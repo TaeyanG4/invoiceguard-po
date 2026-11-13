@@ -1,0 +1,44 @@
+{
+  "written_at": "2026-11-14T05:46:59+09:00",
+  "git_commit": "622c22c7a1b35fce9c914c8ff5757485b8cb77c6",
+  "rule": "final runs only with --allow-final, clean git tree and identical hashes",
+  "files": {
+    "b0_code": {
+      "src/invoiceguard/ocr_baseline.py": "ba696c8866ee79c59fca0eb1997797741961cd0a81f7f423ee39dec5fe3f96da",
+      "docker/ocr/Dockerfile": "850c6d25779a7390ee34224df78a362cba29882f03d71c4da633f91659fd6831",
+      "docker/ocr/run.sh": "1c86fc2632a14e3c952fa7366c7ccc5a83a6154d83cbb63fb30b214cbb97c13a"
+    },
+    "evaluator_code": {
+      "src/invoiceguard/evaluation.py": "028a97ec3ac9cd671811650335f9333b8ed69e778660d0f4cca21a050579ed5f",
+      "src/invoiceguard/score_run.py": "1836a2309f66f882a6cd4d48da56965e96b5201c2b1e3a5e0871df40e7e9e1e6",
+      "src/invoiceguard/canonical.py": "270b6bd9317b4eb10553d7347e24e70140ed028cb076e9c9aba4b85455b72512",
+      "src/invoiceguard/normalization.py": "ae70673163d3bd167562c978010e5b46fcd2128d81d030e1e0f3cfb9d8927c9e",
+      "src/invoiceguard/reconciliation.py": "d5dfa63785feaf6af865adee4114b03163e71eac0b4dadf366fc9141d96ca10f",
+      "src/invoiceguard/model_output.py": "856c69a49188add64c8d50efea8264ba3c42c9f6376733425f7bec92eb4acba7",
+      "src/invoiceguard/public_visibility.py": "4189804ff8f2243ab57602051561bf4f731c91a54ec95e03745e7ab8ca7495bb"
+    },
+    "inference_code": {
+      "src/invoiceguard/vlm/infer.py": "f61e66f575c5a926409909e32824f1b663ffff17b53e58cf22e5511d60083904",
+      "src/invoiceguard/vlm/model.py": "62ffd610023766dee31ef9476c1a5abf2817035889e0e9c445378e1f08b07509",
+      "src/invoiceguard/vlm/sft.py": "74a6e28c94fc2fa3d0996a40024b1b0f2ad934c12f2edcbfbf2a946c9a7a9284",
+      "src/invoiceguard/vlm/records.py": "72dbf7c18d89373ed26e52bb786bbce6709135c58678d9a656b2a785f75b687d",
+      "src/invoiceguard/extraction_request.py": "6b3728a2c246dad0cb53ab6e02fa7bf3d45d7b993025259c1a2a2a76831ab947"
+    },
+    "frozen_config": {
+      "configs/frozen_v1.json": "d5493833fb02e3f573b1021079fa43618102c32920b1d6cc9f8ff42d7acca8d0"
+    },
+    "manifests": {
+      "manifests/public_canonical_v1.jsonl": "1495b06a45881dbfe8e911ff8f1ee6498786743a5cae989ff33bb584834320d7",
+      "manifests/trade_raw_v1.jsonl": "f818ae30cc855521b2a758942fc979263e9cdedf7b42d2743171678dd7fef0ae",
+      "manifests/stress_v1.jsonl": "677167cf8a9a2ecb21fac1c172af259a43d0b82369e234c1e8e4a64bd4e5f853"
+    },
+    "prompts": {
+      "prompts/EXTRACT_PUBLIC_CANONICAL.txt": "800bf7c960350fe25395637091bcbad02bcdb0b90b643c6c991305427593887d",
+      "prompts/EXTRACT_V1.txt": "766c5596d8ff18f6820617782970b1a4e4d424e2525d7cd7b87a64865b52de06"
+    }
+  },
+  "m1_adapter_sha256": "eb08674120d6489fb9f2ae4cf72038588794e09b3d337a5239d8a6078aff2868",
+  "ocr_docker_image_id": "sha256:101657bb60f5e3435b3358bfe498c9253bf443dd279b4073d6ac5374b6182bf4",
+  "b0_version": "b0-1.2",
+  "b0_psm": 4
+}
