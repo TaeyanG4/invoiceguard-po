@@ -1,0 +1,770 @@
+{
+  "run_id": "b0_train_v11",
+  "arm": "B0",
+  "run_metadata": {
+    "sets": [
+      "trade:train",
+      "public:train"
+    ],
+    "fingerprint": null,
+    "psm": 4,
+    "b0_version": "b0-1.1",
+    "adapter": null,
+    "wall_seconds": null,
+    "engine": "tesseract 4.1.1 (docker ubuntu:22.04)"
+  },
+  "contract": "metric contract v2 (reports/eval/metric_contract_v2.md); strict primary",
+  "E1_public": {
+    "strict": {
+      "attempted": 200,
+      "status_counts": {
+        "ok": 200
+      },
+      "json_valid_rate": 1.0,
+      "schema_valid_rate": 1.0,
+      "row_index_valid_rate": 1.0,
+      "doc_exact": 0.665,
+      "row_exact": 0.790091,
+      "row_count_match": 0.885,
+      "excess_rows": 10,
+      "missing_rows": 37,
+      "fields": {
+        "description": {
+          "correct": 647,
+          "scored": 767,
+          "accuracy": 0.843546
+        },
+        "quantity": {
+          "correct": 698,
+          "scored": 767,
+          "accuracy": 0.910039
+        },
+        "unit_price": {
+          "correct": 696,
+          "scored": 767,
+          "accuracy": 0.907432
+        },
+        "amount": {
+          "correct": 728,
+          "scored": 767,
+          "accuracy": 0.949153
+        }
+      },
+      "masked": {},
+      "all_scored_fields": {
+        "correct": 2769,
+        "scored": 3068,
+        "accuracy": 0.902542
+      },
+      "conditional_on_valid_json": {
+        "documents": 200,
+        "correct": 2769,
+        "scored": 3068,
+        "accuracy": 0.902542,
+        "fields": {
+          "description": {
+            "correct": 647,
+            "scored": 767,
+            "accuracy": 0.843546
+          },
+          "quantity": {
+            "correct": 698,
+            "scored": 767,
+            "accuracy": 0.910039
+          },
+          "unit_price": {
+            "correct": 696,
+            "scored": 767,
+            "accuracy": 0.907432
+          },
+          "amount": {
+            "correct": 728,
+            "scored": 767,
+            "accuracy": 0.949153
+          }
+        }
+      },
+      "secondary_casefold_description_case_transformed": {
+        "correct": 0,
+        "scored": 0,
+        "accuracy": null
+      }
+    },
+    "lenient_fence_strip": {
+      "attempted": 200,
+      "status_counts": {
+        "ok": 200
+      },
+      "json_valid_rate": 1.0,
+      "schema_valid_rate": 1.0,
+      "row_index_valid_rate": 1.0,
+      "doc_exact": 0.665,
+      "row_exact": 0.790091,
+      "row_count_match": 0.885,
+      "excess_rows": 10,
+      "missing_rows": 37,
+      "fields": {
+        "description": {
+          "correct": 647,
+          "scored": 767,
+          "accuracy": 0.843546
+        },
+        "quantity": {
+          "correct": 698,
+          "scored": 767,
+          "accuracy": 0.910039
+        },
+        "unit_price": {
+          "correct": 696,
+          "scored": 767,
+          "accuracy": 0.907432
+        },
+        "amount": {
+          "correct": 728,
+          "scored": 767,
+          "accuracy": 0.949153
+        }
+      },
+      "masked": {},
+      "all_scored_fields": {
+        "correct": 2769,
+        "scored": 3068,
+        "accuracy": 0.902542
+      },
+      "conditional_on_valid_json": {
+        "documents": 200,
+        "correct": 2769,
+        "scored": 3068,
+        "accuracy": 0.902542,
+        "fields": {
+          "description": {
+            "correct": 647,
+            "scored": 767,
+            "accuracy": 0.843546
+          },
+          "quantity": {
+            "correct": 698,
+            "scored": 767,
+            "accuracy": 0.910039
+          },
+          "unit_price": {
+            "correct": 696,
+            "scored": 767,
+            "accuracy": 0.907432
+          },
+          "amount": {
+            "correct": 728,
+            "scored": 767,
+            "accuracy": 0.949153
+          }
+        }
+      },
+      "secondary_casefold_description_case_transformed": {
+        "correct": 0,
+        "scored": 0,
+        "accuracy": null
+      },
+      "repaired_documents": 0
+    },
+    "note": "strict is the primary metric; lenient only strips a single ```json fence and is reported separately.",
+    "bootstrap_all_fields_by_base": {
+      "n_clusters": 200,
+      "iterations": 2000,
+      "ci95": [
+        0.8597,
+        0.9368
+      ]
+    },
+    "n_bases": 200,
+    "by_group_strict": {
+      "template:formal_corporate": {
+        "attempted": 75,
+        "json_valid_rate": 1.0,
+        "all_scored_fields": {
+          "correct": 1138,
+          "scored": 1152,
+          "accuracy": 0.987847
+        },
+        "doc_exact": 0.76,
+        "masked": {}
+      },
+      "template:modern_minimal": {
+        "attempted": 50,
+        "json_valid_rate": 1.0,
+        "all_scored_fields": {
+          "correct": 711,
+          "scored": 772,
+          "accuracy": 0.920984
+        },
+        "doc_exact": 0.62,
+        "masked": {}
+      },
+      "template:pos_thermal": {
+        "attempted": 8,
+        "json_valid_rate": 1.0,
+        "all_scored_fields": {
+          "correct": 56,
+          "scored": 120,
+          "accuracy": 0.466667
+        },
+        "doc_exact": 0.625,
+        "masked": {}
+      },
+      "template:utility_bill": {
+        "attempted": 67,
+        "json_valid_rate": 1.0,
+        "all_scored_fields": {
+          "correct": 864,
+          "scored": 1024,
+          "accuracy": 0.84375
+        },
+        "doc_exact": 0.597015,
+        "masked": {}
+      },
+      "train|clean": {
+        "attempted": 200,
+        "json_valid_rate": 1.0,
+        "all_scored_fields": {
+          "correct": 2769,
+          "scored": 3068,
+          "accuracy": 0.902542
+        },
+        "doc_exact": 0.665,
+        "masked": {}
+      }
+    }
+  },
+  "E2_trade": {
+    "strict": {
+      "attempted": 160,
+      "status_counts": {
+        "ok": 160
+      },
+      "json_valid_rate": 1.0,
+      "schema_valid_rate": 1.0,
+      "row_index_valid_rate": 1.0,
+      "doc_exact": 0.61875,
+      "row_exact": 0.842593,
+      "row_count_match": 0.98125,
+      "excess_rows": 0,
+      "missing_rows": 4,
+      "fields": {
+        "sku_raw": {
+          "correct": 607,
+          "scored": 648,
+          "accuracy": 0.936728
+        },
+        "description_raw": {
+          "correct": 630,
+          "scored": 648,
+          "accuracy": 0.972222
+        },
+        "quantity_raw": {
+          "correct": 622,
+          "scored": 648,
+          "accuracy": 0.959877
+        },
+        "unit_raw": {
+          "correct": 610,
+          "scored": 648,
+          "accuracy": 0.941358
+        },
+        "unit_price_raw": {
+          "correct": 636,
+          "scored": 648,
+          "accuracy": 0.981481
+        },
+        "line_total_raw": {
+          "correct": 639,
+          "scored": 648,
+          "accuracy": 0.986111
+        },
+        "invoice_number_raw": {
+          "correct": 150,
+          "scored": 160,
+          "accuracy": 0.9375
+        },
+        "currency_raw": {
+          "correct": 160,
+          "scored": 160,
+          "accuracy": 1.0
+        },
+        "subtotal_raw": {
+          "correct": 159,
+          "scored": 160,
+          "accuracy": 0.99375
+        },
+        "tax_raw": {
+          "correct": 149,
+          "scored": 160,
+          "accuracy": 0.93125
+        },
+        "discount_raw": {
+          "correct": 149,
+          "scored": 160,
+          "accuracy": 0.93125
+        },
+        "total_raw": {
+          "correct": 158,
+          "scored": 160,
+          "accuracy": 0.9875
+        }
+      },
+      "masked": {},
+      "all_scored_fields": {
+        "correct": 4669,
+        "scored": 4848,
+        "accuracy": 0.963078
+      },
+      "conditional_on_valid_json": {
+        "documents": 160,
+        "correct": 4669,
+        "scored": 4848,
+        "accuracy": 0.963078,
+        "fields": {
+          "sku_raw": {
+            "correct": 607,
+            "scored": 648,
+            "accuracy": 0.936728
+          },
+          "description_raw": {
+            "correct": 630,
+            "scored": 648,
+            "accuracy": 0.972222
+          },
+          "quantity_raw": {
+            "correct": 622,
+            "scored": 648,
+            "accuracy": 0.959877
+          },
+          "unit_raw": {
+            "correct": 610,
+            "scored": 648,
+            "accuracy": 0.941358
+          },
+          "unit_price_raw": {
+            "correct": 636,
+            "scored": 648,
+            "accuracy": 0.981481
+          },
+          "line_total_raw": {
+            "correct": 639,
+            "scored": 648,
+            "accuracy": 0.986111
+          },
+          "invoice_number_raw": {
+            "correct": 150,
+            "scored": 160,
+            "accuracy": 0.9375
+          },
+          "currency_raw": {
+            "correct": 160,
+            "scored": 160,
+            "accuracy": 1.0
+          },
+          "subtotal_raw": {
+            "correct": 159,
+            "scored": 160,
+            "accuracy": 0.99375
+          },
+          "tax_raw": {
+            "correct": 149,
+            "scored": 160,
+            "accuracy": 0.93125
+          },
+          "discount_raw": {
+            "correct": 149,
+            "scored": 160,
+            "accuracy": 0.93125
+          },
+          "total_raw": {
+            "correct": 158,
+            "scored": 160,
+            "accuracy": 0.9875
+          }
+        }
+      },
+      "numeric_value_em": {
+        "quantity_raw": {
+          "correct": 618,
+          "scored": 640,
+          "accuracy": 0.965625
+        },
+        "unit_price_raw": {
+          "correct": 636,
+          "scored": 648,
+          "accuracy": 0.981481
+        },
+        "line_total_raw": {
+          "correct": 639,
+          "scored": 648,
+          "accuracy": 0.986111
+        },
+        "subtotal_raw": {
+          "correct": 159,
+          "scored": 160,
+          "accuracy": 0.99375
+        },
+        "tax_raw": {
+          "correct": 149,
+          "scored": 160,
+          "accuracy": 0.93125
+        },
+        "discount_raw": {
+          "correct": 149,
+          "scored": 160,
+          "accuracy": 0.93125
+        },
+        "total_raw": {
+          "correct": 158,
+          "scored": 160,
+          "accuracy": 0.9875
+        }
+      }
+    },
+    "lenient_fence_strip": {
+      "attempted": 160,
+      "status_counts": {
+        "ok": 160
+      },
+      "json_valid_rate": 1.0,
+      "schema_valid_rate": 1.0,
+      "row_index_valid_rate": 1.0,
+      "doc_exact": 0.61875,
+      "row_exact": 0.842593,
+      "row_count_match": 0.98125,
+      "excess_rows": 0,
+      "missing_rows": 4,
+      "fields": {
+        "sku_raw": {
+          "correct": 607,
+          "scored": 648,
+          "accuracy": 0.936728
+        },
+        "description_raw": {
+          "correct": 630,
+          "scored": 648,
+          "accuracy": 0.972222
+        },
+        "quantity_raw": {
+          "correct": 622,
+          "scored": 648,
+          "accuracy": 0.959877
+        },
+        "unit_raw": {
+          "correct": 610,
+          "scored": 648,
+          "accuracy": 0.941358
+        },
+        "unit_price_raw": {
+          "correct": 636,
+          "scored": 648,
+          "accuracy": 0.981481
+        },
+        "line_total_raw": {
+          "correct": 639,
+          "scored": 648,
+          "accuracy": 0.986111
+        },
+        "invoice_number_raw": {
+          "correct": 150,
+          "scored": 160,
+          "accuracy": 0.9375
+        },
+        "currency_raw": {
+          "correct": 160,
+          "scored": 160,
+          "accuracy": 1.0
+        },
+        "subtotal_raw": {
+          "correct": 159,
+          "scored": 160,
+          "accuracy": 0.99375
+        },
+        "tax_raw": {
+          "correct": 149,
+          "scored": 160,
+          "accuracy": 0.93125
+        },
+        "discount_raw": {
+          "correct": 149,
+          "scored": 160,
+          "accuracy": 0.93125
+        },
+        "total_raw": {
+          "correct": 158,
+          "scored": 160,
+          "accuracy": 0.9875
+        }
+      },
+      "masked": {},
+      "all_scored_fields": {
+        "correct": 4669,
+        "scored": 4848,
+        "accuracy": 0.963078
+      },
+      "conditional_on_valid_json": {
+        "documents": 160,
+        "correct": 4669,
+        "scored": 4848,
+        "accuracy": 0.963078,
+        "fields": {
+          "sku_raw": {
+            "correct": 607,
+            "scored": 648,
+            "accuracy": 0.936728
+          },
+          "description_raw": {
+            "correct": 630,
+            "scored": 648,
+            "accuracy": 0.972222
+          },
+          "quantity_raw": {
+            "correct": 622,
+            "scored": 648,
+            "accuracy": 0.959877
+          },
+          "unit_raw": {
+            "correct": 610,
+            "scored": 648,
+            "accuracy": 0.941358
+          },
+          "unit_price_raw": {
+            "correct": 636,
+            "scored": 648,
+            "accuracy": 0.981481
+          },
+          "line_total_raw": {
+            "correct": 639,
+            "scored": 648,
+            "accuracy": 0.986111
+          },
+          "invoice_number_raw": {
+            "correct": 150,
+            "scored": 160,
+            "accuracy": 0.9375
+          },
+          "currency_raw": {
+            "correct": 160,
+            "scored": 160,
+            "accuracy": 1.0
+          },
+          "subtotal_raw": {
+            "correct": 159,
+            "scored": 160,
+            "accuracy": 0.99375
+          },
+          "tax_raw": {
+            "correct": 149,
+            "scored": 160,
+            "accuracy": 0.93125
+          },
+          "discount_raw": {
+            "correct": 149,
+            "scored": 160,
+            "accuracy": 0.93125
+          },
+          "total_raw": {
+            "correct": 158,
+            "scored": 160,
+            "accuracy": 0.9875
+          }
+        }
+      },
+      "numeric_value_em": {
+        "quantity_raw": {
+          "correct": 618,
+          "scored": 640,
+          "accuracy": 0.965625
+        },
+        "unit_price_raw": {
+          "correct": 636,
+          "scored": 648,
+          "accuracy": 0.981481
+        },
+        "line_total_raw": {
+          "correct": 639,
+          "scored": 648,
+          "accuracy": 0.986111
+        },
+        "subtotal_raw": {
+          "correct": 159,
+          "scored": 160,
+          "accuracy": 0.99375
+        },
+        "tax_raw": {
+          "correct": 149,
+          "scored": 160,
+          "accuracy": 0.93125
+        },
+        "discount_raw": {
+          "correct": 149,
+          "scored": 160,
+          "accuracy": 0.93125
+        },
+        "total_raw": {
+          "correct": 158,
+          "scored": 160,
+          "accuracy": 0.9875
+        }
+      },
+      "repaired_documents": 0
+    },
+    "note": "strict is the primary metric; lenient only strips a single ```json fence and is reported separately.",
+    "bootstrap_all_fields_by_family": {
+      "n_clusters": 160,
+      "iterations": 2000,
+      "ci95": [
+        0.9505,
+        0.9742
+      ]
+    },
+    "by_group_strict": {
+      "train|T01": {
+        "attempted": 54,
+        "json_valid_rate": 1.0,
+        "all_scored_fields": {
+          "correct": 1596,
+          "scored": 1650,
+          "accuracy": 0.967273
+        },
+        "doc_exact": 0.777778
+      },
+      "train|T02": {
+        "attempted": 54,
+        "json_valid_rate": 1.0,
+        "all_scored_fields": {
+          "correct": 1527,
+          "scored": 1608,
+          "accuracy": 0.949627
+        },
+        "doc_exact": 0.462963
+      },
+      "train|T03": {
+        "attempted": 52,
+        "json_valid_rate": 1.0,
+        "all_scored_fields": {
+          "correct": 1546,
+          "scored": 1590,
+          "accuracy": 0.972327
+        },
+        "doc_exact": 0.615385
+      }
+    }
+  },
+  "E3_findings": {
+    "documents": 160,
+    "per_code": {
+      "AMBIGUOUS_NUMBER": {
+        "tp": 0,
+        "fp": 5,
+        "fn": 0,
+        "support": 0,
+        "precision": 0.0,
+        "recall": null
+      },
+      "AMBIGUOUS_QUANTITY": {
+        "tp": 6,
+        "fp": 15,
+        "fn": 2,
+        "support": 8,
+        "precision": 0.285714,
+        "recall": 0.75
+      },
+      "DUPLICATE_SKU": {
+        "tp": 14,
+        "fp": 2,
+        "fn": 2,
+        "support": 16,
+        "precision": 0.875,
+        "recall": 0.875
+      },
+      "LINE_ARITHMETIC_MISMATCH": {
+        "tp": 0,
+        "fp": 10,
+        "fn": 0,
+        "support": 0,
+        "precision": 0.0,
+        "recall": null
+      },
+      "MISSING_CRITICAL_FIELD": {
+        "tp": 0,
+        "fp": 21,
+        "fn": 0,
+        "support": 0,
+        "precision": 0.0,
+        "recall": null
+      },
+      "PO_LINE_NOT_FOUND": {
+        "tp": 8,
+        "fp": 40,
+        "fn": 0,
+        "support": 8,
+        "precision": 0.166667,
+        "recall": 1.0
+      },
+      "QTY_DIFF": {
+        "tp": 20,
+        "fp": 1,
+        "fn": 4,
+        "support": 24,
+        "precision": 0.952381,
+        "recall": 0.833333
+      },
+      "TOTAL_ARITHMETIC_MISMATCH": {
+        "tp": 0,
+        "fp": 4,
+        "fn": 0,
+        "support": 0,
+        "precision": 0.0,
+        "recall": null
+      },
+      "TOTAL_CHECK_NOT_EVALUABLE": {
+        "tp": 0,
+        "fp": 14,
+        "fn": 0,
+        "support": 0,
+        "precision": 0.0,
+        "recall": null
+      },
+      "UNIT_MISMATCH": {
+        "tp": 0,
+        "fp": 34,
+        "fn": 0,
+        "support": 0,
+        "precision": 0.0,
+        "recall": null
+      },
+      "UNIT_PRICE_DIFF": {
+        "tp": 33,
+        "fp": 1,
+        "fn": 7,
+        "support": 40,
+        "precision": 0.970588,
+        "recall": 0.825
+      },
+      "UNKNOWN_SKU": {
+        "tp": 8,
+        "fp": 16,
+        "fn": 0,
+        "support": 8,
+        "precision": 0.333333,
+        "recall": 1.0
+      },
+      "UNSUPPORTED_ROW_COUNT": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "support": 0,
+        "precision": 0.0,
+        "recall": null
+      }
+    },
+    "review_rate": 0.7,
+    "failed_rate": 0.0,
+    "matched_candidate_rate": 0.3,
+    "candidates_with_actual_transaction_diff": 0.0,
+    "candidates_with_extraction_error": 0.166667,
+    "note": "live findings from the arm's own extraction; oracle findings from gold. n per code is small."
+  }
+}

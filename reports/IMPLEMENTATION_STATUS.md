@@ -119,5 +119,19 @@
 - 테스트: `.venv` 134 passed / 1 skipped(torch 필요한 mask 테스트), `.venv-ml` mask 3 passed. `tests/test_repo_hygiene.py` 추가(git 추적 파일에 가중치·키·폰트·원본 데이터 없음).
 - `scripts/verify_claude_pack.py`는 현재 작업 트리에서 `no_asset:.pem`, `no_asset:.safetensors` 2건 **failed**: 검사기가 Git 무시 폴더까지 rglob하여 `.venv-ml`의 certifi `cacert.pem`, `models/…/model.safetensors`, `artifacts/adapters/…/adapter_model.safetensors`를 잡음. `git ls-files` 기준 해당 파일 추적 0건 확인. 패키지 검사기는 수정하지 않고 결과(`reports/CLAUDE_PACK_VALIDATION.json`)를 그대로 둠.
 
+### v5 실행 (Fable 결정서 docs/19, 구현 Opus) — 2026-11-14
+**S1 계약 개정·지표 분리·CI (완료, 커밋 0a1cd6e)**: docs/19_DECISIONS_V5.md, CLAUDE.md 2개 조항 개정(로컬 GPU 주 실행, vLLM P0, 8B는 추론 전용·유료 승인 시). `evaluation.aggregate()`에 `conditional_on_valid_json`, `strict_and_lenient()` 추가, `reports/eval/metric_contract_v2.md`. `.github/workflows/ci.yml`(ubuntu, 패키지 검사+pytest).
+
+**S2 프롬프트 확정·동결 (완료, 커밋 4a7cec1)**: `configs/frozen_v1.json` — profile standard, manifest 해시, 프롬프트 해시(공개 800bf7c9…, 자체 766c5596…), max_pixels 786,432, max_new_tokens 1,536, greedy, NF4, batch 1.
+- 공개 프롬프트 A/B(train 4장, `reports/model/s2_prompt_ab_train.json`): "Markdown 펜스 금지" 문구 추가 시 strict 0/4→0/4, lenient 3/4→2/4 → **v1 유지**.
+- **배치 불변성 문제**: batch 8 greedy 출력이 batch 1과 달라짐(train 진단 `diag_m0_prompt_v2_bs8`) → 평가 batch 1 고정.
+- **속도 원인 규명**: cProfile 결과 문서당 시간의 대부분이 비전 patch-embedding `torch.conv3d`(bf16) 1회 18.4s. 텍스트 전용 디코드는 32 tok/s, NF4/bf16 동일 5.7 tok/s였던 이유. patch-embed만 fp32로 계산 → 문서당 12–21s(약 21 tok/s, 2.5–3배). 모든 arm 동일 적용·동결 설정에 기록. 학습 경로는 PEFT kbit 준비가 비전을 fp32로 올리므로 래퍼 미적용.
+
+**S3 B0 OCR 기준선 (진행 중)**: Tesseract 4.1.1을 Docker(ubuntu:22.04, `--network none`)로 실행(`docker/ocr/`), 일반 전처리(회색조·어두운 띠의 어두운 x범위만 반전·2배 확대), 헤더 키워드 열 탐지(긴 키워드 우선)·셀 간격 구문화·텍스트=왼쪽/숫자=오른쪽 정렬·2줄 목록 패턴·공개 티켓 패턴. train 조정 이력: 전처리 없음 자체 0.697/공개 0.595 → 전처리 후 0.862/0.712. held-out 레이아웃에서 착안한 키워드("line") 1건을 발견해 제거함(계약 준수). 단위 테스트 `tests/test_ocr_baseline.py` 5개.
+
+**S5 준비 — dev 전용 stress set**: `invoiceguard.vlm.stress` 자체 dev 24장 × 3변형(blur_jpeg / skew_lowres / fade_noise) = 72장, `manifests/stress_v1.jsonl` sha256 677167cf…(2회 생성 동일). final 미포함.
+
+**S6 준비**: 드라이버 561.17(CUDA 12.6) vs vLLM 0.11.x(cu128/129/130 빌드) — CUDA 마이너 호환성으로 동작 여부를 실제 시험 예정, `vllm/vllm-openai:v0.11.2` 이미지 다운로드 중.
+
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.

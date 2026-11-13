@@ -86,18 +86,34 @@ def main() -> int:
 
     processor = load_processor()
     template = processor.chat_template or ""
-    model = attach_lora(load_base())
+    model = attach_lora(load_base(patch_embed_fp32=False))  # kbit prep upcasts vision to fp32 itself
     collator = VerifiedCollator(processor, records)
     cfg = SFTConfig(
         output_dir=str(REPO / "artifacts" / "trainer" / run_id), max_steps=max_steps,
         per_device_train_batch_size=CONFIG["micro_batch"], gradient_accumulation_steps=CONFIG["grad_accum"],
         learning_rate=CONFIG["lr"], lr_scheduler_type=CONFIG["scheduler"], warmup_ratio=CONFIG["warmup_ratio"],
-        bf16=True, logging_steps=1, save_strategy="no", report_to="none", seed=SEED, data_seed=SEED,
+        bf16=False,  # no autocast: it pushes the vision Conv3d onto the slow bf16 cuDNN path (~18 s/sample); bnb 4-bit layers still compute in bf16
+        logging_steps=1, save_strategy="no", report_to="none", seed=SEED, data_seed=SEED,
         dataloader_num_workers=0, remove_unused_columns=False, max_length=None, packing=False,
         gradient_checkpointing=False,  # already enabled by prepare_model_for_kbit_training
         dataset_kwargs={"skip_prepare_dataset": True})
-    trainer = SFTTrainer(model=model, args=cfg, train_dataset=Dataset.from_list([{"idx": i} for i in range(len(records))]),
-                         data_collator=collator, processing_class=processor)
+    from transformers import Trainer
+
+    class LeanSFTTrainer(SFTTrainer):
+        """TRL SFTTrainer whose compute_loss skips TRL's per-step entropy/token-accuracy metrics.
+
+        Measured 2026-11-14: those metrics materialise extra fp32 copies of the 151,936-vocab logits each
+        micro-step; on the 16 GB GPU the run grew to 14.9 GB, spilled into shared memory and stalled (GPU
+        idle, 19 W). The loss itself is the standard causal-LM loss on our verified labels.
+        """
+
+        def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+            inputs["use_cache"] = False
+            return Trainer.compute_loss(self, model, inputs, return_outputs=return_outputs,
+                                        num_items_in_batch=num_items_in_batch)
+
+    trainer = LeanSFTTrainer(model=model, args=cfg, train_dataset=Dataset.from_list([{"idx": i} for i in range(len(records))]),
+                             data_collator=collator, processing_class=processor)
     torch.cuda.reset_peak_memory_stats()
     t0 = time.perf_counter()
     result = trainer.train()
@@ -108,7 +124,8 @@ def main() -> int:
               for h in trainer.state.log_history if "loss" in h]
     manifests = {name: _sha(REPO / "manifests" / name) for name in ("public_canonical_v1.jsonl", "trade_raw_v1.jsonl")}
     meta = {
-        "run_id": run_id, "kind": "M1_qlora_sft", "framework": "trl.SFTTrainer + verified completion-only collator",
+        "run_id": run_id, "kind": "M1_qlora_sft",
+        "framework": "trl 0.25.1 SFTTrainer (compute_loss = transformers Trainer loss; TRL logit metrics disabled for VRAM) + verified completion-only collator",
         "trl_assistant_only_loss_supported_by_template": "{% generation %}" in template,
         "profile": args.profile, "records": len(records),
         "records_by_task": {t: sum(r.task == t for r in records) for t in ("PUBLIC_CANONICAL", "TRADE_RAW")},

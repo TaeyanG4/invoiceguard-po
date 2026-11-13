@@ -122,7 +122,7 @@ def cmd_train(steps: int = 10, accum: int = 8, lr: float = 1e-4) -> int:
     processor = load_processor()
     records = _records()
     random.Random(SEED).shuffle(records)
-    model = attach_lora(load_base())
+    model = attach_lora(load_base(patch_embed_fp32=False))
     model.train()
     report = {"kind": "local_10_step_qlora_smoke", "steps": steps, "grad_accumulation": accum, "lr": lr,
               "trainable": trainable_report(model), "env": _env()}
