@@ -1,0 +1,130 @@
+{
+  "run": "b0_dev_v11",
+  "trade_documents": 96,
+  "trade_documents_with_any_error": 83,
+  "cause_counts_all": {
+    "rows:missing": 68,
+    "discount_raw:missing_value": 26,
+    "currency_raw:missing_value": 24,
+    "tax_raw:missing_value": 20,
+    "invoice_number_raw:missing_value": 18,
+    "invoice_number_raw:invoice_number_raw_text": 17,
+    "subtotal_raw:missing_value": 13,
+    "total_raw:missing_value": 12,
+    "tax_raw:number_value": 11,
+    "subtotal_raw:number_value": 11,
+    "quantity_raw:number_value": 11,
+    "line_total_raw:number_value": 9,
+    "discount_raw:number_value": 8,
+    "sku_raw:sku_raw_text": 8,
+    "sku_raw:missing_value": 8,
+    "description_raw:description_text": 8,
+    "unit_price_raw:missing_value": 7,
+    "unit_raw:unit_text": 7,
+    "unit_price_raw:number_value": 5,
+    "total_raw:number_value": 5,
+    "unit_raw:missing_value": 4,
+    "quantity_raw:number_format_only": 3,
+    "tax_raw:number_format_only": 2,
+    "line_total_raw:missing_value": 2,
+    "unit_price_raw:number_format_only": 2,
+    "rows:excess": 1,
+    "quantity_raw:missing_value": 1,
+    "discount_raw:number_format_only": 1
+  },
+  "examined": [
+    {
+      "id": "tr_01ed9dbd532f",
+      "causes": [
+        "unit_price_raw:number_value",
+        "tax_raw:number_value",
+        "discount_raw:missing_value"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": \"INV-2025-64803\", \"currency_raw\": \"USD\", \"subtotal_raw\": \"867.45\", \"tax_raw\": \"8.00\", \"discount_raw\": null, \"total_raw\": \"867.45\", \"items\": [{\"row_index\": 1, \"sku_r"
+    },
+    {
+      "id": "tr_01ed9dbd532f__blur_jpeg",
+      "causes": [
+        "rows:missing",
+        "invoice_number_raw:missing_value",
+        "currency_raw:missing_value",
+        "subtotal_raw:missing_value",
+        "tax_raw:missing_value",
+        "discount_raw:missing_value"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": null, \"currency_raw\": null, \"subtotal_raw\": null, \"tax_raw\": null, \"discount_raw\": null, \"total_raw\": \"867.45\", \"items\": []}"
+    },
+    {
+      "id": "tr_01ed9dbd532f__fade_noise",
+      "causes": [
+        "rows:missing",
+        "invoice_number_raw:missing_value",
+        "tax_raw:number_value",
+        "discount_raw:number_value",
+        "total_raw:missing_value"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": null, \"currency_raw\": \"USD\", \"subtotal_raw\": \"867.45\", \"tax_raw\": \"8.82\", \"discount_raw\": \"6.98\", \"total_raw\": null, \"items\": []}"
+    },
+    {
+      "id": "tr_01ed9dbd532f__skew_lowres",
+      "causes": [
+        "rows:missing",
+        "tax_raw:missing_value",
+        "discount_raw:missing_value"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": \"INV-2025-64803\", \"currency_raw\": \"USD\", \"subtotal_raw\": \"867.45\", \"tax_raw\": null, \"discount_raw\": null, \"total_raw\": \"867.45\", \"items\": []}"
+    },
+    {
+      "id": "tr_094c507908ef__blur_jpeg",
+      "causes": [
+        "rows:missing",
+        "subtotal_raw:number_value",
+        "tax_raw:missing_value",
+        "total_raw:missing_value"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": \"0000121\", \"currency_raw\": \"USD\", \"subtotal_raw\": \"3.04\", \"tax_raw\": null, \"discount_raw\": \"0.00\", \"total_raw\": null, \"items\": []}"
+    },
+    {
+      "id": "tr_094c507908ef__fade_noise",
+      "causes": [
+        "quantity_raw:number_format_only"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": \"0000121\", \"currency_raw\": \"USD\", \"subtotal_raw\": \"124873.04\", \"tax_raw\": \"0.00\", \"discount_raw\": \"0.00\", \"total_raw\": \"124873.04\", \"items\": [{\"row_index\": 1, \"sku_"
+    },
+    {
+      "id": "tr_094c507908ef__skew_lowres",
+      "causes": [
+        "rows:missing"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": \"0000121\", \"currency_raw\": \"USD\", \"subtotal_raw\": \"124873.04\", \"tax_raw\": \"0.00\", \"discount_raw\": \"0.00\", \"total_raw\": \"124873.04\", \"items\": []}"
+    },
+    {
+      "id": "tr_0dc291e8cb69__blur_jpeg",
+      "causes": [
+        "rows:missing",
+        "currency_raw:missing_value",
+        "subtotal_raw:number_value",
+        "tax_raw:missing_value",
+        "discount_raw:missing_value"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": \"0009108\", \"currency_raw\": null, \"subtotal_raw\": \"00\", \"tax_raw\": null, \"discount_raw\": null, \"total_raw\": \"295,473.00\", \"items\": []}"
+    },
+    {
+      "id": "tr_0dc291e8cb69__fade_noise",
+      "causes": [
+        "rows:missing",
+        "invoice_number_raw:missing_value",
+        "discount_raw:missing_value"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": null, \"currency_raw\": \"USD\", \"subtotal_raw\": \"295,473.00\", \"tax_raw\": \"0.00\", \"discount_raw\": null, \"total_raw\": \"295,473.00\", \"items\": []}"
+    },
+    {
+      "id": "tr_0dc291e8cb69__skew_lowres",
+      "causes": [
+        "rows:missing"
+      ],
+      "raw_head": "{\"schema_version\": \"1.0\", \"document_type\": \"invoice\", \"invoice_number_raw\": \"0009108\", \"currency_raw\": \"USD\", \"subtotal_raw\": \"295,473.00\", \"tax_raw\": \"0.00\", \"discount_raw\": \"0.00\", \"total_raw\": \"295,473.00\", \"items\": []}"
+    }
+  ],
+  "note": "fixed id order; at most N examined in detail; counts cover every document"
+}

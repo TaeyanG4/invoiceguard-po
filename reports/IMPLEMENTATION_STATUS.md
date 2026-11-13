@@ -127,7 +127,10 @@
 - **배치 불변성 문제**: batch 8 greedy 출력이 batch 1과 달라짐(train 진단 `diag_m0_prompt_v2_bs8`) → 평가 batch 1 고정.
 - **속도 원인 규명**: cProfile 결과 문서당 시간의 대부분이 비전 patch-embedding `torch.conv3d`(bf16) 1회 18.4s. 텍스트 전용 디코드는 32 tok/s, NF4/bf16 동일 5.7 tok/s였던 이유. patch-embed만 fp32로 계산 → 문서당 12–21s(약 21 tok/s, 2.5–3배). 모든 arm 동일 적용·동결 설정에 기록. 학습 경로는 PEFT kbit 준비가 비전을 fp32로 올리므로 래퍼 미적용.
 
-**S3 B0 OCR 기준선 (진행 중)**: Tesseract 4.1.1을 Docker(ubuntu:22.04, `--network none`)로 실행(`docker/ocr/`), 일반 전처리(회색조·어두운 띠의 어두운 x범위만 반전·2배 확대), 헤더 키워드 열 탐지(긴 키워드 우선)·셀 간격 구문화·텍스트=왼쪽/숫자=오른쪽 정렬·2줄 목록 패턴·공개 티켓 패턴. train 조정 이력: 전처리 없음 자체 0.697/공개 0.595 → 전처리 후 0.862/0.712. held-out 레이아웃에서 착안한 키워드("line") 1건을 발견해 제거함(계약 준수). 단위 테스트 `tests/test_ocr_baseline.py` 5개.
+**S3 B0 OCR 기준선 (완료·동결, 커밋 c7f3e96 + 수정 ceb5213)**: Tesseract 4.1.1 Docker(ubuntu:22.04, `--network none`, `docker/ocr/`). 전처리 2종(①회색조·어두운 띠의 어두운 x범위만 반전·2배 확대·임계 165 이진화 ②이진화 없음)을 모두 OCR하고 **정답 없이 문서 내부 산술 일관성**(수량×단가≈금액, 행합≈총액)이 높은 쪽 선택. 헤더 키워드 열 탐지(긴 키워드 우선), 번호·세금 열 무시, 셀 간격 구문화, 텍스트=왼쪽/숫자=오른쪽 정렬, 2줄 목록·티켓 패턴.
+- train 조정 이력(필드 정확도 자체/공개): 0.697/0.595 → 반전·확대 0.862/0.712 → 헤더 키워드 수정 0.884/0.820 → 이진화 0.925/0.864 → 변형 선택 **0.963/0.903** (v1.1 동결). 조정은 train만 사용. held-out 레이아웃에서 착안한 키워드("line") 1건은 발견 즉시 제거.
+- **dev 결과(동결 후, `reports/eval/b0_dev_v11.json`)**: 자체 dev clean(T04) 0.911 (doc exact 0.54), 공개 dev clean 0.967, faded 0.933, **bad_scan 0.562**; 자체 dev stress **blur_jpeg 0.124 / fade_noise 0.217 / skew_lowres 0.180** (doc exact 0). E3(dev 전체 96건) 리콜 QTY_DIFF 0.75, UNIT_PRICE_DIFF 0.83, 나머지 1.0, 검수율 0.625.
+- 버그 수정: stress 이미지가 clean과 같은 파일 stem을 써서 OCR 캐시를 재사용 → 세 변형 점수가 clean과 소수점까지 동일한 이상치로 발견, record_id 기준 이름으로 수정 + 회귀 테스트.
 
 **S5 준비 — dev 전용 stress set**: `invoiceguard.vlm.stress` 자체 dev 24장 × 3변형(blur_jpeg / skew_lowres / fade_noise) = 72장, `manifests/stress_v1.jsonl` sha256 677167cf…(2회 생성 동일). final 미포함.
 
