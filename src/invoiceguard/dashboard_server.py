@@ -298,8 +298,24 @@ def status_body(store: DataStore) -> dict[str, Any]:
         content = _safe(errors, f"reports/model/{path.name}", lambda path=path: _read_json(path))
         if content is not None:  # raw key/values only; the dashboard does not interpret them
             smoke.append({"path": f"reports/model/{path.name}", "pairs": _flatten(content)[:MAX_SMOKE_PAIRS]})
+    evaluations, comparisons = [], []
+    for path in sorted((repo / "reports" / "eval").glob("*.json")):
+        content = _safe(errors, f"reports/eval/{path.name}", lambda path=path: _read_json(path))
+        if not isinstance(content, dict):
+            continue
+        if "headline" in content and content.get("run_id"):
+            sets = (content.get("run_metadata") or {}).get("sets") or []
+            stage = "final" if any(x in ("public:iid_final", "public:ood_final", "trade:test") for x in sets) else (
+                "dev" if any("dev" in x or x.startswith("stress:") for x in sets) else "train_diagnostic")
+            evaluations.append({"file": f"reports/eval/{path.name}", "run_id": content["run_id"], "arm": content.get("arm"),
+                                "stage": stage, "denominator_check": content.get("denominator_check"),
+                                "headline": content["headline"]})
+        elif path.name.startswith("compare_") and "sets" in content:
+            comparisons.append({"file": f"reports/eval/{path.name}", "a": content.get("a"), "b": content.get("b"),
+                                "sets": content["sets"]})
     return {
         "tasks": tasks, "gates": gates,
+        "evaluations": evaluations, "comparisons": comparisons,
         "hardware": (config or {}).get("hardware"),
         "approval": _safe(errors, "approval", lambda: snap.parse_kv(snap._read(repo / "reports" / "RUNPOD_APPROVAL.md") or "")),
         "handoff": _safe(errors, "handoff", lambda: snap.parse_kv(snap._read(repo / "reports" / "SESSION_HANDOFF.md") or "")),

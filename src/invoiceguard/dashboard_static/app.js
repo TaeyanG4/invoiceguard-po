@@ -431,6 +431,36 @@
     add(view, parts);
   }
 
+  // ---- evaluation tables (reports/eval/*.json written by invoiceguard.score_run; shown as recorded)
+  function evalCards(evals, comps) {
+    const fmt = (v) => (v === null || v === undefined) ? "—" : Number(v).toFixed(3);
+    const out = [];
+    ["final", "dev"].forEach((stage) => {
+      const runs = evals.filter((e) => e.stage === stage);
+      if (!runs.length) {
+        out.push(card(stage === "final" ? "FINAL 평가 (동결 후 1회)" : "DEV 평가", h("p", null, pill("not_run"), " 해당 단계 채점 결과 파일 없음")));
+        return;
+      }
+      const sets = Array.from(new Set(runs.flatMap((e) => Object.keys(e.headline)))).sort();
+      const rows = runs.map((e) => h("tr", null, h("td", { class: "mono" }, e.run_id),
+        sets.map((k) => { const v = e.headline[k];
+          return h("td", null, v ? [h("b", null, fmt(v.fields_acc)), h("div", { class: "sub" }, "exact " + fmt(v.doc_exact) + " · json " + fmt(v.json_valid) + " · n " + v.n),
+            v.ci95 ? h("div", { class: "sub" }, "CI " + v.ci95.join("–")) : null] : pill("not_run")); })));
+      out.push(card(stage === "final" ? "FINAL 평가 (동결 후 1회) — strict 필드 정확도" : "DEV 평가 — strict 필드 정확도 (final 아님)",
+        h("div", { class: "tablewrap" }, table(["run"].concat(sets), rows, "small")),
+        h("p", { class: "sub" }, "세트별로만 집계합니다(clean·stress·iid·ood·test 합산 없음). 셀 아래: 문서 exact · strict JSON 유효율 · 문서 수 · base/family 단위 bootstrap 95% CI. 원본: reports/eval/*.json")));
+    });
+    if (comps.length) {
+      out.push(card("Paired 차이 (A − B, 같은 문서, cluster bootstrap 95% CI)", comps.map((c) => [
+        h("h3", { class: "mono" }, c.a + "  −  " + c.b),
+        h("div", { class: "tablewrap" }, table(["set", "n", "필드 정확도 차이", "95% CI", "문서 exact 차이"],
+          Object.entries(c.sets).map(([k, v]) => h("tr", null, h("td", { class: "mono" }, k), h("td", null, String(v.n_docs)),
+            h("td", null, (v.field_acc_diff >= 0 ? "+" : "") + fmt(v.field_acc_diff)), h("td", null, v.field_acc_diff_ci95.join(" ~ ")),
+            h("td", null, (v.doc_exact_diff >= 0 ? "+" : "") + fmt(v.doc_exact_diff)))), "small"))])));
+    }
+    return out;
+  }
+
   // ---- model / training
   async function pageModel(view) {
     const s = await status();
@@ -440,8 +470,7 @@
       pageHead("모델·학습", "M0 base vs M1 adapter · 동일 frozen manifest·NF4·프롬프트·생성 설정"),
       banner("측정된 결과 파일이 없으면 모든 칸은 미실행입니다. 이 페이지는 수치를 추정하거나 채우지 않습니다."),
       statusErrors(s),
-      card("평가 매트릭스", table(["모델"].concat(cols), ["M0 base (NF4)", "M1 adapter (NF4)"].map((name) => h("tr", null, h("td", { class: "mono" }, name), cols.map(() => h("td", null, pill("not_run")))))),
-        h("p", { class: "sub" }, "결과 파일 reports/RESULTS_TEMPLATE.json 상태: ", mono(r.status || "not_run"), " — 템플릿이며 측정값이 아닙니다.")),
+      evalCards(s.evaluations || [], s.comparisons || []),
       h("div", { class: "cols" },
         card("기록된 모델 상태", kv([
           ["model_revision / adapter_hash", ho["model_revision / adapter_hash"]], ["current_profile", ho.current_profile],
