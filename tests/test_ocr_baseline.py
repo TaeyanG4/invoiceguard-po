@@ -70,3 +70,13 @@ def test_canonical_number_strips_currency_and_grouping():
     assert canonical_number("€1,200.50") == "1200.5"
     assert canonical_number("C$45.00") == "45"
     assert canonical_number("n/a") is None
+
+
+def test_ocr_artifacts_are_named_by_unique_record_id():
+    """Regression: stress variants share the clean image's file stem; OCR caches must key on record_id."""
+    import inspect
+
+    from invoiceguard import ocr_baseline
+
+    src = inspect.getsource(ocr_baseline.run_ocr) + inspect.getsource(ocr_baseline.run_predict)
+    assert "rec.record_id" in src and "image_path.stem" not in src

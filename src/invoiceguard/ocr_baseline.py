@@ -415,7 +415,8 @@ def run_ocr(specs: list[str], psm: int, variant: str = "bin") -> Path:
     paths = []
     for spec in specs:
         for rec in _records(spec):
-            src = OCR_DIR / ("pre" if variant == "bin" else f"pre_{variant}") / f"{rec.image_path.stem}.png"
+            # name by record_id: stress variants share the source file stem (<doc_id>.png) with the clean image
+            src = OCR_DIR / ("pre" if variant == "bin" else f"pre_{variant}") / f"{rec.record_id}.png"
             if not src.exists():
                 preprocess(rec.image_path, src, binarize=VARIANTS[variant])
             rel = src.resolve().relative_to(data_root.resolve()).as_posix()
@@ -439,7 +440,7 @@ def run_predict(specs: list[str], psm: int, run_id: str) -> Path:
             started = time.perf_counter()
             candidates = []
             for variant in VARIANTS:
-                tsv = tsv_dir(psm, variant) / f"{rec.image_path.stem}.tsv"
+                tsv = tsv_dir(psm, variant) / f"{rec.record_id}.tsv"
                 if tsv.exists():
                     words = read_tsv(tsv)
                     obj = predict_trade(words) if rec.task == "TRADE_RAW" else predict_public(words)
