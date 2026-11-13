@@ -1,0 +1,10 @@
+{
+  "measured_at": "2026-11-14 local RTX 4070 Ti SUPER",
+  "server": "invoiceguard.serving.hf_server (Transformers+PEFT, NF4, adapter eb08674120d6..., 127.0.0.1:8001)",
+  "timeout_cancel_test": {"request_timeout_s": 3, "http_status": 504, "wall_s": 3.1, "gpu_seconds": 2.989,
+                          "health_immediately_after": {"busy": false, "queued": 0},
+                          "conclusion": "generation stopped at the deadline via StoppingCriteria; no orphan GPU work"},
+  "normal_m1_request": {"http_status": 200, "finish_reason": "stop", "prompt_tokens": 1045, "completion_tokens": 202, "gpu_seconds": 8.704},
+  "bounded_queue_test": {"concurrent_requests": 4, "status_codes": [200, 200, 200, 429],
+                         "conclusion": "1 running + MAX_QUEUE=2 waiting; the 4th is rejected with 429"}
+}

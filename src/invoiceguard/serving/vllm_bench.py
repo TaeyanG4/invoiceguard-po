@@ -28,12 +28,15 @@ PORT = 8001
 MODEL_DIR = REPO / "models" / "qwen3-vl-2b-instruct" / "89644892e4d85e24eaac8bacfd4f463576704203"
 ADAPTER_DIR = REPO / "artifacts" / "adapters" / "m1_standard_v1"
 OUT = REPO / "reports" / "serving"
+TARGET = {"port": PORT, "conc": (1, 2, 4, 8)}  # overridable from the CLI (HF server: --port 8001 --conc 1,2,4)
 MAX_TOKENS = 1536
 
 
 def up(quant: str) -> None:
-    args = ["docker", "run", "-d", "--rm", "--name", CONTAINER, "--gpus", "all", "--ipc", "host",
+    subprocess.run(["docker", "rm", "-f", CONTAINER], capture_output=True)
+    args = ["docker", "run", "-d", "--name", CONTAINER, "--gpus", "all", "--ipc", "host",
             "-p", f"127.0.0.1:{PORT}:8000",  # loopback only; never 0.0.0.0
+            "-e", "NVIDIA_DISABLE_REQUIRE=1",  # experiment: CUDA 12.9 image on a 12.6 driver via minor-version compatibility
             "-v", f"{MODEL_DIR}:/model:ro", "-v", f"{ADAPTER_DIR}:/adapters/m1:ro",
             IMAGE, "--model", "/model", "--served-model-name", "base", "--dtype", "bfloat16",
             "--enable-lora", "--lora-modules", "m1=/adapters/m1", "--max-lora-rank", "8", "--max-loras", "1",
@@ -53,13 +56,15 @@ def up(quant: str) -> None:
             pass
         state = subprocess.run(["docker", "inspect", "-f", "{{.State.Running}}", CONTAINER], capture_output=True, text=True)
         if state.stdout.strip() != "true":
-            raise SystemExit("container exited; see `docker logs " + CONTAINER + "` (removed with --rm)")
+            logs = subprocess.run(["docker", "logs", "--tail", "40", CONTAINER], capture_output=True, text=True, errors="replace")
+            print((logs.stdout + logs.stderr)[-4000:])
+            raise SystemExit("container exited before becoming healthy")
         time.sleep(5)
     raise SystemExit("vLLM did not become healthy within 15 min")
 
 
 def down() -> None:
-    subprocess.run(["docker", "stop", CONTAINER], check=False)
+    subprocess.run(["docker", "rm", "-f", CONTAINER], check=False)
 
 
 def _request(model: str, prompt: str, image_path: Path) -> dict:
@@ -67,7 +72,7 @@ def _request(model: str, prompt: str, image_path: Path) -> dict:
     body = {"model": model, "temperature": 0, "max_tokens": MAX_TOKENS, "seed": 20261113,
             "messages": [{"role": "user", "content": [{"type": "image_url", "image_url": {"url": data_url}},
                                                       {"type": "text", "text": prompt}]}]}
-    req = urllib.request.Request(f"http://127.0.0.1:{PORT}/v1/chat/completions", data=json.dumps(body).encode(),
+    req = urllib.request.Request(f"http://127.0.0.1:{TARGET['port']}/v1/chat/completions", data=json.dumps(body).encode(),
                                  headers={"Content-Type": "application/json"})
     start = time.perf_counter()
     try:
@@ -99,7 +104,7 @@ def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
         path = REPO / "artifacts" / "predictions" / f"{arm}_dev_v1" / "predictions.jsonl"
         if path.exists():
             hf[arm] = {json.loads(l)["id"]: json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()}
-    result = {"label": label, "image": IMAGE, "docs": [d.record_id for d in docs], "max_tokens": MAX_TOKENS,
+    result = {"label": label, "server_port": TARGET["port"], "docs": [d.record_id for d in docs], "max_tokens": MAX_TOKENS,
               "warmups": warmups, "repetitions": reps, "arms": {}}
     for arm, model in (("m0", "base"), ("m1", "m1")):
         for d in docs[:warmups]:
@@ -121,7 +126,7 @@ def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
                     entry["hf_fields"] = [sum(c for c, _ in s_h["fields"].values()), sum(s for _, s in s_h["fields"].values())]
                 parity.append(entry)
         bench = {}
-        for conc in (1, 2, 4, 8):
+        for conc in TARGET["conc"]:
             lat, fails, mem = [], 0, []
             start = time.perf_counter()
             jobs = [d for _ in range(reps) for d in docs]
@@ -166,7 +171,10 @@ def main() -> int:
     parser.add_argument("--docs", type=int, default=20)
     parser.add_argument("--warmups", type=int, default=3)
     parser.add_argument("--reps", type=int, default=2)
+    parser.add_argument("--port", type=int, default=PORT)
+    parser.add_argument("--conc", default="1,2,4,8")
     args = parser.parse_args()
+    TARGET["port"], TARGET["conc"] = args.port, tuple(int(x) for x in args.conc.split(","))
     if args.command == "up":
         up(args.quant)
     elif args.command == "down":

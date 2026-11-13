@@ -1,0 +1,47 @@
+{
+ "doc_id": "tr_75f27f299e4f",
+ "scenario": "price_change",
+ "steps": [
+  [
+   "create_po",
+   201
+  ],
+  [
+   "upload",
+   201
+  ],
+  [
+   "export_before_approval",
+   409
+  ],
+  [
+   "extract_live",
+   200,
+   15.18,
+   "LIVE_MODEL",
+   "needs_review",
+   [
+    "UNIT_PRICE_DIFF"
+   ]
+  ],
+  [
+   "approve",
+   200,
+   "blockers=0"
+  ],
+  [
+   "export_json",
+   200,
+   1,
+   "b2686a90"
+  ]
+ ],
+ "run": {
+  "status": "applied",
+  "extractor_mode": "LIVE_MODEL",
+  "model_label": "live:m1",
+  "prompt_sha256": "766c5596d8ff18f6820617782970b1a4e4d424e2525d7cd7b87a64865b52de06",
+  "latency_s": 15.154886699980125
+ },
+ "extraction_equals_gold_rows": true
+}
