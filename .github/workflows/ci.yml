@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install (CPU product environment only; no torch, no data, no model)
-        run: python -m pip install -e ".[dev]"
+        run: python -m pip install -e ".[dev,app]"
       - name: Package contract checks
         run: |
           python scripts/verify_pack.py

@@ -18,6 +18,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+# minimal review API (T06/S8): FastAPI + SQLite, loopback only
+app = ["fastapi==0.121.2", "uvicorn==0.38.0", "python-multipart==0.0.20", "httpx==0.28.1"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -132,6 +132,11 @@
 - **dev 결과(동결 후, `reports/eval/b0_dev_v11.json`)**: 자체 dev clean(T04) 0.911 (doc exact 0.54), 공개 dev clean 0.967, faded 0.933, **bad_scan 0.562**; 자체 dev stress **blur_jpeg 0.124 / fade_noise 0.217 / skew_lowres 0.180** (doc exact 0). E3(dev 전체 96건) 리콜 QTY_DIFF 0.75, UNIT_PRICE_DIFF 0.83, 나머지 1.0, 검수율 0.625.
 - 버그 수정: stress 이미지가 clean과 같은 파일 stem을 써서 OCR 캐시를 재사용 → 세 변형 점수가 clean과 소수점까지 동일한 이상치로 발견, record_id 기준 이름으로 수정 + 회귀 테스트.
 
+**S4 M1 본학습 (완료)**: `python -m invoiceguard.vlm.train --profile standard --run-id m1_standard_v1` — TRL 0.25.1 `SFTTrainer` 하위 클래스(LeanSFTTrainer) + 검증 collator. 80 optimizer step / 641 micro-step 전부 mask 재검사 통과 / 본 예제 640(≈1.78 epoch, 공개 200·자체 160) / loss 0.364→0.008(평균 0.0487) / 1,308s / peak 6.52GB / 학습 파라미터 1,605,632(언어 q/v LoRA만, vision 0). 어댑터 `artifacts/adapters/m1_standard_v1/adapter_model.safetensors` SHA256 `eb08674120d6489fb9f2ae4cf72038588794e09b3d337a5239d8a6078aff2868`. 기록 `reports/model/train_m1_standard_v1.json`.
+- TRL 내장 assistant_only_loss는 Qwen3-VL chat template에 `{% generation %}` 표식이 없어 사용 불가 → 검증 collator 사용(문서화).
+- 해결한 장애 2건: ① TRL 기본 compute_loss의 entropy/token-accuracy가 15만 어휘 logits fp32 복사본을 만들어 16GB에서 14.9GB→공유메모리 스필, GPU 유휴(19W)로 21분 정지 → 해당 메트릭만 생략(Trainer 기본 loss) ② `bf16=True` autocast가 비전 Conv3d를 bf16 느린 경로로 보내 micro-step 17s → autocast 끔(0.78s/micro-step, 2-step 시험 `reports/model/train_dryrun_trl_2step_nobf16.json`).
+- 재로드 검증: S5 dev 추론이 디스크에서 base+adapter를 새로 로드해 수행(진행 중).
+
 **S5 준비 — dev 전용 stress set**: `invoiceguard.vlm.stress` 자체 dev 24장 × 3변형(blur_jpeg / skew_lowres / fade_noise) = 72장, `manifests/stress_v1.jsonl` sha256 677167cf…(2회 생성 동일). final 미포함.
 
 **S6 준비**: 드라이버 561.17(CUDA 12.6) vs vLLM 0.11.x(cu128/129/130 빌드) — CUDA 마이너 호환성으로 동작 여부를 실제 시험 예정, `vllm/vllm-openai:v0.11.2` 이미지 다운로드 중.
