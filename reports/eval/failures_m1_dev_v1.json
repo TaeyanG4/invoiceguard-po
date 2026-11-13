@@ -1,0 +1,102 @@
+{
+  "run": "m1_dev_v1",
+  "trade_documents": 96,
+  "trade_documents_with_any_error": 32,
+  "cause_counts_all": {
+    "quantity_raw:number_value": 22,
+    "sku_raw:sku_raw_text": 20,
+    "unit_price_raw:number_value": 17,
+    "line_total_raw:number_value": 16,
+    "description_raw:description_text": 16,
+    "rows:missing": 7,
+    "line_total_raw:number_format_only": 6,
+    "subtotal_raw:number_format_only": 5,
+    "total_raw:number_format_only": 5,
+    "quantity_raw:ambiguous_quantity_text": 4,
+    "invoice_number_raw:invoice_number_raw_text": 2,
+    "unit_raw:unit_text": 1,
+    "unit_price_raw:number_format_only": 1
+  },
+  "examined": [
+    {
+      "id": "tr_094c507908ef__blur_jpeg",
+      "causes": [
+        "line_total_raw:number_value"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"0000121\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"026242\",\"description_raw\":\"LED indicator green\",\"quantity_raw\":\"10\",\"unit_raw\":\"EA\",\"unit_price_raw\":\"3"
+    },
+    {
+      "id": "tr_3d6c316a6402__skew_lowres",
+      "causes": [
+        "sku_raw:sku_raw_text"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"INV-2026-43919\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"25-0913\",\"description_raw\":\"Junction box IP65\",\"quantity_raw\":\"2,000\",\"unit_raw\":\"EA\",\"unit_pric"
+    },
+    {
+      "id": "tr_489dcc965b4b",
+      "causes": [
+        "subtotal_raw:number_format_only",
+        "total_raw:number_format_only"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"INV-2025-49014\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"036343\",\"description_raw\":\"Crimp terminal ring\",\"quantity_raw\":\"307\",\"unit_raw\":\"EA\",\"unit_price"
+    },
+    {
+      "id": "tr_489dcc965b4b__blur_jpeg",
+      "causes": [
+        "subtotal_raw:number_format_only",
+        "total_raw:number_format_only"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"INV-2025-49014\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"036343\",\"description_raw\":\"Crimp terminal ring\",\"quantity_raw\":\"307\",\"unit_raw\":\"EA\",\"unit_price"
+    },
+    {
+      "id": "tr_489dcc965b4b__fade_noise",
+      "causes": [
+        "subtotal_raw:number_format_only",
+        "total_raw:number_format_only"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"INV-2025-49014\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"036343\",\"description_raw\":\"Crimp terminal ring\",\"quantity_raw\":\"307\",\"unit_raw\":\"EA\",\"unit_price"
+    },
+    {
+      "id": "tr_5ed7bf6fba3c",
+      "causes": [
+        "line_total_raw:number_format_only"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"0047000\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"028315\",\"description_raw\":\"Panel connector RJ45\",\"quantity_raw\":\"200\",\"unit_raw\":\"EA\",\"unit_price_raw\":"
+    },
+    {
+      "id": "tr_5ed7bf6fba3c__fade_noise",
+      "causes": [
+        "unit_price_raw:number_value"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"0047000\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"028315\",\"description_raw\":\"Panel connector RJ45\",\"quantity_raw\":\"200\",\"unit_raw\":\"EA\",\"unit_price_raw\":"
+    },
+    {
+      "id": "tr_69cab78e7dcd",
+      "causes": [
+        "line_total_raw:number_value"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"0046907\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"071615\",\"description_raw\":\"Push button red\",\"quantity_raw\":\"884\",\"unit_raw\":\"EA\",\"unit_price_raw\":\"7.03"
+    },
+    {
+      "id": "tr_69cab78e7dcd__fade_noise",
+      "causes": [
+        "line_total_raw:number_format_only",
+        "line_total_raw:number_format_only",
+        "subtotal_raw:number_format_only",
+        "total_raw:number_format_only"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"0046907\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"071615\",\"description_raw\":\"Push button red\",\"quantity_raw\":\"884\",\"unit_raw\":\"EA\",\"unit_price_raw\":\"7.03"
+    },
+    {
+      "id": "tr_69cab78e7dcd__skew_lowres",
+      "causes": [
+        "line_total_raw:number_format_only",
+        "line_total_raw:number_format_only",
+        "subtotal_raw:number_format_only",
+        "total_raw:number_format_only"
+      ],
+      "raw_head": "{\"schema_version\":\"1.0\",\"document_type\":\"invoice\",\"invoice_number_raw\":\"0046907\",\"currency_raw\":\"USD\",\"items\":[{\"row_index\":1,\"sku_raw\":\"071615\",\"description_raw\":\"Push button red\",\"quantity_raw\":\"884\",\"unit_raw\":\"EA\",\"unit_price_raw\":\"7.03"
+    }
+  ],
+  "note": "fixed id order; at most N examined in detail; counts cover every document"
+}

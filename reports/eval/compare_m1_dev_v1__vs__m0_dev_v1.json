@@ -1,0 +1,105 @@
+{
+  "a": "m1_dev_v1",
+  "b": "m0_dev_v1",
+  "method": "cluster-paired bootstrap (2000, seed 20261113), A minus B, strict",
+  "sets": {
+    "public:dev_stress|bad_scan": {
+      "n_docs": 8,
+      "n_clusters": 8,
+      "field_acc_diff": 0.7048,
+      "field_acc_diff_ci95": [
+        0.4,
+        0.9649
+      ],
+      "doc_exact_diff": 0.5,
+      "doc_exact_diff_ci95": [
+        0.125,
+        0.875
+      ]
+    },
+    "public:dev_stress|faded": {
+      "n_docs": 8,
+      "n_clusters": 8,
+      "field_acc_diff": 1.0,
+      "field_acc_diff_ci95": [
+        1.0,
+        1.0
+      ],
+      "doc_exact_diff": 1.0,
+      "doc_exact_diff_ci95": [
+        1.0,
+        1.0
+      ]
+    },
+    "public:dev|clean": {
+      "n_docs": 20,
+      "n_clusters": 20,
+      "field_acc_diff": 0.9675,
+      "field_acc_diff_ci95": [
+        0.9217,
+        0.9961
+      ],
+      "doc_exact_diff": 0.8,
+      "doc_exact_diff_ci95": [
+        0.6,
+        0.95
+      ]
+    },
+    "stress:blur_jpeg": {
+      "n_docs": 24,
+      "n_clusters": 24,
+      "field_acc_diff": 0.9318,
+      "field_acc_diff_ci95": [
+        0.8629,
+        0.9907
+      ],
+      "doc_exact_diff": 0.6667,
+      "doc_exact_diff_ci95": [
+        0.4583,
+        0.8333
+      ]
+    },
+    "stress:fade_noise": {
+      "n_docs": 24,
+      "n_clusters": 24,
+      "field_acc_diff": 0.8667,
+      "field_acc_diff_ci95": [
+        0.7619,
+        0.9579
+      ],
+      "doc_exact_diff": 0.5833,
+      "doc_exact_diff_ci95": [
+        0.375,
+        0.7917
+      ]
+    },
+    "stress:skew_lowres": {
+      "n_docs": 24,
+      "n_clusters": 24,
+      "field_acc_diff": 0.7652,
+      "field_acc_diff_ci95": [
+        0.6082,
+        0.9078
+      ],
+      "doc_exact_diff": 0.5417,
+      "doc_exact_diff_ci95": [
+        0.3333,
+        0.75
+      ]
+    },
+    "trade:dev": {
+      "n_docs": 24,
+      "n_clusters": 24,
+      "field_acc_diff": 0.047,
+      "field_acc_diff_ci95": [
+        0.0016,
+        0.1121
+      ],
+      "doc_exact_diff": 0.125,
+      "doc_exact_diff_ci95": [
+        -0.0417,
+        0.2917
+      ]
+    }
+  }
+}

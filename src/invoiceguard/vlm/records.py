@@ -54,9 +54,9 @@ def _manifest(name: str) -> list[dict]:
     return [json.loads(line) for line in (REPO / "manifests" / name).read_text(encoding="utf-8").splitlines()]
 
 
-def trade_records(role_field: str = "standard_role", role: str = "train") -> list[Record]:
+def trade_records(role_field: str = "standard_role", role: str = "train", manifest: str = "trade_raw_v1.jsonl") -> list[Record]:
     out = []
-    for row in _manifest("trade_raw_v1.jsonl"):
+    for row in _manifest(manifest):
         if row[role_field] != role:
             continue
         gold = json.loads((REPO / "data" / "processed" / "trade" / "gold" / f"{row['doc_id']}.json").read_text(encoding="utf-8"))

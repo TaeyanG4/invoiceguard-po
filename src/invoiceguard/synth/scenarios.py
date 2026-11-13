@@ -96,10 +96,10 @@ def line_total(qty: int, price: Decimal) -> Decimal:
     return (Decimal(qty) * price).quantize(CENT, rounding=ROUND_HALF_UP)
 
 
-def build_family(rng: random.Random, family_id: str, scenario: str) -> dict[str, Any]:
+def build_family(rng: random.Random, family_id: str, scenario: str, n_lines: int | None = None) -> dict[str, Any]:
     used: set[str] = set()
     sku_style = rng.choice(["zero_padded", "alpha_dash", "alnum", "digits_dash"])
-    n_lines = rng.randint(2, 6)
+    n_lines = n_lines or rng.randint(2, 6)
     descriptions = rng.sample(PRODUCTS, n_lines + 1)
     lines = []
     for i in range(n_lines):

@@ -67,6 +67,7 @@ def main() -> int:
     parser.add_argument("--profile", choices=["standard", "mini"], required=True)
     parser.add_argument("--max-steps", type=int)
     parser.add_argument("--run-id")
+    parser.add_argument("--with-aug1", action="store_true", help="add the S5 train-only augmentation (manifests/trade_raw_aug1.jsonl)")
     args = parser.parse_args()
 
     from datasets import Dataset
@@ -77,6 +78,8 @@ def main() -> int:
 
     role_field = f"{args.profile}_role"
     records = public_records(role_field) + trade_records(role_field)
+    if args.with_aug1:
+        records += trade_records(role_field, "train", manifest="trade_raw_aug1.jsonl")
     random.Random(SEED).shuffle(records)
     max_steps = args.max_steps or CONFIG["max_steps"][args.profile]
     run_id = args.run_id or f"m1_{args.profile}_{time.strftime('%Y%m%d_%H%M%S')}"
@@ -122,7 +125,8 @@ def main() -> int:
 
     losses = [{"step": h["step"], "loss": h["loss"], "lr": h.get("learning_rate"), "grad_norm": h.get("grad_norm")}
               for h in trainer.state.log_history if "loss" in h]
-    manifests = {name: _sha(REPO / "manifests" / name) for name in ("public_canonical_v1.jsonl", "trade_raw_v1.jsonl")}
+    manifests = {name: _sha(REPO / "manifests" / name) for name in ("public_canonical_v1.jsonl", "trade_raw_v1.jsonl")
+                 + (("trade_raw_aug1.jsonl",) if args.with_aug1 else ())}
     meta = {
         "run_id": run_id, "kind": "M1_qlora_sft",
         "framework": "trl 0.25.1 SFTTrainer (compute_loss = transformers Trainer loss; TRL logit metrics disabled for VRAM) + verified completion-only collator",
