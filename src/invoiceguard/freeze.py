@@ -52,8 +52,9 @@ def snapshot() -> dict:
 
 def git_state() -> tuple[str, list[str]]:
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True, text=True).stdout.strip()
+    # evaluation OUTPUTS (reports/) may change between final runs; code, configs, manifests and prompts may not
     dirty = [l for l in subprocess.run(["git", "status", "--porcelain"], cwd=REPO, capture_output=True, text=True).stdout.splitlines()
-             if l.strip()]
+             if l.strip() and not l[3:].strip().strip('"').startswith("reports/")]
     return head, dirty
 
 
