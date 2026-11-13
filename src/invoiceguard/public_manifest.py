@@ -185,11 +185,11 @@ def main() -> int:
     else:
         rows = build()
         MANIFEST.parent.mkdir(parents=True, exist_ok=True)
-        MANIFEST.write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows), encoding="utf-8")
+        MANIFEST.write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows), encoding="utf-8", newline="\n")
     digest = hashlib.sha256(MANIFEST.read_bytes()).hexdigest()
     checks = check(rows)
     if not args.check:
-        SUMMARY.write_text(json.dumps(summarize(rows, digest, checks), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        SUMMARY.write_text(json.dumps(summarize(rows, digest, checks), ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps({"sha256": digest, "pass": checks["pass"], "rows": len(rows)}, indent=1))
     return 0 if checks["pass"] else 1
 

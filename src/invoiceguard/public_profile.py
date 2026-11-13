@@ -112,7 +112,7 @@ def main() -> int:
         qualities_by_file[row["file_name"]].append(row["quality"])
         records_by_file.setdefault(row["file_name"], row)
 
-    with (out_dir / "rows.jsonl").open("w", encoding="utf-8") as handle:
+    with (out_dir / "rows.jsonl").open("w", encoding="utf-8", newline="\n") as handle:
         for meta in rows_meta:
             handle.write(json.dumps(meta, ensure_ascii=False) + "\n")
 
@@ -210,12 +210,12 @@ def main() -> int:
         if row["quality"] == "clean":
             audit_gold[stem] = {"file_name": row["file_name"], "template": row["_template_used"],
                                 "currency": row.get("document_currency"), "items": canonical_items(row)}
-    (audit_dir / "audit_gold.json").write_text(json.dumps(audit_gold, ensure_ascii=False, indent=1), encoding="utf-8")
+    (audit_dir / "audit_gold.json").write_text(json.dumps(audit_gold, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
     report["audit_sample"] = {"seed": SEED, "picks": picks, "dir": str(audit_dir.relative_to(REPO)).replace("\\", "/")}
 
     report_dir = REPO / "reports" / "data"
     report_dir.mkdir(parents=True, exist_ok=True)
-    (report_dir / "public_profile.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (report_dir / "public_profile.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     failed = [name for name, c in checks.items() if not c["pass"]]
     print(json.dumps({"rows": len(rows_meta), "base_docs": len(base_files), "failed_checks": failed}, indent=1))
     return 1 if failed else 0

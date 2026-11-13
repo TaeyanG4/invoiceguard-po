@@ -145,7 +145,7 @@ def main() -> int:
         assert len(members) == profiles["standard"][key]
 
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
-    MANIFEST.write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows), encoding="utf-8")
+    MANIFEST.write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows), encoding="utf-8", newline="\n")
     digest = _sha(MANIFEST.read_bytes())
 
     leaks = find_leaks(rows, "split", ["family_id", "doc_id", "image_sha256", "gold_sha256", "po_sha256"])
@@ -174,7 +174,7 @@ def main() -> int:
         "checks": checks, "frozen": False,
         "note": "Synthetic, self-generated, fictional companies. PO/gold/scenario metadata are never model inputs.",
     }
-    SUMMARY.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    SUMMARY.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps({"documents": len(rows), "sha256": digest, "pass": checks["pass"],
                       "render_errors": len(errors)}, indent=1))
     if errors:

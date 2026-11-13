@@ -51,3 +51,8 @@ def test_d06_manifest_contains_no_label_values_or_po():
     first = json.loads(MANIFEST.read_text(encoding="utf-8").splitlines()[0])
     forbidden = {"line_items", "quantity", "unit_price", "amount", "description", "po", "image", "po_id"}
     assert not forbidden & set(first)
+
+
+def test_manifests_are_lf_only_so_hashes_survive_git_checkout():
+    for path in (REPO / "manifests").glob("*.json*"):
+        assert b"\r" not in path.read_bytes(), path.name

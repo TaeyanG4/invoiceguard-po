@@ -58,7 +58,7 @@
 ### T02-a — 공개 데이터 누수 없는 분할 (로컬, 2026-11-14)
 | 명령 | 결과 |
 |---|---|
-| `.venv/Scripts/python.exe -m invoiceguard.public_manifest` | exit 0, `manifests/public_canonical_v1.jsonl` 2814행, sha256 `53ad6fe993564c32a27d2b1fe78f611ac476e8e7e2ab1728f8c7f85605cce1a2`, checks pass |
+| `.venv/Scripts/python.exe -m invoiceguard.public_manifest` | exit 0, `manifests/public_canonical_v1.jsonl` 2814행, sha256 `1495b06a45881dbfe8e911ff8f1ee6498786743a5cae989ff33bb584834320d7`, checks pass |
 | `.venv/Scripts/python.exe -m pytest tests/` | 36 passed (canonical 24 + visibility 7 + split 5) |
 
 - 그룹: file_name + 업무내용 해시 + 추출대상 해시 + 3품질 이미지 SHA를 union-find로 연결 → 937 그룹(다문서 1). freelancer_invoice 포함 그룹 전체 → OOD pool(123 base). 나머지 seed 20261113 해시 순서로 train/dev/iid = 611/102/102 base.
@@ -70,7 +70,7 @@
 ### T02-b — 대사 규칙·평가기·자체 합성 Invoice–PO (로컬, 2026-11-14)
 | 명령 | 결과 |
 |---|---|
-| `.venv/Scripts/python.exe -m invoiceguard.synth.build` (약 30초) | exit 0. 224건(train 160 T01–T03 / dev 24 T04 / test 40 T05–T06), manifest `manifests/trade_raw_v1.jsonl` sha256 `6a2d089e05756cc0565a90f7150c8dbcf65e0873da717302096fcebbe88a552b`, render_errors 0 |
+| `.venv/Scripts/python.exe -m invoiceguard.synth.build` (약 30초) | exit 0. 224건(train 160 T01–T03 / dev 24 T04 / test 40 T05–T06), manifest `manifests/trade_raw_v1.jsonl` sha256 `f818ae30cc855521b2a758942fc979263e9cdedf7b42d2743171678dd7fef0ae`, render_errors 0 |
 | `.venv/Scripts/python.exe -m pytest tests/` | 105 passed, 0 failed, 0 skipped (1.9s) |
 
 - 대사 규칙(`reconciliation.py`, `normalization.py`): docs/04 알고리즘, findings enum 그대로. `examples/expected_findings.json`과 결과 완전 일치(B03). B01–B12, E03(별칭 enum 스키마 실패), PO 중복 SKU 거부, 원문 불변 테스트.
@@ -83,6 +83,12 @@
 ### 관리자 대시보드·Git (사용자 추가 요청, 2026-11-14)
 - `python -m invoiceguard.dashboard --run-tests` → `artifacts/dashboard/index.html`(Git 제외). TASK_BOARD·RUNPOD_APPROVAL·SESSION_HANDOFF·manifest 요약·pytest junit만 읽어 표시. 외부 리소스 없음, 모든 값 HTML escape, 모델 결과는 not_run 고정 표시. 미리보기: `.claude/launch.json`의 `admin-dashboard`(127.0.0.1:8765).
 - `git init -b main`, `.gitattributes`(LF 고정 — manifest SHA 재현성), GitHub `TaeyanG4/invoiceguard-po` **PRIVATE** 생성·push (visibility 확인). `data/`, `.venv/`, `artifacts/`, `*.egg-info/` 제외 확인.
+
+### 정정 — manifest 해시 기준 바이트 (2026-11-14)
+- 발견: Windows `Path.write_text`가 CRLF로 저장해 manifest SHA가 CRLF 바이트 기준이었음. Git(`.gitattributes eol=lf`)은 LF로 저장하므로 clone 후 SHA가 달라지는 문제.
+- 조치: 모든 기록기를 `newline="
+"`로 고정, manifest 재생성. 내용은 이전과 동일(줄바꿈만 차이, diff 확인). 새 기준 해시: public `1495b06a45881dbfe8e911ff8f1ee6498786743a5cae989ff33bb584834320d7`, trade `f818ae30cc855521b2a758942fc979263e9cdedf7b42d2743171678dd7fef0ae` (= 커밋된 LF blob SHA와 일치 확인). 재발 방지 테스트 `test_manifests_are_lf_only_so_hashes_survive_git_checkout` 추가 → pytest 106 passed.
+- 이전 해시(53ad6fe9…, 6a2d089e…)는 폐기. 어떤 평가에도 사용되지 않았음.
 
 ### T03 준비 (로컬, 2026-11-14)
 - RunPod 콘솔·CLI 접근 없음 → 실제 견적 미관측. `reports/RUNPOD_APPROVAL.md`에 작업량 추정(약 6.5 GPU-h)과 가정 단가별 `budget_plan.py` 출력만 기록, `approved: false` 유지. 비용 $0.

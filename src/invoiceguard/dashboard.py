@@ -284,7 +284,7 @@ def main() -> int:
     if args.run_tests:
         run_tests(junit)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(build_html(collect(junit)), encoding="utf-8")
+    out.write_text(build_html(collect(junit)), encoding="utf-8", newline="\n")
     print(out)
     return 0
 

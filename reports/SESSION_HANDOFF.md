@@ -14,7 +14,7 @@
 - actual_spend_from_this_package: $0 (클라우드 작업 없음)
 - cloud_credentials: not_provided; do not paste secrets
 - dataset_revision: alamgirqazi/invoice-ocr-synthetic@673ff85be462eb7f3715ec188a295dd17ca11115
-- manifest_hash: public_canonical_v1 53ad6fe993564c32a27d2b1fe78f611ac476e8e7e2ab1728f8c7f85605cce1a2 / trade_raw_v1 6a2d089e05756cc0565a90f7150c8dbcf65e0873da717302096fcebbe88a552b (둘 다 미동결)
+- manifest_hash: public_canonical_v1 1495b06a45881dbfe8e911ff8f1ee6498786743a5cae989ff33bb584834320d7 / trade_raw_v1 f818ae30cc855521b2a758942fc979263e9cdedf7b42d2743171678dd7fef0ae (둘 다 미동결)
 - model_revision / adapter_hash: not_run
 - running_local_processes: 대시보드 미리보기 http.server(127.0.0.1:8765, 과금 없음) — Claude 앱 Browser 패널에서 시작, 필요 없으면 중지
 - next_prompt: prompts/CLAUDE_RESUME.md

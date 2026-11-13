@@ -1,6 +1,6 @@
 {
   "manifest": "manifests/trade_raw_v1.jsonl",
-  "sha256": "6a2d089e05756cc0565a90f7150c8dbcf65e0873da717302096fcebbe88a552b",
+  "sha256": "f818ae30cc855521b2a758942fc979263e9cdedf7b42d2743171678dd7fef0ae",
   "seed": 20261113,
   "generator_version": "trade-synth-1.0",
   "documents": 224,

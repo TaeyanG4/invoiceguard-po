@@ -7,7 +7,7 @@
 |---|---|---|---|---|
 | T00 | 기존 코드·환경·문서·패키지 검사 | 로컬 | passed_with_evidence | checksums 59 PASS(수정 전), verify_pack 72 / contracts 63 / claude_pack 258 pass (2026-11-14). package_contract_tests만 해당 |
 | T01 | 데이터 다운로드·프로파일·12장 이미지/라벨 감사 | 로컬 | passed_with_evidence | rev 673ff85b, shard SHA=LFS oid, 2814행 디코드, 938 base, 12장 육안+렌더러 소스 가시성 (reports/data/) |
-| T02 | 누수 없는 분할·합성 렌더러·채점기·대사 규칙 | 로컬 | passed_with_evidence | 공개 manifest 53ad6fe9… 누수 0 / 자체 224건 manifest 6a2d089e… 렌더=정답·family 누수 0 / 대사 B01–B12·평가기 E01–E05 / pytest 102 pass (CPU only) |
+| T02 | 누수 없는 분할·합성 렌더러·채점기·대사 규칙 | 로컬 | passed_with_evidence | 공개 manifest 1495b06a… 누수 0 / 자체 224건 manifest f818ae30… 렌더=정답·family 누수 0 / 대사 B01–B12·평가기 E01–E05 / pytest 106 pass (CPU only) |
 | T03 | 실견적 승인·SSH/백업 검사·모델/10스텝 smoke | RunPod 승인 후 | blocked | 콘솔 견적·Full SSH 확인과 사용자 승인 필요(초안: RUNPOD_APPROVAL.md). GPU 러너 코드 미작성 |
 | T04 | 프로필 동결·M0 기준선·M1 학습/재로드 | RunPod | not_started | 실제 모델 미실행 |
 | T05 | dev 실패 분석·개선 한 가지 | 로컬/승인된 Pod | not_started | 예측 없음 |

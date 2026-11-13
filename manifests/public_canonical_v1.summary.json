@@ -1,6 +1,6 @@
 {
   "manifest": "manifests/public_canonical_v1.jsonl",
-  "sha256": "53ad6fe993564c32a27d2b1fe78f611ac476e8e7e2ab1728f8c7f85605cce1a2",
+  "sha256": "1495b06a45881dbfe8e911ff8f1ee6498786743a5cae989ff33bb584834320d7",
   "seed": 20261113,
   "dataset": "alamgirqazi/invoice-ocr-synthetic",
   "revision": "673ff85be462eb7f3715ec188a295dd17ca11115",
