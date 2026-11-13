@@ -88,7 +88,7 @@ def main() -> int:
         data = {"written_at": time.strftime("%Y-%m-%dT%H:%M:%S+09:00"), "git_commit": head,
                 "rule": "final runs only with --allow-final, clean git tree and identical hashes", **snapshot()}
         APPENDIX.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8", newline="\n")
-        print(f"wrote {APPENDIX} at {head[:8]} — commit it before running final")
+        print(f"wrote {APPENDIX} at {head[:8]} - commit it before running final")
         return 0
     problems = verify_final_ready()
     print(json.dumps({"final_ready": not problems, "problems": problems}, indent=1))
