@@ -14,7 +14,7 @@
 | T06 | 검수 UI/API·버전·승인·export | 로컬 | passed_with_evidence (minimal API) | FastAPI+SQLite 검수 API, CAS·스냅샷·429/503/504·재시작 복구, 테스트 12개. 검수 화면 UI는 관리자 대시보드만(검수용 UI 미구현) |
 | T07 | 실제 GPU API·지연/메모리/실패 측정 | 로컬 GPU | passed_with_evidence (HF+PEFT) · vLLM blocked | HF 서버: 실제 타임아웃 취소·bounded queue·동시성 측정(reports/serving/). vLLM 0.11.2는 CUDA≥12.9 필요, 드라이버 561.17(12.6)로 blocked |
 | T08 | M0/M1 동일 frozen final 평가 | 로컬 GPU | passed_with_evidence | 동결 부록 7c5b7f8 후 1회: B0/M0/M1 160/160, reports/eval/final_summary.md |
-| T09 | 결과/어댑터 백업·복원·승인된 과금 리소스 정리 | 로컬 | in_progress | 클라우드 리소스 생성 안 함($0). 어댑터·예측은 artifacts/(Git 제외) — 최종 push 전 백업 해시 정리 예정 |
+| T09 | 결과/어댑터 백업·복원·승인된 과금 리소스 정리 | 로컬 | passed_with_evidence (local) · 클라우드 n/a | 41파일 저장소 밖 백업·해시 일치(reports/backup_inventory.json). 생성한 과금 리소스 없음($0) |
 
 ## Gate 상태 (docs/16)
 | Gate | 상태 |
@@ -26,6 +26,6 @@
 | G4 학습/재로드·M0/M1 dev | pass (local GPU; reports/model, reports/eval/dev_summary.md) |
 | G5 검수 API/경쟁조건 | pass (application_cpu_test 12 + live HF cancel/queue probe) |
 | G6 final·서빙 | partial: final pass (once, frozen); HF serving measured; vLLM blocked (driver) |
-| G7 백업·과금 정리 | partial: no paid resources created; backup manifest pending |
+| G7 백업·과금 정리 | pass (local): hash-verified backup; no paid resources were ever created |
 
 T03 승인을 기다리는 동안 독립적인 로컬 작업은 진행할 수 있다. GPU 결과 없는 기능 시연은 fixture/replay라고 명시한다.

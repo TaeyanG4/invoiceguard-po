@@ -118,7 +118,7 @@ def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
                 pred = {"raw_response": r["raw_response"], "finish_reason": "length" if r["finish_reason"] == "length" else "stop"}
                 gold = json.loads((REPO / "data" / "processed" / "trade" / "gold" / f"{d.record_id}.json").read_text(encoding="utf-8"))
                 s_v = score_trade_document(gold, parse_for_eval(pred, "TRADE_RAW"))
-                entry = {"id": d.record_id, "vllm_fields": [sum(c for c, _ in s_v["fields"].values()), sum(s for _, s in s_v["fields"].values())]}
+                entry = {"id": d.record_id, "server_fields": [sum(c for c, _ in s_v["fields"].values()), sum(s for _, s in s_v["fields"].values())]}
                 if arm in hf and d.record_id in hf[arm]:
                     h = hf[arm][d.record_id]
                     entry["identical_raw_to_hf"] = (h.get("raw_response") or "").strip() == r["raw_response"].strip()
@@ -147,13 +147,13 @@ def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
                                 "p95_s": round(lat[min(len(lat) - 1, int(0.95 * len(lat)))], 2) if lat else None,
                                 "gpu_mem_mb_max": max(m for m in mem if m is not None) if any(m is not None for m in mem) else None}
             print(label, arm, conc, bench[str(conc)], flush=True)
-        vc = sum(p["vllm_fields"][0] for p in parity)
-        vs = sum(p["vllm_fields"][1] for p in parity)
+        vc = sum(p["server_fields"][0] for p in parity)
+        vs = sum(p["server_fields"][1] for p in parity)
         hc = sum(p.get("hf_fields", [0, 0])[0] for p in parity)
         hs = sum(p.get("hf_fields", [0, 0])[1] for p in parity)
         result["arms"][arm] = {"parity_rows": parity, "requests_c1": rows,
-                               "vllm_field_accuracy": round(vc / vs, 4) if vs else None,
-                               "hf_field_accuracy_same_docs": round(hc / hs, 4) if hs else None,
+                               "server_field_accuracy": round(vc / vs, 4) if vs else None,
+                               "offline_hf_field_accuracy_same_docs": round(hc / hs, 4) if hs else None,
                                "identical_raw_rate": round(sum(p.get("identical_raw_to_hf", False) for p in parity) / len(parity), 4) if parity else None,
                                "prompt_tokens": sorted({r.get("prompt_tokens") for r in rows if r.get("ok")}),
                                "bench": bench}

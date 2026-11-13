@@ -16,15 +16,17 @@
 | Git / GitHub | private repo `TaeyanG4/invoiceguard-po` (사용자 요청으로 생성·push) | 데이터·venv 제외 |
 | 실제 RunPod 잔액·견적·Pod 접속 | not_run — 승인 요청 초안만 | reports/RUNPOD_APPROVAL.md |
 | 로컬 GPU smoke (RTX 4070 Ti SUPER, 사용자 승인) | M01 mask pass / 파일럿 8장 실행 / 10-step 학습 — 아래 로그 | reports/model/local_smoke_*.json |
-| RunPod QLoRA·추론·GPU API·측정 | not_run | T03–T08 |
-| 제품 API/UI·검수·승인·동시성 테스트 | not_implemented | T06 |
+| RunPod(클라우드) 실행·비용 | not_run — 사용자 로그인·견적 승인 없음, 비용 $0 | reports/RUNPOD_APPROVAL.md (초안만) |
+| 검수 API·버전·승인·동시성 / 검수 화면 UI | API implemented + tested (12) · LIVE 종단 시연 / **UI not_implemented** (읽기 전용 관리자 대시보드만) | src/invoiceguard/app/, reports/serving/live_e2e_demo.json |
+| 로컬 GPU 본학습·dev·final 평가 | passed_with_evidence (HF NF4, final 1회) | reports/model/, reports/eval/dev_summary.md, reports/eval/final_summary.md |
+| 서빙 | HF+PEFT 서버 실측 passed_with_evidence · **vLLM blocked**(이미지 CUDA≥12.9, 드라이버 561.17=12.6) | reports/serving/ |
 
 ## 환경 (T00, 2026-11-14 확인)
 - OS: Windows 10 Pro 10.0.19045, PowerShell 5.1 + Git Bash (MINGW). WSL 사용 안 함.
-- 작업 폴더: `H:\dev\invoiceguard-po` (Git 저장소 아님; 상위 폴더에도 저장소 없음 — 새 저장소 초기화는 하지 않음).
+- 작업 폴더: `H:\dev\invoiceguard-po`. T00 시점에는 Git 저장소가 아니었고, 이후 사용자 요청으로 `git init` + private GitHub 저장소를 만들었다(아래 Git 절).
 - Python: 시스템 3.12.6 / 3.11.9 존재. 프로젝트 로컬 `.venv` = CPython 3.11.9 (`uv venv --python 3.11 .venv`). uv 0.11.29.
 - Git 2.45.1. 디스크 여유: H: 652.8GB, C: 742.1GB.
-- 로컬 GPU: NVIDIA GeForce RTX 4070 Ti SUPER, 16376 MiB, driver 561.17 (`nvidia-smi`). 로컬 GPU는 이번 단계에서 모델 실행에 사용하지 않음.
+- 로컬 GPU: NVIDIA GeForce RTX 4070 Ti SUPER, 16376 MiB, driver 561.17 (`nvidia-smi`). T00 단계에서는 사용하지 않았고, 이후 사용자 승인("4070 Ti SUPER로 먼저 시험")으로 학습·평가·서빙의 주 실행 위치가 되었다.
 
 ## 실행 로그
 
@@ -139,7 +141,7 @@
 **S4 M1 본학습 (완료)**: `python -m invoiceguard.vlm.train --profile standard --run-id m1_standard_v1` — TRL 0.25.1 `SFTTrainer` 하위 클래스(LeanSFTTrainer) + 검증 collator. 80 optimizer step / 641 micro-step 전부 mask 재검사 통과 / 본 예제 640(≈1.78 epoch, 공개 200·자체 160) / loss 0.364→0.008(평균 0.0487) / 1,308s / peak 6.52GB / 학습 파라미터 1,605,632(언어 q/v LoRA만, vision 0). 어댑터 `artifacts/adapters/m1_standard_v1/adapter_model.safetensors` SHA256 `eb08674120d6489fb9f2ae4cf72038588794e09b3d337a5239d8a6078aff2868`. 기록 `reports/model/train_m1_standard_v1.json`.
 - TRL 내장 assistant_only_loss는 Qwen3-VL chat template에 `{% generation %}` 표식이 없어 사용 불가 → 검증 collator 사용(문서화).
 - 해결한 장애 2건: ① TRL 기본 compute_loss의 entropy/token-accuracy가 15만 어휘 logits fp32 복사본을 만들어 16GB에서 14.9GB→공유메모리 스필, GPU 유휴(19W)로 21분 정지 → 해당 메트릭만 생략(Trainer 기본 loss) ② `bf16=True` autocast가 비전 Conv3d를 bf16 느린 경로로 보내 micro-step 17s → autocast 끔(0.78s/micro-step, 2-step 시험 `reports/model/train_dryrun_trl_2step_nobf16.json`).
-- 재로드 검증: S5 dev 추론이 디스크에서 base+adapter를 새로 로드해 수행(진행 중).
+- 재로드 검증: S5 dev 추론(m1_dev_v1)과 final(m1_final_v1)이 디스크에서 base+adapter를 새로 로드해 수행 — 완료.
 
 **Fable 중간 검토 (2026-11-14 03:59, 조건부 NO-GO) 반영**
 - blocker 1 B0 held-out 어휘 → v1.2 (위).
@@ -147,7 +149,7 @@
 - blocker 3 분모 보전 → score_run이 run의 `sets`로 기대 ID를 재구성, 누락=missing 실패, 중복=채점 거부, `denominator_check` 기록. infer는 OOM 외 예외도 문서별 `error`로 기록, 재개 시 attempt_ids 병합. B0 메타에 attempt_ids. `compare_runs`는 두 arm의 ID·세트가 동일하지 않으면 거부.
 - blocker 4 E3 정정·세트 분리 (위).
 - should-fix: paired bootstrap(`invoiceguard.compare_runs`, base/family 군집) 추가; 조건부 지표를 `conditional_on_json_parse_ok`로 개명(스키마 유효 불요); 검수 API — 동기 추론을 async에서 제거(sync def→스레드풀), 예외 시 케이스가 extracting에 고착되던 문제 해결(BACKEND_ERROR 502), 격리 해제는 백엔드 /health 통과 시에만, dispositions 타입 오류 422. 테스트 12개.
-- 공개(should-fix 7): M1 학습은 PEFT kbit 준비로 vision 전체 fp32·autocast 없음, 추론은 vision bf16 + patch-embed만 fp32. M1에 불리한 방향의 불일치이며 train 이미지 sanity 확인 예정.
+- 공개(should-fix 7): M1 학습은 PEFT kbit 준비로 vision 전체 fp32·autocast 없음, 추론은 vision bf16 + patch-embed만 fp32. M1에 불리한 방향의 불일치이며 별도 train 이미지 sanity 검사는 **not_run**(dev·final 추론이 같은 추론 경로로 정상 동작한 것으로 대신 확인).
 - 계획 변경: S5 → blocker 수정 → **S7(HF) → S6(vLLM, 2시간 타임박스)**. final 전 드라이버 변경 금지.
 
 **S5 dev 평가·실패 분석·수정 1건 (완료)** — `reports/eval/dev_summary.md`
@@ -157,7 +159,18 @@
 
 **S5 준비 — dev 전용 stress set**: `invoiceguard.vlm.stress` 자체 dev 24장 × 3변형(blur_jpeg / skew_lowres / fade_noise) = 72장, `manifests/stress_v1.jsonl` sha256 677167cf…(2회 생성 동일). final 미포함.
 
-**S6 준비**: 드라이버 561.17(CUDA 12.6) vs vLLM 0.11.x(cu128/129/130 빌드) — CUDA 마이너 호환성으로 동작 여부를 실제 시험 예정, `vllm/vllm-openai:v0.11.2` 이미지 다운로드 중.
+**S6 vLLM (blocked)**: `vllm/vllm-openai:v0.11.2` 컨테이너가 `nvidia-container-cli: requirement error: cuda>=12.9`로 시작 거부. `NVIDIA_DISABLE_REQUIRE=1`로 재시도 시 엔진 초기화에서 `RuntimeError: No CUDA GPUs are available`. CUDA 12.6 빌드인 SGLang 최신 이미지(v0.5.3rc1-cu126, 2025-09-19)는 Qwen3-VL 공개 이전 버전. 해제 조건: 사용자가 NVIDIA 드라이버 ≥ 575로 업데이트하거나 RunPod 승인.
+
+### S7 final (1회, 동결 후) — `reports/eval/final_summary.md`
+- 동결: `configs/frozen_v1_appendix.json` (git 622c22c7, 커밋 7c5b7f8) — B0·평가기·추론 코드, M1 어댑터 eb086741…, OCR 이미지, manifest·stress 해시. `freeze verify` → final_ready true 후 B0(`--allow-final`), M0·M1(HF NF4, batch 1, 각 160장, 1,763s / 1,166s) 실행, `score_run --allow-final`, 누락 0.
+- 결과(strict 필드 정확도): 자체 test B0 0.210 / M0 0.897 / M1 0.921 (M1−M0 +0.024 [−0.001, 0.050] 비유의, M1−B0 +0.711 [0.67, 0.75]); 공개 IID clean 0.731 / 0 / 0.880 (M1−B0 비유의), IID bad_scan 0.346 / 0 / 0.798; 미학습 템플릿(freelancer) clean 0 / 0 / 0.973. M0 공개 strict JSON 유효 0/120. M1 AMBIGUOUS_QUANTITY 리콜 0/2 (M0 1/2), 오경보 UNIT_PRICE_DIFF FP 15·LINE_ARITHMETIC FP 19.
+
+### S8 서빙·시연·백업·문서
+- `serving/hf_server.py` (Transformers+PEFT, 127.0.0.1:8001, 작업자 1 + 대기열 2): 서버 출력 = 오프라인 평가 출력 100%(M0·M1, dev 10장); M1 동시성1 4.0 docs/min p50 16.1s, 동시성2 p50 26.6s, 동시성4 실패 7/10; 3초 타임아웃 요청 → 3.1s 504, 직후 busy=false(실제 생성 중단); 동시 4건 → [200,200,200,429]. 기록: `reports/serving/hf_peft_nf4_local.json`(벤치 스크립트), `hf_cancel_probe.json`·`live_e2e_demo.json`(1회 수동 probe).
+- LIVE 종단 시연: 검수 API(LIVE_MODEL) → 단가 변경 문서 추출 15.2s, UNIT_PRICE_DIFF, 정답 행 일치 → 승인 → 스냅샷 export. 이후 두 서버 종료(포트 8000/8001 닫힘 확인).
+- 백업: `python -m invoiceguard.backup --dest H:/dev/invoiceguard-po-backup` → 41파일 22MB, 복사본 해시 전부 일치(`reports/backup_inventory.json`). 기본 모델 가중치는 고정 revision에서 재다운로드 가능하여 미복사.
+- README를 포트폴리오 첫 화면으로 재작성(원래 패키지 안내는 docs/PACKAGE_README_v4.md). `requirements-ml.lock.txt` 추가.
+- Fable 최종 검토(조건부 NO-GO) 반영: README의 과장 표현 정정(B0가 본 레이아웃 clean으로 한정·문서 exact는 B0 우위 명시, lenient 범위, 재현 범위, 미학습 템플릿 표기, 모호수량·오경보, 서빙 한계, UI 미구현), 인계 문서 갱신, 서빙 JSON의 vllm_* 키를 server_*로 개명(값 불변), CLAUDE_PACK_VALIDATION.json을 T00 실행본으로 복원(이후 작업 트리 실행은 Git 제외 자산(.venv-ml/models/artifacts) 때문에 no_asset 2건 실패 — 추적 파일 기준 0건, tests/test_repo_hygiene.py).
 
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.

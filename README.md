@@ -1,7 +1,7 @@
 # InvoiceGuard-PO
 **영어 인보이스 이미지 → VLM 추출(Qwen3-VL-2B + QLoRA) → 독립 발주서(PO) 대조 → 사람 검수·승인 → 승인 버전만 export**
 
-2일 MVP 포트폴리오입니다. 데이터는 **모두 합성**(공개 InvoiceOCR-Synth + 자체 생성 Invoice–PO)이며, 실제 기업·통관 문서 성능을 주장하지 않습니다. 모든 수치는 이 저장소의 스크립트로 재현되는 실측값이고, 실행하지 않은 항목은 `not_run`/`blocked`로 남겼습니다.
+2일 MVP 포트폴리오입니다. 데이터는 **모두 합성**(공개 InvoiceOCR-Synth + 자체 생성 Invoice–PO)이며, 실제 기업·통관 문서 성능을 주장하지 않습니다. 평가 수치(학습·dev·final·paired CI)는 이 저장소의 스크립트로 재현됩니다. 서빙 probe 2건(타임아웃 취소·LIVE 종단 시연)과 Conv3d 속도 프로파일은 1회 수동 측정 기록입니다. 실행하지 않은 항목은 `not_run`/`blocked`로 남겼습니다.
 
 ## 결과 한눈에 (final — 설정 동결 후 1회 평가)
 로컬 RTX 4070 Ti SUPER, HF Transformers NF4(비전 비양자화), greedy, batch 1. 값 = strict 필드 정확도 [95% bootstrap CI, base/family 단위]. 전체 표: [`reports/eval/final_summary.md`](reports/eval/final_summary.md)
@@ -11,23 +11,25 @@
 | 자체 test, 처음 보는 레이아웃 T05/T06 (40) | 0.210 [0.19–0.23] | 0.897 [0.85–0.94] | **0.921** [0.87–0.96] |
 | 공개 IID clean (20) | 0.731 [0.46–0.99] | 0.000 (펜스, lenient 0.817) | **0.880** [0.78–0.96] |
 | 공개 IID bad_scan (20) | 0.346 [0.15–0.56] | 0.000 (lenient 0.466) | **0.798** [0.63–0.92] |
-| 공개 OOD 양식 freelancer clean (20) | 0.000 | 0.000 (lenient 0.555) | **0.973** [0.94–0.99] |
-| 공개 OOD bad_scan (20) | 0.000 | 0.000 (lenient 0.058) | **0.756** [0.62–0.88] |
+| 공개 미학습 템플릿 freelancer clean (20) | 0.000 ¹ | 0.000 (lenient 0.555) | **0.973** [0.94–0.99] |
+| 공개 미학습 템플릿 bad_scan (20) | 0.000 ¹ | 0.000 (lenient 0.058) | **0.756** [0.62–0.88] |
+
+"미학습 템플릿"은 같은 합성 생성기의 held-out 템플릿 1종입니다(분포가 완전히 다른 OOD가 아님; M1은 오히려 IID clean 0.880보다 높음). ¹ B0의 0점은 held-out 양식의 헤더 단어를 규칙에서 일부러 제외한(v1.2) 결과입니다.
 
 **읽는 법 — 정직한 결론**
-1. **깨끗한 문서는 OCR+규칙으로도 충분**: dev와 final 모두 clean에서 M1−B0 차이가 유의하지 않습니다(예: dev 공개 clean 0.000 [−0.06, 0.06]).
-2. **OCR 규칙은 처음 보는 레이아웃·열화에서 무너지고, 파인튜닝한 VLM은 버팁니다**: 자체 test M1−B0 **+0.711 [0.67, 0.75]**, dev 열화 3종 +0.71~+0.81.
-3. **파인튜닝 이득의 상당 부분은 "출력 형식"**: M0는 공개 문서에서 100% ```json 펜스를 붙여 strict 0점(펜스만 벗기면 0.82). 자체 test에서 M1−M0 = +0.024 [−0.001, 0.050]로 **유의하지 않음**.
-4. **남은 위험**: M1도 좁은 열에 줄바꿈된 모호수량("2 cartons / 100 pcs")을 숫자로 바꿉니다(test AMBIGUOUS_QUANTITY 리콜 0/2). 그래서 제품은 모든 문서를 사람 검수로 보내고, 수량×단가≠금액 산술 경고가 안전망입니다. dev 기반 개선 시도(학습 데이터 보강)는 효과가 없었고 그대로 기록했습니다.
+1. **B0가 본 레이아웃의 깨끗한 문서는 OCR+규칙으로도 충분**: 공개 IID clean/faded와 dev clean에서 M1−B0 필드 정확도 차이가 유의하지 않고(예: final IID clean +0.149 [−0.15, 0.42], dev 공개 clean 0.000 [−0.06, 0.06]), 같은 세트의 **문서 완전일치는 오히려 B0가 높습니다**(IID clean 0.80 vs M1 0.65, faded 0.80 vs 0.60).
+2. **OCR 규칙은 처음 보는 레이아웃·열화에서 무너지고, 파인튜닝한 VLM은 버팁니다**: 자체 test(미학습 레이아웃) M1−B0 **+0.711 [0.67, 0.75]**, dev 열화 3종 +0.71~+0.81, final IID bad_scan +0.452 [0.21, 0.69].
+3. **파인튜닝 이득의 상당 부분은 "출력 형식"**: M0의 공개 final strict JSON 유효는 **0/120**입니다(```json 펜스 등). 펜스만 벗긴 lenient 점수는 IID clean 0.817, 나머지 세트 0.00–0.56으로, 열화 문서에서는 펜스를 벗겨도 JSON이 아닌 출력이 남습니다. 자체 test에서 M1−M0 = +0.024 [−0.001, 0.050]로 **유의하지 않음**.
+4. **남은 위험**: M1은 test의 모호수량 문서 2건 모두에서 수량을 숫자로 바꿨습니다(AMBIGUOUS_QUANTITY 리콜 **0/2, M0는 1/2**로 파인튜닝 후 오히려 나빠짐). 두 건은 다른 경고(QTY_DIFF·LINE_ARITHMETIC_MISMATCH)로 검수 대상이 되었지만 n=2라 안전망을 일반화할 수 없습니다. 추출 오류로 인한 **오경보도 많습니다**(M1 UNIT_PRICE_DIFF TP 10/FP 15, LINE_ARITHMETIC TP 0/FP 19). 그래서 제품은 모든 문서를 사람 검수로 보냅니다. dev 기반 개선 시도(학습 데이터 보강)는 효과가 없었고 그대로 기록했습니다.
 
 ## 공고 직무 ↔ 증거
 | 직무/자격 | 이 저장소의 증거 |
 |---|---|
-| LoRA/QLoRA/SFT, HF transformers·peft·**trl** | [`vlm/train.py`](src/invoiceguard/vlm/train.py) TRL `SFTTrainer` + 검증 collator, NF4 + LoRA r8 (언어 q/v만, 학습 파라미터 0.11%), [`reports/model/train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json) |
+| LoRA/QLoRA/SFT, HF transformers·peft·**trl** | [`vlm/train.py`](src/invoiceguard/vlm/train.py) TRL `SFTTrainer` + 검증 collator, NF4 + LoRA r8 (언어 q/v만, 학습 파라미터 1,605,632 = 4bit 로딩 후 파라미터 수 1.42B 기준 0.11%), [`reports/model/train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json) |
 | 학습 정확성 검증 | 확장 이미지 토큰 기준 loss mask 감사 360/360, 10-step smoke(유한 gradient·112/112 텐서 변경·재로드 일치) [`reports/model/`](reports/model) |
 | 추출 정확도·실패 분석·개선 | 세트별 평가기·paired bootstrap [`evaluation.py`](src/invoiceguard/evaluation.py), [`compare_runs.py`](src/invoiceguard/compare_runs.py), 실패 분류 [`reports/eval/failures_m1_dev_v1.md`](reports/eval/failures_m1_dev_v1.md), 개선 1건과 **음성 결과** [`reports/eval/dev_summary.md`](reports/eval/dev_summary.md) |
 | 자동 채점·회귀 테스트 | pytest 150+개(규칙 B01–B12, 평가 E01–E05, API A01–A08), [GitHub Actions CI](.github/workflows/ci.yml), 동결·해시 가드 [`freeze.py`](src/invoiceguard/freeze.py) |
-| 서빙·성능 측정 | Transformers+PEFT GPU 서버 [`serving/hf_server.py`](src/invoiceguard/serving/hf_server.py) — 실제 타임아웃 취소·bounded queue 실측 [`reports/serving/`](reports/serving). vLLM은 드라이버 제약으로 **blocked**(아래) |
+| 서빙·성능 측정 | 자체 FastAPI 래퍼의 Transformers+PEFT GPU 서버 [`serving/hf_server.py`](src/invoiceguard/serving/hf_server.py) — 실제 타임아웃 취소·bounded queue 실측 [`reports/serving/`](reports/serving). **서빙 프레임워크(vLLM)는 드라이버 제약으로 blocked**, 양자화 A/B·배칭은 미측정(아래) |
 | OCR/문서 AI(우대) | Tesseract 기준선 B0 (train/dev만 보고 만든 일반 규칙, Docker 격리) [`ocr_baseline.py`](src/invoiceguard/ocr_baseline.py) |
 | 표 구조 문서·도메인 | 구조가 다른 6개 인보이스 레이아웃 렌더러, PO 대사 규칙(단가/수량 차이·미등록 품번·중복·모호수량) [`reconciliation.py`](src/invoiceguard/reconciliation.py) |
 | 서비스 연동 | 검수 API(FastAPI+SQLite): 추출 CAS, 늦은 응답 덮어쓰기 방지, 승인 스냅샷 export [`app/api.py`](src/invoiceguard/app/api.py) |
@@ -57,7 +59,7 @@
 |---|---|
 | 서버 출력 = 오프라인 평가 출력 | M0·M1 모두 원문 100% 동일, 같은 프롬프트 토큰(1045) |
 | 처리량 (M1) | 동시성 1: 4.0 docs/min, p50 16.1s / p95 18.4s · 동시성 2: 4.2 docs/min, p50 26.6s / p95 36.3s (직렬 작업자 → 대기 시간 증가, 배치 효과 아님) |
-| 동시성 4 | 10건 중 7건 **429** (bounded queue 설계대로) |
+| 동시성 4 | 10건 중 7건 실패 기록(벤치는 상태코드를 저장하지 않음; 같은 서버의 별도 probe에서 대기열 초과 시 429 확인) |
 | 실제 타임아웃 취소 | 3초 제한 요청 → 3.1초에 504, 직후 작업자 `busy:false` (StoppingCriteria로 생성 중단, 고아 추론 없음) |
 | GPU 메모리 | 약 3.1GB (nvidia-smi, 다른 프로세스 포함) |
 | LIVE 종단 시연 | 검수 API(LIVE_MODEL) → 추출 15.2s, `UNIT_PRICE_DIFF` 검출, 정답 행과 일치 → 승인 → 스냅샷 export ([`reports/serving/live_e2e_demo.json`](reports/serving/live_e2e_demo.json)) |
@@ -70,18 +72,41 @@
 클라우드 지출 **$0** (RunPod 미사용, 승인 대기 — [`reports/RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md)). 학습 1회 약 22분, final 3-arm 추론 약 50분(로컬 GPU).
 
 ## 한계
-합성 데이터만 사용 / 표본이 작음(공개 세트당 20 base, 자체 test 40) / 열화 stress는 dev 전용 / M0의 낮은 strict 점수는 형식 효과가 큼 / vLLM·클라우드 비용·멀티 GPU는 미실행 / 모호수량 실패는 해결되지 않음.
+- 합성 데이터만 사용, 표본이 작음(공개 세트당 20 base, 자체 test 40, 코드별 사례 1–10건), 열화 stress는 dev 전용.
+- M0의 낮은 strict 점수는 형식 효과가 큼; 모호수량 실패는 해결되지 않음.
+- 서빙: 서빙 프레임워크(vLLM) 미실측(blocked), 양자화 비교 없음(NF4 단일), 배칭 없음(batch 1, 직렬 작업자), 벤치는 문서 10장·반복 1회, 서빙 서버 자체의 자동 테스트 없음(수동 probe만).
+- 클라우드 GPU 비용(RunPod) 미실행. FSDP/DeepSpeed는 2B·단일 GPU에서 필요가 없어 사용하지 않음(억지 적용 기각, `docs/19`).
+- 검수 **화면 UI는 미구현**(검수 API와 읽기 전용 관리자 대시보드만 있음).
+- 방향 판단·검토는 Fable, 구현은 Opus(Claude Code)로 진행했습니다.
 
 ## 재현
 ```bash
+# 0) 제품/평가 환경 (CPU)
 uv venv --python 3.11 .venv && uv pip install --python .venv/Scripts/python.exe -e ".[dev,app]"
 .venv/Scripts/python.exe -m pytest tests/
+# 1) 데이터: 공개 데이터는 HF에서 rev 673ff85b 의 parquet 2개를 data/raw/invoice-ocr-synthetic/<rev>/data/ 로 내려받은 뒤
 .venv/Scripts/python.exe -m invoiceguard.public_profile && .venv/Scripts/python.exe -m invoiceguard.public_manifest
-.venv/Scripts/python.exe -m invoiceguard.synth.build
-# 모델 환경(.venv-ml: torch 2.9.1+cu126, transformers 4.57.6, peft 0.17.1, trl 0.25.1, bitsandbytes 0.48.2)
+.venv/Scripts/python.exe -m invoiceguard.synth.build && .venv/Scripts/python.exe -m invoiceguard.vlm.stress build
+# 2) 모델 환경(.venv-ml): 정확한 버전은 requirements-ml.lock.txt (torch 2.9.1+cu126, transformers 4.57.6, peft 0.17.1, trl 0.25.1, bitsandbytes 0.48.2)
+#    모델: Qwen/Qwen3-VL-2B-Instruct @ 89644892 를 models/qwen3-vl-2b-instruct/<rev>/ 에
+.venv-ml/Scripts/python.exe -m invoiceguard.vlm.smoke masks
 .venv-ml/Scripts/python.exe -m invoiceguard.vlm.train --profile standard --run-id m1_standard_v1
-.venv-ml/Scripts/python.exe -m invoiceguard.vlm.infer --arm m1 --adapter artifacts/adapters/m1_standard_v1 --set trade:dev --run-id m1_dev
+# 3) B0 OCR (Docker): 이미지 빌드 후 OCR -> 예측
+docker build -t invoiceguard-ocr:tesseract docker/ocr
+.venv/Scripts/python.exe -m invoiceguard.ocr_baseline ocr --set trade:dev --set public:dev --psm 4
+.venv/Scripts/python.exe -m invoiceguard.ocr_baseline predict --set trade:dev --set public:dev --psm 4 --run-id b0_dev
+# 4) 추론(원문 먼저 저장) -> 채점 -> paired 비교
+.venv-ml/Scripts/python.exe -m invoiceguard.vlm.infer --arm m1 --adapter artifacts/adapters/m1_standard_v1 --set trade:dev --set public:dev --run-id m1_dev
 .venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_dev
-.venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765   # 관리자 대시보드 (127.0.0.1)
+.venv/Scripts/python.exe -m invoiceguard.compare_runs m1_dev b0_dev
+# 5) final: 코드 커밋 -> 동결 부록 기록·커밋 -> --allow-final (해시 불일치·dirty tree면 거부)
+.venv/Scripts/python.exe -m invoiceguard.freeze write
+.venv-ml/Scripts/python.exe -m invoiceguard.vlm.infer --arm m1 --adapter artifacts/adapters/m1_standard_v1 --set public:iid_final --set public:ood_final --set trade:test --run-id m1_final --allow-final
+.venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_final --allow-final
+# 6) 서빙·대시보드 (127.0.0.1)
+.venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --port 8001
+.venv/Scripts/python.exe -m invoiceguard.serving.vllm_bench run --label hf_peft_nf4_local --port 8001 --conc 1,2,4 --docs 10 --reps 1
+.venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1
+.venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765
 ```
 원래 패키지 안내(Claude Code 시작 방법·설계 문서 목록)는 [`docs/PACKAGE_README_v4.md`](docs/PACKAGE_README_v4.md)에 있습니다.

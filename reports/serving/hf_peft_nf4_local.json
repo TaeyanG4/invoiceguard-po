@@ -21,120 +21,120 @@
       "parity_rows": [
         {
           "id": "tr_69cab78e7dcd",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             26,
             30
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             26,
             30
           ]
         },
         {
           "id": "tr_381d80972097",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             22,
             24
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             22,
             24
           ]
         },
         {
           "id": "tr_e082855b966a",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             22,
             24
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             22,
             24
           ]
         },
         {
           "id": "tr_827938e7dc64",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             30,
             30
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             30,
             30
           ]
         },
         {
           "id": "tr_fbcfacdef70c",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             30,
             30
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             30,
             30
           ]
         },
         {
           "id": "tr_b373fb6ce71b",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             13,
             18
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             13,
             18
           ]
         },
         {
           "id": "tr_29f3c4e354c9",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             18,
             18
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             18,
             18
           ]
         },
         {
           "id": "tr_75f27f299e4f",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             30,
             30
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             30,
             30
           ]
         },
         {
           "id": "tr_5ed7bf6fba3c",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             35,
             36
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             35,
             36
           ]
         },
         {
           "id": "tr_7d3690b30c40",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             30,
             42
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             30,
             42
           ]
@@ -222,8 +222,6 @@
           "completion_tokens": 516
         }
       ],
-      "vllm_field_accuracy": 0.9078,
-      "hf_field_accuracy_same_docs": 0.9078,
       "identical_raw_rate": 1.0,
       "prompt_tokens": [
         1045
@@ -256,126 +254,128 @@
           "p95_s": 47.39,
           "gpu_mem_mb_max": 3140
         }
-      }
+      },
+      "server_field_accuracy": 0.9078,
+      "offline_hf_field_accuracy_same_docs": 0.9078
     },
     "m1": {
       "parity_rows": [
         {
           "id": "tr_69cab78e7dcd",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             29,
             30
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             29,
             30
           ]
         },
         {
           "id": "tr_381d80972097",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             24,
             24
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             24,
             24
           ]
         },
         {
           "id": "tr_e082855b966a",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             22,
             24
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             22,
             24
           ]
         },
         {
           "id": "tr_827938e7dc64",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             30,
             30
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             30,
             30
           ]
         },
         {
           "id": "tr_fbcfacdef70c",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             29,
             30
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             29,
             30
           ]
         },
         {
           "id": "tr_b373fb6ce71b",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             18,
             18
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             18,
             18
           ]
         },
         {
           "id": "tr_29f3c4e354c9",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             18,
             18
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             18,
             18
           ]
         },
         {
           "id": "tr_75f27f299e4f",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             30,
             30
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             30,
             30
           ]
         },
         {
           "id": "tr_5ed7bf6fba3c",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             35,
             36
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             35,
             36
           ]
         },
         {
           "id": "tr_7d3690b30c40",
-          "vllm_fields": [
+          "identical_raw_to_hf": true,
+          "hf_fields": [
             29,
             42
           ],
-          "identical_raw_to_hf": true,
-          "hf_fields": [
+          "server_fields": [
             29,
             42
           ]
@@ -463,8 +463,6 @@
           "completion_tokens": 371
         }
       ],
-      "vllm_field_accuracy": 0.9362,
-      "hf_field_accuracy_same_docs": 0.9362,
       "identical_raw_rate": 1.0,
       "prompt_tokens": [
         1045
@@ -497,7 +495,10 @@
           "p95_s": 42.23,
           "gpu_mem_mb_max": 3140
         }
-      }
+      },
+      "server_field_accuracy": 0.9362,
+      "offline_hf_field_accuracy_same_docs": 0.9362
     }
-  }
+  },
+  "note": "Measured against invoiceguard.serving.hf_server (Transformers+PEFT), NOT vLLM. Keys renamed from the generic bench names (values unchanged)."
 }
