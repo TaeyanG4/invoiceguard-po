@@ -1,0 +1,3 @@
+# Only offline planning-package validation; not a model training environment.
+jsonschema==4.26.0
+PyYAML==6.0.3

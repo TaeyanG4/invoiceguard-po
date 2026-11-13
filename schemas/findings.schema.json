@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:invoiceguard:findings:1.0",
+  "title": "Reconciliation result; source explicitly distinguishes fixtures",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "case_status",
+    "findings"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "source": {
+      "enum": [
+        "oracle_fixture",
+        "live_model",
+        "human_review"
+      ]
+    },
+    "case_status": {
+      "enum": [
+        "needs_review",
+        "matched_candidate"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "severity",
+          "row_index",
+          "field",
+          "expected",
+          "observed",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "enum": [
+              "MISSING_CRITICAL_FIELD",
+              "AMBIGUOUS_NUMBER",
+              "AMBIGUOUS_QUANTITY",
+              "UNSUPPORTED_CURRENCY",
+              "CURRENCY_MISMATCH",
+              "UNIT_MISMATCH",
+              "DUPLICATE_SKU",
+              "UNSUPPORTED_DOCUMENT",
+              "UNSUPPORTED_ROW_COUNT",
+              "NO_PO",
+              "UNKNOWN_SKU",
+              "PO_LINE_NOT_FOUND",
+              "QTY_DIFF",
+              "UNIT_PRICE_DIFF",
+              "LINE_ARITHMETIC_MISMATCH",
+              "TOTAL_ARITHMETIC_MISMATCH",
+              "TOTAL_CHECK_NOT_EVALUABLE",
+              "DUPLICATE_DOCUMENT"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "warning",
+              "blocker"
+            ]
+          },
+          "row_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          },
+          "field": {
+            "type": "string"
+          },
+          "expected": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "observed": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "reference_total_difference": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

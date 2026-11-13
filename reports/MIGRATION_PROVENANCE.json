@@ -1,0 +1,18 @@
+{
+  "source_package": "v3 technical planning archive supplied in conversation",
+  "source_archive_sha256": "355a2b5cb005757cdba6ccf6aa148b88f8eeaefeac5b5978636f61ad5d8e4000",
+  "target_package": "invoiceguard-po",
+  "target_version": "4.0",
+  "target_agent": "Claude Code",
+  "adaptation_date": "2026-11-14",
+  "technical_contracts_retained": true,
+  "historical_source_report": "SOURCE_VERIFICATION.json (2026-11-13, not refreshed)",
+  "new_official_doc_review": [
+    "https://code.claude.com/docs/en/memory",
+    "https://code.claude.com/docs/en/permissions",
+    "https://code.claude.com/docs/en/settings",
+    "https://code.claude.com/docs/en/quickstart"
+  ],
+  "claude_cli_executed": false,
+  "cloud_resources_created": false
+}

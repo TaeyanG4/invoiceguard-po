@@ -1,0 +1,29 @@
+{
+  "checked_on": "2026-11-13",
+  "verified": [
+    "official_dataset_card_and_visible_table",
+    "official_model_card",
+    "official_runpod_prices_multiple_pages",
+    "official_runpod_storage_pricing",
+    "official_runpod_basic_vs_full_ssh",
+    "official_trl_vision_mask_requirements"
+  ],
+  "not_verified": [
+    "dataset_full_bytes",
+    "12_image_label_alignment",
+    "actual_runpod_quote_and_balance",
+    "gpu_training",
+    "application_runtime"
+  ],
+  "access_failures": [
+    {
+      "operation": "container_dataset_api_request",
+      "result": "DNS resolution failed"
+    },
+    {
+      "operation": "web_dataset_viewer_image",
+      "result": "signed URL 403"
+    }
+  ],
+  "data_profile_status": "publisher_claim_not_independently_recounted"
+}

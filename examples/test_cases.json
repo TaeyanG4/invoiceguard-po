@@ -1,0 +1,97 @@
+{
+  "kind": "test_specification_not_execution_result",
+  "base_invoice": "invoice_oracle.json",
+  "base_po": "purchase_order.json",
+  "cases": [
+    {
+      "id": "B01",
+      "input": "SKU 000125",
+      "expect": "leading zeros preserved"
+    },
+    {
+      "id": "B02",
+      "input": "2.50 vs 2.5000",
+      "expect": "same Decimal"
+    },
+    {
+      "id": "B03",
+      "input": "base fixtures",
+      "expect": [
+        "UNIT_PRICE_DIFF"
+      ],
+      "not_expect": [
+        "LINE_ARITHMETIC_MISMATCH"
+      ]
+    },
+    {
+      "id": "B07",
+      "invoice_patch": {
+        "items[0].quantity_raw": "2 cartons / 100 pcs"
+      },
+      "expect": [
+        "AMBIGUOUS_QUANTITY"
+      ]
+    },
+    {
+      "id": "B08",
+      "invoice_patch": {
+        "items[0].unit_price_raw": "1.234,50"
+      },
+      "expect": [
+        "AMBIGUOUS_NUMBER"
+      ]
+    },
+    {
+      "id": "B09",
+      "invoice_patch": {
+        "currency_raw": "$"
+      },
+      "expect": [
+        "UNSUPPORTED_CURRENCY"
+      ]
+    },
+    {
+      "id": "B10",
+      "invoice_patch": {
+        "items[0].unit_raw": "BOX"
+      },
+      "expect": [
+        "UNIT_MISMATCH"
+      ]
+    },
+    {
+      "id": "B11",
+      "invoice_patch": {
+        "items[0].unit_price_raw": "2.50",
+        "items[0].line_total_raw": "2500.00"
+      },
+      "expect": [
+        "LINE_ARITHMETIC_MISMATCH"
+      ]
+    },
+    {
+      "id": "B12",
+      "invoice_patch": {
+        "items[0].quantity_raw": null
+      },
+      "expect": [
+        "MISSING_CRITICAL_FIELD"
+      ]
+    },
+    {
+      "id": "A01",
+      "action": "export before approval",
+      "expected_http_status": 409
+    },
+    {
+      "id": "A03",
+      "action": "edit after approval then export",
+      "expected_http_status": 409
+    },
+    {
+      "id": "A08",
+      "action": "extract without model",
+      "expected_http_status": 503
+    }
+  ]
+}

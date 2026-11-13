@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "source": "oracle_fixture",
+  "case_status": "needs_review",
+  "findings": [
+    {
+      "code": "UNIT_PRICE_DIFF",
+      "severity": "warning",
+      "row_index": 1,
+      "field": "unit_price",
+      "expected": "2.50",
+      "observed": "2.75",
+      "message": "인보이스의 표시 단가가 발주 단가와 다릅니다. 읽기 오류인지 실제 거래 변경인지 원문과 계약을 확인하세요."
+    }
+  ],
+  "reference_total_difference": "25.00"
+}

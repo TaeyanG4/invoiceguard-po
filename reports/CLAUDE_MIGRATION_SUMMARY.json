@@ -1,0 +1,42 @@
+{
+  "package": "invoiceguard-po",
+  "version": "4.0",
+  "agent": "Claude Code",
+  "generated_at_utc": "2026-11-13T16:21:29.692752+00:00",
+  "status": "static_package_checks_passed_runtime_not_executed",
+  "scope": "planning_artifact_migration_only",
+  "validations": [
+    {
+      "report": "reports/PACK_VALIDATION.json",
+      "status": "pass",
+      "checks": 72,
+      "scope": "planning-package-only; not data download, application, training, or serving validation"
+    },
+    {
+      "report": "reports/CONTRACT_VALIDATION.json",
+      "status": "pass",
+      "checks": 63,
+      "scope": "inherited_technical_contracts_and_artificial_fixtures_only"
+    },
+    {
+      "report": "reports/CLAUDE_PACK_VALIDATION.json",
+      "status": "pass",
+      "checks": 153,
+      "scope": "static_claude_code_package_migration_only"
+    }
+  ],
+  "total_static_checks": 288,
+  "inherited_configuration_unchanged_except_package_metadata_and_agent": true,
+  "inherited_json_schemas_byte_identical": true,
+  "not_performed": [
+    "Claude_Code_CLI_execution",
+    "permission_runtime_enforcement",
+    "full_dataset_download",
+    "RunPod_quote_or_account_access",
+    "RunPod_resource_creation",
+    "QLoRA_training",
+    "GPU_serving",
+    "application_tests"
+  ],
+  "checksums": "MANIFEST.json enumerates all delivery files except itself; verify before editing."
+}

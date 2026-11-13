@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:invoiceguard:purchase-order:1.0",
+  "title": "Independent PO, supported MVP domain",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "po_id",
+    "po_version",
+    "supplier_id",
+    "currency",
+    "items"
+  ],
+  "properties": {
+    "po_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "po_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "supplier_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "currency": {
+      "const": "USD"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "po_line_id",
+          "sku",
+          "description",
+          "quantity",
+          "unit",
+          "unit_price"
+        ],
+        "properties": {
+          "po_line_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "sku": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,32}$"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "quantity": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$"
+          },
+          "unit": {
+            "const": "EA"
+          },
+          "unit_price": {
+            "type": "string",
+            "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,4})?$"
+          }
+        }
+      }
+    }
+  }
+}

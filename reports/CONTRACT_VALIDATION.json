@@ -1,0 +1,331 @@
+{
+  "scope": "inherited_technical_contracts_and_artificial_fixtures_only",
+  "checked_at_utc": "2026-11-13T16:34:08.690227+00:00",
+  "status": "pass",
+  "checks": [
+    {
+      "check": "package_version4",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "actual_quote_unknown",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "single_paid_pod",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "full_ssh_gate",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "seven_one_two_budget",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "gpu_training_unrun",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "public_not_raw_gt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "default_train_steps_match",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "standard_profile_positive_int",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "standard_dev_stress_within_dev",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_profile_positive_int",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_dev_stress_within_dev",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_not_larger:public_train",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_not_larger:public_dev",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_not_larger:public_dev_stress_bases",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_not_larger:public_iid_test",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_not_larger:public_ood_test",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_not_larger:trade_train",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_not_larger:trade_dev",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_not_larger:trade_test",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "mini_not_larger:max_optimizer_steps",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "synthetic_profile_consistent",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "canonical_valid_fixture",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "canonical_reject_json_number",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "canonical_reject_grouping",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "canonical_reject_unlabelled_sku",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "canonical_null_abstention_allowed",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "numeric_format_equivalence_fixture",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "numeric_reading_error_fixture",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "sku_leading_zero_fixture",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "authoritative_reason_enum:QTY_DIFF",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "authoritative_reason_enum:AMBIGUOUS_QUANTITY",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "authoritative_reason_enum:PO_LINE_NOT_FOUND",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "authoritative_reason_enum:UNKNOWN_SKU",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "authoritative_reason_enum:DUPLICATE_SKU",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "expected_fixture_enums",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_enum:B03:expect",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_enum:B03:not_expect",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_enum:B07:expect",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_enum:B08:expect",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_enum:B09:expect",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_enum:B10:expect",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_enum:B11:expect",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_enum:B12:expect",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "budget_arithmetic_example_within",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "budget_reject_18h_high_price",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "budget_bad_input:gpu_rate:NaN",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "budget_bad_input:remaining_gpu_hours:-1",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "budget_bad_input:margin:.9",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "budget_bad_input:gpu_rate:0",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "budget_script_no_api",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:budget_plan.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:verify_checksums.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:verify_claude_pack.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:verify_contracts.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:verify_pack.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "final_matrix_both_models",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "final_matrix_all_splits",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "runtime_evidence_not_faked",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "new_required_doc:docs/14_FINAL_AUDIT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "new_required_doc:docs/15_LABEL_AND_METRIC_CONTRACT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "new_required_doc:docs/16_RUNTIME_RELEASE_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_font_files",
+      "status": "pass",
+      "detail": ""
+    }
+  ],
+  "not_performed": [
+    "full_data_download",
+    "image_label_audit",
+    "RunPod_quote_or_account_access",
+    "VLM_inference",
+    "QLoRA",
+    "live_GPU_API",
+    "application_concurrency_tests"
+  ]
+}

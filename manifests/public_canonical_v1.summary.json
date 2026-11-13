@@ -1,0 +1,207 @@
+{
+  "manifest": "manifests/public_canonical_v1.jsonl",
+  "sha256": "53ad6fe993564c32a27d2b1fe78f611ac476e8e7e2ab1728f8c7f85605cce1a2",
+  "seed": 20261113,
+  "dataset": "alamgirqazi/invoice-ocr-synthetic",
+  "revision": "673ff85be462eb7f3715ec188a295dd17ca11115",
+  "renderer_commit": "91082ede48d2c0b2e32d9c489ea35f34e9922a99",
+  "rows": 2814,
+  "base_documents": 938,
+  "groups": 937,
+  "multi_document_groups": 1,
+  "pool_base_docs": {
+    "ood_test": 123,
+    "train": 611,
+    "iid_test": 102,
+    "dev": 102
+  },
+  "pool_templates": {
+    "train": {
+      "event_ticket": 90,
+      "modern_minimal": 99,
+      "formal_corporate": 147,
+      "utility_bill": 136,
+      "pos_thermal": 139
+    },
+    "dev": {
+      "formal_corporate": 24,
+      "utility_bill": 27,
+      "pos_thermal": 16,
+      "event_ticket": 21,
+      "modern_minimal": 14
+    },
+    "iid_test": {
+      "event_ticket": 21,
+      "modern_minimal": 17,
+      "pos_thermal": 32,
+      "formal_corporate": 18,
+      "utility_bill": 14
+    },
+    "ood_test": {
+      "freelancer_invoice": 123
+    }
+  },
+  "train_eligible_by_template": {
+    "event_ticket": "0/132",
+    "formal_corporate": "189/189",
+    "freelancer_invoice": "123/123",
+    "modern_minimal": "130/130",
+    "pos_thermal": "24/187",
+    "utility_bill": "174/177"
+  },
+  "ineligible_reasons": {
+    "description:case_transformed": 132,
+    "unit_price:not_printed": 114,
+    "description:truncated_by_renderer": 49,
+    "unit_price:printed_rounded": 3
+  },
+  "field_status_counts_all_bases": {
+    "description:visible_exact": 2937,
+    "quantity:visible_exact": 3521,
+    "unit_price:visible_exact": 2628,
+    "amount:visible_exact": 3521,
+    "description:case_transformed": 501,
+    "unit_price:not_printed": 889,
+    "description:truncated_by_renderer": 83,
+    "unit_price:printed_rounded": 4
+  },
+  "profiles": {
+    "standard": {
+      "image_rows_by_role": {
+        "iid_final": 60,
+        "train": 200,
+        "ood_final": 60,
+        "dev": 20,
+        "dev_stress": 16
+      },
+      "base_templates_by_role": {
+        "train": {
+          "modern_minimal": 50,
+          "utility_bill": 67,
+          "formal_corporate": 75,
+          "pos_thermal": 8
+        },
+        "dev": {
+          "event_ticket": 7,
+          "formal_corporate": 5,
+          "modern_minimal": 2,
+          "utility_bill": 2,
+          "pos_thermal": 4
+        },
+        "dev_stress": {
+          "formal_corporate": 4,
+          "utility_bill": 2,
+          "pos_thermal": 2
+        },
+        "iid_final": {
+          "event_ticket": 7,
+          "modern_minimal": 4,
+          "formal_corporate": 3,
+          "utility_bill": 2,
+          "pos_thermal": 4
+        },
+        "ood_final": {
+          "freelancer_invoice": 20
+        }
+      },
+      "scored_fields_by_role": {
+        "train": 3068,
+        "dev": 246,
+        "dev_stress": 210,
+        "iid_final": 624,
+        "ood_final": 984
+      },
+      "masked_fields_by_role": {
+        "train": 0,
+        "dev": 78,
+        "dev_stress": 14,
+        "iid_final": 192,
+        "ood_final": 0
+      }
+    },
+    "mini": {
+      "image_rows_by_role": {
+        "train": 120,
+        "ood_final": 24,
+        "dev": 10,
+        "iid_final": 24,
+        "dev_stress": 8
+      },
+      "base_templates_by_role": {
+        "train": {
+          "modern_minimal": 28,
+          "utility_bill": 45,
+          "formal_corporate": 42,
+          "pos_thermal": 5
+        },
+        "dev": {
+          "event_ticket": 2,
+          "formal_corporate": 4,
+          "utility_bill": 2,
+          "pos_thermal": 2
+        },
+        "dev_stress": {
+          "utility_bill": 1,
+          "pos_thermal": 2,
+          "formal_corporate": 1
+        },
+        "iid_final": {
+          "modern_minimal": 1,
+          "formal_corporate": 1,
+          "event_ticket": 3,
+          "pos_thermal": 2,
+          "utility_bill": 1
+        },
+        "ood_final": {
+          "freelancer_invoice": 8
+        }
+      },
+      "scored_fields_by_role": {
+        "train": 1756,
+        "dev": 125,
+        "dev_stress": 156,
+        "iid_final": 171,
+        "ood_final": 360
+      },
+      "masked_fields_by_role": {
+        "train": 0,
+        "dev": 27,
+        "dev_stress": 12,
+        "iid_final": 81,
+        "ood_final": 0
+      }
+    }
+  },
+  "checks": {
+    "pool_leaks": {
+      "base_id": [],
+      "group_id": [],
+      "content_hash": [],
+      "target_hash": [],
+      "image_sha256": []
+    },
+    "standard_role_leaks": {
+      "base_id": [],
+      "group_id": [],
+      "content_hash": [],
+      "target_hash": [],
+      "image_sha256": []
+    },
+    "mini_role_leaks": {
+      "base_id": [],
+      "group_id": [],
+      "content_hash": [],
+      "target_hash": [],
+      "image_sha256": []
+    },
+    "mini_nested_in_standard": true,
+    "holdout_template_only_in_ood": true,
+    "ood_pool_only_holdout_groups": true,
+    "train_rows_all_eligible_clean": true,
+    "final_has_all_three_qualities": true,
+    "no_label_values_or_po_in_manifest": true,
+    "pass": true
+  },
+  "frozen": false,
+  "freeze_note": "Membership pre-registered by seeded hash before any model output. Profile (standard|mini) is chosen once after the training-only pilot (T03/T04) and then frozen."
+}

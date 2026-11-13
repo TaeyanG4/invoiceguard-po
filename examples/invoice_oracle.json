@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "document_type": "invoice",
+  "invoice_number_raw": "DEMO-INV-001",
+  "currency_raw": "USD",
+  "items": [
+    {
+      "row_index": 1,
+      "sku_raw": "000125",
+      "description_raw": "Sensor module",
+      "quantity_raw": "100",
+      "unit_raw": "EA",
+      "unit_price_raw": "2.75",
+      "line_total_raw": "275.00"
+    },
+    {
+      "row_index": 2,
+      "sku_raw": "CAB-002",
+      "description_raw": "Signal cable",
+      "quantity_raw": "20",
+      "unit_raw": "EA",
+      "unit_price_raw": "5.00",
+      "line_total_raw": "100.00"
+    }
+  ],
+  "subtotal_raw": "375.00",
+  "tax_raw": "0.00",
+  "discount_raw": "0.00",
+  "total_raw": "375.00"
+}

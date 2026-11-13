@@ -1,0 +1,1306 @@
+{
+  "scope": "static_claude_code_package_migration_only",
+  "checked_at_utc": "2026-11-13T16:34:09.282658+00:00",
+  "status": "pass",
+  "checks": [
+    {
+      "check": "required:CLAUDE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:.claude/settings.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:.claude/README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:prompts/CLAUDE_START.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:prompts/CLAUDE_RESUME.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:prompts/CLAUDE_RUNPOD_APPROVAL_CHECK.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:prompts/CLAUDE_MODEL_AND_RELEASE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:docs/17_CLAUDE_CODE_WORKFLOW.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:docs/18_PACKAGE_MIGRATION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:reports/SESSION_HANDOFF.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:reports/TASK_BOARD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:scripts/verify_checksums.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "required:requirements-pack.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:CLAUDE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:MANIFEST.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:requirements-pack.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.claude/README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.claude/settings.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/typing_extensions.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/_virtualenv.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/converters.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/exceptions.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/filters.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/setters.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/validators.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/_cmp.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/_compat.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/_config.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/_funcs.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/_make.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/_next_gen.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/_version_info.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attr/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attrs/converters.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attrs/exceptions.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attrs/filters.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attrs/setters.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attrs/validators.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/attrs/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/cli.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/exceptions.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/protocols.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/validators.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/_format.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/_keywords.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/_legacy_keywords.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/_types.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/_typing.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/_utils.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/__main__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/const_vs_enum.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/contains.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/import_benchmark.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/issue232.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/json_schema_test_suite.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/nested_schemas.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/subcomponents.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/unused_registry.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/useless_applicator_schemas.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/useless_keywords.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/validator_creation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/issue232/issue.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/fuzz_validate.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_cli.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_deprecations.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_exceptions.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_format.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_jsonschema_test_suite.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_types.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_utils.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_validators.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/_suite.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/typing/test_all_concrete_validators_match_protocol.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/typing/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema-4.26.0.dist-info/entry_points.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/_core.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft201909/metaschema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft202012/metaschema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft3/metaschema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft4/metaschema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft6/metaschema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft7/metaschema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/tests/test_jsonschema_specifications.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/tests/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/pyyaml-6.0.3.dist-info/top_level.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/exceptions.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/jsonschema.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/retrieval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/typing.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/_attrs.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/_core.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_core.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_exceptions.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_jsonschema.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_referencing_suite.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_retrieval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/referencing/tests/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/rpds/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/rpds_py-2026.9.1.dist-info/sboms/rpds-py.cyclonedx.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/composer.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/constructor.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/cyaml.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/dumper.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/emitter.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/error.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/events.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/loader.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/nodes.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/parser.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/reader.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/representer.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/resolver.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/scanner.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/serializer.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/tokens.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/yaml/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Lib/site-packages/_yaml/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.venv/Scripts/activate_this.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:configs/project.yaml",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/00_PROJECT_BRIEF.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/01_DATA_PLAN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/02_PRD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/03_ARCHITECTURE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/04_DATA_CONTRACTS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/05_MODEL_PLAN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/06_EVALUATION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/07_API_UI.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/08_48H_EXECUTION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/09_TEST_ACCEPTANCE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/10_DEMO_PORTFOLIO.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/11_SOURCES_ADR.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/12_RUNPOD_PLAYBOOK.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/13_DATASET_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/14_FINAL_AUDIT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/15_LABEL_AND_METRIC_CONTRACT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/16_RUNTIME_RELEASE_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/17_CLAUDE_CODE_WORKFLOW.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/18_PACKAGE_MIGRATION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:examples/expected_findings.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:examples/invoice_oracle.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:examples/public_canonical.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:examples/purchase_order.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:examples/README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:examples/test_cases.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:prompts/CLAUDE_MODEL_AND_RELEASE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:prompts/CLAUDE_RESUME.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:prompts/CLAUDE_RUNPOD_APPROVAL_CHECK.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:prompts/CLAUDE_START.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:prompts/EXTRACT_PUBLIC_CANONICAL.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:prompts/EXTRACT_V1.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/CLAUDE_MIGRATION_SUMMARY.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/CLAUDE_PACK_VALIDATION.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/CONTRACT_VALIDATION.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/IMPLEMENTATION_STATUS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/MIGRATION_PROVENANCE.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/PACK_VALIDATION.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/RESULTS_TEMPLATE.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/RESULTS_TEMPLATE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/SESSION_HANDOFF.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/SOURCE_VERIFICATION.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/TASK_BOARD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:schemas/extraction.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:schemas/findings.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:schemas/public_extraction.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:schemas/purchase_order.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/budget_plan.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/verify_checksums.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/verify_claude_pack.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/verify_contracts.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/verify_pack.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "v4_package",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "claude_entrypoint",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "retained_technical_baseline",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_rival_root_instruction",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "compact_root_instruction",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "remote_credential_boundary",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "manual_permission_mode",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_wide_allowlist",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_automatic_hooks",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_forced_agent_model",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_provider_or_key_config",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "secret_read_rules",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "remote_asks",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "local_settings_gitignored",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "secrets_gitignored",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "not_preapproved",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "runtime_unrun",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "result_metrics_unrun",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T00",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T01",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T02",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T03",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T04",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T05",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T06",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T07",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T08",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "task_board:T09",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "config_path:start_prompt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "config_path:resume_prompt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "config_path:workflow",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "config_path:handoff_file",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "config_path:task_board",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:CLAUDE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:.claude/README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:configs/project.yaml",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/00_PROJECT_BRIEF.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/01_DATA_PLAN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/02_PRD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/03_ARCHITECTURE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/04_DATA_CONTRACTS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/05_MODEL_PLAN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/06_EVALUATION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/07_API_UI.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/08_48H_EXECUTION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/09_TEST_ACCEPTANCE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/10_DEMO_PORTFOLIO.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/11_SOURCES_ADR.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/12_RUNPOD_PLAYBOOK.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/13_DATASET_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/14_FINAL_AUDIT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/15_LABEL_AND_METRIC_CONTRACT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/16_RUNTIME_RELEASE_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/17_CLAUDE_CODE_WORKFLOW.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/18_PACKAGE_MIGRATION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:examples/README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:prompts/CLAUDE_MODEL_AND_RELEASE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:prompts/CLAUDE_RESUME.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:prompts/CLAUDE_RUNPOD_APPROVAL_CHECK.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:prompts/CLAUDE_START.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/IMPLEMENTATION_STATUS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/RESULTS_TEMPLATE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/SESSION_HANDOFF.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/TASK_BOARD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:budget_plan.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:verify_checksums.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:verify_claude_pack.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:verify_contracts.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "python_syntax:verify_pack.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_asset:.pem",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_asset:.key",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_asset:.ttf",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_asset:.otf",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_asset:.woff",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_asset:.woff2",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_asset:.safetensors",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_asset:.pt",
+      "status": "pass",
+      "detail": ""
+    }
+  ],
+  "not_performed": [
+    "Claude_Code_CLI",
+    "permission_runtime_enforcement",
+    "RunPod_login_or_billing",
+    "full_dataset_download",
+    "VLM_inference",
+    "QLoRA_training",
+    "application_tests"
+  ]
+}

@@ -1,0 +1,375 @@
+{
+  "scope": "planning-package-only; not data download, application, training, or serving validation",
+  "checked_at_utc": "2026-11-13T16:34:08.288970+00:00",
+  "status": "pass",
+  "checks": [
+    {
+      "check": "schema:extraction.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "schema:findings.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "schema:public_extraction.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "schema:purchase_order.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "example:examples/purchase_order.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "example:examples/invoice_oracle.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "example:examples/expected_findings.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "example:examples/public_canonical.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "leading_zero_fixture",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "invoice_fixture_arithmetic:row1",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "invoice_fixture_arithmetic:row2",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "invoice_fixture_total",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_delta_25",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "fixture_is_not_live_output",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "expected_price_warning",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "synthetic_count:train",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "synthetic_count:validation",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "synthetic_count:test",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "template_split_disjoint",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "total_synthetic_planned_224",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "config_not_measured",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "no_model_revision_fabricated",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "english_primary_dataset",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "english_locale",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "english_group_key",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "english_quality_three",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "local_16gb",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "runpod_primary",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "budget_guard",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "unmeasured_metrics_null",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:prompts/CLAUDE_START.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:CLAUDE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:.claude/settings.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/17_CLAUDE_CODE_WORKFLOW.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/SESSION_HANDOFF.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/TASK_BOARD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/18_PACKAGE_MIGRATION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:prompts/CLAUDE_START.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:prompts/CLAUDE_RESUME.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:prompts/CLAUDE_RUNPOD_APPROVAL_CHECK.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:prompts/CLAUDE_MODEL_AND_RELEASE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/00_PROJECT_BRIEF.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/02_PRD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/01_DATA_PLAN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/04_DATA_CONTRACTS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/06_EVALUATION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/15_LABEL_AND_METRIC_CONTRACT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/03_ARCHITECTURE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/05_MODEL_PLAN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/07_API_UI.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/08_48H_EXECUTION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/12_RUNPOD_PLAYBOOK.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/16_RUNTIME_RELEASE_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/09_TEST_ACCEPTANCE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/10_DEMO_PORTFOLIO.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/13_DATASET_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/11_SOURCES_ADR.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/14_FINAL_AUDIT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/CLAUDE_MIGRATION_SUMMARY.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/17_CLAUDE_CODE_WORKFLOW.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:.claude\\README.md:../docs/17_CLAUDE_CODE_WORKFLOW.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\01_DATA_PLAN.md:15_LABEL_AND_METRIC_CONTRACT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\03_ARCHITECTURE.md:16_RUNTIME_RELEASE_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\04_DATA_CONTRACTS.md:15_LABEL_AND_METRIC_CONTRACT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\06_EVALUATION.md:15_LABEL_AND_METRIC_CONTRACT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\07_API_UI.md:16_RUNTIME_RELEASE_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\09_TEST_ACCEPTANCE.md:16_RUNTIME_RELEASE_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\11_SOURCES_ADR.md:17_CLAUDE_CODE_WORKFLOW.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\17_CLAUDE_CODE_WORKFLOW.md:../prompts/CLAUDE_START.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\17_CLAUDE_CODE_WORKFLOW.md:../reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\17_CLAUDE_CODE_WORKFLOW.md:../prompts/CLAUDE_RESUME.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "local_links_checked",
+      "status": "pass",
+      "detail": "41 local Markdown links"
+    }
+  ],
+  "not_performed": [
+    "full_dataset_download",
+    "synthetic_image_rendering",
+    "VLM_inference",
+    "QLoRA_training",
+    "GPU_API",
+    "application_tests"
+  ]
+}

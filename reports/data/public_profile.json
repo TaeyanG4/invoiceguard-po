@@ -1,0 +1,178 @@
+{
+  "dataset_id": "alamgirqazi/invoice-ocr-synthetic",
+  "revision": "673ff85be462eb7f3715ec188a295dd17ca11115",
+  "origin": "synthetic_public",
+  "license_tag": "cc-by-4.0",
+  "checks": {
+    "all_images_decoded": {
+      "pass": true,
+      "failures": [],
+      "n_failures": 0
+    },
+    "each_file_has_exactly_3_qualities": {
+      "pass": true,
+      "violations": {}
+    },
+    "annotations_identical_across_qualities": {
+      "pass": true,
+      "violations": []
+    },
+    "parquet_vs_released_json_canonical_items": {
+      "pass": true,
+      "released_records": 938,
+      "mismatches": [],
+      "n_mismatches": 0
+    },
+    "excluded_records_absent": {
+      "pass": true,
+      "n_excluded_listed": 62,
+      "present_in_data": []
+    }
+  },
+  "shards": {
+    "data/train-00000-of-00002.parquet": {
+      "bytes": 594209287,
+      "sha256": "62b0432e30bc41baff495f0dfdfc64ffbccaaa39f1814e9528b7ed0d9f2085b3",
+      "matches_hf_lfs_oid": true
+    },
+    "data/train-00001-of-00002.parquet": {
+      "bytes": 2635217711,
+      "sha256": "7e48694c5acb676a7d9853c07cba82affb652463ccf14b1f97e678302a7d968b",
+      "matches_hf_lfs_oid": true
+    }
+  },
+  "counts": {
+    "rows_actual": 2814,
+    "rows_claimed": 2814,
+    "base_documents_actual": 938,
+    "base_documents_claimed": 938,
+    "rows_per_quality": {
+      "clean": 938,
+      "faded": 938,
+      "bad_scan": 938
+    },
+    "templates_base_docs": {
+      "event_ticket": 132,
+      "freelancer_invoice": 123,
+      "formal_corporate": 189,
+      "modern_minimal": 130,
+      "utility_bill": 177,
+      "pos_thermal": 187
+    },
+    "locale_base_docs": {
+      "en": 938
+    },
+    "currency_base_docs": {
+      "USD": 202,
+      "GBP": 231,
+      "CAD": 51,
+      "EUR": 408,
+      "AUD": 45,
+      "$": 1
+    },
+    "category_base_docs": {
+      "services": 344,
+      "software": 154,
+      "electronics": 69,
+      "office_supplies": 46,
+      "rent": 55,
+      "food": 54,
+      "transport": 65,
+      "travel": 71,
+      "utilities": 54,
+      "retail": 4,
+      "miscellaneous": 10,
+      "null": 2,
+      "shipping": 3,
+      "other": 6,
+      "consulting": 1
+    },
+    "items_per_doc": {
+      "1": 185,
+      "2": 154,
+      "3": 136,
+      "4": 276,
+      "5": 6,
+      "6": 10,
+      "7": 10,
+      "8": 124,
+      "9": 6,
+      "10": 31
+    },
+    "image_formats": {
+      "PNG": 2814
+    },
+    "image_sizes_top": {
+      "1241x1754": 1190,
+      "1654x2339": 312,
+      "473x1477": 302,
+      "630x1969": 72,
+      "662x2203": 2,
+      "1319x1938": 2,
+      "1317x2032": 2,
+      "1385x1992": 2,
+      "1305x1856": 2,
+      "1347x1936": 2
+    },
+    "max_image_pixels": 5186612,
+    "line_item_field_types": {
+      "amount:float": 10563,
+      "quantity:float": 10563,
+      "unit_price:float": 10563
+    },
+    "line_item_numeric_issues": {
+      "unit_price_negative": 24,
+      "amount_negative": 24,
+      "quantity_non_integer": 15
+    }
+  },
+  "duplicates_across_file_names": {
+    "same_image_sha256_groups": 0,
+    "same_image_examples": [],
+    "same_business_content_groups": 0,
+    "same_business_content_examples": [],
+    "same_target_items_groups": 1,
+    "same_target_items_files": 2,
+    "same_target_items_examples": [
+      [
+        "synth_0531_290505de.png",
+        "synth_0647_e8ab4f72.png"
+      ]
+    ],
+    "same_target_items_cross_template_groups": 0,
+    "same_target_items_involving_holdout_template": 1
+  },
+  "sku_labels_available": false,
+  "raw_print_format_labels_available": false,
+  "note": "Profile of public SYNTHETIC data at the pinned revision. Visibility of target columns in each template is decided by the manual audit (reports/data/public_visual_audit.md), not by this script.",
+  "audit_sample": {
+    "seed": "20261113",
+    "picks": {
+      "event_ticket": [
+        "synth_0267_bf4703cc.png",
+        "synth_0372_8fac2313.png"
+      ],
+      "formal_corporate": [
+        "synth_0057_5072a4b2.png",
+        "synth_0548_c0f3e504.png"
+      ],
+      "freelancer_invoice": [
+        "synth_0717_de4c7f68.png",
+        "synth_0171_1bb2f804.png"
+      ],
+      "modern_minimal": [
+        "synth_0732_08c24cd4.png",
+        "synth_0311_df57d68c.png"
+      ],
+      "pos_thermal": [
+        "synth_0748_08f496bd.png",
+        "synth_0225_c0612bf3.png"
+      ],
+      "utility_bill": [
+        "synth_0100_2874e6f0.png",
+        "synth_0096_2b8b7dfc.png"
+      ]
+    },
+    "dir": "data/processed/public/audit"
+  }
+}

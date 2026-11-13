@@ -1,0 +1,33 @@
+{
+  "status": "not_run",
+  "model_revision": null,
+  "adapter_sha256": null,
+  "dataset_revision": null,
+  "split_manifest_sha256": null,
+  "gpu": null,
+  "metrics": {
+    "synthetic_extraction": null,
+    "synthetic_reconciliation": null,
+    "serving": null,
+    "english_public_extraction": null,
+    "english_quality_robustness": null,
+    "english_ood_holdout": null
+  },
+  "warnings": [
+    "This is a results template, not a measured run."
+  ],
+  "version": "4.0",
+  "data_language": "en",
+  "data_source": "alamgirqazi/invoice-ocr-synthetic",
+  "primary_compute": "RunPod Pod (planned, not provisioned)",
+  "prepaid_usd_user_reported": 10,
+  "cloud_cost_usd_actual": null,
+  "execution_profile": null,
+  "public_task": "PUBLIC_CANONICAL",
+  "trade_task": "TRADE_RAW",
+  "base_loading_precision": null,
+  "adapter_loading_precision": null,
+  "console_gpu_rate_usd_per_hour": null,
+  "billing_verified": false,
+  "real_trade_documents_evaluated": false
+}

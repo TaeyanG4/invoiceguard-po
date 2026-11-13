@@ -1,0 +1,12 @@
+{
+  "schema_version": "public-1.0",
+  "items": [
+    {
+      "row_index": 1,
+      "description": "Sensor module",
+      "quantity": "100",
+      "unit_price": "2.5",
+      "amount": "250"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "po_id": "DEMO-PO-001",
+  "po_version": 1,
+  "supplier_id": "FICTIONAL-SUPPLIER-01",
+  "currency": "USD",
+  "items": [
+    {
+      "po_line_id": "L1",
+      "sku": "000125",
+      "description": "Sensor module",
+      "quantity": "100",
+      "unit": "EA",
+      "unit_price": "2.50"
+    },
+    {
+      "po_line_id": "L2",
+      "sku": "CAB-002",
+      "description": "Signal cable",
+      "quantity": "20",
+      "unit": "EA",
+      "unit_price": "5.00"
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+project:
+  name: invoiceguard-po
+  document_version: '4.0'
+  seed: 20261113
+  status: planned_not_executed
+  audit_date: '2026-11-13'
+  package_updated_date: '2026-11-14'
+  technical_baseline: v3_audited_contracts_unchanged
+scope:
+  image_formats:
+  - PNG
+  - JPEG
+  max_upload_bytes: 10485760
+  max_decoded_pixels: 20000000
+  product_max_rows: 12
+  language: en
+  ui_language: ko
+  currency: USD
+  unit: EA
+  all_exports_require_human_approval: true
+hardware:
+  local_gpu: RTX_4070_Ti_SUPER
+  local_vram_gb: 16
+  primary_runtime: runpod_pod
+  preferred_gpu: RTX_4090_24GB_if_quote_and_preflight_fit
+  fallback_gpu: RTX_A6000_48GB_or_A40_if_reapproved
+  allowed_new_charge_without_approval: false
+  prepaid_balance_usd_user_reported: 10.0
+  spend_soft_stop_usd: 8.0
+  reserve_usd: 2.0
+  gpu_rates_dynamic: true
+  volume_disk_gb_proposed: 60
+  cloud_storage_billable: true
+  gpu_compute_budget_usd: 7.0
+  storage_and_shutdown_budget_usd: 1.0
+  actual_console_gpu_rate_usd_per_hour: null
+  actual_all_in_rate_usd_per_hour: null
+  max_simultaneous_paid_pods: 1
+  full_ssh_required: true
+  container_disk_gb_proposed: 20
+  auto_top_up_authorized: false
+data:
+  english_invoice_ocr:
+    dataset_id: alamgirqazi/invoice-ocr-synthetic
+    revision: null
+    language: en
+    origin: synthetic_public
+    license: cc-by-4.0
+    claimed_base_documents: 938
+    claimed_total_images: 2814
+    quality_values:
+    - clean
+    - faded
+    - bad_scan
+    grouped_split_key: full_file_name_plus_business_content_components
+    selected_holdout_template: freelancer_invoice
+    main_training_qualities:
+    - clean
+    evaluation_qualities:
+    - clean
+    - faded
+    - bad_scan
+    train_dev_iid_test_group_split:
+    - 0.75
+    - 0.125
+    - 0.125
+    smoke_documents: 12
+    planned_train_max_clean_base_docs: 200
+    planned_dev_max_base_docs: 20
+    planned_iid_test_max_base_docs: 20
+    planned_unseen_layout_test_max_base_docs: 20
+    missing_sku_policy: no_label_never_infer
+    inspect_invoice_only_subset: true
+    main_metric: numeric_value_exact_not_raw_string
+    source_transcription_labels_available: false
+  synthetic:
+    source: self_generated_english_invoice_po
+    counts:
+      train: 160
+      validation: 24
+      test: 40
+    templates:
+      train:
+      - T01
+      - T02
+      - T03
+      validation:
+      - T04
+      test:
+      - T05
+      - T06
+    type_counts:
+      train:
+        normal: 64
+        price_change: 40
+        quantity_change: 24
+        unknown_sku: 8
+        ambiguous_quantity: 8
+        missing_po_line: 8
+        duplicate_sku: 8
+      validation:
+        normal: 10
+        price_change: 6
+        quantity_change: 4
+        unknown_sku: 1
+        ambiguous_quantity: 1
+        missing_po_line: 1
+        duplicate_sku: 1
+      test:
+        normal: 16
+        price_change: 10
+        quantity_change: 6
+        unknown_sku: 2
+        ambiguous_quantity: 2
+        missing_po_line: 2
+        duplicate_sku: 2
+    group_key: scenario_family_id
+    fault_type_must_not_determine_template: true
+    oracle_export_is_not_live_prediction: true
+model:
+  id: Qwen/Qwen3-VL-2B-Instruct
+  revision: null
+  max_pixels: 786432
+  max_new_tokens: 1536
+  do_sample: false
+  task_prompts:
+    public_canonical: prompts/EXTRACT_PUBLIC_CANONICAL.txt
+    trade_raw: prompts/EXTRACT_V1.txt
+  base_precision_for_comparison: nf4_4bit_same_as_adapter
+  image_resize_policy: freeze_after_training_only_pilot
+training:
+  method: qlora
+  quantization: nf4_4bit
+  double_quantization: true
+  lora_rank: 8
+  lora_alpha: 16
+  lora_dropout: 0.05
+  language_backbone_only: true
+  candidate_attention_modules:
+  - q_proj
+  - v_proj
+  freeze_vision: true
+  freeze_projector: true
+  learning_rate: 0.0001
+  micro_batch: 1
+  gradient_accumulation: 8
+  max_optimizer_steps: 80
+  gradient_checkpointing: true
+  packing: false
+  sequence_budget: 6144
+  truncate_image_tokens: false
+  smoke_steps: 10
+  training_after_smoke: reload_clean_base_and_reset_seed_optimizer
+  loss_scope: assistant_completion_only_verified_at_expanded_image_tokens
+serving:
+  preferred_backend: transformers_peft_gpu
+  optional_backend: vllm
+  fallback_must_be_reported: true
+  bind_host: 127.0.0.1
+  app_port: 8000
+  model_port: 8001
+  timeout_seconds: 120
+  app_inference_concurrency: 1
+  benchmark_concurrency:
+  - 1
+  - 2
+  benchmark_documents: 20
+  benchmark_warmups: 3
+  benchmark_repetitions: 2
+  benchmark_p95_status: exploratory_small_sample
+  timeout_must_cancel_or_quarantine_worker: true
+rules:
+  money_tolerance: '0.01'
+  rounding: ROUND_HALF_UP
+  sku_matching: exact_case_sensitive_trim_only
+  no_po_in_extraction: true
+  do_not_infer_missing_numeric_values: true
+profiles:
+  selection: choose_once_after_training_only_pilot_before_evaluation_then_freeze
+  standard:
+    public_train: 200
+    public_dev: 20
+    public_dev_stress_bases: 8
+    public_iid_test: 20
+    public_ood_test: 20
+    trade_train: 160
+    trade_dev: 24
+    trade_test: 40
+    max_optimizer_steps: 80
+  mini:
+    public_train: 120
+    public_dev: 10
+    public_dev_stress_bases: 4
+    public_iid_test: 8
+    public_ood_test: 8
+    trade_train: 96
+    trade_dev: 12
+    trade_test: 20
+    max_optimizer_steps: 40
+  mini_is_nested_preselected_subset_of_standard: true
+  public_final_qualities:
+  - clean
+  - faded
+  - bad_scan
+audit:
+  data_download_status: not_run_network_unavailable_in_audit_container
+  gpu_status: not_run
+  application_status: not_implemented
+  price_status: official_pages_verified_console_not_accessed
+agent:
+  tool: claude_code
+  entrypoint: CLAUDE.md
+  start_prompt: prompts/CLAUDE_START.md
+  resume_prompt: prompts/CLAUDE_RESUME.md
+  workflow: docs/17_CLAUDE_CODE_WORKFLOW.md
+  default_permission_mode: default
+  paid_cloud_actions_require_explicit_approval: true
+  agent_login_location: local_workstation_not_runpod
+  handoff_file: reports/SESSION_HANDOFF.md
+  task_board: reports/TASK_BOARD.md
