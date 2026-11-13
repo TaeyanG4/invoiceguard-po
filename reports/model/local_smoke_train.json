@@ -1,0 +1,143 @@
+{
+  "kind": "local_10_step_qlora_smoke",
+  "steps": 10,
+  "grad_accumulation": 8,
+  "lr": 0.0001,
+  "trainable": {
+    "trainable_tensors": 112,
+    "trainable_params": 1605632,
+    "total_params": 1424494592,
+    "unexpected_trainable": [],
+    "visual_trainable": false,
+    "sample_names": [
+      "base_model.model.model.language_model.layers.0.self_attn.q_proj.lora_A.default.weight",
+      "base_model.model.model.language_model.layers.0.self_attn.q_proj.lora_B.default.weight",
+      "base_model.model.model.language_model.layers.0.self_attn.v_proj.lora_A.default.weight",
+      "base_model.model.model.language_model.layers.0.self_attn.v_proj.lora_B.default.weight"
+    ]
+  },
+  "env": {
+    "host": "local_workstation",
+    "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "torch": "2.9.1+cu126",
+    "cuda": "12.6",
+    "transformers": "4.57.6",
+    "peft": "0.17.1",
+    "bitsandbytes": "0.48.2",
+    "python": "3.11.9",
+    "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+    "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+    "max_pixels": 786432,
+    "precision": "nf4_double_quant_bf16_compute; vision+lm_head not quantised"
+  },
+  "log": [
+    {
+      "step": 1,
+      "mean_loss": 0.4312,
+      "grad_norm": 1.4354,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 56,
+      "tensors_with_grad": 112
+    },
+    {
+      "step": 2,
+      "mean_loss": 0.4661,
+      "grad_norm": 1.8683,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 112,
+      "tensors_with_grad": 112
+    },
+    {
+      "step": 3,
+      "mean_loss": 0.3495,
+      "grad_norm": 1.6235,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 112,
+      "tensors_with_grad": 112
+    },
+    {
+      "step": 4,
+      "mean_loss": 0.331,
+      "grad_norm": 1.7886,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 112,
+      "tensors_with_grad": 112
+    },
+    {
+      "step": 5,
+      "mean_loss": 0.2202,
+      "grad_norm": 1.0676,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 112,
+      "tensors_with_grad": 112
+    },
+    {
+      "step": 6,
+      "mean_loss": 0.1786,
+      "grad_norm": 0.9366,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 112,
+      "tensors_with_grad": 112
+    },
+    {
+      "step": 7,
+      "mean_loss": 0.1899,
+      "grad_norm": 0.8753,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 112,
+      "tensors_with_grad": 112
+    },
+    {
+      "step": 8,
+      "mean_loss": 0.0776,
+      "grad_norm": 0.5556,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 112,
+      "tensors_with_grad": 112
+    },
+    {
+      "step": 9,
+      "mean_loss": 0.0538,
+      "grad_norm": 0.4662,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 112,
+      "tensors_with_grad": 112
+    },
+    {
+      "step": 10,
+      "mean_loss": 0.1007,
+      "grad_norm": 0.9856,
+      "grads_finite": true,
+      "tensors_with_nonzero_grad": 112,
+      "tensors_with_grad": 112
+    }
+  ],
+  "micro_steps": 80,
+  "optimizer_steps": 10,
+  "train_seconds": 79.7,
+  "seconds_per_optimizer_step": 7.97,
+  "peak_vram_gb": 7.092,
+  "nonfinite_losses": 0,
+  "mask_failures": 0,
+  "lora_tensors_changed": 112,
+  "lora_tensors_total": 112,
+  "adapter_dir": "artifacts/adapters/local_smoke_10step",
+  "adapter_files_sha256": {
+    "adapter_config.json": "bd34dea4018228dd0b508faad36ed3ae30476059b337aef349764127635579b3",
+    "adapter_model.safetensors": "ffadbcd4704fc67a8669bfd4db3df88bb29e5c537e784c14a01e8f05fcbacec4",
+    "README.md": "3529ef92d77bbcd887cb415bf400d5753a40ee0928976d6a277d7eabb841a0cb"
+  },
+  "reload_tensor_equal": true,
+  "reload_inference": {
+    "id": "tr_3cd64dc9128a",
+    "task": "TRADE_RAW",
+    "parse_status": "ok",
+    "schema_valid": true,
+    "generated_tokens": 534,
+    "input_tokens": 1045,
+    "finish_reason": "stop",
+    "latency_s": 57.533,
+    "peak_vram_gb": 3.698
+  },
+  "pass": true
+}

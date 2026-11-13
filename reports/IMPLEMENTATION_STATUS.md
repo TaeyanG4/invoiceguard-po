@@ -12,10 +12,11 @@
 | 전체 공개 데이터 적재·이미지/정답 감사 (T01/G1) | passed_with_evidence | T01 로그, reports/data/ |
 | 공개 데이터 누수 없는 분할 (T02) | passed_with_evidence (application_cpu_test) | T02-a 로그, manifests/ |
 | 자체 Invoice–PO 합성·렌더러·대사 규칙·평가기 (T02/G2) | passed_with_evidence (application_cpu_test) | T02-b 로그 |
-| 관리자 대시보드(읽기 전용 현황판) | implemented_local | `python -m invoiceguard.dashboard --run-tests` |
+| 관리자 대시보드(사이드바·데이터 직접 보기, 읽기 전용) | implemented_local | `.venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765` (127.0.0.1) |
 | Git / GitHub | private repo `TaeyanG4/invoiceguard-po` (사용자 요청으로 생성·push) | 데이터·venv 제외 |
 | 실제 RunPod 잔액·견적·Pod 접속 | not_run — 승인 요청 초안만 | reports/RUNPOD_APPROVAL.md |
-| 실제 QLoRA·추론·GPU API·측정 | not_run | T03–T08 (GPU 러너 코드 미작성) |
+| 로컬 GPU smoke (RTX 4070 Ti SUPER, 사용자 승인) | M01 mask pass / 파일럿 8장 실행 / 10-step 학습 — 아래 로그 | reports/model/local_smoke_*.json |
+| RunPod QLoRA·추론·GPU API·측정 | not_run | T03–T08 |
 | 제품 API/UI·검수·승인·동시성 테스트 | not_implemented | T06 |
 
 ## 환경 (T00, 2026-11-14 확인)
@@ -92,6 +93,31 @@
 
 ### T03 준비 (로컬, 2026-11-14)
 - RunPod 콘솔·CLI 접근 없음 → 실제 견적 미관측. `reports/RUNPOD_APPROVAL.md`에 작업량 추정(약 6.5 GPU-h)과 가정 단가별 `budget_plan.py` 출력만 기록, `approved: false` 유지. 비용 $0.
+
+### T03-local — 로컬 GPU smoke (사용자 지시: "4070 Ti SUPER로 먼저 시험", 2026-11-14)
+- 사전 점검: `nvidia-smi` 사용 1.25GB / 여유 14.8GB, 전력 19W(유휴), SM 약 35%는 데스크톱 부하 → 사용 가능 판단. 다른 python.exe(3.12) 1개가 GPU 컨텍스트 보유(소량).
+- 모델: `Qwen/Qwen3-VL-2B-Instruct` revision `89644892e4d85e24eaac8bacfd4f463576704203` (Apache-2.0), `model.safetensors` 4,255,140,312 B, SHA256 `7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0` = HF LFS oid. `models/`(Git 제외).
+- ML 환경 `.venv-ml`(Git 제외): torch 2.9.1+cu126, torchvision 0.24.1+cu126, transformers 4.57.6, peft 0.17.1, bitsandbytes 0.48.2, accelerate 1.10.1. (transformers 5.x는 일부러 쓰지 않음 — 검증된 4.57 계열 고정.)
+- 로딩 조건(M0/M1 공통): NF4 + double quant, bf16 compute, **vision tower·lm_head는 양자화하지 않음**(읽기 품질 보존), sdpa, max_pixels 786,432 → 이미지 토큰 690–736.
+
+| 명령 (`.venv-ml/Scripts/python.exe -m invoiceguard.vlm.smoke …`) | 결과 |
+|---|---|
+| `masks` (50s, CPU processor) | **pass**. standard train 360건(공개 200 + 자체 160) 모두: prompt/이미지/비전 토큰 -100, 학습 구간 decode == 정답 JSON+`<|im_end|>`, 이미지 토큰 수 == grid 계산값, 잘림 없음. 최대 총 길이 1,557(예산 6,144), 정답 최대 511토큰(한도 1,536) |
+| `pilot` (5m39s) | base NF4, **train 이미지 8장**(공개 4·자체 4, seed 고정). 자체 4/4 JSON·스키마 유효. 공개 4/4 `json_invalid` — 원인: 모델이 ```json 코드펜스로 감쌈(공개 프롬프트에 "Markdown 금지" 문구 없음). 생성 190–714토큰, **문서당 28–51초(약 10 tok/s)**, peak VRAM 2.33–2.37GB. 원문: `artifacts/runs/local_pilot_*/` |
+| `pytest tests/test_vlm_masks.py` (.venv-ml) | 3 passed; 제품 `.venv`에서는 torch 없음으로 skip |
+| `train` (10 optimizer step × grad accum 8 = 80 micro-step, lr 1e-4, seed 20261113) | **pass**. 학습 파라미터 1,605,632개(전체 1,424,494,592의 0.11%) = 언어모델 28층 q_proj/v_proj LoRA A/B 112 텐서만, vision 학습 0·예상 밖 학습 텐서 0. loss 0.431→0.101(step 9 0.054), 모든 step gradient 유한, 112/112 LoRA 텐서 실제 변경, mask 실패 0, non-finite loss 0. 학습 79.7s(7.97 s/optimizer step), peak VRAM 7.09GB. 어댑터 저장 `artifacts/adapters/local_smoke_10step/` (`adapter_model.safetensors` SHA256 `ffadbcd4704fc67a8669bfd4db3df88bb29e5c537e784c14a01e8f05fcbacec4`) → 모델 완전 해제 후 base+adapter 재로드, LoRA 텐서 동일 확인, 재로드 모델로 train 문서 1건 추론: JSON·스키마 유효, 534토큰 57.5s |
+
+- smoke 어댑터는 검증용이며 M1이 아니다. M1 본학습은 계약대로 깨끗한 base·seed·optimizer로 다시 시작한다(training_after_smoke).
+- 예상 비용 감각(로컬 실측 기반): 본학습 standard 80 step ≈ 11분. 병목은 생성 속도(HF generate + NF4 ≈ 9–10 tok/s, 문서당 30–57초) — final 2모델×160장 ≈ 3–4시간 → 서빙/추론 가속이 실제 필요.
+
+- 해석 주의: 파일럿은 학습 이미지에 대한 진단이며 평가 결과가 아니다. 공개 태스크 실패는 형식(코드펜스) 문제로, primary strict 지표에서 실패로 집계되는 것이 계약대로다. 10 tok/s는 bitsandbytes NF4 + HF generate의 속도로, 서빙 단계에서 개선 대상(측정 근거).
+
+### 대시보드 개편 (사용자 요청: 사이드바·데이터 직접 확인, 2026-11-14)
+- `src/invoiceguard/dashboard_server.py` + `dashboard_static/`(vanilla JS, 외부 리소스 없음): 사이드바 9개 페이지(개요/진행 단계·게이트/공개 데이터/자체 Invoice–PO/분할·manifest/모델·학습/RunPod 비용·승인/테스트/검수 앱). 공개 데이터: 필터 목록 → 이미지(parquet에서 1회 추출·SHA 검증 후 캐시) + canonical 정답 + 필드별 가시성 마스크. 자체 데이터: 이미지 + 정답 + 발주서 + 기대/oracle findings.
+- 안전: 127.0.0.1 전용(다른 host는 ValueError), GET/HEAD만, Host 헤더 검사(DNS rebinding), ID 정규식+manifest 등록 여부 이중 검사, CSP·nosniff, 프런트는 textContent만 사용. 정답·발주서는 "평가 데이터, 모델 입력 아님"으로 표시.
+- 백그라운드 서브에이전트가 구현, 메인 세션이 검증: Browser 패널에서 좁은 화면(386px) 이미지·표 가로 넘침 결함 발견 → flex `min-width:auto`와 `1fr` 그리드 원인 수정(`minmax(0,1fr)`, 카드 내부 스크롤). 수정 후 문서 폭 386 ≤ 화면 401, 콘솔 오류 0.
+- 테스트: `.venv` 134 passed / 1 skipped(torch 필요한 mask 테스트), `.venv-ml` mask 3 passed. `tests/test_repo_hygiene.py` 추가(git 추적 파일에 가중치·키·폰트·원본 데이터 없음).
+- `scripts/verify_claude_pack.py`는 현재 작업 트리에서 `no_asset:.pem`, `no_asset:.safetensors` 2건 **failed**: 검사기가 Git 무시 폴더까지 rglob하여 `.venv-ml`의 certifi `cacert.pem`, `models/…/model.safetensors`, `artifacts/adapters/…/adapter_model.safetensors`를 잡음. `git ls-files` 기준 해당 파일 추적 0건 확인. 패키지 검사기는 수정하지 않고 결과(`reports/CLAUDE_PACK_VALIDATION.json`)를 그대로 둠.
 
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.

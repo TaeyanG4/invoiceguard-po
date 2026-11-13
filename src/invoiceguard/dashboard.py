@@ -2,6 +2,10 @@
 
 Usage: python -m invoiceguard.dashboard [--run-tests] [--out artifacts/dashboard/index.html]
 
+This module writes a single-page static SNAPSHOT and holds the report parsers. The interactive
+dashboard with a sidebar and the data browser (images, gold labels, POs) is
+``python -m invoiceguard.dashboard_server`` (127.0.0.1 only), which reuses these parsers.
+
 It renders what the reports, manifests and config say — nothing more. Missing evidence is
 shown as not_run / blocked / unknown; it never fabricates GPU, billing or model results.
 Self-contained HTML (no CDN, no network); every value is HTML-escaped.
