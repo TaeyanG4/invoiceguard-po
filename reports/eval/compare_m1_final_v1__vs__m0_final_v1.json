@@ -1,0 +1,105 @@
+{
+  "a": "m1_final_v1",
+  "b": "m0_final_v1",
+  "method": "cluster-paired bootstrap (2000, seed 20261113), A minus B, strict",
+  "sets": {
+    "public:iid_final|bad_scan": {
+      "n_docs": 20,
+      "n_clusters": 20,
+      "field_acc_diff": 0.7981,
+      "field_acc_diff_ci95": [
+        0.6309,
+        0.9217
+      ],
+      "doc_exact_diff": 0.55,
+      "doc_exact_diff_ci95": [
+        0.35,
+        0.75
+      ]
+    },
+    "public:iid_final|clean": {
+      "n_docs": 20,
+      "n_clusters": 20,
+      "field_acc_diff": 0.8798,
+      "field_acc_diff_ci95": [
+        0.7841,
+        0.9595
+      ],
+      "doc_exact_diff": 0.65,
+      "doc_exact_diff_ci95": [
+        0.4,
+        0.85
+      ]
+    },
+    "public:iid_final|faded": {
+      "n_docs": 20,
+      "n_clusters": 20,
+      "field_acc_diff": 0.851,
+      "field_acc_diff_ci95": [
+        0.6859,
+        0.9548
+      ],
+      "doc_exact_diff": 0.6,
+      "doc_exact_diff_ci95": [
+        0.4,
+        0.8
+      ]
+    },
+    "public:ood_final|bad_scan": {
+      "n_docs": 20,
+      "n_clusters": 20,
+      "field_acc_diff": 0.7561,
+      "field_acc_diff_ci95": [
+        0.6192,
+        0.877
+      ],
+      "doc_exact_diff": 0.4,
+      "doc_exact_diff_ci95": [
+        0.2,
+        0.6
+      ]
+    },
+    "public:ood_final|clean": {
+      "n_docs": 20,
+      "n_clusters": 20,
+      "field_acc_diff": 0.9726,
+      "field_acc_diff_ci95": [
+        0.9429,
+        0.9925
+      ],
+      "doc_exact_diff": 0.75,
+      "doc_exact_diff_ci95": [
+        0.55,
+        0.9
+      ]
+    },
+    "public:ood_final|faded": {
+      "n_docs": 20,
+      "n_clusters": 20,
+      "field_acc_diff": 0.9055,
+      "field_acc_diff_ci95": [
+        0.8333,
+        0.9567
+      ],
+      "doc_exact_diff": 0.5,
+      "doc_exact_diff_ci95": [
+        0.3,
+        0.7
+      ]
+    },
+    "trade:test": {
+      "n_docs": 40,
+      "n_clusters": 40,
+      "field_acc_diff": 0.0238,
+      "field_acc_diff_ci95": [
+        -0.0008,
+        0.0502
+      ],
+      "doc_exact_diff": 0.0,
+      "doc_exact_diff_ci95": [
+        -0.125,
+        0.1
+      ]
+    }
+  }
+}
