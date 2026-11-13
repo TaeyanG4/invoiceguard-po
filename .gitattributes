@@ -1,0 +1,5 @@
+# Keep LF bytes so manifest/checksum SHA-256 values stay reproducible on Windows checkouts
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.parquet binary
