@@ -127,3 +127,27 @@ def test_e05_precision_null_when_no_predictions_and_e02_sources_separate():
     assert result["per_code"]["QTY_DIFF"]["recall"] is None
     assert result["candidates_with_actual_transaction_diff"] is None
     assert oracle["source"] == "oracle_fixture"
+
+
+def test_metric_contract_v2_strict_vs_lenient_and_conditional():
+    """Fenced output: strict counts it as a failure; lenient (fence strip only) and the conditional
+    reading accuracy are reported separately with their own denominators."""
+    from invoiceguard.evaluation import strict_and_lenient
+
+    good = pub([dict(g) for g in GOLD])
+    fenced = "```json\n" + good + "\n```"
+    truncated = good[: len(good) // 2]
+    items = [((GOLD, VIS), {"raw_response": good}),
+             ((GOLD, VIS), {"raw_response": fenced}),
+             ((GOLD, VIS), {"raw_response": truncated}),
+             ((GOLD, VIS), {"raw_response": None, "generation_status": "timeout"})]
+    result = strict_and_lenient(score_public_document, items, "PUBLIC_CANONICAL",
+                                lambda docs: aggregate(docs, PUBLIC_FIELDS))
+    strict, lenient = result["strict"], result["lenient_fence_strip"]
+    assert strict["attempted"] == lenient["attempted"] == 4  # denominators never shrink
+    assert strict["status_counts"] == {"ok": 1, "json_invalid": 2, "timeout": 1}
+    assert lenient["status_counts"] == {"ok": 2, "json_invalid": 1, "timeout": 1}  # truncation NOT repaired
+    assert lenient["repaired_documents"] == 1
+    assert strict["conditional_on_valid_json"]["documents"] == 1
+    assert strict["conditional_on_valid_json"]["accuracy"] == 1.0
+    assert strict["all_scored_fields"]["accuracy"] == 0.25

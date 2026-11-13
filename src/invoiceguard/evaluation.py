@@ -106,6 +106,17 @@ def aggregate(doc_scores: list[dict[str, Any]], field_names: Iterable[str]) -> d
     all_c = sum(v["correct"] for v in out["fields"].values())
     all_s = sum(v["scored"] for v in out["fields"].values())
     out["all_scored_fields"] = {"correct": all_c, "scored": all_s, "accuracy": _ratio(all_c, all_s)}
+    # metric contract v2 (docs/19 #5): reading accuracy conditional on a strictly parsed JSON object,
+    # reported with its own denominator so format failures and reading failures are separable.
+    valid = [d for d in doc_scores if d["status"] == "ok"]
+    vc = sum(c for d in valid for c, _ in d["fields"].values())
+    vs = sum(s for d in valid for _, s in d["fields"].values())
+    out["conditional_on_valid_json"] = {"documents": len(valid), "correct": vc, "scored": vs, "accuracy": _ratio(vc, vs),
+                                        "fields": {f: {"correct": sum(d["fields"][f][0] for d in valid),
+                                                       "scored": sum(d["fields"][f][1] for d in valid),
+                                                       "accuracy": _ratio(sum(d["fields"][f][0] for d in valid),
+                                                                          sum(d["fields"][f][1] for d in valid))}
+                                                   for f in field_names}}
     if any("casefold_description" in d for d in doc_scores):
         c = [sum(d.get("casefold_description", [0, 0])[k] for d in doc_scores) for k in (0, 1)]
         out["secondary_casefold_description_case_transformed"] = {"correct": c[0], "scored": c[1], "accuracy": _ratio(*c)}
@@ -257,3 +268,20 @@ def score_findings(expected: list[Counter], predicted: list[Counter], codes: Ite
 def parse_for_eval(record: dict[str, Any], task: str, lenient: bool = False) -> ParsedOutput:
     return parse_response(record.get("raw_response"), task, record.get("generation_status", "ok"),
                           record.get("finish_reason"), lenient=lenient)
+
+
+def strict_and_lenient(score_fn, items: list[tuple[Any, dict[str, Any]]], task: str, aggregate_fn) -> dict[str, Any]:
+    """Score the same predictions twice: strict (primary) and lenient fence-strip (secondary, labelled).
+
+    items: [(gold_args, prediction_record)], where score_fn(*gold_args, parsed) -> doc score.
+    The lenient path never repairs truncation or JSON syntax; it only removes one ```json fence.
+    """
+    out = {}
+    for mode, lenient in (("strict", False), ("lenient_fence_strip", True)):
+        docs = [score_fn(*gold, parse_for_eval(pred, task, lenient=lenient)) for gold, pred in items]
+        out[mode] = aggregate_fn(docs)
+        if lenient:
+            out[mode]["repaired_documents"] = sum(
+                parse_for_eval(pred, task, lenient=True).repair is not None for _, pred in items)
+    out["note"] = "strict is the primary metric; lenient only strips a single ```json fence and is reported separately."
+    return out
