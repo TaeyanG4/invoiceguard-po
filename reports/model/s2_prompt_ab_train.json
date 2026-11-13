@@ -1,0 +1,66 @@
+[
+ {
+  "prompt": "v1_old",
+  "id": "synth_0015_d222cd4b__clean",
+  "fenced": true,
+  "status": "json_invalid",
+  "schema_valid": false,
+  "lenient_status": "ok"
+ },
+ {
+  "prompt": "v1_old",
+  "id": "synth_0087_099d766e__clean",
+  "fenced": true,
+  "status": "json_invalid",
+  "schema_valid": false,
+  "lenient_status": "json_invalid"
+ },
+ {
+  "prompt": "v1_old",
+  "id": "synth_0123_7027c7a9__clean",
+  "fenced": true,
+  "status": "json_invalid",
+  "schema_valid": false,
+  "lenient_status": "ok"
+ },
+ {
+  "prompt": "v1_old",
+  "id": "synth_0304_2dc7d400__clean",
+  "fenced": true,
+  "status": "json_invalid",
+  "schema_valid": false,
+  "lenient_status": "ok"
+ },
+ {
+  "prompt": "v2_no_markdown",
+  "id": "synth_0015_d222cd4b__clean",
+  "fenced": true,
+  "status": "json_invalid",
+  "schema_valid": false,
+  "lenient_status": "ok"
+ },
+ {
+  "prompt": "v2_no_markdown",
+  "id": "synth_0087_099d766e__clean",
+  "fenced": false,
+  "status": "json_invalid",
+  "schema_valid": false,
+  "lenient_status": "json_invalid"
+ },
+ {
+  "prompt": "v2_no_markdown",
+  "id": "synth_0123_7027c7a9__clean",
+  "fenced": true,
+  "status": "json_invalid",
+  "schema_valid": false,
+  "lenient_status": "json_invalid"
+ },
+ {
+  "prompt": "v2_no_markdown",
+  "id": "synth_0304_2dc7d400__clean",
+  "fenced": true,
+  "status": "json_invalid",
+  "schema_valid": false,
+  "lenient_status": "ok"
+ }
+]

@@ -1,0 +1,75 @@
+{
+  "frozen_at": "2026-11-14T03:01:01+09:00",
+  "contract": "docs/19_DECISIONS_V5.md (S2)",
+  "profile": "standard",
+  "profile_reason": "training-only pilot on local RTX 4070 Ti SUPER: 10-step QLoRA smoke 7.97 s/optimizer step (80 steps ~11 min, 7.1 GB peak); batch-1 inference 12-21 s/doc after the patch-embed fix. standard fits locally; chosen once before any dev/final prediction.",
+  "manifests_sha256": {
+    "public_canonical_v1.jsonl": "1495b06a45881dbfe8e911ff8f1ee6498786743a5cae989ff33bb584834320d7",
+    "trade_raw_v1.jsonl": "f818ae30cc855521b2a758942fc979263e9cdedf7b42d2743171678dd7fef0ae"
+  },
+  "model": {
+    "id": "Qwen/Qwen3-VL-2B-Instruct",
+    "revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+    "weights_sha256": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0"
+  },
+  "generation": {
+    "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+    "prompt_sha256": {
+      "PUBLIC_CANONICAL": "800bf7c960350fe25395637091bcbad02bcdb0b90b643c6c991305427593887d",
+      "TRADE_RAW": "766c5596d8ff18f6820617782970b1a4e4d424e2525d7cd7b87a64865b52de06"
+    },
+    "max_pixels": 786432,
+    "max_new_tokens": 1536,
+    "do_sample": false,
+    "precision": "nf4_double_quant_bf16_compute_vision_unquantised_patch_embed_fp32",
+    "batch_size": 1,
+    "padding_side": "left"
+  },
+  "generation_notes": [
+    "batch_size 1: batched greedy outputs changed with batch composition (train diagnostic diag_m0_prompt_v2_bs8), so every arm decodes one document at a time.",
+    "patch_embed fp32: bf16 Conv3d cost 18.4 s/doc on this Windows stack; only that layer runs in fp32, output cast back to bf16; same for all arms.",
+    "public prompt kept at v1: adding 'without Markdown code fences' did not improve strict validity on 4 TRAIN images (0/4 vs 0/4; lenient 2/4 vs 3/4), reports/model/s2_prompt_ab_train.json."
+  ],
+  "lora": {
+    "r": 8,
+    "alpha": 16,
+    "dropout": 0.05,
+    "targets": "language_model q_proj,v_proj only",
+    "vision": "frozen, not quantised"
+  },
+  "training": {
+    "framework": "trl 0.25.1 SFTTrainer + verified completion-only collator",
+    "max_optimizer_steps": 80,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "lr": 0.0001,
+    "scheduler": "cosine",
+    "warmup_ratio": 0.05,
+    "seed": 20261113,
+    "start": "clean base (never the smoke adapter)"
+  },
+  "eval_sets": {
+    "dev": [
+      "public:dev",
+      "public:dev_stress",
+      "trade:dev"
+    ],
+    "dev_stress_own": "stress variants of trade:dev only (S5)",
+    "final": [
+      "public:iid_final",
+      "public:ood_final",
+      "trade:test"
+    ]
+  },
+  "arms": {
+    "B0": "OCR + layout heuristics (tuned on train/dev only, frozen by commit before final)",
+    "M0": "base NF4, no adapter",
+    "M1": "base NF4 + trained LoRA adapter"
+  },
+  "rules": [
+    "after this freeze, any prompt/preprocessing/generation change re-runs every arm",
+    "final runs once; changes after viewing final make that evaluation exploratory",
+    "strict metrics are primary; lenient/conditional are secondary with own denominators"
+  ],
+  "code_commit_at_freeze": "0a1cd6e544612f0093e5af3c9e6290f1ad217d04"
+}

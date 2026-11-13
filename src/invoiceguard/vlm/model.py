@@ -23,7 +23,26 @@ def bnb_config():
                               bnb_4bit_compute_dtype=torch.bfloat16, llm_int8_skip_modules=SKIP_QUANT_MODULES)
 
 
-def load_base(model_dir=MODEL_DIR):
+def fp32_patch_embed(model) -> None:
+    """Run ONLY the vision patch-embedding Conv3d in fp32 and cast its output back.
+
+    Measured 2026-11-14 on RTX 4070 Ti SUPER / torch 2.9.1+cu126 / Windows: the bf16 Conv3d took
+    18.4 s per document (cuDNN slow path) while the whole 32-token decode took ~1 s. fp32 is also what
+    the training path uses (prepare_model_for_kbit_training upcasts non-quantised params). Applied to
+    every inference arm identically and recorded in the frozen config.
+    """
+    embed = model.model.visual.patch_embed
+    out_dtype = embed.proj.weight.dtype
+    embed.proj.float()
+    original = embed.forward
+
+    def forward(hidden_states):
+        return original(hidden_states).to(out_dtype)
+
+    embed.forward = forward
+
+
+def load_base(model_dir=MODEL_DIR, patch_embed_fp32: bool = True):
     from transformers import Qwen3VLForConditionalGeneration
 
     if not torch.cuda.is_available():
@@ -31,6 +50,8 @@ def load_base(model_dir=MODEL_DIR):
     model = Qwen3VLForConditionalGeneration.from_pretrained(
         str(model_dir), quantization_config=bnb_config(), dtype=torch.bfloat16, device_map={"": 0},
         attn_implementation="sdpa")
+    if patch_embed_fp32:
+        fp32_patch_embed(model)
     model.eval()
     return model
 
