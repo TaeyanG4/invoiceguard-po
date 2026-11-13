@@ -117,7 +117,9 @@ def main() -> int:
     batch_size = args.batch_size or (frozen["generation"]["batch_size"] if frozen else 4)
     fp = config_fingerprint(args.arm, adapter_sha, batch_size)
     if any(s in FINAL_SETS for s in args.set):
-        problems = check_frozen(fp)
+        from ..freeze import verify_final_ready
+
+        problems = check_frozen(fp) + verify_final_ready({"fingerprint": fp})
         if problems or not args.allow_final:
             raise SystemExit(f"final sets need --allow-final and a matching frozen config: {problems}")
 
@@ -152,8 +154,9 @@ def main() -> int:
     if args.adapter:
         model = PeftModel.from_pretrained(model, str(REPO / args.adapter))
         model.eval()
+    previous_attempts = json.loads(meta_path.read_text(encoding="utf-8")).get("attempt_ids", []) if meta_path.exists() else []
     meta = {"run_id": run_id, "fingerprint": fp, "sets": args.set, "ids_file": args.ids_file,
-            "attempt_ids": [r.record_id for r in records], "env": _env(),
+            "attempt_ids": sorted(set(previous_attempts) | {r.record_id for r in records}), "env": _env(),
             "started": time.strftime("%Y-%m-%dT%H:%M:%S"), "adapter": args.adapter}
     meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     torch.cuda.reset_peak_memory_stats()
@@ -163,16 +166,18 @@ def main() -> int:
             chunk = todo[start:start + batch_size]
             try:
                 rows = generate_batch(model, processor, chunk)
-            except torch.cuda.OutOfMemoryError:
+            except Exception as batch_exc:  # noqa: BLE001 - every failure is recorded, never dropped
                 torch.cuda.empty_cache()
                 rows = []
-                for rec in chunk:  # retry one by one; record OOM instead of dropping the item
+                for rec in chunk:  # retry one by one
                     try:
                         rows += generate_batch(model, processor, [rec])
-                    except torch.cuda.OutOfMemoryError:
+                    except Exception as exc:  # noqa: BLE001
                         torch.cuda.empty_cache()
-                        rows.append({"id": rec.record_id, "task": rec.task, "generation_status": "oom",
-                                     "raw_response": None, "finish_reason": None, "generated_tokens": 0})
+                        status = "oom" if isinstance(exc, torch.cuda.OutOfMemoryError) else "error"
+                        rows.append({"id": rec.record_id, "task": rec.task, "generation_status": status,
+                                     "raw_response": None, "finish_reason": None, "generated_tokens": 0,
+                                     "error": repr(exc)[:200], "batch_error": repr(batch_exc)[:200]})
             for row in rows:
                 handle.write(json.dumps(row, ensure_ascii=False) + "\n")
             handle.flush()

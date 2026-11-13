@@ -73,6 +73,13 @@ class LiveHTTPExtractor:
         self.base_url, self.model, self.timeout_s = base_url.rstrip("/"), model, timeout_s
         self.label = f"live:{model}"
 
+    def ready(self) -> bool:
+        try:
+            with urllib.request.urlopen(f"{self.base_url}/health", timeout=5) as r:
+                return r.status == 200
+        except Exception:  # noqa: BLE001
+            return False
+
     def extract(self, image_bytes: bytes) -> ExtractionResult:
         req = build_request(PRODUCT_TASK, image_bytes)
         body = {"model": self.model, "temperature": 0, "max_tokens": 1536,
@@ -85,7 +92,7 @@ class LiveHTTPExtractor:
         try:
             with urllib.request.urlopen(http, timeout=self.timeout_s) as r:
                 payload = json.loads(r.read())
-        except TimeoutError as exc:  # closing the socket makes vLLM abort the request server-side
+        except TimeoutError as exc:  # we close the socket; whether the server aborts generation is verified in S6, not assumed
             raise ExtractionTimeout(str(exc)) from exc
         except urllib.error.URLError as exc:
             if isinstance(exc.reason, TimeoutError):

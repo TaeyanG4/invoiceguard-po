@@ -26,7 +26,7 @@ from .canonical import canonical_str
 REPO = Path(__file__).resolve().parents[2]
 OCR_DIR = REPO / "data" / "processed" / "ocr"
 IMAGE = "invoiceguard-ocr:tesseract"
-B0_VERSION = "b0-1.1"
+B0_VERSION = "b0-1.2"
 
 # ----------------------------------------------------------------------------- OCR words and lines
 @dataclass
@@ -195,18 +195,20 @@ def table_rows(lines: list[Line], start: int, columns: list[Column], stop_words:
 
 
 # ----------------------------------------------------------------------------- TRADE_RAW (own invoices)
+# Header vocabulary = ONLY words observed as column headers in TRAIN/DEV layouts (own T01-T04, public
+# formal_corporate / modern_minimal / utility_bill / pos_thermal). v1.2 removed words that came from held-out
+# layouts (T05 "item code", "item description", "rate", "u/m", "items total"; freelancer "hours", "rate",
+# "description of work", "total" header) — found by the Fable mid-course review, see IMPLEMENTATION_STATUS.
 TRADE_VOCAB = {
-    "sku": ["item #", "item no", "item no.", "part no.", "part no", "part number", "item code", "sku"],
-    "description": ["item description", "description"],
+    "sku": ["item #", "part no.", "part no", "part number"],          # T01, T02, T04
+    "description": ["description"],
     "quantity": ["quantity", "qty"],
-    "unit": ["uom", "u/m", "unit"],
-    "unit_price": ["unit price", "unit cost", "price", "rate"],
+    "unit": ["uom", "unit"],
+    "unit_price": ["unit price", "unit cost", "price"],              # T01, T04, T02 ("Price")
     "line_total": ["line total", "ext. amount", "ext amount", "amount"],
-    "_index": ["#", "no."],
-    "_tax": ["tax rate", "tax", "vat"],
 }
 TRADE_NUMERIC = {"quantity", "unit_price", "line_total"}
-TOTAL_LABELS = [("subtotal_raw", ("subtotal", "sub-total", "items total", "net")), ("discount_raw", ("less discount", "discount")),
+TOTAL_LABELS = [("subtotal_raw", ("subtotal", "sub-total", "net")), ("discount_raw", ("less discount", "discount")),
                 ("tax_raw", ("sales tax", "tax")),
                 ("total_raw", ("invoice total", "amount due", "balance due", "total (usd)", "total"))]
 INVOICE_NO = re.compile(r"^(?:INV-\d{4}-\d{3,6}|SI-\d{4,7}|\d{4}/\d{3,6}|\d{6,8})$")
@@ -239,7 +241,7 @@ def trade_items(lines: list[Line]) -> list[dict]:
                                [{"quantity"}, {"unit_price", "line_total"}, {"sku", "description"}])
     items = []
     if idx is not None:
-        stop = ("subtotal", "sub-total", "items total", "net", "discount", "tax", "total", "all amounts")
+        stop = ("subtotal", "sub-total", "net", "discount", "tax", "total", "all amounts")
         for row in table_rows(lines, idx, columns, stop, anchor={"sku", "line_total"}):
             if not any(row.get(k) for k in ("quantity", "unit_price", "line_total")):
                 continue
@@ -270,12 +272,12 @@ def predict_trade(words: list[Word]) -> dict:
 
 # ----------------------------------------------------------------------------- PUBLIC_CANONICAL
 PUBLIC_VOCAB = {
-    "description": ["description of work", "description", "item"],
-    "quantity": ["quantity", "qty", "hours"],
-    "unit_price": ["unit price", "price", "rate"],
-    "amount": ["amount (gbp)", "amount (eur)", "amount (usd)", "amount (cad)", "amount (aud)", "amount", "value", "total"],
-    "_index": ["#", "no."],
-    "_tax": ["tax rate", "tax", "vat"],
+    "description": ["description", "item"],                          # formal/modern/utility, pos_thermal
+    "quantity": ["quantity", "qty"],
+    "unit_price": ["unit price", "price"],
+    "amount": ["amount (gbp)", "amount (eur)", "amount (usd)", "amount (cad)", "amount (aud)", "amount", "value"],
+    "_index": ["#"],                                                 # modern_minimal
+    "_tax": ["tax rate", "tax"],                                     # utility_bill, modern_minimal
 }
 PUBLIC_NUMERIC = {"quantity", "unit_price", "amount"}
 TICKET = re.compile(r"(?P<qty>\d+(?:\.\d+)?)\s+x\s+(?P<desc>.+?)\s+(?P<amount>\S*\d[\d,]*\.\d{2})\s*$")
@@ -431,7 +433,16 @@ def run_ocr(specs: list[str], psm: int, variant: str = "bin") -> Path:
     return out
 
 
-def run_predict(specs: list[str], psm: int, run_id: str) -> Path:
+FINAL_SETS = {"public:iid_final", "public:ood_final", "trade:test"}
+
+
+def run_predict(specs: list[str], psm: int, run_id: str, allow_final: bool = False) -> Path:
+    if FINAL_SETS & set(specs):
+        from .freeze import verify_final_ready
+
+        problems = verify_final_ready()
+        if problems or not allow_final:
+            raise SystemExit(f"final sets need --allow-final and a matching freeze: {problems}")
     out_dir = REPO / "artifacts" / "predictions" / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -457,6 +468,7 @@ def run_predict(specs: list[str], psm: int, run_id: str) -> Path:
                                                encoding="utf-8", newline="\n")
     meta = {"run_id": run_id, "arm": "B0", "engine": "tesseract 4.1.1 (docker ubuntu:22.04)", "psm": psm,
             "preprocess_variants": list(VARIANTS), "selection": "max document-internal arithmetic consistency (no gold)",
+            "attempt_ids": [r["id"] for r in rows],
             "b0_version": B0_VERSION, "sets": specs, "items": len(rows)}
     (out_dir / "run_metadata.json").write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8", newline="\n")
     return out_dir
@@ -469,12 +481,13 @@ def main() -> int:
     parser.add_argument("--psm", type=int, default=4)
     parser.add_argument("--run-id")
     parser.add_argument("--variant", choices=list(VARIANTS) + ["all"], default="all")
+    parser.add_argument("--allow-final", action="store_true")
     args = parser.parse_args()
     if args.command == "ocr":
         for variant in (VARIANTS if args.variant == "all" else [args.variant]):
             run_ocr(args.set, args.psm, variant)
     else:
-        print(run_predict(args.set, args.psm, args.run_id or f"b0_psm{args.psm}_{int(time.time())}"))
+        print(run_predict(args.set, args.psm, args.run_id or f"b0_psm{args.psm}_{int(time.time())}", args.allow_final))
     return 0
 
 

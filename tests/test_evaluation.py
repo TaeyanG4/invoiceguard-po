@@ -148,6 +148,6 @@ def test_metric_contract_v2_strict_vs_lenient_and_conditional():
     assert strict["status_counts"] == {"ok": 1, "json_invalid": 2, "timeout": 1}
     assert lenient["status_counts"] == {"ok": 2, "json_invalid": 1, "timeout": 1}  # truncation NOT repaired
     assert lenient["repaired_documents"] == 1
-    assert strict["conditional_on_valid_json"]["documents"] == 1
-    assert strict["conditional_on_valid_json"]["accuracy"] == 1.0
+    assert strict["conditional_on_json_parse_ok"]["documents"] == 1
+    assert strict["conditional_on_json_parse_ok"]["accuracy"] == 1.0
     assert strict["all_scored_fields"]["accuracy"] == 0.25

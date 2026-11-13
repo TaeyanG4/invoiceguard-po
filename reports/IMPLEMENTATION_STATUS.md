@@ -129,13 +129,26 @@
 
 **S3 B0 OCR 기준선 (완료·동결, 커밋 c7f3e96 + 수정 ceb5213)**: Tesseract 4.1.1 Docker(ubuntu:22.04, `--network none`, `docker/ocr/`). 전처리 2종(①회색조·어두운 띠의 어두운 x범위만 반전·2배 확대·임계 165 이진화 ②이진화 없음)을 모두 OCR하고 **정답 없이 문서 내부 산술 일관성**(수량×단가≈금액, 행합≈총액)이 높은 쪽 선택. 헤더 키워드 열 탐지(긴 키워드 우선), 번호·세금 열 무시, 셀 간격 구문화, 텍스트=왼쪽/숫자=오른쪽 정렬, 2줄 목록·티켓 패턴.
 - train 조정 이력(필드 정확도 자체/공개): 0.697/0.595 → 반전·확대 0.862/0.712 → 헤더 키워드 수정 0.884/0.820 → 이진화 0.925/0.864 → 변형 선택 **0.963/0.903** (v1.1 동결). 조정은 train만 사용. held-out 레이아웃에서 착안한 키워드("line") 1건은 발견 즉시 제거.
-- **dev 결과(동결 후, `reports/eval/b0_dev_v11.json`)**: 자체 dev clean(T04) 0.911 (doc exact 0.54), 공개 dev clean 0.967, faded 0.933, **bad_scan 0.562**; 자체 dev stress **blur_jpeg 0.124 / fade_noise 0.217 / skew_lowres 0.180** (doc exact 0). E3(dev 전체 96건) 리콜 QTY_DIFF 0.75, UNIT_PRICE_DIFF 0.83, 나머지 1.0, 검수율 0.625.
+- **dev 결과(세트별, `reports/eval/b0_dev_v12.json`)**: 자체 dev clean(T04) 0.911 (doc exact 0.54, 검수율 0.625), 공개 dev clean 0.967, faded 0.933, **bad_scan 0.562**; 자체 dev stress **blur_jpeg 0.124 / fade_noise 0.217 / skew_lowres 0.180** (doc exact 0, 검수율 1.0).
+- **정정**: 이전에 적었던 "E3 리콜 QTY_DIFF 0.75 / UNIT_PRICE_DIFF 0.83 / 검수율 0.625(96건)"은 OCR 캐시 충돌 버그 시점 수치이고 clean+stress를 합산한 값이라 폐기한다(Fable 중간 검토 blocker 4). 이제 E3·헤드라인·bootstrap은 세트별로만 낸다.
+- **B0 v1.2 (계약 위반 시정, Fable 중간 검토 blocker 1)**: v1.1 어휘에 held-out 레이아웃 단어가 남아 있었다 — T05 전용 "item code / item description / rate / u/m / items total", 공개 OOD(freelancer) 전용 헤더 "hours / rate / description of work / total". 렌더러를 같은 세션이 작성해 그 지식이 섞였다. train/dev OCR 텍스트로 각 단어의 출처를 확인한 뒤 **train/dev에서 헤더로 관측된 단어만** 남겼다. train 자체 0.963→0.959, 공개 0.903 유지, dev 동일. 이 시정은 S5의 "수정 1건"에 포함하지 않는다.
+- 공개: B0의 송장번호 정규식(`INVOICE_NO`)과 USD 탐지는 생성기 형식(모든 split에서 동일)을 train 문서에서 관찰해 쓴 것이다. 현실 문서 일반화 근거가 아니다.
+
 - 버그 수정: stress 이미지가 clean과 같은 파일 stem을 써서 OCR 캐시를 재사용 → 세 변형 점수가 clean과 소수점까지 동일한 이상치로 발견, record_id 기준 이름으로 수정 + 회귀 테스트.
 
 **S4 M1 본학습 (완료)**: `python -m invoiceguard.vlm.train --profile standard --run-id m1_standard_v1` — TRL 0.25.1 `SFTTrainer` 하위 클래스(LeanSFTTrainer) + 검증 collator. 80 optimizer step / 641 micro-step 전부 mask 재검사 통과 / 본 예제 640(≈1.78 epoch, 공개 200·자체 160) / loss 0.364→0.008(평균 0.0487) / 1,308s / peak 6.52GB / 학습 파라미터 1,605,632(언어 q/v LoRA만, vision 0). 어댑터 `artifacts/adapters/m1_standard_v1/adapter_model.safetensors` SHA256 `eb08674120d6489fb9f2ae4cf72038588794e09b3d337a5239d8a6078aff2868`. 기록 `reports/model/train_m1_standard_v1.json`.
 - TRL 내장 assistant_only_loss는 Qwen3-VL chat template에 `{% generation %}` 표식이 없어 사용 불가 → 검증 collator 사용(문서화).
 - 해결한 장애 2건: ① TRL 기본 compute_loss의 entropy/token-accuracy가 15만 어휘 logits fp32 복사본을 만들어 16GB에서 14.9GB→공유메모리 스필, GPU 유휴(19W)로 21분 정지 → 해당 메트릭만 생략(Trainer 기본 loss) ② `bf16=True` autocast가 비전 Conv3d를 bf16 느린 경로로 보내 micro-step 17s → autocast 끔(0.78s/micro-step, 2-step 시험 `reports/model/train_dryrun_trl_2step_nobf16.json`).
 - 재로드 검증: S5 dev 추론이 디스크에서 base+adapter를 새로 로드해 수행(진행 중).
+
+**Fable 중간 검토 (2026-11-14 03:59, 조건부 NO-GO) 반영**
+- blocker 1 B0 held-out 어휘 → v1.2 (위).
+- blocker 2 동결 장치 → `invoiceguard.freeze` + `configs/frozen_v1_appendix.json`(B0·평가기·추론 코드 해시, Tesseract 이미지 ID, M1 어댑터 SHA, stress manifest, git 커밋). B0 predict / HF infer / score_run 모두 final 세트는 `--allow-final` + 해시 일치 + clean git tree 아니면 거부(검증: appendix 없을 때 `trade:test` 거부 확인).
+- blocker 3 분모 보전 → score_run이 run의 `sets`로 기대 ID를 재구성, 누락=missing 실패, 중복=채점 거부, `denominator_check` 기록. infer는 OOM 외 예외도 문서별 `error`로 기록, 재개 시 attempt_ids 병합. B0 메타에 attempt_ids. `compare_runs`는 두 arm의 ID·세트가 동일하지 않으면 거부.
+- blocker 4 E3 정정·세트 분리 (위).
+- should-fix: paired bootstrap(`invoiceguard.compare_runs`, base/family 군집) 추가; 조건부 지표를 `conditional_on_json_parse_ok`로 개명(스키마 유효 불요); 검수 API — 동기 추론을 async에서 제거(sync def→스레드풀), 예외 시 케이스가 extracting에 고착되던 문제 해결(BACKEND_ERROR 502), 격리 해제는 백엔드 /health 통과 시에만, dispositions 타입 오류 422. 테스트 12개.
+- 공개(should-fix 7): M1 학습은 PEFT kbit 준비로 vision 전체 fp32·autocast 없음, 추론은 vision bf16 + patch-embed만 fp32. M1에 불리한 방향의 불일치이며 train 이미지 sanity 확인 예정.
+- 계획 변경: S5 → blocker 수정 → **S7(HF) → S6(vLLM, 2시간 타임박스)**. final 전 드라이버 변경 금지.
 
 **S5 준비 — dev 전용 stress set**: `invoiceguard.vlm.stress` 자체 dev 24장 × 3변형(blur_jpeg / skew_lowres / fade_noise) = 72장, `manifests/stress_v1.jsonl` sha256 677167cf…(2회 생성 동일). final 미포함.
 

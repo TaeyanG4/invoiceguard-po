@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 import jsonschema
-from fastapi import FastAPI, File, Form, Request, UploadFile
+from fastapi import Body, FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse, Response
 
 from ..model_output import parse_response
@@ -165,8 +165,8 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None) -> FastAPI:
     @app.get("/health")
     def health():
         ext = app.state.extractor
-        return {"app": "ok", "model_mode": ext.mode, "model_label": ext.label,
-                "model_ready": ext.mode != "MODEL_UNAVAILABLE" and not app.state.quarantined}
+        return {"app": "ok", "model_mode": ext.mode, "model_label": ext.label, "model_ready": backend_ready(),
+                "quarantined": app.state.quarantined}
 
     @app.post("/api/purchase-orders", status_code=201)
     async def create_po(request: Request):
@@ -201,11 +201,21 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None) -> FastAPI:
                        (case_id, document_id, po_id, po_version, "uploaded", None, 0, None, _now(), _now()))
         return {"case_id": case_id, "version": 0, "state": "uploaded", "image_sha256": sha}
 
-    @app.post("/api/cases/{case_id}/extract")
-    async def extract(case_id: str, request: Request):
-        body = await request.json()
+    def backend_ready() -> bool:
+        """Quarantine is lifted only when the backend proves it is healthy again (e.g. GET /health on the model server)."""
         ext = app.state.extractor
-        if ext.mode == "MODEL_UNAVAILABLE" or app.state.quarantined:
+        if ext.mode == "MODEL_UNAVAILABLE":
+            return False
+        if app.state.quarantined:
+            probe = getattr(ext, "ready", None)
+            if probe is not None and probe():
+                app.state.quarantined = False
+        return not app.state.quarantined
+
+    @app.post("/api/cases/{case_id}/extract")
+    def extract(case_id: str, body: dict = Body(...)):  # sync def: FastAPI runs it in a worker thread, the event loop stays free
+        ext = app.state.extractor
+        if not backend_ready():
             raise ApiError(503, "MODEL_UNAVAILABLE", "모델 서버를 사용할 수 없습니다. 예시 결과로 대체하지 않습니다.")
         if not busy.acquire(blocking=False):
             raise ApiError(429, "INFERENCE_BUSY", "다른 추출이 진행 중입니다. 잠시 후 다시 시도하세요.")
@@ -228,6 +238,8 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None) -> FastAPI:
                 app.state.quarantined = True
             except ModelUnavailable as exc:
                 status, error = "unavailable", str(exc)[:200]
+            except Exception as exc:  # noqa: BLE001 - any backend error must release the case, never leave it extracting
+                status, error = "error", repr(exc)[:200]
             outcome_error = None  # raised only AFTER the history is committed (raising inside would roll it back)
             with store.tx() as db:  # compare-and-swap on completion
                 case = load_case(db, case_id)
@@ -240,9 +252,11 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None) -> FastAPI:
                     outcome_error = ApiError(409, "STALE_EXTRACTION", "이 추출 결과는 더 최신 상태가 있어 이력으로만 저장했습니다.")
                 elif status != "done":
                     db.execute("UPDATE extraction_runs SET status=? WHERE run_id=?", (status, run_id))
+                    reason = {"timeout": "TIMEOUT", "unavailable": "MODEL_UNAVAILABLE"}.get(status, "BACKEND_ERROR")
                     db.execute("UPDATE cases SET state='failed', state_reason=?, active_run_id=NULL, updated_at=? WHERE case_id=?",
-                               ("TIMEOUT" if status == "timeout" else "MODEL_UNAVAILABLE", _now(), case_id))
-                    outcome_error = ApiError(504 if status == "timeout" else 503, status.upper(), "추출에 실패했습니다. 명시적으로 재시도하세요.")
+                               (reason, _now(), case_id))
+                    outcome_error = ApiError({"timeout": 504, "unavailable": 503}.get(status, 502), reason,
+                                             "추출에 실패했습니다. 명시적으로 재시도하세요.")
                 else:  # fresh + model answered: apply in the SAME transaction as the CAS check
                     parsed = parse_response(result.raw_response, "TRADE_RAW", result.generation_status, result.finish_reason)
                     po = load_po(db, case["po_id"], case["po_version"])
@@ -323,6 +337,8 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None) -> FastAPI:
         body = await request.json()
         reviewer = (body.get("reviewer") or "local_operator").strip()
         dispositions = body.get("dispositions") or {}
+        if not isinstance(dispositions, dict) or not all(isinstance(v, dict) for v in dispositions.values()):
+            raise ApiError(422, "BAD_DISPOSITIONS", "dispositions는 {finding_key: {decision, reason}} 형식이어야 합니다.")
         with store.tx() as db:
             case = load_case(db, case_id)
             check_version(case, int(body.get("expected_version", -1)))

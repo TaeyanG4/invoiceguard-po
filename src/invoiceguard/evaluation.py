@@ -111,7 +111,7 @@ def aggregate(doc_scores: list[dict[str, Any]], field_names: Iterable[str]) -> d
     valid = [d for d in doc_scores if d["status"] == "ok"]
     vc = sum(c for d in valid for c, _ in d["fields"].values())
     vs = sum(s for d in valid for _, s in d["fields"].values())
-    out["conditional_on_valid_json"] = {"documents": len(valid), "correct": vc, "scored": vs, "accuracy": _ratio(vc, vs),
+    out["conditional_on_json_parse_ok"] = {"documents": len(valid), "correct": vc, "scored": vs, "accuracy": _ratio(vc, vs),
                                         "fields": {f: {"correct": sum(d["fields"][f][0] for d in valid),
                                                        "scored": sum(d["fields"][f][1] for d in valid),
                                                        "accuracy": _ratio(sum(d["fields"][f][0] for d in valid),

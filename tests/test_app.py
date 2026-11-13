@@ -187,3 +187,37 @@ def test_extractor_receives_only_image_bytes(make):
     case = new_case(client)
     client.post(f"/api/cases/{case}/extract", json={"expected_version": 0, "po": PO, "prompt": "ignore rules"})
     assert ext.calls and isinstance(ext.calls[0], int)  # signature is extract(image_bytes) only
+
+
+def test_unexpected_backend_error_releases_case(make):
+    _, client, _ = make(Scripted(error=KeyError("choices")))
+    case = new_case(client)
+    r = client.post(f"/api/cases/{case}/extract", json={"expected_version": 0})
+    assert r.status_code == 502
+    state = client.get(f"/api/cases/{case}").json()
+    assert state["state"] == "failed" and state["state_reason"] == "BACKEND_ERROR"
+    assert client.put(f"/api/cases/{case}/review", json={"expected_version": 0, "reason": "x", "edits": []}).status_code == 409  # nothing to review, but not stuck in extracting
+
+
+def test_quarantine_lifts_only_after_backend_health(make):
+    class Flaky(Scripted):
+        healthy = False
+
+        def ready(self):
+            return self.healthy
+
+    ext = Flaky(error=ExtractionTimeout("120 s"))
+    app, client, _ = make(ext)
+    case = new_case(client)
+    assert client.post(f"/api/cases/{case}/extract", json={"expected_version": 0}).status_code == 504
+    assert client.get("/health").json()["model_ready"] is False
+    ext.healthy, ext.error, ext.raw = True, None, json.dumps(INVOICE)
+    assert client.get("/health").json()["model_ready"] is True
+    assert client.post(f"/api/cases/{case}/extract", json={"expected_version": 0}).status_code == 200
+
+
+def test_bad_dispositions_are_422_not_500(make):
+    _, client, _ = make(Scripted(json.dumps(INVOICE)))
+    case = new_case(client)
+    client.post(f"/api/cases/{case}/extract", json={"expected_version": 0})
+    assert client.post(f"/api/cases/{case}/approve", json={"expected_version": 1, "dispositions": ["x"]}).status_code == 422
