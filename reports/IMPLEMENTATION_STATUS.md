@@ -150,6 +150,11 @@
 - 공개(should-fix 7): M1 학습은 PEFT kbit 준비로 vision 전체 fp32·autocast 없음, 추론은 vision bf16 + patch-embed만 fp32. M1에 불리한 방향의 불일치이며 train 이미지 sanity 확인 예정.
 - 계획 변경: S5 → blocker 수정 → **S7(HF) → S6(vLLM, 2시간 타임박스)**. final 전 드라이버 변경 금지.
 
+**S5 dev 평가·실패 분석·수정 1건 (완료)** — `reports/eval/dev_summary.md`
+- dev(세트별 strict 필드 정확도) B0/M0/M1: 자체 clean 0.911/0.921/0.968, 자체 stress 3종 0.12–0.22 / 0.00–0.17(lenient 0.89–0.91) / 0.93, 공개 clean 0.967/0.000(lenient 0.84)/0.967, faded 0.933/0/1.000, bad_scan 0.562/0/0.705.
+- paired: M1−B0 clean 차이 없음(0.0 [−0.06,0.06], +0.058 [−0.02,0.15]), 열화 +0.71~+0.81. M1−M0 전 세트 유의, 상당 부분 형식(M0 펜스·스키마 오류).
+- 수정 1건 = train 전용 보강 32건(M1 v2) → **효과 없음**(±0.005, 출력 122/132 동일, 목표 실패 지속). 사전 규칙대로 **M1 v1 유지**. 원인 가설 기록.
+
 **S5 준비 — dev 전용 stress set**: `invoiceguard.vlm.stress` 자체 dev 24장 × 3변형(blur_jpeg / skew_lowres / fade_noise) = 72장, `manifests/stress_v1.jsonl` sha256 677167cf…(2회 생성 동일). final 미포함.
 
 **S6 준비**: 드라이버 561.17(CUDA 12.6) vs vLLM 0.11.x(cu128/129/130 빌드) — CUDA 마이너 호환성으로 동작 여부를 실제 시험 예정, `vllm/vllm-openai:v0.11.2` 이미지 다운로드 중.

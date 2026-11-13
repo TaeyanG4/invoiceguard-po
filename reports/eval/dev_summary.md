@@ -44,3 +44,12 @@ Cell = strict field accuracy / document exact / strict JSON validity (lenient fe
 - last row dropped on a 7-row document under all three stress variants (`tr_f2882769a6fc`); train had only 3 seven-row documents.
 - thousands separator dropped in totals ('1,230.84' -> '1230.84'): raw EM error, value correct, no effect on findings.
 - Fix chosen (one change): train-only augmentation `manifests/trade_raw_aug1.jsonl` (32 families on T01–T03: 16 ambiguous_quantity, 16 normal with 6–7 rows), same training config → M1 v2. Adopt only if dev improves; final/test untouched.
+
+## S5 fix outcome — NEGATIVE (honest record)
+M1 v2 = same config + `trade_raw_aug1` (392 records, 640 examples). Dev vs M1 v1 (paired, cluster bootstrap): every set within
+±0.005 field accuracy, all CIs include 0 (`compare_m1v2_dev_v1__vs__m1_dev_v1.json`); 122/132 raw outputs identical.
+The targeted failures persist: `tr_7d3690b30c40` still 5/6 rows with the ambiguous quantity turned into a number; `tr_f2882769a6fc`
+still drops the 7th row under stress. Decision (pre-registered rule "adopt only if dev improves"): **keep M1 v1 for final**.
+Likely reason (hypothesis, not verified): the failing cells are specific to the dev layout T04 (quantity-first narrow column, wrapped
+two-line quantity); 32 examples on T01–T03 seen ~1.6 times each in 80 steps do not transfer to that layout. The product safety net
+(LINE_ARITHMETIC_MISMATCH → human review) still catches the forced number.
