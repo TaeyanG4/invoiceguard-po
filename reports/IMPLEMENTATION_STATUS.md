@@ -10,9 +10,12 @@
 | T00 환경 확인 + 패키지 검사(G0 일부) | passed_with_evidence (package_contract_tests only) | 아래 T00 로그 |
 | Claude Code CLI 실행 | n/a — desktop app(Code 탭)에서 실행 중 | CLI 단독 검증 아님 |
 | 전체 공개 데이터 적재·이미지/정답 감사 (T01/G1) | passed_with_evidence | T01 로그, reports/data/ |
-| 공개 데이터 누수 없는 분할 (T02 일부) | passed_with_evidence (application_cpu_test) | T02-a 로그, manifests/ |
-| 실제 RunPod 잔액·견적·Pod 접속 | not_run | 승인 전 생성 금지 |
-| 실제 QLoRA·추론·GPU API·측정 | not_run | T03–T08 |
+| 공개 데이터 누수 없는 분할 (T02) | passed_with_evidence (application_cpu_test) | T02-a 로그, manifests/ |
+| 자체 Invoice–PO 합성·렌더러·대사 규칙·평가기 (T02/G2) | passed_with_evidence (application_cpu_test) | T02-b 로그 |
+| 관리자 대시보드(읽기 전용 현황판) | implemented_local | `python -m invoiceguard.dashboard --run-tests` |
+| Git / GitHub | private repo `TaeyanG4/invoiceguard-po` (사용자 요청으로 생성·push) | 데이터·venv 제외 |
+| 실제 RunPod 잔액·견적·Pod 접속 | not_run — 승인 요청 초안만 | reports/RUNPOD_APPROVAL.md |
+| 실제 QLoRA·추론·GPU API·측정 | not_run | T03–T08 (GPU 러너 코드 미작성) |
 | 제품 API/UI·검수·승인·동시성 테스트 | not_implemented | T06 |
 
 ## 환경 (T00, 2026-11-14 확인)
@@ -63,6 +66,26 @@
 - 학습 적격: formal 189/189, modern 130/130, utility 174/177, pos_thermal 24/187, event_ticket 0/132 (사유는 manifest summary).
 - 누수 검사: base_id·group_id·content_hash·target_hash·image_sha256 모두 pool 간/역할 간 교집합 0. manifest에 라벨 값·PO·이미지 없음.
 - 프로필(standard/mini)은 **아직 선택·동결하지 않음** (T03 훈련 전용 파일럿 후 1회 선택).
+
+### T02-b — 대사 규칙·평가기·자체 합성 Invoice–PO (로컬, 2026-11-14)
+| 명령 | 결과 |
+|---|---|
+| `.venv/Scripts/python.exe -m invoiceguard.synth.build` (약 30초) | exit 0. 224건(train 160 T01–T03 / dev 24 T04 / test 40 T05–T06), manifest `manifests/trade_raw_v1.jsonl` sha256 `6a2d089e05756cc0565a90f7150c8dbcf65e0873da717302096fcebbe88a552b`, render_errors 0 |
+| `.venv/Scripts/python.exe -m pytest tests/` | 105 passed, 0 failed, 0 skipped (1.9s) |
+
+- 대사 규칙(`reconciliation.py`, `normalization.py`): docs/04 알고리즘, findings enum 그대로. `examples/expected_findings.json`과 결과 완전 일치(B03). B01–B12, E03(별칭 enum 스키마 실패), PO 중복 SKU 거부, 원문 불변 테스트.
+- 평가기(`evaluation.py`, `model_output.py`): E1 canonical(Decimal 값 EM, JSON 숫자=type_error, 천단위=형식오류, 마스크 필드 별도 집계, casefold 보조지표 분리), E2 raw EM+수치 EM, E3 SKU 기준 finding 매칭·precision/recall 분모0=null, 실패 응답 분모 유지, 잘린 출력=truncated, fence 복구는 lenient 경로만, base 단위 cluster bootstrap.
+- 자체 합성: PO 먼저 생성 → 시나리오별 값 유지/변경 → 정답 문자열만 렌더. 시나리오 7종 oracle 대사 = 기대 코드(15 seed×7 테스트 + 224건 빌드 검사). 유형별 템플릿 균등 순환 배정(유형→레이아웃 결정 없음), 6개 레이아웃 구조 상이(열 순서·2줄 목록·카드형·총액 위치·메타 위치). 렌더 검사: 그린 문자열=정답, 페이지 밖·필드 겹침·열 경계 침범·17px 미만 글자 0. 프롬프트 주입 문구 포함 문서 24건(유형과 무관).
+- 수정한 결함: ① 무작위 배정으로 test unknown_sku가 한 레이아웃에 몰림 → 유형별 순환 배정 ② 좁은 열에서 모호수량 문구가 14px 축소·열 침범(겹침 검사가 놓침) → 17px 하한+열 내 줄바꿈+열 경계 검사 ③ 소수 수량에 `587 pcs (587 ctn)` 생성 → 포장 단위>1 보장(PO 단계에서 수량 조정).
+- 육안 확인: T01·T03·T05·T06 각 1장 + 수정 후 T05 재확인. 폰트는 Windows 시스템 폰트 9종(파일 SHA만 manifest에 기록, 저장소에 포함 안 함).
+- 모델 입력 경계(D06): `extraction_request.py`가 (task, 고정 프롬프트+SHA, 이미지)만 담음. PO·정답·파일명·시나리오 없음.
+
+### 관리자 대시보드·Git (사용자 추가 요청, 2026-11-14)
+- `python -m invoiceguard.dashboard --run-tests` → `artifacts/dashboard/index.html`(Git 제외). TASK_BOARD·RUNPOD_APPROVAL·SESSION_HANDOFF·manifest 요약·pytest junit만 읽어 표시. 외부 리소스 없음, 모든 값 HTML escape, 모델 결과는 not_run 고정 표시. 미리보기: `.claude/launch.json`의 `admin-dashboard`(127.0.0.1:8765).
+- `git init -b main`, `.gitattributes`(LF 고정 — manifest SHA 재현성), GitHub `TaeyanG4/invoiceguard-po` **PRIVATE** 생성·push (visibility 확인). `data/`, `.venv/`, `artifacts/`, `*.egg-info/` 제외 확인.
+
+### T03 준비 (로컬, 2026-11-14)
+- RunPod 콘솔·CLI 접근 없음 → 실제 견적 미관측. `reports/RUNPOD_APPROVAL.md`에 작업량 추정(약 6.5 GPU-h)과 가정 단가별 `budget_plan.py` 출력만 기록, `approved: false` 유지. 비용 $0.
 
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.

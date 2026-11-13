@@ -1,0 +1,148 @@
+{
+  "manifest": "manifests/trade_raw_v1.jsonl",
+  "sha256": "6a2d089e05756cc0565a90f7150c8dbcf65e0873da717302096fcebbe88a552b",
+  "seed": 20261113,
+  "generator_version": "trade-synth-1.0",
+  "documents": 224,
+  "by_split": {
+    "train": 160,
+    "dev": 24,
+    "test": 40
+  },
+  "mini_by_split": {
+    "train": 96,
+    "dev": 12,
+    "test": 20
+  },
+  "type_by_template": {
+    "train": {
+      "normal": {
+        "T02": 22,
+        "T03": 21,
+        "T01": 21
+      },
+      "price_change": {
+        "T02": 13,
+        "T03": 13,
+        "T01": 14
+      },
+      "quantity_change": {
+        "T03": 8,
+        "T02": 8,
+        "T01": 8
+      },
+      "unknown_sku": {
+        "T01": 3,
+        "T03": 3,
+        "T02": 2
+      },
+      "ambiguous_quantity": {
+        "T03": 3,
+        "T02": 3,
+        "T01": 2
+      },
+      "missing_po_line": {
+        "T01": 3,
+        "T03": 2,
+        "T02": 3
+      },
+      "duplicate_sku": {
+        "T02": 3,
+        "T03": 2,
+        "T01": 3
+      }
+    },
+    "dev": {
+      "normal": {
+        "T04": 10
+      },
+      "price_change": {
+        "T04": 6
+      },
+      "quantity_change": {
+        "T04": 4
+      },
+      "unknown_sku": {
+        "T04": 1
+      },
+      "ambiguous_quantity": {
+        "T04": 1
+      },
+      "missing_po_line": {
+        "T04": 1
+      },
+      "duplicate_sku": {
+        "T04": 1
+      }
+    },
+    "test": {
+      "normal": {
+        "T06": 8,
+        "T05": 8
+      },
+      "price_change": {
+        "T05": 5,
+        "T06": 5
+      },
+      "quantity_change": {
+        "T05": 3,
+        "T06": 3
+      },
+      "unknown_sku": {
+        "T06": 1,
+        "T05": 1
+      },
+      "ambiguous_quantity": {
+        "T06": 1,
+        "T05": 1
+      },
+      "missing_po_line": {
+        "T06": 1,
+        "T05": 1
+      },
+      "duplicate_sku": {
+        "T05": 1,
+        "T06": 1
+      }
+    }
+  },
+  "fonts_used": {
+    "calibri.ttf": 15,
+    "consola.ttf": 21,
+    "verdana.ttf": 25,
+    "georgia.ttf": 22,
+    "tahoma.ttf": 32,
+    "arial.ttf": 30,
+    "segoeui.ttf": 22,
+    "times.ttf": 23,
+    "trebuc.ttf": 34
+  },
+  "rows_per_doc": {
+    "2": 46,
+    "3": 42,
+    "4": 40,
+    "5": 53,
+    "6": 40,
+    "7": 3
+  },
+  "image_size": {
+    "1240x1754": 224
+  },
+  "checks": {
+    "render_errors": [],
+    "split_leaks": {
+      "family_id": [],
+      "doc_id": [],
+      "image_sha256": [],
+      "gold_sha256": [],
+      "po_sha256": []
+    },
+    "template_holdout_respected": true,
+    "fault_type_not_determining_template": true,
+    "all_render_checks_pass": true,
+    "injection_text_docs": 24,
+    "pass": true
+  },
+  "frozen": false,
+  "note": "Synthetic, self-generated, fictional companies. PO/gold/scenario metadata are never model inputs."
+}

@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-13T16:34:08.288970+00:00",
+  "checked_at_utc": "2026-11-13T17:01:27.796744+00:00",
   "status": "pass",
   "checks": [
     {
