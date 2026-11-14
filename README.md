@@ -11,7 +11,7 @@
 
 - **Model:** Qwen3-VL-2B-Instruct (NF4) + a QLoRA adapter — trained, evaluated and served on one local GPU; the training was reproduced, vLLM serving accuracy recovered and FP8 measured on rented RunPod A40 and L40S GPUs ([section 12](#12-cloud-reproduction-on-runpod))
 - **Data:** public InvoiceOCR-Synth and the self-generated Invoice–PO documents are synthetic. The base model already gets those almost right, so they cannot separate the fine-tuning effect; human-labelled **real receipt photos from CORD v2** (CC BY 4.0) were added ([CORD results](#cord-v2--real-receipt-photos)). No claim is made about real company or customs documents.
-- **Reproducibility:** every evaluation number (training · dev · final · paired CI) is produced by the scripts in this repository, given the pinned dataset revision, base-model revision and seed. Data and weights are downloaded, not stored here, and training ran with a single seed.
+- **Reproducibility:** every evaluation number (training · dev · final · paired CI) is produced by the scripts in this repository, given the pinned dataset revision, base-model revision and seed. Data and weights are downloaded, not stored here, synthetic training ran with one seed and CORD training with three (repeated on dev).
 - **Honesty:** anything that was not run is recorded as `not_run` / `blocked`.
 
 ### One-minute summary
@@ -24,7 +24,7 @@
 | Invoice extraction + PO reconciliation | unseen-layout test: M1 0.921 · M0 0.897 (not significant) · OCR rules 0.210 | [section 1](#1-at-a-glance) |
 | Evaluation integrity | single-test-run guard, frozen hashes checked in CI, 209 pytest tests | [section 6](#6-results) |
 | Cost | two RunPod runs, about $2.16 (estimate); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
-| Limits | the only real photos are receipts; unit price fell 0.82 → 0.72 after fine-tuning; the test verdict rests on one training seed (two more seeds are pre-registered for dev, [section 6](#cord-v2--real-receipt-photos)) | [section 11](#11-cost-and-limitations) |
+| Limits | the only real photos are receipts; unit price fell 0.82 → 0.72 after fine-tuning; the test verdict rests on one seed; on dev all three seeds beat M0 by +0.044 to +0.060 ([section 6](#cord-v2--real-receipt-photos)) | [section 11](#11-cost-and-limitations) |
 
 ![Admin dashboard — overview](docs/images/dashboard-overview.png)
 
@@ -542,11 +542,23 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 <!-- cord-criteria:end -->
 
 **Reading the result (test)**
-- **Verdict:** M1-cord − M0 = +0.065 [+0.027, +0.107], format-insensitive +0.055 [+0.019, +0.095] → both "fine-tuning effect" and "reads better, not just formats better" are met. This is one seed, one training run.
+- **Verdict:** M1-cord − M0 = +0.065 [+0.027, +0.107], format-insensitive +0.055 [+0.019, +0.095] → both "fine-tuning effect" and "reads better, not just formats better" are met. The test run is one seed, one training run; on dev all three seeds point the same way (mean +0.051, table below).
 - **Much of the gain is format and structure:** fence-free JSON 0 → 100/100, invented fields 264 → 42, row-count match 0.63 → 0.77, whole-document match 0.02 → 0.33. The format-insensitive accuracy rose as well, so it is not only the output format.
 - **Per field (test):** subtotal 0.64 → 0.91, total 0.59 → 0.91 and tax 0.43 → 0.67 rose sharply; item unit price 0.82 → 0.72 and item price 0.84 → 0.82 went down (same direction as dev). Sub-items are weak for every arm (0.00–0.30).
 - **The adapter trained only on synthetic invoices (M1 v1) does not transfer to receipts:** −0.474 [−0.543, −0.400] against M0 on test; 25 of 100 outputs are not readable JSON and total accuracy is 0.12. Outside the format it learned, fine-tuning can hurt.
 - dev and test point the same way (dev +0.0497 → test +0.065).
+
+**Seed repeats (amendment 2, CORD dev only, criteria fixed before training)** — the same recipe trained twice more with only the seed changed.
+
+| seed | strict | M1-cord − M0 (95% CI) | format-insensitive difference (95% CI) | item unit price |
+|---|---:|---|---|---:|
+| 20261113 (the tested model) | 0.762 | +0.050 [+0.005, +0.093] | +0.036 [−0.001, +0.073] | 0.68 |
+| 20261114 | 0.756 | +0.044 [+0.000, +0.087] | +0.033 [+0.000, +0.067] | 0.64 |
+| 20261115 | 0.772 | +0.060 [+0.017, +0.103] | +0.043 [+0.008, +0.079] | 0.66 |
+
+- All three seeds beat M0 (differences +0.044 to +0.060), mean **+0.051** → the pre-registered "robust to the seed" criterion (all above 0, mean at least +0.03) is met.
+- The extra seeds are not frozen arms, so they did not run CORD test; the test verdict (+0.065) remains the single run of seed 20261113.
+- The unit-price drop (0.64–0.68 against M0's 0.82) appears for all three seeds, so it is not one seed's accident.
 
 **dev failure types** ([`cord_failure_dev.md`](reports/eval/cord_failure_dev.md), same normalisation as the pre-registered scorer)
 - **Unit price is a trade-off.** M0 invented 160 unit prices that are not printed (mostly copying the line total); M1-cord cut that to 20, but left 10 of 50 printed unit prices empty — 5 on lines where unit price and total are the same printed number, 2 where an "@" unit price went into the price field. This analysis set amendment 3 (up-weighting receipts with printed unit prices).
@@ -683,7 +695,7 @@ A local, read-only dashboard (the UI is in Korean).
 - Local GPU: one training run about 22 min; final M0 · M1 inference about 49 min (B0 OCR time not recorded). CORD: M1-cord training 22.6 min, dev inference 20.7 · 20.9 · 13.6 min, regression on the existing dev sets 29.7 min.
 
 **Limitations**
-- The FINAL table is synthetic data with small samples. The only real photos are CORD v2 receipts — not invoices or customs documents, and not English-only. CORD training is also a single seed, single run.
+- The FINAL table is synthetic data with small samples. The only real photos are CORD v2 receipts — not invoices or customs documents, and not English-only. The CORD test verdict is one seed, one run (the three-seed repeat is dev only).
   - 20 base documents per public set, 40 own test documents, 1–10 cases per alert code
   - The degradation stress set is dev-only.
 - M0's low strict score is largely a format effect (code fences). A pre-freeze prompt A/B did not remove it, and a fence-stripping step is not part of the frozen contract.
