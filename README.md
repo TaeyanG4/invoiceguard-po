@@ -132,10 +132,10 @@ There are three kinds of data, all synthetic. Each is shown below with real samp
 
 | formal_corporate (189) | modern_minimal (130) | utility_bill (177) |
 |:---:|:---:|:---:|
-| <img src="docs/images/data/public-formal_corporate.jpg" alt="formal_corporate sample" width="200"> | <img src="docs/images/data/public-modern_minimal.jpg" alt="modern_minimal sample" width="200"> | <img src="docs/images/data/public-utility_bill.jpg" alt="utility_bill sample" width="200"> |
+| <img src="docs/images/data/public-formal_corporate.jpg" alt="formal_corporate sample" width="185"> | <img src="docs/images/data/public-modern_minimal.jpg" alt="modern_minimal sample" width="185"> | <img src="docs/images/data/public-utility_bill.jpg" alt="utility_bill sample" width="185"> |
 | <sub>corporate sales invoice · train / dev / IID</sub> | <sub>minimal-style invoice · train / dev / IID</sub> | <sub>utility bill · train / dev / IID</sub> |
 | **pos_thermal (187)** | **event_ticket (132)** | **freelancer_invoice (123)** |
-| <img src="docs/images/data/public-pos_thermal.jpg" alt="pos_thermal sample" width="200"> | <img src="docs/images/data/public-event_ticket.jpg" alt="event_ticket sample" width="200"> | <img src="docs/images/data/public-freelancer_invoice.jpg" alt="freelancer_invoice sample" width="200"> |
+| <img src="docs/images/data/public-pos_thermal.jpg" alt="pos_thermal sample" width="185"> | <img src="docs/images/data/public-event_ticket.jpg" alt="event_ticket sample" width="185"> | <img src="docs/images/data/public-freelancer_invoice.jpg" alt="freelancer_invoice sample" width="185"> |
 | <sub>thermal receipt · mostly masked, few trainable</sub> | <sub>order summary · descriptions printed in upper case → never trainable, appears in dev / IID</sub> | <sub>**held out of training → OOD only**</sub> |
 
 **Three image qualities** — every document is published in all three (same crop of one utility bill)

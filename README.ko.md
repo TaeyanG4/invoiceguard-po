@@ -132,10 +132,10 @@ flowchart LR
 
 | formal_corporate (189) | modern_minimal (130) | utility_bill (177) |
 |:---:|:---:|:---:|
-| <img src="docs/images/data/public-formal_corporate.jpg" alt="formal_corporate 샘플" width="200"> | <img src="docs/images/data/public-modern_minimal.jpg" alt="modern_minimal 샘플" width="200"> | <img src="docs/images/data/public-utility_bill.jpg" alt="utility_bill 샘플" width="200"> |
+| <img src="docs/images/data/public-formal_corporate.jpg" alt="formal_corporate 샘플" width="185"> | <img src="docs/images/data/public-modern_minimal.jpg" alt="modern_minimal 샘플" width="185"> | <img src="docs/images/data/public-utility_bill.jpg" alt="utility_bill 샘플" width="185"> |
 | <sub>기업 판매 인보이스 · 학습 / dev / IID</sub> | <sub>미니멀 양식 인보이스 · 학습 / dev / IID</sub> | <sub>공과금 청구서 · 학습 / dev / IID</sub> |
 | **pos_thermal (187)** | **event_ticket (132)** | **freelancer_invoice (123)** |
-| <img src="docs/images/data/public-pos_thermal.jpg" alt="pos_thermal 샘플" width="200"> | <img src="docs/images/data/public-event_ticket.jpg" alt="event_ticket 샘플" width="200"> | <img src="docs/images/data/public-freelancer_invoice.jpg" alt="freelancer_invoice 샘플" width="200"> |
+| <img src="docs/images/data/public-pos_thermal.jpg" alt="pos_thermal 샘플" width="185"> | <img src="docs/images/data/public-event_ticket.jpg" alt="event_ticket 샘플" width="185"> | <img src="docs/images/data/public-freelancer_invoice.jpg" alt="freelancer_invoice 샘플" width="185"> |
 | <sub>감열지 영수증 · 대부분 마스크, 학습 가능 일부</sub> | <sub>주문 요약 · 설명이 대문자로 인쇄돼 학습 불가, dev / IID에 등장</sub> | <sub>**학습에서 뺀 양식 → OOD 전용**</sub> |
 
 **이미지 품질 3종** — 모든 문서가 세 가지 품질로 들어 있습니다(같은 공과금 청구서의 같은 부분)
