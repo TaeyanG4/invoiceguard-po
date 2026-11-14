@@ -336,14 +336,21 @@ flowchart LR
 
 ### 평가 세트 구성
 
-| 세트 | 양식 | 이미지 | 추출 형식 |
-|---|---|---|---|
-| **자체 test**<br><sub>자체 문서 40개</sub> | T05 · T06<br><sub>학습에서 뺀 레이아웃</sub> | clean | TRADE_RAW<br><sub>SKU · 단위 포함 원문</sub> |
-| **공개 IID** ×3<br><sub>20문서 × 품질 3</sub> | 학습과 같은 종류<br><sub>+ event_ticket</sub> | clean<br>faded<br>bad_scan | PUBLIC_CANONICAL<br><sub>설명 · 수량 · 단가 · 금액</sub> |
-| **공개 OOD** ×3<br><sub>20문서 × 품질 3</sub> | freelancer<br><sub>학습에서 뺀 양식</sub> | clean<br>faded<br>bad_scan | PUBLIC_CANONICAL |
+FINAL 표의 7줄은 문서 묶음 세 개로 이루어져 있습니다. 아래는 줄마다 무엇이 들어 있는지와, 그 세트의 실제 문서 한 장입니다.
 
-- 공개 IID · OOD의 세 줄은 **같은 20문서를 세 가지 이미지 품질로** 평가한 것입니다. 아래로 갈수록 스캔 열화가 심해집니다.
-- 자체 test와 공개 세트는 문서 출처 · 추출 형식 · 프롬프트가 모두 다릅니다. 그래서 두 묶음의 점수를 직접 비교하지는 않습니다.
+| 세트 | 들어 있는 것 | 샘플 |
+|---|---|:---:|
+| **자체 test**<br><sub>40문서 · 필드 1,260개</sub> | 학습에 한 번도 나오지 않은 레이아웃 **T05(20) · T06(20)**의 자체 인보이스. 깨끗한 렌더, 품목 170행(문서당 2–6행).<br><sub>시나리오: normal 16 · 단가 변경 10 · 수량 변경 6 · 미등록 SKU · 중복 SKU · 모호수량 · 발주 행 누락 각 2. 4개 문서에 주입 문구.<br>채점(행마다): SKU · 설명 · 수량 · 단위 · 단가 · 행 금액. 문서마다: 인보이스 번호 · 통화 · 소계 · 세금 · 할인 · 합계.</sub> | <img src="docs/images/data/trade-T05.jpg" alt="자체 test 샘플, 레이아웃 T05" width="110"> |
+| **공개 IID clean**<br><sub>20문서 · 필드 208개</sub> | IID 풀에서 뽑은, 학습에 쓰지 않은 공개 문서 20개: event_ticket 7 · modern_minimal 4 · pos_thermal 4 · formal_corporate 3 · utility_bill 2. 깨끗한 이미지, 품목 68행(문서당 1–8행).<br><sub>채점: 설명 · 수량 · 단가 · 금액. 이미지에 정답대로 보이지 않는 64개 필드는 마스크: 대문자 설명 25 · 인쇄되지 않은 단가 35 · 잘린 설명 4.</sub> | <img src="docs/images/data/eval-iid-clean.jpg" alt="IID 샘플, clean" width="110"> |
+| **공개 IID faded**<br><sub>같은 20문서</sub> | 같은 20문서의 **faded** 사본 — 바랜, 대비가 낮은 인쇄. 정답과 마스크는 같습니다. | <img src="docs/images/data/eval-iid-faded.jpg" alt="IID 샘플, faded" width="110"> |
+| **공개 IID bad_scan**<br><sub>같은 20문서</sub> | 같은 20문서의 **bad scan** 사본 — 색 번짐 · 노이즈 · 스캐너 줄무늬. 정답과 마스크는 같습니다. | <img src="docs/images/data/eval-iid-bad_scan.jpg" alt="IID 샘플, bad_scan" width="110"> |
+| **공개 OOD clean**<br><sub>20문서 · 필드 328개</sub> | 학습에서 통째로 뺀 양식 **freelancer_invoice** 문서 20개. 깨끗한 이미지, 품목 82행(문서당 1–8행).<br><sub>채점: 설명 · 수량 · 단가 · 금액. 마스크 없음.</sub> | <img src="docs/images/data/eval-ood-clean.jpg" alt="OOD 샘플, clean" width="110"> |
+| **공개 OOD faded**<br><sub>같은 20문서</sub> | 같은 freelancer 20문서의 **faded** 사본 | <img src="docs/images/data/eval-ood-faded.jpg" alt="OOD 샘플, faded" width="110"> |
+| **공개 OOD bad_scan**<br><sub>같은 20문서</sub> | 같은 freelancer 20문서의 **bad scan** 사본 | <img src="docs/images/data/eval-ood-bad_scan.jpg" alt="OOD 샘플, bad_scan" width="110"> |
+
+- IID 안의 세 줄, OOD 안의 세 줄은 각각 **같은 문서를 세 가지 이미지 품질로** 평가한 것이라, 아래로 내려가며 스캔 열화의 영향만 따로 볼 수 있습니다.
+- 자체 test와 공개 세트는 문서 출처 · 추출 형식(원문 문자열 vs 숫자) · 프롬프트가 모두 달라 점수를 직접 비교하지 않습니다.
+- "필드"는 채점 분모입니다. 모델이 파싱에 실패한 문서의 필드도 모두 포함합니다.
 
 ### FINAL — 세트별 strict 필드 정확도
 

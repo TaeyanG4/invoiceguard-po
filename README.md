@@ -338,14 +338,21 @@ Full contract: [`reports/eval/metric_contract_v2.md`](reports/eval/metric_contra
 
 ### Evaluation sets
 
-| Set | Template | Image | Extraction format |
-|---|---|---|---|
-| **Own test**<br><sub>40 own documents</sub> | T05 · T06<br><sub>held out of training</sub> | clean | TRADE_RAW<br><sub>raw strings incl. SKU · unit</sub> |
-| **Public IID** ×3<br><sub>20 docs × 3 qualities</sub> | same kinds as training<br><sub>+ event_ticket</sub> | clean<br>faded<br>bad_scan | PUBLIC_CANONICAL<br><sub>description · qty · price · amount</sub> |
-| **Public OOD** ×3<br><sub>20 docs × 3 qualities</sub> | freelancer<br><sub>held out of training</sub> | clean<br>faded<br>bad_scan | PUBLIC_CANONICAL |
+The seven rows of the FINAL table are three groups of documents. Each row below says what is in it, with a real document from that set.
 
-- The three IID / OOD rows are **the same 20 documents at three image qualities**; scan degradation increases down the list.
-- The own test set and the public sets differ in document source, extraction format and prompt, so their scores are not compared directly.
+| Set | What is in it | Sample |
+|---|---|:---:|
+| **Own test**<br><sub>40 docs · 1,260 fields</sub> | Own invoices in layouts **T05 (20) and T06 (20)**, which never appear in training. Clean renders, 170 item rows (2–6 per document).<br><sub>Scenarios: normal 16 · price change 10 · quantity change 6 · unknown SKU, duplicate SKU, ambiguous quantity and missing PO line 2 each. 4 documents carry the injection note.<br>Scored per row: SKU · description · qty · unit · unit price · line total. Per document: invoice no. · currency · subtotal · tax · discount · total.</sub> | <img src="docs/images/data/trade-T05.jpg" alt="own test sample, layout T05" width="110"> |
+| **Public IID clean**<br><sub>20 docs · 208 fields</sub> | 20 public documents from the IID pool, never used for training: event_ticket 7 · modern_minimal 4 · pos_thermal 4 · formal_corporate 3 · utility_bill 2. Clean images, 68 item rows (1–8 per document).<br><sub>Scored: description · qty · unit price · amount. 64 fields are masked because the image does not show them as labelled: upper-cased descriptions 25, unprinted unit prices 35, truncated descriptions 4.</sub> | <img src="docs/images/data/eval-iid-clean.jpg" alt="IID sample, clean" width="110"> |
+| **Public IID faded**<br><sub>same 20 docs</sub> | The same 20 documents as a **faded** copy — washed-out, low-contrast print. Same labels and masks. | <img src="docs/images/data/eval-iid-faded.jpg" alt="IID sample, faded" width="110"> |
+| **Public IID bad_scan**<br><sub>same 20 docs</sub> | The same 20 documents as a **bad scan** — tint, noise and scanner streaks. Same labels and masks. | <img src="docs/images/data/eval-iid-bad_scan.jpg" alt="IID sample, bad_scan" width="110"> |
+| **Public OOD clean**<br><sub>20 docs · 328 fields</sub> | 20 **freelancer_invoice** documents — a template left out of training entirely. Clean images, 82 item rows (1–8 per document).<br><sub>Scored: description · qty · unit price · amount. Nothing is masked.</sub> | <img src="docs/images/data/eval-ood-clean.jpg" alt="OOD sample, clean" width="110"> |
+| **Public OOD faded**<br><sub>same 20 docs</sub> | The same 20 freelancer documents, **faded**. | <img src="docs/images/data/eval-ood-faded.jpg" alt="OOD sample, faded" width="110"> |
+| **Public OOD bad_scan**<br><sub>same 20 docs</sub> | The same 20 freelancer documents, **bad scan**. | <img src="docs/images/data/eval-ood-bad_scan.jpg" alt="OOD sample, bad_scan" width="110"> |
+
+- Within IID and within OOD, the three rows are **the same documents at three image qualities**, so moving down a group isolates the effect of scan degradation.
+- The own test set and the public sets differ in document source, extraction format (raw strings vs canonical numbers) and prompt, so their scores are not compared directly.
+- "fields" is the scoring denominator: every scored field counts, including those in documents the model failed to parse.
 
 ### FINAL — strict field accuracy per set
 

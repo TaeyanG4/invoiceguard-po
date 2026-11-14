@@ -74,6 +74,12 @@ def build() -> list[Path]:
     for layout in LAYOUTS:  # one page per own layout, plain scenario, no injected note
         row = next(r for r in trade if r["template"] == layout and r["scenario_type"] == "normal" and not r["has_injection_text"])
         written.append(_save(_card(Image.open(store.trade_dir / "images" / f"{row['doc_id']}.png")), f"trade-{layout}.jpg"))
+    for role, tag in (("iid_final", "iid"), ("ood_final", "ood")):  # one real FINAL document per set, all three qualities
+        base = next(r["base_id"] for r in public if r.get("standard_role") == role and r["quality"] == "clean" and 3 <= r["n_items"] <= 5)
+        for quality in ("clean", "faded", "bad_scan"):
+            row = next(r for r in public if r["base_id"] == base and r["quality"] == quality)
+            path = store.public_image(base, quality, row["image_sha256"])
+            written.append(_save(_card(Image.open(path)), f"eval-{tag}-{quality}.jpg"))
     box = (0.0, 0.0, 0.62, 0.36)
     written.append(_save(_crop(Image.open(store.trade_dir / "images" / f"{STRESS_DOC}.png"), box, 360), "stress-original.jpg"))
     for variant in ("blur_jpeg", "fade_noise", "skew_lowres"):
