@@ -34,6 +34,9 @@ SLOW_TRAIN_S_PER_IT, SLOW_INFER_S_PER_DOC, SLOW_CHECKS = 15.0, 60.0, 6
 # The trainer itself can grow past 16 GB through the CUDA caching allocator (seen 2026-11-15: python held ~15 GB at
 # 354 s/step). These settings make the allocator release cached blocks early; they change memory reuse, not the math.
 ALLOC_CONF = "garbage_collection_threshold:0.6,max_split_size_mb:256"
+# The trainer reserves nearly the whole 16 GB soon after loading (measured ~15.9 GB within a minute, 2026-11-15), so a
+# running game leaves too little memory even when idle in a menu: these processes mean "not free" while they exist.
+BUSY_PROCESSES = {"osu!", "leagueclient", "league of legends", "valorant", "valorant-win64-shipping"}
 IGNORED = {"python", "dwm", "claude", "msedgewebview2", "explorer", "csrss", "system", "idle"}
 
 
@@ -65,9 +68,17 @@ def foreign_3d_util() -> dict[str, float]:
     return use
 
 
+def running_busy_processes() -> list[str]:
+    out = subprocess.run(["powershell", "-NoProfile", "-Command", "(Get-Process).ProcessName"],
+                         capture_output=True, text=True).stdout
+    return sorted({n.strip() for n in out.splitlines() if n.strip().lower() in BUSY_PROCESSES})
+
+
 def is_contended() -> tuple[bool, str]:
     use = foreign_3d_util()
-    busy = {k: round(v, 1) for k, v in use.items() if v > FOREIGN_UTIL}
+    busy: dict[str, object] = {k: round(v, 1) for k, v in use.items() if v > FOREIGN_UTIL}
+    for name in running_busy_processes():
+        busy.setdefault(name, "running")
     return bool(busy), json.dumps(busy)
 
 
@@ -85,10 +96,11 @@ def wait_until_free() -> None:
         time.sleep(CHECK_S)
 
 
-def last_rate(unit_log: Path, kind: str) -> float | None:
+def last_rate(unit_log: Path, kind: str, start_offset: int = 0) -> float | None:
+    """Speed from THIS attempt's output only (bytes after start_offset); earlier attempts are ignored."""
     if not unit_log.exists():
         return None
-    tail = unit_log.read_bytes()[-4000:].decode("utf-8", "replace").replace("\r", "\n")
+    tail = unit_log.read_bytes()[start_offset:][-4000:].decode("utf-8", "replace").replace("\r", "\n")
     if kind == "train":
         m = re.findall(r"([\d.]+)s/it", tail)
         return float(m[-1]) if m else None
@@ -108,6 +120,7 @@ def run_unit(name: str, kind: str, cmd: list[str]) -> str:
     """'done', 'contended' or 'failed'."""
     unit_log = REPO / "artifacts" / "logs" / f"unit_{name}.log"
     log(f"start {name}: {' '.join(cmd[2:])}")
+    start_offset = unit_log.stat().st_size if unit_log.exists() else 0
     with unit_log.open("ab") as out:
         env = os.environ | {"PYTORCH_CUDA_ALLOC_CONF": ALLOC_CONF}
         proc = subprocess.Popen(cmd, cwd=REPO, stdout=out, stderr=subprocess.STDOUT, env=env)
@@ -118,13 +131,15 @@ def run_unit(name: str, kind: str, cmd: list[str]) -> str:
             break
         mem = gpu_mem_mb()
         busy, who = is_contended()
-        rate = last_rate(unit_log, kind)
+        rate = last_rate(unit_log, kind, start_offset)
         limit = SLOW_TRAIN_S_PER_IT if kind == "train" else SLOW_INFER_S_PER_DOC
         slow = slow + 1 if rate is not None and rate > limit else 0
         checks += 1
         if checks % 10 == 0:  # every 5 min: memory and speed, to tell allocator growth from outside contention
             log(f"  {name}: gpu {mem} MiB, rate {rate}, other GPU use {who}")
-        if (mem > SPILL_MB and (busy or slow)) or slow >= SLOW_CHECKS:
+        # stop for a real competitor (busy process while memory is full) or sustained slowness of this attempt;
+        # a nearly full card alone is normal for this trainer
+        if (busy and mem > SPILL_MB) or slow >= SLOW_CHECKS:
             log(f"contention in {name}: gpu {mem} MiB, rate {rate}, other GPU use {who} -> stop and wait")
             kill_tree(proc)
             return "contended"
@@ -168,8 +183,8 @@ def main() -> int:
             if result == "failed" and not done(kind, out):
                 log(f"ABORT: {name} failed (see artifacts/logs/unit_{name}.log)")
                 return 1
-            if attempts >= 20:
-                log(f"ABORT: {name} contended 20 times")
+            if attempts >= 60:
+                log(f"ABORT: {name} contended 60 times")
                 return 2
         log(f"{name} complete")
     log("ALL DONE")
