@@ -3,10 +3,10 @@
 <rect x="0.5" y="0.5" width="1039" height="411" rx="12" fill="#ffffff" stroke="#d1d9e0"/>
 <g transform="translate(20,20)">
 <circle cx="6" cy="14" r="5" fill="#1f2328"/>
-<text x="16.0" y="18.0" fill="#59636e" font-size="11.5" font-weight="400" text-anchor="start">CI가 0을 포함하지 않음 (유의)</text>
-<circle cx="206" cy="14" r="5" fill="#ffffff" stroke="#1f2328" stroke-width="1.5"/>
-<text x="216.0" y="18.0" fill="#59636e" font-size="11.5" font-weight="400" text-anchor="start">CI가 0을 포함 (유의하지 않음)</text>
-<text x="420.0" y="18.0" fill="#59636e" font-size="11.5" font-weight="400" text-anchor="start">같은 문서 쌍 · cluster bootstrap 95% CI</text>
+<text x="16.0" y="18.0" fill="#59636e" font-size="11.5" font-weight="400" text-anchor="start">CI excludes 0 (significant)</text>
+<circle cx="219.9" cy="14" r="5" fill="#ffffff" stroke="#1f2328" stroke-width="1.5"/>
+<text x="229.9" y="18.0" fill="#59636e" font-size="11.5" font-weight="400" text-anchor="start">CI includes 0 (not significant)</text>
+<text x="459.5" y="18.0" fill="#59636e" font-size="11.5" font-weight="400" text-anchor="start">same document pairs · cluster bootstrap 95% CI</text>
 <text x="325.0" y="42.0" fill="#1f2328" font-size="13" font-weight="700" text-anchor="middle">M1 − M0</text>
 <line x1="200.0" y1="58" x2="200.0" y2="346" stroke="#d1d9e0" stroke-width="1"/>
 <text x="200.0" y="360.0" fill="#59636e" font-size="10.5" font-weight="400" text-anchor="middle">-1</text>
@@ -18,31 +18,31 @@
 <text x="387.5" y="360.0" fill="#59636e" font-size="10.5" font-weight="400" text-anchor="middle">+0.5</text>
 <line x1="450.0" y1="58" x2="450.0" y2="346" stroke="#d1d9e0" stroke-width="1"/>
 <text x="450.0" y="360.0" fill="#59636e" font-size="10.5" font-weight="400" text-anchor="middle">+1</text>
-<text x="0.0" y="86.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">자체 test</text>
+<text x="0.0" y="86.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">Own test</text>
 <path d="M324.9 77.5 V86.5 M324.9 82.0 H331.3 M331.3 77.5 V86.5" stroke="#1f2328" stroke-width="1.5" fill="none"/>
 <circle cx="328.0" cy="82.0" r="5" fill="#ffffff" stroke="#1f2328" stroke-width="1.5"/>
 <text x="460.0" y="86.0" fill="#1f2328" font-size="11" font-weight="400" text-anchor="start">+0.024 [-0.00, +0.05]</text>
-<text x="0.0" y="126.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">공개 IID · clean</text>
+<text x="0.0" y="126.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">Public IID · clean</text>
 <path d="M423.0 117.5 V126.5 M423.0 122.0 H444.9 M444.9 117.5 V126.5" stroke="#1f2328" stroke-width="1.5" fill="none"/>
 <circle cx="435.0" cy="122.0" r="5" fill="#1f2328" stroke="#1f2328" stroke-width="1.5"/>
 <text x="460.0" y="126.0" fill="#1f2328" font-size="11" font-weight="600" text-anchor="start">+0.880 [+0.78, +0.96]</text>
-<text x="0.0" y="166.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">공개 IID · faded</text>
+<text x="0.0" y="166.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">Public IID · faded</text>
 <path d="M410.7 157.5 V166.5 M410.7 162.0 H444.4 M444.4 157.5 V166.5" stroke="#1f2328" stroke-width="1.5" fill="none"/>
 <circle cx="431.4" cy="162.0" r="5" fill="#1f2328" stroke="#1f2328" stroke-width="1.5"/>
 <text x="460.0" y="166.0" fill="#1f2328" font-size="11" font-weight="600" text-anchor="start">+0.851 [+0.69, +0.95]</text>
-<text x="0.0" y="206.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">공개 IID · bad_scan</text>
+<text x="0.0" y="206.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">Public IID · bad_scan</text>
 <path d="M403.9 197.5 V206.5 M403.9 202.0 H440.2 M440.2 197.5 V206.5" stroke="#1f2328" stroke-width="1.5" fill="none"/>
 <circle cx="424.8" cy="202.0" r="5" fill="#1f2328" stroke="#1f2328" stroke-width="1.5"/>
 <text x="460.0" y="206.0" fill="#1f2328" font-size="11" font-weight="600" text-anchor="start">+0.798 [+0.63, +0.92]</text>
-<text x="0.0" y="246.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">공개 OOD · clean</text>
+<text x="0.0" y="246.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">Public OOD · clean</text>
 <path d="M442.9 237.5 V246.5 M442.9 242.0 H449.1 M449.1 237.5 V246.5" stroke="#1f2328" stroke-width="1.5" fill="none"/>
 <circle cx="446.6" cy="242.0" r="5" fill="#1f2328" stroke="#1f2328" stroke-width="1.5"/>
 <text x="460.0" y="246.0" fill="#1f2328" font-size="11" font-weight="600" text-anchor="start">+0.973 [+0.94, +0.99]</text>
-<text x="0.0" y="286.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">공개 OOD · faded</text>
+<text x="0.0" y="286.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">Public OOD · faded</text>
 <path d="M429.2 277.5 V286.5 M429.2 282.0 H444.6 M444.6 277.5 V286.5" stroke="#1f2328" stroke-width="1.5" fill="none"/>
 <circle cx="438.2" cy="282.0" r="5" fill="#1f2328" stroke="#1f2328" stroke-width="1.5"/>
 <text x="460.0" y="286.0" fill="#1f2328" font-size="11" font-weight="600" text-anchor="start">+0.905 [+0.83, +0.96]</text>
-<text x="0.0" y="326.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">공개 OOD · bad_scan</text>
+<text x="0.0" y="326.0" fill="#1f2328" font-size="12.5" font-weight="600" text-anchor="start">Public OOD · bad_scan</text>
 <path d="M402.4 317.5 V326.5 M402.4 322.0 H434.6 M434.6 317.5 V326.5" stroke="#1f2328" stroke-width="1.5" fill="none"/>
 <circle cx="419.5" cy="322.0" r="5" fill="#1f2328" stroke="#1f2328" stroke-width="1.5"/>
 <text x="460.0" y="326.0" fill="#1f2328" font-size="11" font-weight="600" text-anchor="start">+0.756 [+0.62, +0.88]</text>

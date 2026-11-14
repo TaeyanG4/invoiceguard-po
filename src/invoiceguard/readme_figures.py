@@ -1,11 +1,11 @@
 """README figures, drawn from the recorded results (no plotting library, no network).
 
-  python -m invoiceguard.readme_figures            # writes docs/images/*-{light,dark}.svg
+  python -m invoiceguard.readme_figures            # writes docs/images/*-{light,dark}.svg (+ *-ko-*.svg)
 
 Reads reports/eval/{b0,m0,m1}_final_*.json, reports/eval/compare_*final*.json and
 reports/model/train_m1_standard_v1.json. Every number in a figure comes from those files; nothing is
-typed in by hand. Each figure is written twice (GitHub light and dark backgrounds) and embedded with
-<picture>. Series colours are the first three slots of a validated categorical palette, stepped per mode.
+typed in by hand. Each figure is written for GitHub light and dark backgrounds (embedded with <picture>)
+and in two languages: English (README.md, default file names) and Korean (README.ko.md, "-ko-" names). Series colours are the first three slots of a validated categorical palette, stepped per mode.
 """
 from __future__ import annotations
 
@@ -18,16 +18,48 @@ REPO = Path(__file__).resolve().parents[2]
 EVAL = REPO / "reports" / "eval"
 OUT = REPO / "docs" / "images"
 
-ARMS = [("b0", "B0", "OCR + 규칙 (Tesseract)"), ("m0", "M0", "Qwen3-VL-2B 기본 · NF4"), ("m1", "M1", "M0 + QLoRA 어댑터")]
-SETS = [
-    ("trade:test", "자체 test", "학습에 없던 레이아웃 T05·T06"),
-    ("public:iid_final|clean", "공개 IID · clean", "IID 풀 · event_ticket은 학습에 없음"),
-    ("public:iid_final|faded", "공개 IID · faded", "IID 풀 · event_ticket은 학습에 없음"),
-    ("public:iid_final|bad_scan", "공개 IID · bad_scan", "IID 풀 · event_ticket은 학습에 없음"),
-    ("public:ood_final|clean", "공개 OOD · clean", "freelancer · 학습 제외"),
-    ("public:ood_final|faded", "공개 OOD · faded", "freelancer · 학습 제외"),
-    ("public:ood_final|bad_scan", "공개 OOD · bad_scan", "freelancer · 학습 제외"),
-]
+ARM_KEYS = [("b0", "B0"), ("m0", "M0"), ("m1", "M1")]
+SET_KEYS = ["trade:test", "public:iid_final|clean", "public:iid_final|faded", "public:iid_final|bad_scan",
+            "public:ood_final|clean", "public:ood_final|faded", "public:ood_final|bad_scan"]
+TEXT = {
+    "en": {
+        "arms": {"b0": "OCR + rules (Tesseract)", "m0": "Qwen3-VL-2B base · NF4", "m1": "M0 + QLoRA adapter"},
+        "sets": {"trade:test": ("Own test", "unseen layouts T05·T06"),
+                 "public:iid_final|clean": ("Public IID · clean", "IID pool (+ event_ticket)"),
+                 "public:iid_final|faded": ("Public IID · faded", "IID pool (+ event_ticket)"),
+                 "public:iid_final|bad_scan": ("Public IID · bad_scan", "IID pool (+ event_ticket)"),
+                 "public:ood_final|clean": ("Public OOD · clean", "freelancer · held out"),
+                 "public:ood_final|faded": ("Public OOD · faded", "freelancer · held out"),
+                 "public:ood_final|bad_scan": ("Public OOD · bad_scan", "freelancer · held out")},
+        "ci": "95% CI (base/family bootstrap)",
+        "lenient": "lenient: scored after stripping ```json fences from outputs that failed strict JSON",
+        "acc_footer": "strict field accuracy · FINAL (run once after the freeze) · source: reports/eval/*_final_*.json · synthetic data",
+        "missing": "not measured", "no_record": "no record",
+        "sig": "CI excludes 0 (significant)", "ns": "CI includes 0 (not significant)",
+        "pairs": "same document pairs · cluster bootstrap 95% CI",
+        "loss": "loss: step 1 {first} → step {last_s} {last} · mean train_loss {mean} · {run}",
+        "loss_x": "x = optimizer step (micro batch {mb} × grad accum {ga}, lr {lr}, {sched}, warmup {wu}) · source: reports/model/train_m1_standard_v1.json",
+    },
+    "ko": {
+        "arms": {"b0": "OCR + 규칙 (Tesseract)", "m0": "Qwen3-VL-2B 기본 · NF4", "m1": "M0 + QLoRA 어댑터"},
+        "sets": {"trade:test": ("자체 test", "학습에 없던 레이아웃 T05·T06"),
+                 "public:iid_final|clean": ("공개 IID · clean", "IID 풀 · event_ticket은 학습에 없음"),
+                 "public:iid_final|faded": ("공개 IID · faded", "IID 풀 · event_ticket은 학습에 없음"),
+                 "public:iid_final|bad_scan": ("공개 IID · bad_scan", "IID 풀 · event_ticket은 학습에 없음"),
+                 "public:ood_final|clean": ("공개 OOD · clean", "freelancer · 학습 제외"),
+                 "public:ood_final|faded": ("공개 OOD · faded", "freelancer · 학습 제외"),
+                 "public:ood_final|bad_scan": ("공개 OOD · bad_scan", "freelancer · 학습 제외")},
+        "ci": "95% CI (base/family bootstrap)",
+        "lenient": "lenient: strict JSON이 실패한 출력에서 ```json 펜스를 벗긴 뒤 채점",
+        "acc_footer": "strict 필드 정확도 · FINAL (설정 동결 후 1회) · 원본: reports/eval/*_final_*.json · 합성 데이터",
+        "missing": "미측정", "no_record": "기록 없음",
+        "sig": "CI가 0을 포함하지 않음 (유의)", "ns": "CI가 0을 포함 (유의하지 않음)",
+        "pairs": "같은 문서 쌍 · cluster bootstrap 95% CI",
+        "loss": "loss: step 1 {first} → step {last_s} {last} · 평균 train_loss {mean} · {run}",
+        "loss_x": "x = optimizer step (micro batch {mb} × grad accum {ga}, lr {lr}, {sched}, warmup {wu}) · 원본: reports/model/train_m1_standard_v1.json",
+    },
+}
+LANGS = {"en": "", "ko": "-ko"}  # file-name infix per language; English keeps the plain names
 THEMES = {
     "light": {"ink": "#1f2328", "mute": "#59636e", "grid": "#d1d9e0", "zero": "#818b98", "bg": "#ffffff", "border": "#d1d9e0",
               "series": {"b0": "#2a78d6", "m0": "#eb6834", "m1": "#1baf7a"}},
@@ -46,7 +78,7 @@ def load_finals(folder: Path = EVAL) -> dict[str, dict]:
     out: dict[str, dict] = {}
     for path in sorted(folder.glob("*_final_*.json")):
         arm = path.name.split("_")[0]
-        if arm in {a for a, _, _ in ARMS}:
+        if arm in {a for a, _ in ARM_KEYS}:
             out[arm] = _json(path)
     return out
 
@@ -90,15 +122,15 @@ def _whisker(x1: float, x2: float, y: float, color: str, cap: float = 4.5) -> st
             f'stroke="{color}" stroke-width="1.5" fill="none"/>')
 
 
-def final_accuracy_svg(finals: dict[str, dict], mode: str) -> str:
-    th = THEMES[mode]
-    arms = [a for a in ARMS if a[0] in finals]
+def final_accuracy_svg(finals: dict[str, dict], mode: str, lang: str = "en") -> str:
+    th, tx = THEMES[mode], TEXT[lang]
+    arms = [(k, short, tx["arms"][k]) for k, short in ARM_KEYS if k in finals]
     label_w, x0, plot_w, right = 230, 250, 520, 190
     width = x0 + plot_w + right
     bar_h, gap, pad = 12, 4, 16
     group_h = len(arms) * bar_h + (len(arms) - 1) * gap + 2 * pad
     top = 74
-    height = top + group_h * len(SETS) + 34
+    height = top + group_h * len(SET_KEYS) + 34
     X = lambda v: x0 + max(0.0, min(1.0, float(v))) * plot_w  # noqa: E731
     body: list[str] = []
     lx = 0
@@ -107,13 +139,15 @@ def final_accuracy_svg(finals: dict[str, dict], mode: str) -> str:
         body.append(_t(lx + 18, 18.5, f"{name}  {desc}", th["ink"], 12))
         lx += 40 + _text_width(f"{name}  {desc}", 12)
     body.append(_whisker(0, 16, 38, th["ink"]))
-    body.append(_t(24, 42, "95% CI (base/family bootstrap)", th["mute"], 11.5))
-    body.append(_diamond(238, 38, 5, th["ink"], th["bg"]))
-    body.append(_t(250, 42, "lenient: strict JSON이 실패한 출력에서 ```json 펜스를 벗긴 뒤 채점", th["mute"], 11.5))
+    body.append(_t(24, 42, tx["ci"], th["mute"], 11.5))
+    dx = 24 + _text_width(tx["ci"], 11.5) + 28
+    body.append(_diamond(dx, 38, 5, th["ink"], th["bg"]))
+    body.append(_t(dx + 12, 42, tx["lenient"], th["mute"], 11.5))
     for t in (0, 0.25, 0.5, 0.75, 1.0):
         body.append(f'<line x1="{X(t):.1f}" y1="{top - 6}" x2="{X(t):.1f}" y2="{height - 30}" stroke="{th["grid"]}" stroke-width="1"/>')
         body.append(_t(X(t), top - 10, f"{t:g}", th["mute"], 11, "middle"))
-    for i, (set_key, name, desc) in enumerate(SETS):
+    for i, set_key in enumerate(SET_KEYS):
+        name, desc = tx["sets"][set_key]
         gy = top + i * group_h
         if i:
             body.append(f'<line x1="0" y1="{gy:.1f}" x2="{x0 + plot_w}" y2="{gy:.1f}" stroke="{th["grid"]}" stroke-width="1"/>')
@@ -125,7 +159,7 @@ def final_accuracy_svg(finals: dict[str, dict], mode: str) -> str:
             y = gy + pad + j * (bar_h + gap)
             cy = y + bar_h / 2
             if v is None:
-                body.append(_t(x0 + 4, cy + 4, f"{short} 미측정", th["mute"], 11))
+                body.append(_t(x0 + 4, cy + 4, f"{short} {tx['missing']}", th["mute"], 11))
                 continue
             acc = float(v["fields_acc"])
             width_px = max(2.0, acc * plot_w)
@@ -142,22 +176,23 @@ def final_accuracy_svg(finals: dict[str, dict], mode: str) -> str:
                 end = max(end, len_v)
                 label += f"  (◇ {len_v:.3f})"
             body.append(_t(X(end) + 8, cy + 4, label, th["ink"], 11.5, weight=600))
-    body.append(_t(0, height - 8, "strict 필드 정확도 · FINAL (설정 동결 후 1회) · 원본: reports/eval/*_final_*.json · 합성 데이터", th["mute"], 11))
+    body.append(_t(0, height - 8, tx["acc_footer"], th["mute"], 11))
     return _svg(width, height, body, "FINAL strict field accuracy by set: B0, M0, M1", th)
 
 
-def paired_svg(comps: list[tuple[str, dict]], mode: str) -> str:
-    th = THEMES[mode]
+def paired_svg(comps: list[tuple[str, dict]], mode: str, lang: str = "en") -> str:
+    th, tx = THEMES[mode], TEXT[lang]
     label_w, panel_w, text_w = 200, 250, 150
     width = label_w + len(comps) * (panel_w + text_w)
     row_h, top = 40, 62
-    height = top + row_h * len(SETS) + 30
+    height = top + row_h * len(SET_KEYS) + 30
     body: list[str] = []
     body.append(f'<circle cx="6" cy="14" r="5" fill="{th["ink"]}"/>')
-    body.append(_t(16, 18, "CI가 0을 포함하지 않음 (유의)", th["mute"], 11.5))
-    body.append(f'<circle cx="206" cy="14" r="5" fill="{th["bg"]}" stroke="{th["ink"]}" stroke-width="1.5"/>')
-    body.append(_t(216, 18, "CI가 0을 포함 (유의하지 않음)", th["mute"], 11.5))
-    body.append(_t(420, 18, "같은 문서 쌍 · cluster bootstrap 95% CI", th["mute"], 11.5))
+    body.append(_t(16, 18, tx["sig"], th["mute"], 11.5))
+    x2 = 16 + _text_width(tx["sig"], 11.5) + 30
+    body.append(f'<circle cx="{x2:.1f}" cy="14" r="5" fill="{th["bg"]}" stroke="{th["ink"]}" stroke-width="1.5"/>')
+    body.append(_t(x2 + 10, 18, tx["ns"], th["mute"], 11.5))
+    body.append(_t(x2 + 10 + _text_width(tx["ns"], 11.5) + 30, 18, tx["pairs"], th["mute"], 11.5))
     for p, (title, comp) in enumerate(comps):
         px = label_w + p * (panel_w + text_w)
         X = lambda d, px=px: px + (max(-1.0, min(1.0, float(d))) + 1) / 2 * panel_w  # noqa: E731
@@ -167,13 +202,14 @@ def paired_svg(comps: list[tuple[str, dict]], mode: str) -> str:
             dash = ' stroke-dasharray="4 3"' if t == 0 else ""
             body.append(f'<line x1="{X(t):.1f}" y1="{top - 4}" x2="{X(t):.1f}" y2="{height - 26}" stroke="{color}" stroke-width="1"{dash}/>')
             body.append(_t(X(t), height - 12, ("+" if t > 0 else "") + f"{t:g}", th["mute"], 10.5, "middle"))
-        for i, (set_key, name, _) in enumerate(SETS):
+        for i, set_key in enumerate(SET_KEYS):
+            name = tx["sets"][set_key][0]
             v = (comp.get("sets") or {}).get(set_key)
             cy = top + i * row_h + row_h / 2
             if p == 0:
                 body.append(_t(0, cy + 4, name, th["ink"], 12.5, weight=600))
             if not v:
-                body.append(_t(px + panel_w + 10, cy + 4, "기록 없음", th["mute"], 11))
+                body.append(_t(px + panel_w + 10, cy + 4, tx["no_record"], th["mute"], 11))
                 continue
             d = float(v["field_acc_diff"])
             lo, hi = (float(c) for c in v["field_acc_diff_ci95"])
@@ -185,8 +221,8 @@ def paired_svg(comps: list[tuple[str, dict]], mode: str) -> str:
     return _svg(width, height, body, "Paired differences in strict field accuracy with 95% CI", th)
 
 
-def training_svg(report: dict, mode: str) -> str:
-    th = THEMES[mode]
+def training_svg(report: dict, mode: str, lang: str = "en") -> str:
+    th, tx = THEMES[mode], TEXT[lang]
     log = [(int(x["step"]), float(x["loss"])) for x in report.get("loss_log", []) if x.get("loss") is not None]
     width, height = 960, 270
     x0, y0, w, h = 60, 30, 860, 180
@@ -206,10 +242,11 @@ def training_svg(report: dict, mode: str) -> str:
     body.append(f'<circle cx="{X(last_s):.1f}" cy="{Y(last_l):.1f}" r="4" fill="{th["series"]["m1"]}"/>')
     body.append(_t(X(last_s) - 8, Y(last_l) - 10, f"step {last_s} · {last_l:.3f}", th["ink"], 11.5, "end", 600))
     cfg = report.get("config", {})
-    body.append(_t(x0, height - 26, f"loss: step 1 {log[0][1]:.3f} → step {last_s} {last_l:.3f} · 평균 train_loss {float(report.get('train_loss', 0)):.4f} · "
-                   f"{report.get('run_id')}", th["ink"], 11.5, weight=600))
-    body.append(_t(x0, height - 8, f"x = optimizer step (micro batch {cfg.get('micro_batch')} × grad accum {cfg.get('grad_accum')}, lr {cfg.get('lr')}, "
-                   f"{cfg.get('scheduler')}, warmup {cfg.get('warmup_ratio')}) · 원본: reports/model/train_m1_standard_v1.json", th["mute"], 11))
+    body.append(_t(x0, height - 26, tx["loss"].format(first=f"{log[0][1]:.3f}", last_s=last_s, last=f"{last_l:.3f}",
+                                                    mean=f"{float(report.get('train_loss', 0)):.4f}", run=report.get("run_id")),
+                   th["ink"], 11.5, weight=600))
+    body.append(_t(x0, height - 8, tx["loss_x"].format(mb=cfg.get("micro_batch"), ga=cfg.get("grad_accum"), lr=cfg.get("lr"),
+                                                      sched=cfg.get("scheduler"), wu=cfg.get("warmup_ratio")), th["mute"], 11))
     return _svg(width, height, body, "M1 QLoRA training loss per optimizer step", th)
 
 
@@ -220,12 +257,13 @@ def build(out: Path = OUT) -> list[Path]:
     train = _json(REPO / "reports" / "model" / "train_m1_standard_v1.json")
     out.mkdir(parents=True, exist_ok=True)
     written = []
-    for mode in THEMES:
-        for name, svg in (("final-accuracy", final_accuracy_svg(finals, mode)), ("paired-diff", paired_svg(comps, mode)),
-                          ("training-loss", training_svg(train, mode))):
-            path = out / f"{name}-{mode}.svg"
-            path.write_text(svg, encoding="utf-8", newline="\n")
-            written.append(path)
+    for lang, infix in LANGS.items():
+        for mode in THEMES:
+            for name, svg in (("final-accuracy", final_accuracy_svg(finals, mode, lang)), ("paired-diff", paired_svg(comps, mode, lang)),
+                              ("training-loss", training_svg(train, mode, lang))):
+                path = out / f"{name}{infix}-{mode}.svg"
+                path.write_text(svg, encoding="utf-8", newline="\n")
+                written.append(path)
     return written
 
 
