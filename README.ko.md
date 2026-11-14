@@ -80,12 +80,17 @@
 
 **5. 실사진 영수증(CORD v2)에서 다시 확인하는 중입니다.**
 
+<!-- cord-summary:start -->
+
 | CORD v2 · strict 필드 정확도 | M0<br><sub>기본 모델</sub> | M1 v1<br><sub>위 M1 (CORD 없이 학습)</sub> | M1-cord<br><sub>CORD train 추가 학습</sub> |
 |---|---:|---:|---:|
 | dev 100장<br><sub>개발용 · 판정 아님</sub> | 0.712 | 0.304 | **0.762** |
 | test 100장<br><sub>동결 후 1회 · 판정</sub> | — | — | — |
 
-<sub>로컬 RTX 4070 Ti SUPER · 모두 NF4 · 같은 프롬프트·전처리·생성 설정. — = 아직 실행하지 않은 칸입니다. 판정 기준은 학습 전에 [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)에 고정했습니다.</sub>
+<sub>로컬 RTX 4070 Ti SUPER · 모두 NF4 · 같은 프롬프트·전처리·생성 설정. — = 아직 실행하지 않은 칸입니다. 판정 기준은 학습 전에 [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)에 고정했습니다. 표는 `python -m invoiceguard.readme_cord`가 `reports/eval/cord_*.json`에서 만듭니다.</sub>
+
+<!-- cord-summary:end -->
+
 - 합성 인보이스로만 학습한 M1 v1은 영수증 사진에서 기본 모델보다 **0.41 낮습니다**(dev −0.408 [−0.50, −0.31]). 학습한 형식 밖에서는 파인튜닝이 오히려 해가 될 수 있다는 사례입니다.
 - CORD train 742장을 더해 학습한 M1-cord는 dev에서 M0보다 +0.0497 [+0.005, +0.093]입니다. 사전 기준(+0.05)에 점추정이 0.0003 모자라고, 형식 무시 정확도 차이는 CI가 0을 포함합니다. 판정은 test로 합니다.
 - 기존 합성 dev 세트에서는 M1-cord가 M1 v1보다 떨어지지 않았습니다(자체 dev −0.003, 공개 dev clean +0.033).
@@ -490,28 +495,36 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 - **주 지표:** 정답에 값이 있는 필드만 위치대로 맞춰 NFKC · 공백 정리 후 완전 일치. M0가 dev 답을 모두 ```` ```json ````로 감싸서, 필드 점수는 펜스 하나만 벗긴 출력으로 계산하고(잘림 · 문법 오류는 고치지 않음) 펜스 없는 JSON 비율은 형식 지표로 따로 둡니다(학습·test 전에 정한 수정 1).
 - **test는 한 번만:** dev를 본 뒤 [`configs/frozen_cord_v1.json`](configs/frozen_cord_v1.json)에 설정을 동결했고, arm마다 한 번 실행합니다. **— 는 아직 실행하지 않은 칸입니다.**
 
+<!-- cord-metrics:start -->
+
 | 지표 | M0<br><sub>dev</sub> | M1 v1<br><sub>dev</sub> | M1-cord<br><sub>dev</sub> | M0<br><sub>test</sub> | M1 v1<br><sub>test</sub> | M1-cord<br><sub>test</sub> |
 |---|---:|---:|---:|---:|---:|---:|
 | **strict 필드 정확도** (주 지표) | 0.712<br><sub>717/1,007</sub> | 0.304<br><sub>306/1,007</sub> | **0.762**<br><sub>767/1,007</sub> | — | — | — |
 | 형식 무시 정확도<br><sub>숫자는 숫자만, 이름은 대소문자·공백 무시</sub> | 0.777 | 0.393 | **0.812** | — | — | — |
 | 순서 무관 필드 F1<br><sub>정밀도 / 재현율</sub> | 0.654<br><sub>0.56 / 0.79</sub> | 0.425<br><sub>0.52 / 0.36</sub> | **0.845**<br><sub>0.85 / 0.84</sub> | — | — | — |
-| train과 정답이 겹치지 않는 문서만 | 0.706<br><sub>80문서</sub> | 0.272 | **0.744** | —<br><sub>85문서</sub> | — | — |
+| train과 정답이 겹치지 않는 문서만 | 0.706<br><sub>80문서</sub> | 0.272 | **0.744** | — | — | — |
 | 펜스 없는 JSON | 0/100 | 79/100 | **100/100** | — | — | — |
 | 정답에 없는 값을 채운 필드 | 269 | 163 | **24** | — | — | — |
 | 행 수 일치 · 문서 전체 일치 | 0.67 · 0.01 | 0.32 · 0.00 | **0.83 · 0.33** | — | — | — |
 | 추론 시간 | 12.4초/문서 | 12.5초/문서 | 8.2초/문서 | — | — | — |
 
-<sub>원본: `reports/eval/cord_*.json` · 채점기 [`cord_eval.py`](src/invoiceguard/cord_eval.py). 추론이 짧은 것은 M1-cord가 펜스와 지어낸 필드 없이 답해 토큰이 적기 때문입니다.</sub>
+<sub>원본: `reports/eval/cord_*.json` · 채점기 [`cord_eval.py`](src/invoiceguard/cord_eval.py). 굵게 = 같은 split에서 가장 좋은 값. M1-cord의 추론이 짧은 것은 펜스와 지어낸 필드 없이 답해 토큰이 적기 때문입니다.</sub>
+
+<!-- cord-metrics:end -->
 
 **사전 고정 판정 기준**
 
+<!-- cord-criteria:start -->
+
 | 기준 | dev (참고 · 판정 아님) | test (판정) |
 |---|---|---|
-| 파인튜닝 효과<br><sub>M1-cord − M0 strict ≥ +0.05 이고 95% CI 하한 > 0</sub> | +0.0497 [+0.005, +0.093]<br><sub>CI 하한은 0 위, 점추정은 기준보다 0.0003 낮음</sub> | — |
-| 읽기도 좋아짐<br><sub>위 기준 + 형식 무시 차이의 CI 하한 > 0</sub> | +0.036 [−0.001, +0.073]<br><sub>CI가 0을 포함</sub> | — |
+| 파인튜닝 효과<br><sub>M1-cord − M0 strict ≥ +0.05 이고 95% CI 하한 > 0</sub> | +0.0497 [+0.0050, +0.0926] → 미충족<br><sub>점추정이 기준보다 0.0003 낮음 · CI 하한은 0 위</sub> | — |
+| 읽기도 좋아짐<br><sub>위 기준 + 형식 무시 차이의 CI 하한 > 0</sub> | +0.036 [−0.001, +0.073] → 미충족<br><sub>CI가 0을 포함 · 파인튜닝 효과 기준 미충족</sub> | — |
 | 기존 성능 유지<br><sub>기존 dev에서 M1-cord가 M1 v1보다 0.03 넘게 떨어지지 않음</sub> | 자체 dev −0.003 [−0.032, +0.021]<br>공개 dev clean +0.033 [+0.004, +0.077] → **충족** | test 기준 아님 |
 
-<sub>같은 문서 쌍 bootstrap 2,000회(seed 20261113), 정답이 같은 문서는 한 묶음으로 재표집. 회귀 확인은 M1 v1의 dev 세트 7개 전부에서 했고 나머지 5개도 −0.067 ~ +0.162 범위입니다(각 8–24문서, [`compare_m1cord_dev_v1__vs__m1_dev_v1.json`](reports/eval/compare_m1cord_dev_v1__vs__m1_dev_v1.json)).</sub>
+<sub>같은 문서 쌍 bootstrap 2,000회(seed 20261113), 정답이 같은 문서는 한 묶음으로 재표집. 회귀 확인은 M1 v1의 dev 세트 7개 전부에서 했고 나머지 세트는 −0.067 ~ +0.162 범위(각 8–24문서)입니다([`compare_m1cord_dev_v1__vs__m1_dev_v1.json`](reports/eval/compare_m1cord_dev_v1__vs__m1_dev_v1.json)).</sub>
+
+<!-- cord-criteria:end -->
 
 **dev에서 보이는 것 (test 전, 참고)**
 - **M1-cord의 이득은 주로 형식과 구조입니다.** 펜스 없는 JSON 0 → 100/100, 지어낸 필드 269 → 24, 행 수 일치 0.67 → 0.83, 문서 전체 일치 0.01 → 0.33.

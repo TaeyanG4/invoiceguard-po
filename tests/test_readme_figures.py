@@ -71,3 +71,30 @@ def test_readme_field_tables_match_the_final_scoring_files():
     for name in ("README.md", "README.ko.md"):
         text = (REPO / name).read_text(encoding="utf-8")
         assert f"{sku['accuracy']:.3f}" in text and f"{sku['correct']}/{sku['scored']}" in text
+
+
+def test_readme_cord_tables_match_the_cord_scoring_files():
+    from invoiceguard import readme_cord as rc
+
+    assert rc.apply(check=True) == []  # README CORD blocks equal a fresh build from reports/eval/cord_*.json
+    for name in ("README.md", "README.ko.md"):
+        text = (REPO / name).read_text(encoding="utf-8")
+        for stage in rc.STAGES:
+            for _, arm in rc.ARMS:
+                sc = rc.score(stage, arm)
+                if sc is not None:  # every produced number is in the README
+                    acc = sc["all"]["strict_field_accuracy"]
+                    assert f"{acc['correct']:,}/{acc['scored']:,}" in text
+
+
+def test_readme_cord_leaves_unrun_results_blank(monkeypatch):
+    from invoiceguard import readme_cord as rc
+
+    real_score = rc.score
+    monkeypatch.setattr(rc, "score", lambda stage, arm: None if stage == "test" else real_score(stage, arm))
+    monkeypatch.setattr(rc, "compare", lambda stage, a, b: None)
+    test_row = next(line for line in rc.summary_block("en").splitlines() if line.startswith("| test"))
+    assert test_row.count(rc.DASH) == 3 and not any(ch.isdigit() for ch in test_row.split("|", 2)[2])
+    metric_rows = [line for line in rc.metrics_block("ko").splitlines() if line.startswith("| ") and "지표" not in line]
+    assert all(line.rstrip(" |").endswith("— | — | —") for line in metric_rows)  # the three test columns
+    assert rc.criteria_block("ko").count("| — |") >= 2  # no verdict without the comparison file
