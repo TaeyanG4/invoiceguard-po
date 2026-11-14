@@ -7,7 +7,7 @@
 [![ci](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml/badge.svg)](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml)
 ![data](https://img.shields.io/badge/data-synthetic%20only-lightgrey)
 ![gpu](https://img.shields.io/badge/GPU-local%20RTX%204070%20Ti%20SUPER-informational)
-![runpod](https://img.shields.io/badge/RunPod-A40%20%C2%B7%2043%20min%20%C2%B7%20~%240.43-673ab7)
+![runpod](https://img.shields.io/badge/RunPod-A40%20%C2%B7%2043%20min%20%C2%B7%20est.%20%240.43-673ab7)
 
 - **Model:** Qwen3-VL-2B-Instruct (NF4) + a QLoRA adapter — trained, evaluated and served on one local GPU; the training was reproduced and vLLM measured on a rented RunPod A40 ([section 12](#12-cloud-reproduction-on-runpod))
 - **Data:** synthetic only. Public InvoiceOCR-Synth plus self-generated Invoice–PO documents; no claim is made about real company or customs documents.
@@ -282,7 +282,7 @@ flowchart TB
 | Item | Value |
 |---|---|
 | Base model | Qwen3-VL-2B-Instruct<br><sub>NF4 double-quant · bf16 compute; vision encoder and lm_head not quantised</sub> |
-| Method | QLoRA SFT<br><sub>TRL `SFTTrainer` + a verified completion-only collator</sub> |
+| Method | QLoRA SFT<br><sub>TRL `SFTTrainer` as the training loop with our own verified completion-only collator. TRL's dataset preparation and assistant-only loss are bypassed (the Qwen3-VL chat template has no generation markers), so the loss is the standard causal-LM loss from transformers `Trainer`.</sub> |
 | LoRA | r 8 · α 16 · dropout 0.05 · **language-model q_proj / v_proj only**<br><sub>1,605,632 trainable parameters (0.11% of the total)</sub> |
 | Training data | 360 records (PUBLIC_CANONICAL 200 + TRADE_RAW 160) |
 | Optimisation | 80 optimizer steps<br><sub>micro batch 1 × grad accum 8 (≈1.78 epochs), lr 1e-4 cosine, warmup 0.05</sub> |
@@ -368,6 +368,42 @@ The seven rows of the FINAL table are three groups of documents. Each row below 
 
 <sub>[ ] = 95% CI. ² B0's zero comes from deliberately leaving the freelancer template's header words out of its rules (v1.2); it found no item rows in any of the 60 documents.<br>
 M1 scores higher on OOD clean than on IID clean because this OOD is one template from the same generator. Source: [`reports/eval/final_summary.md`](reports/eval/final_summary.md)</sub>
+
+### FINAL — accuracy per field
+
+<!-- field-table:start -->
+
+**Own test** — 40 documents, 170 item rows; strict exact match of the printed string
+
+| Field | B0 | M0 | M1 |
+|---|---:|---:|---:|
+| *per item row* | | | |
+| part number (SKU) | 0.000<br><sub>0/170</sub> | 0.876<br><sub>149/170</sub> | **0.900**<br><sub>153/170</sub> |
+| description | 0.000<br><sub>0/170</sub> | 0.888<br><sub>151/170</sub> | **0.924**<br><sub>157/170</sub> |
+| quantity | 0.000<br><sub>0/170</sub> | 0.882<br><sub>150/170</sub> | **0.906**<br><sub>154/170</sub> |
+| unit | 0.000<br><sub>0/170</sub> | **0.988**<br><sub>168/170</sub> | 0.982<br><sub>167/170</sub> |
+| unit price | 0.000<br><sub>0/170</sub> | 0.806<br><sub>137/170</sub> | **0.824**<br><sub>140/170</sub> |
+| line total | 0.500<br><sub>85/170</sub> | 0.824<br><sub>140/170</sub> | **0.900**<br><sub>153/170</sub> |
+| *per document* | | | |
+| invoice number | 0.625<br><sub>25/40</sub> | **0.925**<br><sub>37/40</sub> | 0.900<br><sub>36/40</sub> |
+| currency | **1.000**<br><sub>40/40</sub> | **1.000**<br><sub>40/40</sub> | **1.000**<br><sub>40/40</sub> |
+| subtotal | 0.375<br><sub>15/40</sub> | 0.975<br><sub>39/40</sub> | **1.000**<br><sub>40/40</sub> |
+| tax | 0.775<br><sub>31/40</sub> | **1.000**<br><sub>40/40</sub> | **1.000**<br><sub>40/40</sub> |
+| discount | 0.800<br><sub>32/40</sub> | **1.000**<br><sub>40/40</sub> | **1.000**<br><sub>40/40</sub> |
+| total | 0.900<br><sub>36/40</sub> | 0.975<br><sub>39/40</sub> | **1.000**<br><sub>40/40</sub> |
+
+**Public clean** — canonical numbers; IID 20 and OOD (freelancer) 20 documents
+
+| Field | B0 IID | M0 IID | M1 IID | B0 OOD | M0 OOD | M1 OOD |
+|---|---:|---:|---:|---:|---:|---:|
+| description | 0.667<br><sub>26/39</sub> | 0.000<br><sub>0/39</sub> | **1.000**<br><sub>39/39</sub> | 0.000<br><sub>0/82</sub> | 0.000<br><sub>0/82</sub> | **0.976**<br><sub>80/82</sub> |
+| quantity | 0.750<br><sub>51/68</sub> | 0.000<br><sub>0/68</sub> | **0.971**<br><sub>66/68</sub> | 0.000<br><sub>0/82</sub> | 0.000<br><sub>0/82</sub> | **0.976**<br><sub>80/82</sub> |
+| unit price | 0.697<br><sub>23/33</sub> | 0.000<br><sub>0/33</sub> | **0.939**<br><sub>31/33</sub> | 0.000<br><sub>0/82</sub> | 0.000<br><sub>0/82</sub> | **0.963**<br><sub>79/82</sub> |
+| amount | **0.765**<br><sub>52/68</sub> | 0.000<br><sub>0/68</sub> | 0.691<br><sub>47/68</sub> | 0.000<br><sub>0/82</sub> | 0.000<br><sub>0/82</sub> | **0.976**<br><sub>80/82</sub> |
+
+<sub>Cell = strict accuracy (correct / scored). Failed or unparsed documents stay in the denominator. M0's 0.000 on the public sets is the code-fence format failure, B0's 0.000 on OOD is "no table found" (see below). On the own test B0 finds item rows in 18 of 40 documents but merges the columns of these unseen layouts (the SKU lands in the description, the unit price in the quantity), so only line totals match. Source: `reports/eval/{b0,m0,m1}_final_*.json` → `sets.<set>.strict.fields`, generated by `python -m invoiceguard.readme_tables`.</sub>
+
+<!-- field-table:end -->
 
 ### What does 0.000 mean?
 
@@ -468,7 +504,7 @@ reject is allowed from every state except `extracting`, and re-extraction from e
 
 **Guarantees**
 - **Version CAS:** extraction, edits and approvals all check `expected_version`.<br>
-  When an extraction finishes, (version, run_id, state) is checked again; if the case changed meanwhile, the result is kept as history but not applied.
+  The version is checked when an extraction is claimed; when it finishes, the case's state and active run id are checked again. If they changed meanwhile (for example a restart marked it `INTERRUPTED`), the result is kept as history but not applied.
 - **One inference at a time:** concurrent extraction requests get 429, and edits or approvals during extraction get 409.<br>
   A timeout quarantines the backend (503) until its health check passes again.
 - **Immutable snapshots:** approval stores a snapshot and its SHA256; export returns only the valid approved snapshot of the current version.<br>
@@ -506,10 +542,10 @@ A local, read-only dashboard (the UI is in Korean).
 
 | Skill | Evidence in this repository |
 |---|---|
-| LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` + verified collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
+| LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` loop + our own verified completion-only collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
 | Training correctness checks | loss-mask audit 360/360, 10-step smoke, reload parity<br><sub>[`reports/model/`](reports/model)</sub> |
 | Reproducibility on another machine | the frozen training re-run on a RunPod A40: loss curve within 0.002 per step, identical outputs on dev<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
-| Cloud GPU operation | Runpod via MCP: real quote → approval → Pod → SSH and tunnel checks → training → SHA256 backup → delete, $0.43<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
+| Cloud GPU operation | Runpod via MCP: real quote → approval → Pod → SSH and tunnel checks → training → SHA256 backup → delete, about $0.43 (estimate)<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | Extraction accuracy · failure analysis · improvement | per-set evaluator · paired bootstrap, failure taxonomy, one improvement and its **negative result**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | Automated scoring · regression tests | 160+ pytest tests (rules B01–B12, evaluation E01–E05, API A01–A08, dashboard)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · freeze and hash guards</sub> |
 | Serving · performance measurement | own Transformers + PEFT GPU server (not a serving framework) — real timeout cancellation and bounded queue, measured<br><sub>[`reports/serving/`](reports/serving)</sub><br>vLLM 0.11.2 on RunPod: continuous batching measured at concurrency 1–8 |
@@ -522,7 +558,7 @@ A local, read-only dashboard (the UI is in Korean).
 ## 11. Cost and limitations
 
 **Cost**
-- Cloud spend **about $0.43** — one RunPod A40 Pod for 43 minutes at $0.60/h ([section 12](#12-cloud-reproduction-on-runpod)).
+- Cloud spend **about $0.43** (estimate: 43 minutes × $0.60/h) — one RunPod A40 Pod ([section 12](#12-cloud-reproduction-on-runpod)). The billing records were still catching up when this was written.
 - One training run about 22 min; final M0 · M1 inference about 49 min (B0 OCR time not recorded); all on the local GPU.
 
 **Limitations**
@@ -533,7 +569,7 @@ A local, read-only dashboard (the UI is in Korean).
 - The ambiguous-quantity failure is not solved.
 - Serving
   - vLLM was measured only on RunPod. Its speed is measured, but M1's accuracy under vLLM dropped and the cause is not established.
-  - No quantisation comparison (NF4 only) and no batching (batch 1, serial worker).
+  - The own HF server has no batching (batch 1, serial worker); batching was measured only with vLLM on RunPod (section 12).
   - The bench uses 10 documents and one repetition; the serving server has no automated tests of its own, only manual probes.
 - The RunPod reproduction is one seed and one run; its dev parity covers 8 documents. An automatic stop inside the Pod could not be set (permission), so the run was watched until the Pod was deleted.
 - FSDP / DeepSpeed were not used: they are unnecessary for a 2B model on a single GPU ([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
@@ -563,7 +599,7 @@ The goal was not a better model but evidence that the training **runs correctly 
 | Machine | 9 vCPU Xeon Gold 6342 · 50 GB RAM<br><sub>container disk 80 GB + volume 20 GB</sub> |
 | Image | `runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404`<br><sub>official template; its torch is not used — the run installs the repository's own lockfile</sub> |
 | Access | SSH on `22/tcp` only<br><sub>the model API listens on 127.0.0.1 inside the Pod and is reached through an SSH tunnel</sub> |
-| Price · time · cost | $0.60/h (GPU 0.59 + disks 0.014) · 43 min · **about $0.43** |
+| Price · time · cost | $0.60/h (GPU 0.59 + disks 0.014) · 43 min · **about $0.43**<br><sub>estimate from time × price; billing records lag by up to an hour</sub> |
 
 | Pod details and price | Telemetry during the vLLM benchmark |
 |---|---|
@@ -612,6 +648,7 @@ flowchart TB
 
 - Before training, every input was checked against the local run: same package versions (Linux only adds CUDA runtime wheels), and SHA256 equal for the model (11 files), manifests (4), own images and gold (512), parquet shards (2) and the 200 public training images re-extracted on the Pod. Mask audit 360/360.
 - Same 8 own-dev documents through the reference HF NF4 path: the Pod-trained adapter gives **raw outputs identical** to the local adapter 8/8, field accuracy 200/204 for both.
+- Running the *local* adapter on the Pod gives the local outputs 7/8; the eighth has the same values with the JSON keys in a different order (a one-token greedy tie), and the same 200/204.
 - Restore check: the Pod adapter, loaded on the local GPU, reproduces the Pod's outputs exactly (2/2).
 
 **vLLM 0.11.2 serving** — A40, bf16, 20 own-dev documents, max_tokens 1536, 0 failed requests
@@ -621,10 +658,12 @@ flowchart TB
 | M0 base | 18.2 docs/min<br><sub>p50 3.1 s</sub> | 34.0<br><sub>3.3 s</sub> | 62.7<br><sub>3.5 s</sub> | 104.8<br><sub>3.9 s</sub> |
 | M1 LoRA | 24.3 docs/min<br><sub>p50 2.2 s</sub> | 47.1<br><sub>2.3 s</sub> | 87.7<br><sub>2.4 s</sub> | 149.3<br><sub>2.6 s</sub> |
 
-- Continuous batching: throughput grows almost linearly with concurrency while p50 rises by only about 20 %.
+- Continuous batching: going from concurrency 1 to 8 raised throughput 6.1× (M1) and 5.8× (M0), while p50 latency rose by only about 17–26 %.
 - **Accuracy caveat:** M1 under vLLM scored 0.849 against 0.960 on the HF NF4 path (M0: 0.969 against 0.941).
-  - Every M1 document lost exactly 4 fields, and its outputs were about 40 tokens shorter — the length of the four document-total fields.
-  - The adapter was trained on the NF4-quantised base, but vLLM applied it to the bf16 base. That mismatch is the leading suspect; it is not confirmed, because this bench did not store raw responses (it does now).
+  - 17 of 20 M1 documents lost 4 fields (the others lost 6, 5 and 0), and the outputs were about 40 tokens shorter — the length of the four document-total fields.
+  - **Cause found locally, without another cloud run:** the same adapter on an unquantised bf16 base, run through the HF reference path on the local GPU, scores 0.847 on the same 20 documents, its token counts match vLLM's within ±1 on 20/20, and 19/20 raw outputs lack the document-total fields ([`reports/quant/`](reports/quant)).
+  - So the drop comes from the base precision: the adapter was trained on the NF4-quantised base but applied to the bf16 base. It is not an A40, Linux or vLLM effect.
+  - The vLLM bench did not store raw responses; it does now.
   - So these vLLM numbers are speed measurements; LoRA serving quality under vLLM is an open issue.
 
 Full record (Korean): [`reports/runpod/RUNPOD_RUN.md`](reports/runpod/RUNPOD_RUN.md)

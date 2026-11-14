@@ -91,3 +91,15 @@ def image_bytes(record: Record) -> bytes:
     buf = io.BytesIO()
     record.image().save(buf, format="PNG")
     return buf.getvalue()
+
+
+def cord_records(split: str, train_only_eligible: bool = True) -> list[Record]:
+    """CORD v2 receipts (docs/20). split: train|dev|test. Training uses only train_eligible rows (no list-valued
+    labels, no content duplicate of a dev/test answer); dev/test keep every document so denominators never shrink."""
+    from ..cord import OUT_DIR, load_gold, manifest_rows
+
+    rows = manifest_rows(split)
+    if split == "train" and train_only_eligible:
+        rows = [r for r in rows if r["train_eligible"]]
+    return [Record(r["id"], "CORD_RAW", OUT_DIR / "images" / f"{r['id']}.png", dump_answer(load_gold(r["id"])), split)
+            for r in rows]

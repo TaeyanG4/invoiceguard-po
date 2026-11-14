@@ -1,0 +1,28 @@
+{
+ "note": "Content-free summary. The raw teacher drafts read real Kaggle GST invoices (supplier names, invoice numbers), so they are kept outside the repository in artifacts/private_realdocs/ (git-ignored). Drafts are NOT gold labels.",
+ "teachers": {
+  "teacher8b": {
+   "documents": 169,
+   "ok": 169,
+   "source": "Pod backup backup2.tgz (the earlier local copy was a 21-document partial fetch)",
+   "finish_reason": {
+    "length": 1,
+    "stop": 168
+   },
+   "completion_tokens_total": 218153,
+   "latency_s_mean": 62.3
+  },
+  "teacher32b": {
+   "documents": 2,
+   "ok": 2,
+   "prompt_version": [
+    "gst-teacher-v1"
+   ],
+   "finish_reason": {
+    "stop": 2
+   },
+   "completion_tokens_total": 2264,
+   "latency_s_mean": 92.4
+  }
+ }
+}

@@ -1,0 +1,329 @@
+--- 2026-11-14 19:16:59 rc=0 83s ---
+㈜로그인네트웍, "AI 모델 개발자(LLM/VLM) – 오픈소스 파인튜닝·서빙")
+회사는 수출입 서류(인보이스, 패킹리스트, B/L)를 통관 신고 데이터로 바꾸며, 외부 모델 API와 자체 학습 모델을 더 정확·빠르·싸게 만들려 한다.
+- 업무: 공개 VLM/LLM LoRA/SFT(데이터·학습·평가), 품목·수량·단가·품번 추출 정확도, LLM 서빙 프레임워크 배포(양자화·추론 가속·배치 튜닝)와 GPU 서버 운영, 정답 대비 자동 채점·회귀 테스트, 실패 분석과 프롬프트·후처리·데이터 개선.
+- 필수: HF transformers/peft/trl 실무 코드, 서빙 프레임워크 배포와 성능 실측, Linux/SSH, 수치 평가.
+- 우대: OCR/문서 AI, 양자화, 멀티 GPU(DeepSpeed/FSDP), 클라우드 GPU 비용 최적화, 한영 혼합·표 문서, 무역·통관 도메인, Java/Spring Boot/React.
+
+## 읽을 것 (한 묶음씩, 데이터셋은 열지 않음)
+1. `README.md`(영어; `README.ko.md`는 한국어판) — 포트폴리오 첫 화면.
+2. `plan.md`(앞으로의 계획), `handoff.md`(작업 내역), `reports/IMPLEMENTATION_STATUS.md`, `reports/TASK_BOARD.md`.
+3. `reports/eval/final_summary.md`와 `reports/eval/` — 평가 결과.
+4. `reports/runpod/RUNPOD_RUN.md`, `reports/RUNPOD_APPROVAL.md`, `reports/runpod/train_compare.json`, `reports/serving/vllm_bf16_a40.json`.
+5. `src/invoiceguard/`(vlm/, serving/, app/, evaluation.py, reconciliation.py)와 `tests/` — 코드 품질과 README 주장의 근거.
+
+참고: 지금 로컬 GPU에서 plan.md P3 실험(기본 모델 정밀도별 HF 추론, `scripts/quant/run_precision_dev20.sh`)이 돌고 있어 결과 파일이 아직 없다. 이 평가는 현재 상태 기준이다.
+
+## 답할 것 (한국어, 약 900단어 이내)
+1. **100점 만점 점수**와 가중치 표: 공고 항목마다 가중치·점수·근거 파일. 우리 결론을 모르는 상태에서 독립적으로 매긴다.
+2. **치명적 공백**이 남아 있는지(이 회사 서류 검토자가 떨어뜨릴 수준인지) 분명히.
+3. **90점 이상으로 가려면** 무엇이 필요한지: 항목별 예상 가산점, 노력, 유료 GPU 필요 여부. plan.md의 P1–P10에 대해 빠진 것·순서·과한 것을 자문해 달라.
+4. vLLM에서 M1 정확도가 0.849(HF NF4 경로 0.960)로 떨어진 원인에 대한 너의 판단과, plan.md P3 실험 설계(E1–E5)가 원인을 가를 수 있는지. A40·리눅스·dtype(bf16/fp16/fp32) 차이 가능성도 따져 달라.
+5. README에서 기록으로 뒷받침되지 않는 주장이나 과장(문장 인용 + 반박 파일). 없으면 "없음".
+
+warning: Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`.
+2026-11-14T10:15:39.415775Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:39.416058Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:39.416323Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:41.152919Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:41.279801Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:41.541892Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:41.542233Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:41.542571Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:41.904241Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:41.904547Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+codex
+요청하신 순서대로 문서, 평가 기록, 실행 기록, 코드를 한 묶음씩 읽고 공고 기준으로 독립 평가하겠습니다. 파일 변경이나 모델 실행 없이 검토하며, 진행 중인 P3 실험은 현재 성과 점수에 넣지 않겠습니다.
+2026-11-14T10:15:46.829551Z ERROR codex_core::tools::router: error=code-mode host is disabled
+2026-11-14T10:15:46.934658Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:46.934909Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:46.935144Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:47.643460Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:47.643819Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:53.517094Z ERROR codex_core::tools::router: error=code-mode host is disabled
+2026-11-14T10:15:53.538881Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:53.570038Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:53.570316Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:53.570567Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:53.930821Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:15:53.931149Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.106416Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.115292Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.220761Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.427220Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.441530Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.447649Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.448044Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.449485Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.491907Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.492189Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.492490Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.839264Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:03.839542Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:04.450984Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:04.454661Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:04.582072Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:04.742100Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:04.742346Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:04.742578Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:05.167526Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:05.167809Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:07.532123Z ERROR codex_core::tools::router: error=code-mode host is disabled
+2026-11-14T10:16:07.656709Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:07.656974Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:07.657233Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:07.913552Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:07.913880Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:10.405791Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:10.466208Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:10.466464Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:10.466720Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:10.883724Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:10.883985Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:11.649623Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:11.649893Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:11.650144Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:12.422189Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:12.422472Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:13.081368Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:13.144056Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:33.141361Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:33.141631Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:33.141887Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:33.973722Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:33.974005Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+codex
+**현재는 근거 있는 독립 평가를 완료할 수 없습니다.** 읽기 명령이 실행되기 전에 도구에서 `code-mode host is disabled` 오류가 반복됐습니다. README를 포함해 저장소 파일을 하나도 읽지 못했습니다.
+
+따라서 **100점 평가, 탈락 수준의 공백, P1–P10의 우선순위·가산점, README 과장 여부는 판정 보류**입니다. 특히 과장이 “없음”이라는 뜻은 아닙니다. 파일을 확인하지 않고 점수나 줄 번호를 붙이면 요청하신 독립 평가의 취지를 훼손합니다.
+
+다만 제공하신 수치에 대해서는 다음과 같은 **검증 전 가설**을 제시할 수 있습니다.
+
+- **0.960 → 0.849는 11.1%p 하락**입니다. HF NF4와 vLLM의 비교는 프레임워크와 정밀도가 함께 달라져, 현재 정보만으로 원인을 특정할 수 없습니다.
+- **QLoRA의 학습·추론 조건 차이**는 유력한 점검 대상입니다. NF4 베이스에서 학습한 어댑터를 BF16 베이스에 적용하면 학습 때와 계산 조건이 달라집니다. 다만 이 사실만으로 하락 폭 전체를 설명할 수는 없습니다. 어댑터 로딩·적용 범위와 병합 방식도 확인해야 합니다.
+- **이미지 전처리, 채팅 템플릿, 생성 설정**도 동등하게 중요합니다. 이미지 크기·비전 토큰 수, 특수 토큰, 출력 길이 제한, 종료 조건, JSON 파싱 차이는 필드 정확도를 떨어뜨릴 수 있습니다.
+- **A40은 BF16을 지원합니다.** “A40이라 BF16 정확도가 낮다”는 설명에는 추가 증거가 필요합니다. BF16과 FP16은 수치 특성이 달라 출력이 달라질 수 있지만, FP32가 반드시 추출 정확도까지 높이지는 않습니다. Linux 자체보다는 함께 달라진 CUDA·PyTorch·attention 커널·라이브러리 버전을 먼저 확인하는 편이 타당합니다.
+
+설명하신 **P3가 기본 모델의 HF 정밀도 비교라면**, 기본 모델이 정밀도 변화에 민감한지는 확인할 수 있습니다. 하지만 그것만으로는 **QLoRA 어댑터와 정밀도의 상호작용**, **HF와 vLLM의 차이**까지 분리하지 못합니다. E1–E5의 실제 내용은 읽지 못했으므로 설계의 충분성은 판단할 수 없습니다.
+
+원인을 가르려면 같은 평가 샘플에서 다음 비교가 필요합니다.
+
+1. **HF 안에서 정밀도 비교:** 기본 모델과 어댑터 적용 모델 각각 NF4/BF16/FP16 비교. FP32는 우선 소수의 실패 샘플로 확인.
+2. **같은 정밀도에서 프레임워크 비교:** HF BF16 ↔ vLLM BF16, 어댑터 적용 상태와 입력·생성 조건 고정.
+3. **샘플별 실패 분해:** 원문 생성 결과를 보존해 추출 오답, 출력 잘림, 형식·파싱 실패를 구분.
+
+이 비교가 갖춰지면 추가 GPU 비용을 쓰기 전에 원인 범위를 상당히 좁힐 수 있습니다. 요청하신 최종 평가를 진행하려면 **읽기 도구가 정상 동작하는 세션에서 저장소 검토를 재개해야 합니다.**
+2026-11-14T10:16:59.358207Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:16:59.474364Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+tokens used
+23,782
+
+--- 2026-11-14 19:23:46 rc=0 376s ---
+ token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:20:43.227868Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:20:43.356596Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:20:46.741091Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:20:46.837389Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:02.163771Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:02.164078Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:21.829556Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:21.830076Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:21.831029Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:26.133141Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:26.133429Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+codex
+핵심 학습 코드, 자동 채점, 승인본 내보내기는 기록과 구현이 서로 뒷받침합니다. 가장 큰 감점은 vLLM에서 품질 저하가 미해결이고, 동시성별 부하 측정에도 정확도 검증이 빠져 있다는 점입니다. 90점 계획은 반복 평가보다 이 서빙 품질 검증과 실제 실패 개선을 먼저 완료하도록 순서를 잡는 편이 좋겠습니다.
+
+2026-11-14T10:21:54.608454Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+exec
+"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'findstr /n "''^" "src'"\\invoiceguard\\app\\api.py\" | findstr /r \""'^24[0-9]: ''^25[0-9]: ''^26[0-9]:"' in H:\dev\invoiceguard-po
+exec
+"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'findstr /n "''^" "reports'"\\serving\\vllm_bf16_a40.json\" | findstr /r \""'^50[5-9]: ''^51[0-9]: ''^60[0-9]: ''^61[0-6]: ''^65[0-9]: ''^66[0-3]:"' in H:\dev\invoiceguard-po
+exec
+"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'findstr /n "''^" "src'"\\invoiceguard\\vlm\\train.py\" | findstr /r \""'^9[0-9]: ''^1[01][0-9]: ''^12[0-9]:"' in H:\dev\invoiceguard-po
+exec
+"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "findstr /n /c:\"budget\" /c:\"estimate\" /c:\"cost\" \"src\\invoiceguard\\dashboard_server.py\"" in H:\dev\invoiceguard-po
+ exited 1 in 806ms:
+ succeeded in 945ms:
+240:                status, error = "unavailable", str(exc)[:200]
+241:            except Exception as exc:  # noqa: BLE001 - any backend error must release the case, never leave it extracting
+242:                status, error = "error", repr(exc)[:200]
+243:            outcome_error = None  # raised only AFTER the history is committed (raising inside would roll it back)
+244:            with store.tx() as db:  # compare-and-swap on completion
+245:                case = load_case(db, case_id)
+246:                fresh = case["state"] == "extracting" and case["active_run_id"] == run_id
+247:                db.execute("UPDATE extraction_runs SET raw_response=?, finish_reason=?, latency_s=?, prompt_sha256=?, error=?, finished_at=? WHERE run_id=?",
+248:                           (result.raw_response if result else None, result.finish_reason if result else None,
+249:                            result.latency_s if result else None, result.prompt_sha256 if result else None, error, _now(), run_id))
+250:                if not fresh:
+251:                    db.execute("UPDATE extraction_runs SET status='stale' WHERE run_id=?", (run_id,))
+252:                    outcome_error = ApiError(409, "STALE_EXTRACTION", "? ?? ??? ? ?? ??? ?? ????? ??????.")
+253:                elif status != "done":
+254:                    db.execute("UPDATE extraction_runs SET status=? WHERE run_id=?", (status, run_id))
+255:                    reason = {"timeout": "TIMEOUT", "unavailable": "MODEL_UNAVAILABLE"}.get(status, "BACKEND_ERROR")
+256:                    db.execute("UPDATE cases SET state='failed', state_reason=?, active_run_id=NULL, updated_at=? WHERE case_id=?",
+257:                               (reason, _now(), case_id))
+258:                    outcome_error = ApiError({"timeout": 504, "unavailable": 503}.get(status, 502), reason,
+259:                                             "??? ??????. ????? ??????.")
+260:                else:  # fresh + model answered: apply in the SAME transaction as the CAS check
+261:                    parsed = parse_response(result.raw_response, "TRADE_RAW", result.generation_status, result.finish_reason)
+262:                    po = load_po(db, case["po_id"], case["po_version"])
+263:                    if parsed.status != "ok" or not parsed.schema_valid or not parsed.row_index_valid:
+264:                        version, _ = add_version(db, case, "extraction", run_id, None, po)
+265:                        db.execute("UPDATE extraction_runs SET status='failed_output' WHERE run_id=?", (run_id,))
+266:                        db.execute("UPDATE cases SET state='failed', state_reason=?, current_version=?, active_run_id=NULL, updated_at=? WHERE case_id=?",
+267:                                   (f"OUTPUT_{parsed.status.upper()}" if parsed.status != "ok" else "OUTPUT_SCHEMA", version, _now(), case_id))
+268:                        return {"case_id": case_id, "version": version, "state": "failed", "mode": ext.mode, "run_id": run_id}
+269:                    version, findings = add_version(db, case, "extraction", run_id, parsed.obj, po)
+
+ succeeded in 1055ms:
+505:        },
+506:        {
+507:          "id": "tr_e082855b966a",
+508:          "server_fields": [
+509:            18,
+510:            24
+511:          ],
+512:          "identical_raw_to_hf": false,
+513:          "hf_fields": [
+514:            22,
+515:            24
+516:          ]
+517:        },
+518:        {
+519:          "id": "tr_827938e7dc64",
+600:          ]
+601:        },
+602:        {
+603:          "id": "tr_d6726bd339a6",
+604:          "server_fields": [
+605:            37,
+606:            42
+607:          ],
+608:          "identical_raw_to_hf": false,
+609:          "hf_fields": [
+610:            41,
+611:            42
+612:          ]
+613:        },
+614:        {
+615:          "id": "tr_c74a74926cfb",
+616:          "server_fields": [
+650:        {
+651:          "id": "tr_e30feeab0b29",
+652:          "server_fields": [
+653:            18,
+654:            18
+655:          ],
+656:          "identical_raw_to_hf": true,
+657:          "hf_fields": [
+658:            18,
+659:            18
+660:          ]
+661:        },
+662:        {
+663:          "id": "tr_e308592901b8",
+
+ succeeded in 1144ms:
+90:    out_dir = REPO / "artifacts" / "adapters" / run_id
+91:    torch.manual_seed(seed)
+92:    random.seed(seed)
+93:
+94:    processor = load_processor()
+95:    template = processor.chat_template or ""
+96:    model = attach_lora(load_base(patch_embed_fp32=False))  # kbit prep upcasts vision to fp32 itself
+97:    collator = VerifiedCollator(processor, records)
+98:    cfg = SFTConfig(
+99:        output_dir=str(REPO / "artifacts" / "trainer" / run_id), max_steps=max_steps,
+100:        per_device_train_batch_size=CONFIG["micro_batch"], gradient_accumulation_steps=CONFIG["grad_accum"],
+101:        learning_rate=CONFIG["lr"], lr_scheduler_type=CONFIG["scheduler"], warmup_ratio=CONFIG["warmup_ratio"],
+102:        bf16=False,  # no autocast: it pushes the vision Conv3d onto the slow bf16 cuDNN path (~18 s/sample); bnb 4-bit layers still compute in bf16
+103:        logging_steps=1, save_strategy="no", report_to="none", seed=seed, data_seed=seed,
+104:        dataloader_num_workers=0, remove_unused_columns=False, max_length=None, packing=False,
+105:        gradient_checkpointing=False,  # already enabled by prepare_model_for_kbit_training
+106:        dataset_kwargs={"skip_prepare_dataset": True})
+107:    from transformers import Trainer
+108:
+109:    class LeanSFTTrainer(SFTTrainer):
+110:        """TRL SFTTrainer whose compute_loss skips TRL's per-step entropy/token-accuracy metrics.
+111:
+112:        Measured 2026-11-14: those metrics materialise extra fp32 copies of the 151,936-vocab logits each
+113:        micro-step; on the 16 GB GPU the run grew to 14.9 GB, spilled into shared memory and stalled (GPU
+114:        idle, 19 W). The loss itself is the standard causal-LM loss on our verified labels.
+115:        """
+116:
+117:        def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+118:            inputs["use_cache"] = False
+119:            return Trainer.compute_loss(self, model, inputs, return_outputs=return_outputs,
+120:                                        num_items_in_batch=num_items_in_batch)
+121:
+122:    trainer = LeanSFTTrainer(model=model, args=cfg, train_dataset=Dataset.from_list([{"idx": i} for i in range(len(records))]),
+123:                             data_collator=collator, processing_class=processor)
+124:    torch.cuda.reset_peak_memory_stats()
+125:    t0 = time.perf_counter()
+126:    result = trainer.train()
+127:    seconds = time.perf_counter() - t0
+128:    model.save_pretrained(str(out_dir))
+129:
+
+2026-11-14T10:21:56.741750Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:56.742024Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:56.742291Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:56.939482Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:21:56.939826Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:22:01.963796Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:22:01.964167Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+codex
+**76/100점입니다. 서류에서 면접으로 넘길 만한 포트폴리오지만, “학습한 모델을 품질 손실 없이 서빙한다”는 증거가 부족합니다.** 현재 코드와 기존 실행 기록 기준이며, 진행 중인 P3는 제외했습니다. 지정 문서에 이전 평가점수가 포함돼 있어 완전한 블라인드는 아니지만, 아래 가중치는 공고 기준으로 별도 산정했습니다.
+
+| 공고 항목 | 가중치 | 획득점 | 판단·근거 |
+|---|---:|---:|---|
+| LoRA/SFT, transformers·peft·trl | 20 | 17 | 실제 학습·마스크 검증·재현성 우수. seed·ablation 부족. [train.py](H:/dev/invoiceguard-po/src/invoiceguard/vlm/train.py:96), [학습 비교](H:/dev/invoiceguard-po/reports/runpod/train_compare.json:40) |
+| 품명·수량·단가·품번 정확도 | 15 | 11 | 자체 test 0.921이나 M1−M0 비유의, 단가 0.824. [FINAL](H:/dev/invoiceguard-po/reports/eval/final_summary.md:22), [필드별 결과](H:/dev/invoiceguard-po/README.md:378) |
+| 서빙 프레임워크·가속·배치 | 20 | 14 | vLLM 배포·동시성 실측 인정. M1 품질 저하 미해결. [RunPod](H:/dev/invoiceguard-po/reports/runpod/RUNPOD_RUN.md:74) |
+| 자동 채점·회귀 테스트 | 15 | 14 | 실패 분모 유지, bootstrap, 엄격/보조 지표, CI가 강점. [평가기](H:/dev/invoiceguard-po/src/invoiceguard/evaluation.py:44), [CI](H:/dev/invoiceguard-po/.github/workflows/ci.yml:17) |
+| 실패 분석·프롬프트·데이터 개선 | 10 | 7 | 구체적 분석과 부정적 결과 공개. 위험 오류 개선 성공은 없음. [dev 분석](H:/dev/invoiceguard-po/reports/eval/dev_summary.md:42) |
+| Linux·SSH·GPU 운영 | 8 | 7 | 설치·터널·백업·복원·삭제 실증. 운영 경험은 단기 1회. [실행 기록](H:/dev/invoiceguard-po/reports/runpod/RUNPOD_RUN.md:24) |
+| OCR·표 문서·무역 도메인 | 5 | 4 | 독립 PO·Decimal 대사·승인본 export 우수. 통관 서류 전반은 미검증. [대사](H:/dev/invoiceguard-po/src/invoiceguard/reconciliation.py:77), [승인](H:/dev/invoiceguard-po/src/invoiceguard/app/api.py:335) |
+| 양자화·클라우드 비용 최적화 | 4 | 2 | NF4·비용 기록 있음. 품질/속도/비용 비교 부족. [한계](H:/dev/invoiceguard-po/README.md:560) |
+| 멀티 GPU·한영 혼합 | 2 | 0 | 현재 실증 없음. [범위](H:/dev/invoiceguard-po/README.md:564) |
+| Java/Spring Boot/React | 1 | 0 | Python·vanilla JS 구현. [구현 현황](H:/dev/invoiceguard-po/reports/IMPLEMENTATION_STATUS.md:118) |
+| **합계** | **100** | **76** | |
+
+**필수역량이 통째로 빠진 치명적 공백은 없습니다.** 제가 서류 검토자라면 면접 대상으로 봅니다. 다만 즉시 서빙 업무를 맡길 사람을 찾는다면, **vLLM에서 11.1%p 하락하고 원문도 남기지 않은 점**은 실제 탈락 사유가 될 수 있습니다. 합성 데이터 한계와 모호수량 recall 0/2도 중요하지만, 이를 명시하고 사람 승인을 강제한 설계는 타당합니다([FINAL:42](H:/dev/invoiceguard-po/reports/eval/final_summary.md:42)).
+
+90점에는 약 **14점의 실질적 보강**이 필요합니다. 아래 가산점은 결과가 확인될 때의 추정치입니다.
+
+| 보강 작업 | 예상 가산 | 노력 | 유료 GPU |
+|---|---:|---|---|
+| P3→P8: 원인 분리·수정 후 vLLM 정확도 회복, 동시성별 품질·p95 검증 | +4–5 | 1–2일 | 현재 환경에서는 짧은 재측정 필요 |
+| P5: M0/M1 BF16·INT8·NF4 정확도/지연/VRAM 비교 | +2 | 반나절–1일 | 불필요 |
+| P6: 추가 seed 2개·데이터 구성 ablation | +2 | 약 1일 | 불필요 |
+| 모호수량·누락행 대상 개선, 새로 고정한 검증셋에서 효과 확인 | +3 | 1–3일 | 대체로 불필요 |
+| 서빙 취소·포화·실패 회귀 테스트, 한영 혼합·다페이지 합성 검증 | +2–3 | 1–2일 | 불필요 |
+
+[계획](H:/dev/invoiceguard-po/plan.md:25)의 순서는 **P1 상태 정리 → P2/P7 완료 확인 → P3/P5 → P8 → 실패 개선 → P6 → P9 → P10**을 권합니다. P2는 상당 부분 반영됐고, P7 표는 이미 있습니다. P4는 이번 자문에 해당합니다. **P8은 H3일 때만 수행할 일이 아니라, 최종 서빙 경로의 품질 확인에 필요합니다.** P9는 점수가 나올 때까지 반복하기보다 사전 완료 기준으로 한 번 재평가하세요. 멀티 GPU 도입과 대규모 rank sweep은 현재 우선순위가 낮습니다. 기존 FINAL은 유지하고 새 검증셋을 별도로 고정해야 합니다.
+
+vLLM 하락은 **일반적인 A40 문제보다 M1의 베이스 정밀도·LoRA 적용·출력 구조 사이의 상호작용**을 우선 의심합니다. M0는 오히려 개선됐고, A40 HF NF4에서는 동일 필드 정확도가 재현됐습니다. 다만 NF4→BF16 불일치와 vLLM 구현 중 어느 쪽인지는 아직 가를 수 없습니다([RunPod:63](H:/dev/invoiceguard-po/reports/runpod/RUNPOD_RUN.md:63)).
+
+[P3 E1–E5](H:/dev/invoiceguard-po/plan.md:45)는 유용하지만 판정 문구를 수정해야 합니다.
+
+- **E1/E3:** HF 안의 정밀도 효과를 확인합니다. E1 저하만으로 H1을 “확정”, 정상만으로 “기각”할 수는 없습니다.
+- **E2:** dtype 민감도 검사입니다. 현재 코드는 vision·lm_head dtype도 함께 바꾸며 모든 HF 조건에서 Conv3d를 FP32로 실행합니다. 순수 언어부 정밀도 비교가 아닙니다([model.py:26](H:/dev/invoiceguard-po/src/invoiceguard/vlm/model.py:26)).
+- **E4:** 8건 NF4 일치는 A40/Linux의 일반적 문제를 약화하지만, BF16 커널 차이를 배제하지 못합니다. A40은 BF16 지원 GPU이며 FP32가 추출 정확도를 반드시 높이지는 않습니다.
+- **E5:** 지원 여부와 양자화 제외 모듈부터 확인해야 합니다. 먼저 **같은 A40에서 HF BF16↔vLLM BF16, M0/M1**을 비교하는 연결 실험이 필요합니다.
+
+원문·필드별 오답·입력 토큰/이미지 전처리·종료 조건·실제 모듈 dtype을 함께 저장하세요. 단순 BF16 병합도 해결을 보장하지 않습니다. `W_bf16+Δ`는 학습 때의 `dequant(W_nf4)+Δ`와 다릅니다.
+
+README에서 확인한 부정확한 주장은 다음입니다.
+
+1. **“Every M1 document lost exactly 4 fields”**([README:663](H:/dev/invoiceguard-po/README.md:663))는 틀립니다. JSON을 집계하면 오답 4개인 문서는 **17/20**, 나머지는 6·5·0개입니다. 특히 [18/18 정답·원문 동일 사례](H:/dev/invoiceguard-po/reports/serving/vllm_bf16_a40.json:651)가 있습니다. “합계 4필드 누락”은 원문 없는 가설로 남겨야 합니다.
+2. **“(version, run_id, state) is checked again”**([README:507](H:/dev/invoiceguard-po/README.md:507))과 달리 완료 검사는 [state와 active_run_id](H:/dev/invoiceguard-po/src/invoiceguard/app/api.py:246)입니다. 설명을 고칠 부분이며, 현재 단일 프로세스에서 지연 덮어쓰기 결함을 발견했다는 뜻은 아닙니다.
+3. **“no batching”**([README:572](H:/dev/invoiceguard-po/README.md:572))은 HF 서버로 범위를 한정해야 합니다. [vLLM 동시성 실측](H:/dev/invoiceguard-po/reports/runpod/RUNPOD_RUN.md:74)과 현재 문구가 충돌합니다.
+
+핵심 학습·FINAL 수치·승인본 export 주장은 정적 검토와 기존 기록으로 뒷받침됩니다. 이번 검토에서 테스트나 모델은 실행하지 않았습니다.
+2026-11-14T10:23:46.287093Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+2026-11-14T10:23:46.382042Z ERROR codex_login::auth::manager: Failed to refresh token: Your access token could not be refreshed because your refresh token was revoked. Please log out and sign in again.
+tokens used
+187,288
+

@@ -7,7 +7,7 @@
 [![ci](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml/badge.svg)](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml)
 ![data](https://img.shields.io/badge/data-synthetic%20only-lightgrey)
 ![gpu](https://img.shields.io/badge/GPU-local%20RTX%204070%20Ti%20SUPER-informational)
-![runpod](https://img.shields.io/badge/RunPod-A40%20%C2%B7%2043%20min%20%C2%B7%20~%240.43-673ab7)
+![runpod](https://img.shields.io/badge/RunPod-A40%20%C2%B7%2043%20min%20%C2%B7%20est.%20%240.43-673ab7)
 
 - **모델:** Qwen3-VL-2B-Instruct(NF4) + QLoRA 어댑터 — 로컬 GPU 1장에서 학습·평가·서빙했고, RunPod A40을 빌려 학습 재현과 vLLM 측정을 했습니다([12장](#12-runpod-클라우드-재현))
 - **데이터:** 모두 합성입니다. 공개 InvoiceOCR-Synth와 자체 생성 Invoice–PO를 쓰며, 실제 기업·통관 문서 성능은 주장하지 않습니다.
@@ -280,7 +280,7 @@ flowchart TB
 | 항목 | 값 |
 |---|---|
 | 기본 모델 | Qwen3-VL-2B-Instruct<br><sub>NF4 double-quant · bf16 compute, 비전 인코더와 lm_head는 비양자화</sub> |
-| 방법 | QLoRA SFT<br><sub>TRL `SFTTrainer` + 검증한 completion-only collator</sub> |
+| 방법 | QLoRA SFT<br><sub>TRL `SFTTrainer`를 학습 루프로 쓰고, completion-only collator는 직접 만들어 검증했습니다. Qwen3-VL 채팅 템플릿에 generation 표시가 없어 TRL의 데이터 준비와 assistant-only loss는 쓰지 않았고, loss는 transformers `Trainer`의 표준 causal-LM loss입니다.</sub> |
 | LoRA | r 8 · α 16 · dropout 0.05 · **언어 모델 q_proj / v_proj만**<br><sub>학습 파라미터 1,605,632개 (전체의 0.11%)</sub> |
 | 학습 데이터 | 360건 (PUBLIC_CANONICAL 200 + TRADE_RAW 160) |
 | 최적화 | 80 optimizer step<br><sub>micro batch 1 × grad accum 8 (≈1.78 epoch), lr 1e-4 cosine, warmup 0.05</sub> |
@@ -366,6 +366,42 @@ FINAL 표의 7줄은 문서 묶음 세 개로 이루어져 있습니다. 아래�
 
 <sub>[ ] = 95% CI. ² B0의 0점은 freelancer 양식의 헤더 단어를 규칙에서 일부러 뺀(v1.2) 결과로, 60건 모두 품목 행을 찾지 못했습니다.<br>
 M1이 OOD clean에서 IID clean보다 높은 것은 이 OOD가 같은 생성기의 양식 1종이기 때문입니다. 원본: [`reports/eval/final_summary.md`](reports/eval/final_summary.md)</sub>
+
+### FINAL — 필드별 정확도
+
+<!-- field-table:start -->
+
+**자체 test** — 40문서, 품목 170행. 인쇄된 문자열 그대로 일치해야 정답(strict)
+
+| 필드 | B0 | M0 | M1 |
+|---|---:|---:|---:|
+| *품목 행마다* | | | |
+| 품번 (SKU) | 0.000<br><sub>0/170</sub> | 0.876<br><sub>149/170</sub> | **0.900**<br><sub>153/170</sub> |
+| 품명 | 0.000<br><sub>0/170</sub> | 0.888<br><sub>151/170</sub> | **0.924**<br><sub>157/170</sub> |
+| 수량 | 0.000<br><sub>0/170</sub> | 0.882<br><sub>150/170</sub> | **0.906**<br><sub>154/170</sub> |
+| 단위 | 0.000<br><sub>0/170</sub> | **0.988**<br><sub>168/170</sub> | 0.982<br><sub>167/170</sub> |
+| 단가 | 0.000<br><sub>0/170</sub> | 0.806<br><sub>137/170</sub> | **0.824**<br><sub>140/170</sub> |
+| 행 금액 | 0.500<br><sub>85/170</sub> | 0.824<br><sub>140/170</sub> | **0.900**<br><sub>153/170</sub> |
+| *문서마다* | | | |
+| 인보이스 번호 | 0.625<br><sub>25/40</sub> | **0.925**<br><sub>37/40</sub> | 0.900<br><sub>36/40</sub> |
+| 통화 | **1.000**<br><sub>40/40</sub> | **1.000**<br><sub>40/40</sub> | **1.000**<br><sub>40/40</sub> |
+| 소계 | 0.375<br><sub>15/40</sub> | 0.975<br><sub>39/40</sub> | **1.000**<br><sub>40/40</sub> |
+| 세금 | 0.775<br><sub>31/40</sub> | **1.000**<br><sub>40/40</sub> | **1.000**<br><sub>40/40</sub> |
+| 할인 | 0.800<br><sub>32/40</sub> | **1.000**<br><sub>40/40</sub> | **1.000**<br><sub>40/40</sub> |
+| 합계 | 0.900<br><sub>36/40</sub> | 0.975<br><sub>39/40</sub> | **1.000**<br><sub>40/40</sub> |
+
+**공개 clean** — 숫자 정규형. IID 20문서, OOD(freelancer) 20문서
+
+| 필드 | B0 IID | M0 IID | M1 IID | B0 OOD | M0 OOD | M1 OOD |
+|---|---:|---:|---:|---:|---:|---:|
+| 품명 | 0.667<br><sub>26/39</sub> | 0.000<br><sub>0/39</sub> | **1.000**<br><sub>39/39</sub> | 0.000<br><sub>0/82</sub> | 0.000<br><sub>0/82</sub> | **0.976**<br><sub>80/82</sub> |
+| 수량 | 0.750<br><sub>51/68</sub> | 0.000<br><sub>0/68</sub> | **0.971**<br><sub>66/68</sub> | 0.000<br><sub>0/82</sub> | 0.000<br><sub>0/82</sub> | **0.976**<br><sub>80/82</sub> |
+| 단가 | 0.697<br><sub>23/33</sub> | 0.000<br><sub>0/33</sub> | **0.939**<br><sub>31/33</sub> | 0.000<br><sub>0/82</sub> | 0.000<br><sub>0/82</sub> | **0.963**<br><sub>79/82</sub> |
+| 금액 | **0.765**<br><sub>52/68</sub> | 0.000<br><sub>0/68</sub> | 0.691<br><sub>47/68</sub> | 0.000<br><sub>0/82</sub> | 0.000<br><sub>0/82</sub> | **0.976**<br><sub>80/82</sub> |
+
+<sub>칸 = strict 정확도 (맞음 / 채점 수). 파싱에 실패한 문서도 분모에 남습니다. 공개 세트에서 M0의 0.000은 코드펜스 형식 실패, OOD에서 B0의 0.000은 "표를 못 찾음"입니다(아래 설명). 자체 test에서 B0는 40문서 중 18문서에서 품목 행을 찾지만, 학습에 없던 레이아웃이라 열을 섞어(품번이 품명 칸, 단가가 수량 칸으로) 행 금액만 맞습니다. 원본: `reports/eval/{b0,m0,m1}_final_*.json` → `sets.<세트>.strict.fields`, `python -m invoiceguard.readme_tables`로 생성.</sub>
+
+<!-- field-table:end -->
 
 ### 0.000은 무엇을 뜻하나
 
@@ -466,7 +502,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 
 **보장하는 것**
 - **버전 CAS:** 추출 · 수정 · 승인은 모두 `expected_version`을 확인합니다.<br>
-  추출이 끝나면 (버전, run_id, 상태)를 다시 확인하고, 그 사이 바뀐 케이스에는 결과를 기록만 하고 반영하지 않습니다.
+  버전은 추출을 시작할 때 확인하고, 추출이 끝나면 케이스의 상태와 진행 중인 run id를 다시 확인합니다. 그 사이 바뀌었으면(예: 재시작으로 `INTERRUPTED` 처리) 결과를 이력으로만 남기고 반영하지 않습니다.
 - **추론은 하나씩:** 동시 추출 요청은 429, 추출 중 수정 · 승인은 409를 돌려줍니다.<br>
   타임아웃이 나면 백엔드를 격리(503)하고, health check가 통과하면 풉니다.
 - **불변 스냅샷:** 승인 시 스냅샷과 SHA256을 저장하고, export는 현재 버전의 유효한 승인 스냅샷만 돌려줍니다.<br>
@@ -504,10 +540,10 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 
 | 역량 | 이 저장소의 증거 |
 |---|---|
-| LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` + 검증 collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
+| LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` 루프 + 직접 만든 검증 collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
 | 학습 정확성 검증 | loss mask 감사 360/360, 10-step smoke, 재로드 일치<br><sub>[`reports/model/`](reports/model)</sub> |
 | 다른 머신에서의 재현 | 동결 학습을 RunPod A40에서 다시 돌림: step별 loss 차이 0.002 이내, dev 출력 동일<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
-| 클라우드 GPU 운영 | MCP로 Runpod 운영: 실제 견적 → 승인 → Pod → SSH · 터널 검사 → 학습 → SHA256 백업 → 삭제, $0.43<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
+| 클라우드 GPU 운영 | MCP로 Runpod 운영: 실제 견적 → 승인 → Pod → SSH · 터널 검사 → 학습 → SHA256 백업 → 삭제, 약 $0.43(추정)<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | 추출 정확도 · 실패 분석 · 개선 | 세트별 평가기 · paired bootstrap, 실패 분류, 개선 1건과 **음성 결과**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | 자동 채점 · 회귀 테스트 | pytest 160개 이상(규칙 B01–B12, 평가 E01–E05, API A01–A08, 대시보드)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · 동결 · 해시 가드</sub> |
 | 서빙 · 성능 측정 | 직접 만든 Transformers + PEFT GPU 서버(서빙 프레임워크 아님) — 실제 타임아웃 취소 · bounded queue 실측<br><sub>[`reports/serving/`](reports/serving)</sub><br>RunPod에서 vLLM 0.11.2: 동시성 1–8의 연속 배칭 측정 |
@@ -520,7 +556,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 ## 11. 비용과 한계
 
 **비용**
-- 클라우드 지출 **약 $0.43** — RunPod A40 Pod 1대를 시간당 $0.60에 43분 사용([12장](#12-runpod-클라우드-재현))
+- 클라우드 지출 **약 $0.43**(추정: 43분 × 시간당 $0.60) — RunPod A40 Pod 1대([12장](#12-runpod-클라우드-재현)). 작성 시점에는 청구 기록이 아직 다 반영되지 않았습니다.
 - 학습 1회 약 22분, final M0 · M1 추론 약 49분(B0 OCR 시간은 기록 없음), 모두 로컬 GPU
 
 **한계**
@@ -531,7 +567,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 - 모호수량 실패는 해결되지 않았습니다.
 - 서빙
   - vLLM은 RunPod에서만 측정했습니다. 속도는 측정했지만 vLLM에서 M1 정확도가 떨어졌고 원인은 확정하지 못했습니다.
-  - 양자화 비교 없음(NF4 단일), 배칭 없음(batch 1, 직렬 작업자)
+  - 직접 만든 HF 서버는 배칭이 없습니다(batch 1, 직렬 작업자). 배칭은 RunPod의 vLLM에서만 측정했습니다(12장).
   - 벤치는 문서 10장 · 반복 1회이고, 서빙 서버 자체의 자동 테스트 없이 수동 probe만 있습니다.
 - RunPod 재현은 seed 1개 · 1회이고, dev parity는 8건입니다. Pod 안 자동 정지는 권한 문제로 걸지 못해, Pod를 삭제할 때까지 지켜보며 진행했습니다.
 - FSDP / DeepSpeed는 2B 모델 · 단일 GPU에서 필요가 없어 쓰지 않았습니다([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
@@ -561,7 +597,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 | 머신 | 9 vCPU Xeon Gold 6342 · 50 GB RAM<br><sub>container 디스크 80 GB + volume 20 GB</sub> |
 | 이미지 | `runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404`<br><sub>공식 템플릿. 이미지의 torch는 쓰지 않고 저장소 lockfile을 그대로 설치</sub> |
 | 접속 | SSH `22/tcp`만 공개<br><sub>모델 API는 Pod 안 127.0.0.1에서만 열고 SSH 터널로 접근</sub> |
-| 단가 · 시간 · 비용 | 시간당 $0.60 (GPU 0.59 + 디스크 0.014) · 43분 · **약 $0.43** |
+| 단가 · 시간 · 비용 | 시간당 $0.60 (GPU 0.59 + 디스크 0.014) · 43분 · **약 $0.43**<br><sub>시간 × 단가로 계산한 추정값. 청구 기록은 최대 1시간 늦게 반영</sub> |
 
 | Pod 상세와 요금 | vLLM 벤치 중 텔레메트리 |
 |---|---|
@@ -610,6 +646,7 @@ flowchart TB
 
 - 학습 전에 모든 입력을 로컬과 대조했습니다. 패키지 버전이 같고(리눅스는 CUDA 런타임 휠만 추가), SHA256도 모두 같습니다: 모델 11개 파일, manifest 4개, 자체 이미지·정답 512개, parquet 샤드 2개, Pod에서 다시 추출한 공개 학습 이미지 200장. 마스크 감사 360/360.
 - 같은 자체 dev 8건을 기준 경로(HF NF4)로 추론했을 때, Pod에서 학습한 어댑터의 **원문 출력이 로컬 어댑터와 8/8 동일**했고 필드 정확도도 둘 다 200/204입니다.
+- *로컬* 어댑터를 Pod에서 돌리면 로컬 출력과 7/8 동일합니다. 나머지 1건은 값이 모두 같고 JSON 키 순서만 다르며(greedy 디코딩에서 한 토큰이 갈림), 필드 정확도는 같은 200/204입니다.
 - 복원 확인: Pod 어댑터를 로컬 GPU에 올려 돌리면 Pod 출력과 글자 단위로 같습니다(2/2).
 
 **vLLM 0.11.2 서빙** — A40, bf16, 자체 dev 20건, max_tokens 1536, 실패 요청 0건
@@ -619,10 +656,12 @@ flowchart TB
 | M0 기본 | 분당 18.2문서<br><sub>p50 3.1초</sub> | 34.0<br><sub>3.3초</sub> | 62.7<br><sub>3.5초</sub> | 104.8<br><sub>3.9초</sub> |
 | M1 LoRA | 분당 24.3문서<br><sub>p50 2.2초</sub> | 47.1<br><sub>2.3초</sub> | 87.7<br><sub>2.4초</sub> | 149.3<br><sub>2.6초</sub> |
 
-- 연속 배칭 덕분에 동시성을 올리면 처리량이 거의 비례해 늘고, p50은 약 20 %만 늘었습니다.
+- 연속 배칭 덕분에 동시성을 1에서 8로 올리면 처리량은 6.1배(M1) · 5.8배(M0)로 늘고, p50 지연은 약 17–26 %만 늘었습니다.
 - **정확도 주의:** vLLM에서 M1은 0.849로, HF NF4 경로의 0.960보다 낮았습니다(M0는 0.969 vs 0.941).
-  - M1은 문서마다 정확히 4필드씩 틀렸고, 출력이 약 40토큰 짧았습니다. 문서 합계 4필드의 길이와 같습니다.
-  - 어댑터는 NF4로 양자화한 기본 모델 위에서 학습했는데, vLLM은 bf16 기본 모델에 붙였습니다. 이 불일치가 가장 유력한 원인이지만 확정하지 못했습니다. 이번 벤치가 원문 응답을 저장하지 않았기 때문입니다(지금은 저장하도록 고침).
+  - M1은 20건 중 17건에서 4필드를 틀렸고(나머지는 6·5·0필드), 출력이 약 40토큰 짧았습니다. 문서 합계 4필드의 길이와 같습니다.
+  - **원인은 클라우드를 다시 쓰지 않고 로컬에서 찾았습니다.** 같은 어댑터를 양자화하지 않은 bf16 기본 모델에 붙여 로컬 GPU의 HF 기준 경로로 돌리면, 같은 20건에서 0.847이 나옵니다. 출력 토큰 수는 20건 모두 vLLM과 ±1 이내로 같고, 원문 20건 중 19건에 문서 합계 필드가 없습니다([`reports/quant/`](reports/quant)).
+  - 즉 원인은 기본 모델 정밀도입니다. 어댑터는 NF4로 양자화한 기본 모델 위에서 학습했는데 bf16 기본 모델에 붙였기 때문이며, A40·리눅스·vLLM 문제가 아닙니다.
+  - vLLM 벤치는 원문 응답을 저장하지 않았습니다. 지금은 저장하도록 고쳤습니다.
   - 그래서 이 vLLM 수치는 속도 측정으로만 쓰고, vLLM에서의 LoRA 서빙 품질은 미해결로 둡니다.
 
 전체 기록: [`reports/runpod/RUNPOD_RUN.md`](reports/runpod/RUNPOD_RUN.md)

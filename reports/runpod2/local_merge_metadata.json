@@ -1,0 +1,10 @@
+{
+ "kind": "nf4_dequantized_bf16_plus_merged_lora",
+ "base_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+ "adapter": "artifacts/adapters/m1_standard_v1",
+ "adapter_sha256": "eb08674120d6489fb9f2ae4cf72038588794e09b3d337a5239d8a6078aff2868",
+ "seconds": 18.4,
+ "files_sha256": {
+  "model.safetensors": "46cfdc9f9585dfe44c3e01522c146b204cc9c1f4d7998a5f75b3d5c9c651ac99"
+ }
+}

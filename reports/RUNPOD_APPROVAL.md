@@ -1,12 +1,12 @@
 # RunPod 실행 승인 기록
 
 파일 존재나 프롬프트 전달은 결제 승인이 아니다. 승인은 사용자 채팅의 명시적 승인으로만, 실행 1회에만 유효하다.
-아래 필드는 **현재 유효한 승인**이다. 2026-11-14 실행은 끝났고 Pod를 삭제했으므로 다시 미승인 상태다. 다음 실행은 새 견적과 새 승인이 필요하다.
+아래 필드는 **현재 유효한 승인**이다. 2026-11-14 실행 1·2는 끝났고 Pod를 모두 삭제했으므로 다시 미승인 상태다. 다음 실행은 새 견적과 새 승인이 필요하다.
 - approved: false
 - user_approved_at: null
 - quote_observed_at: null
-- actual_balance_usd: 9.56 (콘솔 Billing, 2026-11-14 18:44 KST — 직전 실행 반영이 최대 1시간 늦을 수 있음)
-- existing_billable_resources_checked: true (2026-11-14 18:43 KST: Pod 0 · network volume 0 · 지출률 $0.000/hr)
+- actual_balance_usd: 9.56 이하 (2026-11-14 22:23 KST, 실행 2 청구 반영 지연 중 — 다음 실행 전 콘솔에서 확인)
+- existing_billable_resources_checked: true (2026-11-14 22:23 KST: list-pods 0 · network volume 0)
 - provider: RunPod
 - pod_id: null
 - gpu_model / gpu_count / tier / region: null
@@ -27,7 +27,52 @@
 - extra_pod_authorized: false
 - auto_top_up_authorized: false
 - shutdown_observed_at: null
-- remaining_billable_storage_status: none (2026-11-14 18:43 KST 확인)
+- remaining_billable_storage_status: none (2026-11-14 22:23 KST 확인)
+
+
+## 실행 2 — 2026-11-14 L40S (승인 → 실행 → 삭제 확인)
+상세 시각표: [`runpod2/timeline.md`](runpod2/timeline.md).
+
+| 항목 | 값 |
+|---|---|
+| 승인 | 사용자 채팅 "승인" (약 20:45 KST). 범위: L40S ×1 Secure, container 120GB + volume 20GB, 상한 2.5시간·총 $3.00, 백업 확인 후 terminate |
+| Pod | `t5c8go2mwmeh8u` · L40S 48GB · EUR-IS-2 · host CUDA 13.2 · 생성 20:49:38 KST · 시간당 $1.09 |
+| 접속 확인 | 호스트 키 ED25519 지문 = keyscan, 1 MiB 왕복·번들 203MB SHA256 일치, 터널 응답 SHA256 일치, 공인 IP 차단 |
+| 한 일 | vLLM 5회(M0·M1 병합 × bf16·FP8, 배치 제한), Pod 병합본 해시 대조, P14 bf16 LoRA 학습 + dev44 평가 3종, 32B 교사 시도 3회(2장만 생성 후 중단), 8B 교사 초안 169장 |
+| 승인 범위 대비 | P14 학습·평가(35분)는 처음 제안에 없던 작업을 상한 안에서 추가한 것(로컬 4070이 358 s/step로 너무 느려서). 사용자에게 보고함 |
+| 백업 | `artifacts/runpod/backup2.tgz` SHA256 c3e785bc…a67f, 매니페스트 62개 파일 일치 |
+| 복원 확인 | Pod 학습 bf16 LoRA 어댑터를 로컬 4070(bf16 기본)에서 로드 → dev 2건 출력이 Pod와 동일 |
+| 종료 | 22:22:58 KST delete-pod 204 → list-pods 0 · network volume 0 |
+| 시간 · 비용 | 1시간 33분 20초 × $1.09 ≈ $1.70 + 디스크 약 $0.03 → **약 $1.73 (추정)**. 청구 API는 22:23 기준 당일 합계 $1.06(두 실행, 반영 지연) |
+
+## 실행 2 제안 원문 — 2026-11-14 20:40 KST (승인 전 기록)
+**목적**
+1. **vLLM 서빙 정확도 회복 확인:** P8a의 병합본(NF4 역양자화 bf16 + LoRA 병합)을 vLLM에 LoRA 없이 올려, dev 20건에서 HF와 같은 0.96이 나오는지 원문 저장과 함께 확인한다.
+2. **FP8 양자화 서빙:** 병합본을 bf16 대 FP8(동적)로 비교한다. 정확도·처리량·VRAM을 재고, 배치 튜닝(max-num-seqs)도 함께 본다.
+3. **실문서 라벨 초안:** Kaggle 인도 GST 세금계산서 169장(CC BY 4.0)의 품목 행 초안을 교사 모델 Qwen3-VL-32B-Instruct-FP8로 만든다. 이후 로컬에서 산술 검산(수량×단가=금액, 합계)을 하고, 불일치는 판독해서 라벨을 확정한다.
+
+**정밀도 원칙**
+- 비교하는 두 조건은 같은 GPU·같은 정밀도에서 잰다. bf16 대 FP8은 Pod 안에서 비교한다.
+- HF(로컬 4070) 대 vLLM(Pod) 차이는 기계가 다르다는 점을 표에 밝힌다.
+- 2B 모델의 M0·M1 비교와 학습은 로컬 한 기계에서 한다.
+- 어댑터 짝 검사(P15)를 통과한 조합만 올린다.
+
+**후보 GPU** (get-capacity, Secure, host CUDA 13.2, 20:40 조회)
+
+| GPU | VRAM | 시간당 | 재고 | 비고 |
+|---|---:|---:|---|---|
+| **L40S (제안)** | 48GB | **$1.09** | Low | Ada, FP8 하드웨어 지원. 32B FP8(약 35GB)이 들어감 |
+| RTX 6000 Ada (대안) | 48GB | $1.09 | Low | 위와 같음 |
+| RTX PRO 6000 | 96GB | $2.69 | High | Blackwell. vLLM 호환 위험이 있어 예비로만 |
+
+**디스크와 상한**
+- 디스크: container 120GB(32B FP8 약 35GB + 2B·병합본 약 9GB + venv), volume 20GB.
+- 예상: 약 1.5시간 → GPU $1.64 + 디스크 약 $0.03.
+- **상한 요청: 경과 2.5시간 / 총 $3.00.** 현재 잔액 $9.56 기준으로 최악에도 $6.56이 남는다.
+
+**종료**
+- 백업 SHA256 대조와 로컬 복원 확인 뒤 terminate한다.
+- 컷오프는 생성 후 2.5시간이다. Pod 안 자동 정지는 권한 문제로 불가하므로, 세션 알림과 상시 감시로 대신한다.
 
 ## 실행 1 — 2026-11-14 A40 (승인 → 실행 → 삭제 확인)
 상세 기록: [`runpod/RUNPOD_RUN.md`](runpod/RUNPOD_RUN.md).

@@ -42,27 +42,54 @@ def fp32_patch_embed(model) -> None:
     embed.forward = forward
 
 
-def load_base(model_dir=MODEL_DIR, patch_embed_fp32: bool = True):
-    from transformers import Qwen3VLForConditionalGeneration
+PRECISIONS = ("nf4", "int8", "bf16", "fp16", "fp32")
+
+
+def load_base(model_dir=MODEL_DIR, patch_embed_fp32: bool = True, precision: str = "nf4"):
+    """precision 'nf4' is the frozen reference (training, dev, final). The others exist only for the
+    precision/quantisation comparison (dev, exploratory): 'int8' = bitsandbytes LLM.int8 with the same skipped
+    modules, 'bf16'/'fp16'/'fp32' = unquantised base in that dtype."""
+    from transformers import BitsAndBytesConfig, Qwen3VLForConditionalGeneration
 
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA GPU required; no CPU/mock fallback (CLAUDE.md contract 6)")
+    if precision not in PRECISIONS:
+        raise ValueError(precision)
+    kwargs = {"dtype": torch.bfloat16}
+    if precision == "nf4":
+        kwargs["quantization_config"] = bnb_config()
+    elif precision == "int8":
+        kwargs["quantization_config"] = BitsAndBytesConfig(load_in_8bit=True, llm_int8_skip_modules=SKIP_QUANT_MODULES)
+    else:
+        kwargs["dtype"] = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}[precision]
     model = Qwen3VLForConditionalGeneration.from_pretrained(
-        str(model_dir), quantization_config=bnb_config(), dtype=torch.bfloat16, device_map={"": 0},
-        attn_implementation="sdpa")
+        str(model_dir), device_map={"": 0}, attn_implementation="sdpa", **kwargs)
     if patch_embed_fp32:
         fp32_patch_embed(model)
     model.eval()
     return model
 
 
-def attach_lora(model):
+def attach_lora(model, quantized: bool = True):
+    """quantized=True: QLoRA on the NF4 base (the frozen recipe). quantized=False (P14): plain LoRA on an
+    unquantised base — same targets/rank, gradient checkpointing on, base frozen, LoRA weights kept in fp32."""
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
-    model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True,
-                                            gradient_checkpointing_kwargs={"use_reentrant": False})
+    if quantized:
+        model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True,
+                                                gradient_checkpointing_kwargs={"use_reentrant": False})
+    else:
+        for p in model.parameters():
+            p.requires_grad_(False)
+        model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+        model.enable_input_require_grads()
     cfg = LoraConfig(target_modules=LORA_TARGET_REGEX, bias="none", task_type="CAUSAL_LM", **LORA)
-    return get_peft_model(model, cfg)
+    model = get_peft_model(model, cfg)
+    if not quantized:
+        for p in model.parameters():
+            if p.requires_grad:
+                p.data = p.data.float()
+    return model
 
 
 def trainable_report(model) -> dict:

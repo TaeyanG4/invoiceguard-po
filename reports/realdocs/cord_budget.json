@@ -1,0 +1,44 @@
+{
+ "train": {
+  "n": 742,
+  "max_total": 1820,
+  "max_answer": 855,
+  "mean_answer": 149.7,
+  "image_tokens_min_max": [
+   78,
+   768
+  ],
+  "over_budget": 0,
+  "answer_over_max_new_tokens": 0,
+  "mask_check_errors": 0
+ },
+ "dev": {
+  "n": 100,
+  "max_total": 1287,
+  "max_answer": 458,
+  "mean_answer": 132.0,
+  "image_tokens_min_max": [
+   280,
+   768
+  ],
+  "over_budget": 0,
+  "answer_over_max_new_tokens": 0,
+  "mask_check_errors": 0
+ },
+ "test": {
+  "n": 100,
+  "max_total": 1448,
+  "max_answer": 509,
+  "mean_answer": 140.9,
+  "image_tokens_min_max": [
+   70,
+   768
+  ],
+  "over_budget": 0,
+  "answer_over_max_new_tokens": 0,
+  "mask_check_errors": 0
+ },
+ "sequence_budget": 6144,
+ "max_new_tokens": 1536,
+ "seconds": 96.3
+}

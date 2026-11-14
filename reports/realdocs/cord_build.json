@@ -1,0 +1,33 @@
+{
+ "manifest": "manifests/cord_v2.jsonl",
+ "manifest_sha256": "42a8371d142009df4ee95fc34d48cd32290eabed1f7ce62d00dbd0ed3cfac97c",
+ "summary": {
+  "train": {
+   "docs": 800,
+   "with_masked": 18,
+   "train_eligible": 742,
+   "content_dup_excluded": 40,
+   "content_seen_in_train": 0,
+   "items": 2105,
+   "sub_items": 321
+  },
+  "dev": {
+   "docs": 100,
+   "with_masked": 1,
+   "train_eligible": 0,
+   "content_dup_excluded": 0,
+   "content_seen_in_train": 20,
+   "items": 221,
+   "sub_items": 50
+  },
+  "test": {
+   "docs": 100,
+   "with_masked": 2,
+   "train_eligible": 0,
+   "content_dup_excluded": 0,
+   "content_seen_in_train": 15,
+   "items": 251,
+   "sub_items": 36
+  }
+ }
+}

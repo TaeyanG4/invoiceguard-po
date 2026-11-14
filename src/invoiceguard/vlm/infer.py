@@ -22,7 +22,7 @@ import torch
 
 from ..extraction_request import load_prompt
 from . import MODEL_REVISION, REPO
-from .records import Record, public_records, trade_records
+from .records import Record, cord_records, public_records, trade_records
 from .sft import MAX_NEW_TOKENS, MAX_PIXELS, load_processor, user_messages
 
 FROZEN = REPO / "configs" / "frozen_v1.json"
@@ -38,14 +38,23 @@ def resolve_set(spec: str) -> list[Record]:
     if kind == "stress":
         from .stress import stress_records
         return stress_records(name)
+    if kind == "cord":  # docs/20: dev = CORD validation, test = frozen once (configs/frozen_cord_v1.json)
+        return cord_records({"train": "train", "dev": "dev", "test": "test"}[name], train_only_eligible=False)
     raise ValueError(spec)
 
 
-def config_fingerprint(arm: str, adapter_sha: str | None, batch_size: int) -> dict:
+NF4_PRECISION = "nf4_double_quant_bf16_compute_vision_unquantised_patch_embed_fp32"
+
+
+def precision_label(precision: str) -> str:
+    return NF4_PRECISION if precision == "nf4" else f"{precision}_base_vision_lm_head_unquantised_patch_embed_fp32"
+
+
+def config_fingerprint(arm: str, adapter_sha: str | None, batch_size: int, precision: str = "nf4") -> dict:
     return {"arm": arm, "model_revision": MODEL_REVISION, "adapter_sha256": adapter_sha,
             "prompt_sha256": {t: load_prompt(t)[1] for t in ("PUBLIC_CANONICAL", "TRADE_RAW")},
             "max_pixels": MAX_PIXELS, "max_new_tokens": MAX_NEW_TOKENS, "do_sample": False,
-            "precision": "nf4_double_quant_bf16_compute_vision_unquantised_patch_embed_fp32", "batch_size": batch_size,
+            "precision": precision_label(precision), "batch_size": batch_size,
             "padding_side": "left"}
 
 
@@ -61,6 +70,32 @@ def check_frozen(fp: dict) -> list[str]:
     for name, digest in frozen["manifests_sha256"].items():
         if hashlib.sha256((REPO / "manifests" / name).read_bytes()).hexdigest() != digest:
             errors.append(f"manifest_changed:{name}")
+    return errors
+
+
+FROZEN_CORD = REPO / "configs" / "frozen_cord_v1.json"
+
+
+def check_cord_frozen(fp: dict, run_id: str | None) -> list[str]:
+    """cord:test runs once per frozen arm (docs/20): same generation settings, manifest, prompt and an allowed adapter."""
+    if not FROZEN_CORD.exists():
+        return ["frozen_cord_config_missing"]
+    frozen = json.loads(FROZEN_CORD.read_text(encoding="utf-8"))
+    errors = [f"frozen_mismatch:{k}" for k in ("model_revision", "max_pixels", "max_new_tokens", "do_sample", "precision",
+                                               "batch_size", "padding_side") if frozen["generation"].get(k) != fp.get(k)]
+    if frozen["cord_prompt_sha256"] != fp.get("cord_prompt_sha256"):
+        errors.append("frozen_mismatch:cord_prompt_sha256")
+    if frozen["cord_manifest_sha256"] != fp.get("cord_manifest_sha256"):
+        errors.append("frozen_mismatch:cord_manifest_sha256")
+    arms = frozen["arms"]  # name -> {"arm": m0|m1, "adapter_sha256": ...}
+    if not any(a["arm"] == fp["arm"] and a.get("adapter_sha256") == fp.get("adapter_sha256") for a in arms.values()):
+        errors.append("arm_or_adapter_not_frozen")
+    for meta_path in (REPO / "artifacts" / "predictions").glob("*/run_metadata.json"):  # test runs once per arm
+        old = json.loads(meta_path.read_text(encoding="utf-8"))
+        same_arm = old.get("fingerprint", {}).get("adapter_sha256") == fp.get("adapter_sha256") \
+            and old.get("fingerprint", {}).get("arm") == fp["arm"]
+        if "cord:test" in (old.get("sets") or []) and same_arm and old.get("run_id") != run_id:
+            errors.append(f"cord_test_already_run:{old.get('run_id')}")
     return errors
 
 
@@ -99,7 +134,9 @@ def generate_batch(model, processor, records: list[Record]) -> list[dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--arm", choices=["m0", "m1"], required=True)
+    parser.add_argument("--arm", choices=["m0", "m1", "m1merged"], required=True,
+                        help="m1merged = an adapter already merged into a saved base (--model-dir); exploratory dev only")
+    parser.add_argument("--model-dir", help="load the base model from this folder instead of the pinned revision (m1merged)")
     parser.add_argument("--adapter")
     parser.add_argument("--set", action="append", default=[])
     parser.add_argument("--ids-file")
@@ -107,16 +144,42 @@ def main() -> int:
     parser.add_argument("--run-id")
     parser.add_argument("--allow-final", action="store_true")
     parser.add_argument("--limit", type=int, help="keep only the first N resolved records (parity spot checks)")
+    parser.add_argument("--allow-precision-mismatch", action="store_true",
+                        help="exploratory only (P3): load an adapter on a base precision it was not trained on; recorded in the run")
+    parser.add_argument("--precision", default="nf4", choices=["nf4", "int8", "bf16", "fp16", "fp32"],
+                        help="base-model precision; anything but nf4 is an exploratory dev comparison and cannot run final sets")
     args = parser.parse_args()
 
     if (args.arm == "m1") != bool(args.adapter):
         raise SystemExit("m1 requires --adapter; m0 must not have one")
+    if args.arm == "m1merged" and (not args.model_dir or args.adapter):
+        raise SystemExit("m1merged requires --model-dir and no --adapter (the adapter is already merged)")
+    if args.model_dir and args.arm == "m0":
+        raise SystemExit("--model-dir is for m1merged or m1 on a dequantised base, not m0")
     adapter_sha = None
     if args.adapter:
         adapter_sha = hashlib.sha256((REPO / args.adapter / "adapter_model.safetensors").read_bytes()).hexdigest()
     frozen = json.loads(FROZEN.read_text(encoding="utf-8")) if FROZEN.exists() else None
     batch_size = args.batch_size or (frozen["generation"]["batch_size"] if frozen else 4)
-    fp = config_fingerprint(args.arm, adapter_sha, batch_size)
+    fp = config_fingerprint(args.arm, adapter_sha, batch_size, args.precision)
+    if args.adapter:  # P15: the adapter must sit on the base precision it was trained on
+        from .pairing import check as check_pairing
+
+        pairing = check_pairing(REPO / args.adapter, args.precision, MODEL_REVISION,
+                                REPO / args.model_dir if args.model_dir else None, args.allow_precision_mismatch)
+        if pairing["mismatch_allowed"]:
+            fp["adapter_pairing_mismatch_allowed"] = pairing["problems"]
+    if args.model_dir:
+        fp["model_dir"] = args.model_dir
+    if any(s.startswith("cord:") for s in args.set):  # docs/20: CORD runs also pin the CORD prompt and manifest
+        fp["cord_prompt_sha256"] = load_prompt("CORD_RAW")[1]
+        fp["cord_manifest_sha256"] = hashlib.sha256((REPO / "manifests" / "cord_v2.jsonl").read_bytes()).hexdigest()
+    if "cord:test" in args.set:
+        problems = check_cord_frozen(fp, args.run_id)
+        if problems or not args.allow_final:
+            raise SystemExit(f"cord:test needs --allow-final and a matching configs/frozen_cord_v1.json: {problems}")
+    if any(s in FINAL_SETS for s in args.set) and (args.arm == "m1merged" or args.precision != "nf4"):
+        raise SystemExit("final sets run only the frozen reference (m0/m1, nf4); merged or other precisions are dev-only")
     if any(s in FINAL_SETS for s in args.set):
         from ..freeze import verify_final_ready
 
@@ -153,7 +216,7 @@ def main() -> int:
 
     processor = load_processor()
     processor.tokenizer.padding_side = "left"
-    model = load_base()
+    model = load_base(REPO / args.model_dir, precision=args.precision) if args.model_dir else load_base(precision=args.precision)
     if args.adapter:
         model = PeftModel.from_pretrained(model, str(REPO / args.adapter))
         model.eval()

@@ -28,7 +28,7 @@ PORT = 8001
 MODEL_DIR = REPO / "models" / "qwen3-vl-2b-instruct" / "89644892e4d85e24eaac8bacfd4f463576704203"
 ADAPTER_DIR = REPO / "artifacts" / "adapters" / "m1_standard_v1"
 OUT = REPO / "reports" / "serving"
-TARGET = {"port": PORT, "conc": (1, 2, 4, 8)}  # overridable from the CLI (HF server: --port 8001 --conc 1,2,4)
+TARGET = {"port": PORT, "conc": (1, 2, 4, 8), "arms": ("m0", "m1")}  # overridable from the CLI
 MAX_TOKENS = 1536
 
 
@@ -107,6 +107,8 @@ def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
     result = {"label": label, "server_port": TARGET["port"], "docs": [d.record_id for d in docs], "max_tokens": MAX_TOKENS,
               "warmups": warmups, "repetitions": reps, "arms": {}}
     for arm, model in (("m0", "base"), ("m1", "m1")):
+        if arm not in TARGET["arms"]:
+            continue
         for d in docs[:warmups]:
             _request(model, d.prompt(), d.image_path)
         # parity pass (concurrency 1): same docs as HF dev run
@@ -175,8 +177,10 @@ def main() -> int:
     parser.add_argument("--reps", type=int, default=2)
     parser.add_argument("--port", type=int, default=PORT)
     parser.add_argument("--conc", default="1,2,4,8")
+    parser.add_argument("--arms", default="m0,m1", help="which served models to measure: m0 = served name base, m1 = served name m1")
     args = parser.parse_args()
     TARGET["port"], TARGET["conc"] = args.port, tuple(int(x) for x in args.conc.split(","))
+    TARGET["arms"] = tuple(args.arms.split(","))
     if args.command == "up":
         up(args.quant)
     elif args.command == "down":

@@ -18,7 +18,13 @@ from invoiceguard.vlm import MODEL_DIR, MODEL_ID, MODEL_REVISION  # noqa: E402
 
 
 def main() -> int:
+    import argparse
+
     from huggingface_hub import hf_hub_download, snapshot_download
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model-only", action="store_true", help="skip the public parquet shards (run 2 needs only the model)")
+    a = ap.parse_args()
 
     frozen = json.loads((REPO / "configs" / "frozen_v1.json").read_text(encoding="utf-8"))
     report = {"model_id": MODEL_ID, "model_revision": MODEL_REVISION, "dataset_id": DATASET_ID,
@@ -28,7 +34,7 @@ def main() -> int:
     report["checks"]["model.safetensors"] = {"sha256": weights, "expected": frozen["model"]["weights_sha256"],
                                              "ok": weights == frozen["model"]["weights_sha256"]}
     root = dataset_root(REPO)
-    for rel, expected in SHARD_SHA256.items():
+    for rel, expected in ({} if a.model_only else SHARD_SHA256).items():
         hf_hub_download(DATASET_ID, rel, repo_type="dataset", revision=DATASET_REVISION, local_dir=str(root))
         got = sha256_file(root / rel)
         report["checks"][rel] = {"sha256": got, "expected": expected, "ok": got == expected}

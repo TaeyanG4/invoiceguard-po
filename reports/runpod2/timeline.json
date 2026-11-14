@@ -1,0 +1,265 @@
+{
+ "date_utc": "2026-11-14",
+ "rows": [
+  {
+   "utc": "11:49:38",
+   "kst": "20:49:38",
+   "event": "Pod created (create-pod, L40S EUR-IS-2)",
+   "source": "manual",
+   "until_next_s": 306
+  },
+  {
+   "utc": "11:54:44",
+   "kst": "20:54:44",
+   "event": "setup done: venvs + 2B model, SHA256 ok (setup2.log mtime)",
+   "source": "manual",
+   "until_next_s": 8
+  },
+  {
+   "utc": "11:54:52",
+   "kst": "20:54:52",
+   "event": "teacher download (background)",
+   "source": "run2.log",
+   "until_next_s": 0
+  },
+  {
+   "utc": "11:54:52",
+   "kst": "20:54:52",
+   "event": "merge on Pod (parity with the local merge)",
+   "source": "run2.log",
+   "until_next_s": 27
+  },
+  {
+   "utc": "11:55:19",
+   "kst": "20:55:19",
+   "event": "merge exit=0",
+   "source": "run2.log",
+   "until_next_s": 146
+  },
+  {
+   "utc": "11:57:45",
+   "kst": "20:57:45",
+   "event": "healthy m0_bf16",
+   "source": "run2.log",
+   "until_next_s": 161
+  },
+  {
+   "utc": "12:00:26",
+   "kst": "21:00:26",
+   "event": "bench vllm_run2_m0_bf16 exit=0",
+   "source": "run2.log",
+   "until_next_s": 70
+  },
+  {
+   "utc": "12:01:36",
+   "kst": "21:01:36",
+   "event": "healthy m1merged_bf16",
+   "source": "run2.log",
+   "until_next_s": 108
+  },
+  {
+   "utc": "12:03:24",
+   "kst": "21:03:24",
+   "event": "bench vllm_run2_m1merged_bf16 exit=0",
+   "source": "run2.log",
+   "until_next_s": 110
+  },
+  {
+   "utc": "12:05:14",
+   "kst": "21:05:14",
+   "event": "healthy m1merged_fp8",
+   "source": "run2.log",
+   "until_next_s": 84
+  },
+  {
+   "utc": "12:06:38",
+   "kst": "21:06:38",
+   "event": "bench vllm_run2_m1merged_fp8 exit=0",
+   "source": "run2.log",
+   "until_next_s": 76
+  },
+  {
+   "utc": "12:07:54",
+   "kst": "21:07:54",
+   "event": "healthy m0_fp8",
+   "source": "run2.log",
+   "until_next_s": 115
+  },
+  {
+   "utc": "12:09:49",
+   "kst": "21:09:49",
+   "event": "bench vllm_run2_m0_fp8 exit=0",
+   "source": "run2.log",
+   "until_next_s": 66
+  },
+  {
+   "utc": "12:10:55",
+   "kst": "21:10:55",
+   "event": "healthy m1merged_bf16_seqs4",
+   "source": "run2.log",
+   "until_next_s": 117
+  },
+  {
+   "utc": "12:12:52",
+   "kst": "21:12:52",
+   "event": "bench vllm_run2_m1merged_bf16_seqs4 exit=0",
+   "source": "run2.log",
+   "until_next_s": 15
+  },
+  {
+   "utc": "12:13:07",
+   "kst": "21:13:07",
+   "event": "wait for teacher download",
+   "source": "run2.log",
+   "until_next_s": 0
+  },
+  {
+   "utc": "12:13:07",
+   "kst": "21:13:07",
+   "event": "download exit=0",
+   "source": "run2.log",
+   "until_next_s": 171
+  },
+  {
+   "utc": "12:15:58",
+   "kst": "21:15:58",
+   "event": "32B teacher attempt 1 failed: KV cache 0.47 GiB (log mtime)",
+   "source": "manual",
+   "until_next_s": 152
+  },
+  {
+   "utc": "12:18:30",
+   "kst": "21:18:30",
+   "event": "32B teacher attempt 2 started (run2 queue stopped)",
+   "source": "manual",
+   "until_next_s": 104
+  },
+  {
+   "utc": "12:20:14",
+   "kst": "21:20:14",
+   "event": "32B teacher attempt 2 failed: ninja not on PATH (log mtime)",
+   "source": "manual",
+   "until_next_s": 30
+  },
+  {
+   "utc": "12:20:44",
+   "kst": "21:20:44",
+   "event": "shards (public train/dev images)",
+   "source": "p14.log",
+   "until_next_s": 20
+  },
+  {
+   "utc": "12:21:04",
+   "kst": "21:21:04",
+   "event": "fetch exit=0",
+   "source": "p14.log",
+   "until_next_s": 0
+  },
+  {
+   "utc": "12:21:04",
+   "kst": "21:21:04",
+   "event": "P14 train (bf16 base, plain LoRA)",
+   "source": "p14.log",
+   "until_next_s": 496
+  },
+  {
+   "utc": "12:29:20",
+   "kst": "21:29:20",
+   "event": "train exit=0",
+   "source": "p14.log",
+   "until_next_s": 664
+  },
+  {
+   "utc": "12:40:24",
+   "kst": "21:40:24",
+   "event": "dev44_l40s_m0_bf16 exit=0",
+   "source": "p14.log",
+   "until_next_s": 555
+  },
+  {
+   "utc": "12:49:39",
+   "kst": "21:49:39",
+   "event": "dev44_l40s_m1_nf4 exit=0",
+   "source": "p14.log",
+   "until_next_s": 352
+  },
+  {
+   "utc": "12:55:31",
+   "kst": "21:55:31",
+   "event": "dev44_l40s_m1_bf16lora exit=0",
+   "source": "p14.log",
+   "until_next_s": 1
+  },
+  {
+   "utc": "12:55:32",
+   "kst": "21:55:32",
+   "event": "P14_DONE",
+   "source": "p14.log",
+   "until_next_s": 141
+  },
+  {
+   "utc": "12:57:53",
+   "kst": "21:57:53",
+   "event": "teacher healthy",
+   "source": "teacher_run.log",
+   "until_next_s": 297
+  },
+  {
+   "utc": "13:02:50",
+   "kst": "22:02:50",
+   "event": "32B stopped after 2 drafts (15 tok/s); 8B teacher started",
+   "source": "manual",
+   "until_next_s": 8
+  },
+  {
+   "utc": "13:02:58",
+   "kst": "22:02:58",
+   "event": "teacher8b revision 0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+   "source": "teacher8b_run.log",
+   "until_next_s": 12
+  },
+  {
+   "utc": "13:03:10",
+   "kst": "22:03:10",
+   "event": "downloaded",
+   "source": "teacher8b_run.log",
+   "until_next_s": 106
+  },
+  {
+   "utc": "13:04:56",
+   "kst": "22:04:56",
+   "event": "teacher8b healthy",
+   "source": "teacher8b_run.log",
+   "until_next_s": 914
+  },
+  {
+   "utc": "13:20:10",
+   "kst": "22:20:10",
+   "event": "teacher8b_label exit=0",
+   "source": "teacher8b_run.log",
+   "until_next_s": 8
+  },
+  {
+   "utc": "13:20:18",
+   "kst": "22:20:18",
+   "event": "TEACHER8B_DONE",
+   "source": "teacher8b_run.log",
+   "until_next_s": 72
+  },
+  {
+   "utc": "13:21:30",
+   "kst": "22:21:30",
+   "event": "backup packed and verified (62 files)",
+   "source": "manual",
+   "until_next_s": 88
+  },
+  {
+   "utc": "13:22:58",
+   "kst": "22:22:58",
+   "event": "Pod deleted (delete-pod 204), list-pods 0",
+   "source": "manual",
+   "until_next_s": null
+  }
+ ],
+ "total_s": 5600
+}

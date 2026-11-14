@@ -31,3 +31,7 @@ Thumbs.db
 *.egg-info/
 build/
 dist/
+
+# Real-document model drafts can contain real business names/invoice numbers (Kaggle GST): never commit
+reports/runpod2/teacher*_raw*.jsonl
+reports/realdocs/*_raw*.jsonl

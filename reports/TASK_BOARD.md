@@ -14,7 +14,7 @@
 | T06 | 검수 UI/API·버전·승인·export | 로컬 | passed_with_evidence (minimal API) | FastAPI+SQLite 검수 API, CAS·스냅샷·429/503/504·재시작 복구, 테스트 12개. 검수 화면 UI는 관리자 대시보드만(검수용 UI 미구현) |
 | T07 | 실제 GPU API·지연/메모리/실패 측정 | 로컬 GPU / RunPod | passed_with_evidence (HF+PEFT local · vLLM RunPod) | HF 서버: 실제 타임아웃 취소·bounded queue·동시성 측정(reports/serving/). vLLM 0.11.2: 로컬은 드라이버로 blocked, RunPod A40에서 동시성 1–8 측정(실패 0). 단 vLLM에서 M1 정확도 0.849 vs HF 0.960 — 원인 미확정(reports/serving/vllm_bf16_a40.json) |
 | T08 | M0/M1 동일 frozen final 평가 | 로컬 GPU | passed_with_evidence | 동결 부록 7c5b7f8 후 1회: B0/M0/M1 160/160, reports/eval/final_summary.md |
-| T09 | 결과/어댑터 백업·복원·승인된 과금 리소스 정리 | 로컬 | passed_with_evidence (local) · 클라우드 n/a | 41파일 저장소 밖 백업·해시 일치(reports/backup_inventory.json). 생성한 과금 리소스 없음($0) |
+| T09 | 결과/어댑터 백업·복원·승인된 과금 리소스 정리 | 로컬 / RunPod | passed_with_evidence (local + RunPod) | 로컬: 41파일 저장소 밖 백업·해시 일치(reports/backup_inventory.json). RunPod: 백업 32파일 SHA256 일치·로컬 복원 확인 후 Pod 삭제, list-pods 0·지출률 $0/hr (약 $0.43 추정, reports/runpod/RUNPOD_RUN.md) |
 
 ## Gate 상태 (docs/16)
 | Gate | 상태 |

@@ -18,6 +18,7 @@ REPO = Path(__file__).resolve().parents[2]
 _SCHEMAS = {
     "TRADE_RAW": json.loads((REPO / "schemas" / "extraction.schema.json").read_text(encoding="utf-8")),
     "PUBLIC_CANONICAL": json.loads((REPO / "schemas" / "public_extraction.schema.json").read_text(encoding="utf-8")),
+    "CORD_RAW": json.loads((REPO / "schemas" / "cord_extraction.schema.json").read_text(encoding="utf-8")),
 }
 _FENCE = re.compile(r"^\s*```(?:json)?\s*\n(?P<body>.*)\n\s*```\s*$", re.DOTALL)
 

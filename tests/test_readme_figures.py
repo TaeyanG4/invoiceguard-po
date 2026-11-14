@@ -60,3 +60,14 @@ def test_readme_links_point_to_existing_files(readme, other, chart_infix):
     assert not missing, missing
     charts = re.findall(r"docs/images/([a-z-]+)-(?:light|dark)\.svg", text)
     assert charts and all(c.endswith(chart_infix) or not chart_infix and not c.endswith("-ko") for c in charts), charts
+
+
+def test_readme_field_tables_match_the_final_scoring_files():
+    from invoiceguard import readme_tables as rt
+
+    assert rt.apply(check=True) == []  # README blocks equal a fresh build from reports/eval/*_final_*.json
+    finals = rf.load_finals()
+    sku = finals["m1"]["sets"]["trade:test"]["strict"]["fields"]["sku_raw"]
+    for name in ("README.md", "README.ko.md"):
+        text = (REPO / name).read_text(encoding="utf-8")
+        assert f"{sku['accuracy']:.3f}" in text and f"{sku['correct']}/{sku['scored']}" in text

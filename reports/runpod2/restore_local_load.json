@@ -1,0 +1,15 @@
+{
+ "check": "bf16 LoRA adapter trained on the L40S, loaded on the local RTX 4070 Ti SUPER (bf16 base), vs the same adapter on the L40S",
+ "docs": {
+  "tr_69cab78e7dcd": {
+   "identical_raw": true,
+   "local_tokens": 312,
+   "pod_tokens": 312
+  },
+  "tr_381d80972097": {
+   "identical_raw": true,
+   "local_tokens": 255,
+   "pod_tokens": 255
+  }
+ }
+}

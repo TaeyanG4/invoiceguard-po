@@ -1,0 +1,35 @@
+{
+  "a": "dev44_l40s_m1_bf16lora",
+  "b": "dev44_l40s_m0_bf16",
+  "method": "cluster-paired bootstrap (2000, seed 20261113), A minus B, strict",
+  "sets": {
+    "public:dev|clean": {
+      "n_docs": 20,
+      "n_clusters": 20,
+      "field_acc_diff": 0.9309,
+      "field_acc_diff_ci95": [
+        0.8764,
+        0.9858
+      ],
+      "doc_exact_diff": 0.75,
+      "doc_exact_diff_ci95": [
+        0.55,
+        0.9
+      ]
+    },
+    "trade:dev": {
+      "n_docs": 24,
+      "n_clusters": 24,
+      "field_acc_diff": 0.0106,
+      "field_acc_diff_ci95": [
+        -0.0271,
+        0.0588
+      ],
+      "doc_exact_diff": -0.0833,
+      "doc_exact_diff_ci95": [
+        -0.2083,
+        0.0
+      ]
+    }
+  }
+}

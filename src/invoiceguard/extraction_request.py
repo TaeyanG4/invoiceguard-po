@@ -14,6 +14,7 @@ REPO = Path(__file__).resolve().parents[2]
 PROMPT_FILES = {
     "TRADE_RAW": REPO / "prompts" / "EXTRACT_V1.txt",
     "PUBLIC_CANONICAL": REPO / "prompts" / "EXTRACT_PUBLIC_CANONICAL.txt",
+    "CORD_RAW": REPO / "prompts" / "EXTRACT_CORD_RAW.txt",  # docs/20: CORD v2 real receipts, not a product task
 }
 PRODUCT_TASK = "TRADE_RAW"  # the product API only ever calls TRADE_RAW (docs/15 B)
 

@@ -1,0 +1,16 @@
+{
+ "model.language_model.layers.0.self_attn.v_proj.weight": {
+  "elements": 2097152,
+  "differing": 13,
+  "max_abs": 0.00048828125,
+  "max_rel_to_tensor_absmax": 0.0022831049282103777,
+  "weight_abs_mean": 0.02468717284500599
+ },
+ "model.language_model.layers.0.mlp.down_proj.weight": {
+  "elements": 12582912,
+  "differing": 2,
+  "max_abs": 0.0001220703125,
+  "max_rel_to_tensor_absmax": 0.00020032051543239504,
+  "weight_abs_mean": 0.024397313594818115
+ }
+}

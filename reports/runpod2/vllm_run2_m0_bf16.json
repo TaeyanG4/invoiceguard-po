@@ -1,0 +1,501 @@
+{
+  "label": "vllm_run2_m0_bf16",
+  "server_port": 18001,
+  "docs": [
+    "tr_69cab78e7dcd",
+    "tr_381d80972097",
+    "tr_e082855b966a",
+    "tr_827938e7dc64",
+    "tr_fbcfacdef70c",
+    "tr_b373fb6ce71b",
+    "tr_29f3c4e354c9",
+    "tr_75f27f299e4f",
+    "tr_5ed7bf6fba3c",
+    "tr_7d3690b30c40",
+    "tr_d6726bd339a6",
+    "tr_c74a74926cfb",
+    "tr_489dcc965b4b",
+    "tr_0dc291e8cb69",
+    "tr_e30feeab0b29",
+    "tr_e308592901b8",
+    "tr_01ed9dbd532f",
+    "tr_9cc3a8fe31ef",
+    "tr_943ead4253cd",
+    "tr_094c507908ef"
+  ],
+  "max_tokens": 1536,
+  "warmups": 2,
+  "repetitions": 1,
+  "arms": {
+    "m0": {
+      "parity_rows": [
+        {
+          "id": "tr_69cab78e7dcd",
+          "server_fields": [
+            30,
+            30
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            26,
+            30
+          ]
+        },
+        {
+          "id": "tr_381d80972097",
+          "server_fields": [
+            24,
+            24
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            22,
+            24
+          ]
+        },
+        {
+          "id": "tr_e082855b966a",
+          "server_fields": [
+            24,
+            24
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            22,
+            24
+          ]
+        },
+        {
+          "id": "tr_827938e7dc64",
+          "server_fields": [
+            30,
+            30
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            30,
+            30
+          ]
+        },
+        {
+          "id": "tr_fbcfacdef70c",
+          "server_fields": [
+            30,
+            30
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            30,
+            30
+          ]
+        },
+        {
+          "id": "tr_b373fb6ce71b",
+          "server_fields": [
+            18,
+            18
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            13,
+            18
+          ]
+        },
+        {
+          "id": "tr_29f3c4e354c9",
+          "server_fields": [
+            18,
+            18
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            18,
+            18
+          ]
+        },
+        {
+          "id": "tr_75f27f299e4f",
+          "server_fields": [
+            30,
+            30
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            30,
+            30
+          ]
+        },
+        {
+          "id": "tr_5ed7bf6fba3c",
+          "server_fields": [
+            36,
+            36
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            35,
+            36
+          ]
+        },
+        {
+          "id": "tr_7d3690b30c40",
+          "server_fields": [
+            42,
+            42
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            30,
+            42
+          ]
+        },
+        {
+          "id": "tr_d6726bd339a6",
+          "server_fields": [
+            41,
+            42
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            41,
+            42
+          ]
+        },
+        {
+          "id": "tr_c74a74926cfb",
+          "server_fields": [
+            18,
+            18
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            18,
+            18
+          ]
+        },
+        {
+          "id": "tr_489dcc965b4b",
+          "server_fields": [
+            18,
+            18
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            16,
+            18
+          ]
+        },
+        {
+          "id": "tr_0dc291e8cb69",
+          "server_fields": [
+            24,
+            24
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            24,
+            24
+          ]
+        },
+        {
+          "id": "tr_e30feeab0b29",
+          "server_fields": [
+            18,
+            18
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            16,
+            18
+          ]
+        },
+        {
+          "id": "tr_e308592901b8",
+          "server_fields": [
+            18,
+            18
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            18,
+            18
+          ]
+        },
+        {
+          "id": "tr_01ed9dbd532f",
+          "server_fields": [
+            18,
+            18
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            18,
+            18
+          ]
+        },
+        {
+          "id": "tr_9cc3a8fe31ef",
+          "server_fields": [
+            36,
+            36
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            36,
+            36
+          ]
+        },
+        {
+          "id": "tr_943ead4253cd",
+          "server_fields": [
+            24,
+            24
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            24,
+            24
+          ]
+        },
+        {
+          "id": "tr_094c507908ef",
+          "server_fields": [
+            24,
+            24
+          ],
+          "identical_raw_to_hf": false,
+          "hf_fields": [
+            24,
+            24
+          ]
+        }
+      ],
+      "requests_c1": [
+        {
+          "id": "tr_69cab78e7dcd",
+          "ok": true,
+          "latency_s": 3.004977208096534,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"0046907\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"071615\",\n      \"description_raw\": \"Push button red\",\n      \"quantity_raw\": \"884\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"7.03\",\n      \"line_total_raw\": \"6,214.52\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"016106\",\n      \"description_raw\": \"Solenoid valve 1/4in\",\n      \"quantity_raw\": \"12\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"47.50\",\n      \"line_total_raw\": \"570.00\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"047312\",\n      \"description_raw\": \"Encoder 600 PPR\",\n      \"quantity_raw\": \"500\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"420.98\",\n      \"line_total_raw\": \"210,490.00\"\n    },\n    {\n      \"row_index\": 4,\n      \"sku_raw\": \"050006\",\n      \"description_raw\": \"Linear guide rail 300mm\",\n      \"quantity_raw\": \"24\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.39\",\n      \"line_total_raw\": \"9.36\"\n    }\n  ],\n  \"subtotal_raw\": \"217,283.88\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"217,283.88\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 443
+        },
+        {
+          "id": "tr_381d80972097",
+          "ok": true,
+          "latency_s": 2.4357579168863595,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"038443\",\n      \"description_raw\": \"Thermocouple type K\",\n      \"quantity_raw\": \"100\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"50.04\",\n      \"line_total_raw\": \"5,004.00\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"054441\",\n      \"description_raw\": \"Industrial caster 75mm\",\n      \"quantity_raw\": \"160\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"94.15\",\n      \"line_total_raw\": \"15,064.00\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"092274\",\n      \"description_raw\": \"Cooling fan 80mm\",\n      \"quantity_raw\": \"12\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"7.35\",\n      \"line_total_raw\": \"88.20\"\n    }\n  ],\n  \"invoice_number_raw\": \"2026/58536\",\n  \"currency_raw\": \"USD\",\n  \"subtotal_raw\": \"20,156.20\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"20,156.20\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 360
+        },
+        {
+          "id": "tr_e082855b966a",
+          "ok": true,
+          "latency_s": 2.452606701757759,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"DDY-893\",\n      \"description_raw\": \"Rubber foot 15mm\",\n      \"quantity_raw\": \"560\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.58\",\n      \"line_total_raw\": \"324.80\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"PLD-520\",\n      \"description_raw\": \"Linear guide rail 300mm\",\n      \"quantity_raw\": \"12\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.40\",\n      \"line_total_raw\": \"4.80\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"KJR-145\",\n      \"description_raw\": \"Sealing tape PTFE\",\n      \"quantity_raw\": \"891\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.61\",\n      \"line_total_raw\": \"543.51\"\n    }\n  ],\n  \"invoice_number_raw\": \"2026/60640\",\n  \"currency_raw\": \"USD\",\n  \"subtotal_raw\": \"873.11\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"873.11\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 348
+        },
+        {
+          "id": "tr_827938e7dc64",
+          "ok": true,
+          "latency_s": 3.0212564961984754,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"SI-061529\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"050680\",\n      \"description_raw\": \"Thermocouple type K\",\n      \"quantity_raw\": \"2,000\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.76\",\n      \"line_total_raw\": \"1,520.00\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"AJU-394\",\n      \"description_raw\": \"Signal cable 2m\",\n      \"quantity_raw\": \"200\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"8.60\",\n      \"line_total_raw\": \"1,720.00\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"049863\",\n      \"description_raw\": \"Linear guide rail 300mm\",\n      \"quantity_raw\": \"16\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.13\",\n      \"line_total_raw\": \"2.08\"\n    },\n    {\n      \"row_index\": 4,\n      \"sku_raw\": \"049863\",\n      \"description_raw\": \"Linear guide rail 300mm\",\n      \"quantity_raw\": \"9\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.13\",\n      \"line_total_raw\": \"1.17\"\n    }\n  ],\n  \"subtotal_raw\": \"3,243.25\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"3,243.25\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 434
+        },
+        {
+          "id": "tr_fbcfacdef70c",
+          "ok": true,
+          "latency_s": 3.030144820921123,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"INV-2025-98412\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"GWA-497\",\n      \"description_raw\": \"Heat shrink tube 6mm\",\n      \"quantity_raw\": \"10\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.39\",\n      \"line_total_raw\": \"3.90\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"TDY-221\",\n      \"description_raw\": \"Sensor module\",\n      \"quantity_raw\": \"50\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"2.4786\",\n      \"line_total_raw\": \"123.93\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"HCR-700\",\n      \"description_raw\": \"Voltage regulator module\",\n      \"quantity_raw\": \"200\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"99.52\",\n      \"line_total_raw\": \"19,904.00\"\n    },\n    {\n      \"row_index\": 4,\n      \"sku_raw\": \"BHZ-174\",\n      \"description_raw\": \"Rubber foot 15mm\",\n      \"quantity_raw\": \"42\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.93\",\n      \"line_total_raw\": \"39.06\"\n    }\n  ],\n  \"subtotal_raw\": \"20,070.89\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"20,070.89\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 432
+        },
+        {
+          "id": "tr_b373fb6ce71b",
+          "ok": true,
+          "latency_s": 1.9588872506283224,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"INV-2025-87006\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"55-6559\",\n      \"description_raw\": \"Vibration damper\",\n      \"quantity_raw\": \"529\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"6.64\",\n      \"line_total_raw\": \"3512.56\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"37-6188\",\n      \"description_raw\": \"Junction box IP65\",\n      \"quantity_raw\": \"749\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.70\",\n      \"line_total_raw\": \"524.30\"\n    }\n  ],\n  \"subtotal_raw\": \"4036.86\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"4036.86\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 271
+        },
+        {
+          "id": "tr_29f3c4e354c9",
+          "ok": true,
+          "latency_s": 1.99626070773229,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"0074458\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"006745\",\n      \"description_raw\": \"Panel connector RJ45\",\n      \"quantity_raw\": \"20\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"138.18\",\n      \"line_total_raw\": \"2763.60\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"H65-031\",\n      \"description_raw\": \"Relay 24V DC\",\n      \"quantity_raw\": \"650\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"287.77\",\n      \"line_total_raw\": \"187050.50\"\n    }\n  ],\n  \"subtotal_raw\": \"189814.10\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"189814.10\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 277
+        },
+        {
+          "id": "tr_75f27f299e4f",
+          "ok": true,
+          "latency_s": 3.3275211923755705,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"SI-056440\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"ZKW-950\",\n      \"description_raw\": \"Thermocouple type K\",\n      \"quantity_raw\": \"471\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"93.752\",\n      \"line_total_raw\": \"44,157.19\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"AEL-209\",\n      \"description_raw\": \"Junction box IP65\",\n      \"quantity_raw\": \"1,200\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"99.83\",\n      \"line_total_raw\": \"119,796.00\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"VZG-639\",\n      \"description_raw\": \"Relay 24V DC\",\n      \"quantity_raw\": \"396\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"75.71\",\n      \"line_total_raw\": \"29,981.16\"\n    },\n    {\n      \"row_index\": 4,\n      \"sku_raw\": \"AAP-438\",\n      \"description_raw\": \"Capacitor kit 100pcs\",\n      \"quantity_raw\": \"467\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"6.71\",\n      \"line_total_raw\": \"3,133.57\"\n    }\n  ],\n  \"subtotal_raw\": \"197,067.92\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"197,067.92\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 458
+        },
+        {
+          "id": "tr_5ed7bf6fba3c",
+          "ok": true,
+          "latency_s": 7.917281667236239,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"0047000\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"028315\",\n      \"description_raw\": \"Panel connector RJ45\",\n      \"quantity_raw\": \"200\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.59\",\n      \"line_total_raw\": \"118.00\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"039415\",\n      \"description_raw\": \"Coupling 5-8mm\",\n      \"quantity_raw\": \"730\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"205.95\",\n      \"line_total_raw\": \"150343.50\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"085421\",\n      \"description_raw\": \"Copper busbar 20x5\",\n      \"quantity_raw\": \"100\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"317.45\",\n      \"line_total_raw\": \"31745.00\"\n    },\n    {\n      \"row_index\": 4,\n      \"sku_raw\": \"098492\",\n      \"description_raw\": \"Flat washer M8\",\n      \"quantity_raw\": \"50\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"9.84\",\n      \"line_total_raw\": \"492.00\"\n    },\n    {\n      \"row_index\": 5,\n      \"sku_raw\": \"MME-946\",\n      \"description_raw\": \"Limit switch roller\",\n      \"quantity_raw\": \"25\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.95\",\n      \"line_total_raw\": \"23.75\"\n    }\n  ],\n  \"subtotal_raw\": \"182722.25\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"182722.25\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 519
+        },
+        {
+          "id": "tr_7d3690b30c40",
+          "ok": true,
+          "latency_s": 11.565972671844065,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"INV-2025-19209\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"068354\",\n      \"description_raw\": \"Voltage regulator module\",\n      \"quantity_raw\": \"500\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"3.35\",\n      \"line_total_raw\": \"1675.00\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"099021\",\n      \"description_raw\": \"Rubber foot 15mm\",\n      \"quantity_raw\": \"12\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"82.67\",\n      \"line_total_raw\": \"992.04\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"092010\",\n      \"description_raw\": \"DIN rail 35mm\",\n      \"quantity_raw\": \"10\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"260.21\",\n      \"line_total_raw\": \"2602.10\"\n    },\n    {\n      \"row_index\": 4,\n      \"sku_raw\": \"LKF-005\",\n      \"description_raw\": \"Thermal pad 1mm\",\n      \"quantity_raw\": \"726\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.3568\",\n      \"line_total_raw\": \"259.04\"\n    },\n    {\n      \"row_index\": 5,\n      \"sku_raw\": \"045397\",\n      \"description_raw\": \"Sealing tape PTFE\",\n      \"quantity_raw\": \"100 cartons / 2000 pcs\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.21\",\n      \"line_total_raw\": \"420.00\"\n    },\n    {\n      \"row_index\": 6,\n      \"sku_raw\": \"081470\",\n      \"description_raw\": \"Spring washer M5\",\n      \"quantity_raw\": \"500\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"327.23\",\n      \"line_total_raw\": \"163615.00\"\n    }\n  ],\n  \"subtotal_raw\": \"169563.18\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"169563.18\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 618
+        },
+        {
+          "id": "tr_d6726bd339a6",
+          "ok": true,
+          "latency_s": 4.612328273709863,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"SL-092478\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"30-7165\",\n      \"description_raw\": \"Stainless rivet 4mm\",\n      \"quantity_raw\": \"12\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"9.22\",\n      \"line_total_raw\": \"110.64\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"97-0112\",\n      \"description_raw\": \"Coupling 5-8mm\",\n      \"quantity_raw\": \"1000\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.43\",\n      \"line_total_raw\": \"430.00\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"68-4797\",\n      \"description_raw\": \"DIN rail 35mm\",\n      \"quantity_raw\": \"5\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"351.989\",\n      \"line_total_raw\": \"1759.95\"\n    },\n    {\n      \"row_index\": 4,\n      \"sku_raw\": \"14-7731\",\n      \"description_raw\": \"Cooling fan 80mm\",\n      \"quantity_raw\": \"2\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"22.135\",\n      \"line_total_raw\": \"44.27\"\n    },\n    {\n      \"row_index\": 5,\n      \"sku_raw\": \"92-6107\",\n      \"description_raw\": \"Pressure gauge 0-10 bar\",\n      \"quantity_raw\": \"2\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"235.678\",\n      \"line_total_raw\": \"471.36\"\n    },\n    {\n      \"row_index\": 6,\n      \"sku_raw\": \"03-4790\",\n      \"description_raw\": \"Capacitor kit 100pcs\",\n      \"quantity_raw\": \"4\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.5125\",\n      \"line_total_raw\": \"2.05\"\n    }\n  ],\n  \"subtotal_raw\": \"2818.27\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"2818.27\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 609
+        },
+        {
+          "id": "tr_c74a74926cfb",
+          "ok": true,
+          "latency_s": 1.8775494382716715,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"0095940\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"R51-851\",\n      \"description_raw\": \"Precision shim pack\",\n      \"quantity_raw\": \"9\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"99.93\",\n      \"line_total_raw\": \"899.37\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"N69-493\",\n      \"description_raw\": \"Proximity sensor M12\",\n      \"quantity_raw\": \"616\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.20\",\n      \"line_total_raw\": \"123.20\"\n    }\n  ],\n  \"subtotal_raw\": \"1022.57\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"1022.57\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 263
+        },
+        {
+          "id": "tr_489dcc965b4b",
+          "ok": true,
+          "latency_s": 1.930991384666413,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"INV-2025-49014\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"036343\",\n      \"description_raw\": \"Crimp terminal ring\",\n      \"quantity_raw\": \"307\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"1.12\",\n      \"line_total_raw\": \"343.84\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"089832\",\n      \"description_raw\": \"Vibration damper\",\n      \"quantity_raw\": \"100\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"8.87\",\n      \"line_total_raw\": \"887.00\"\n    }\n  ],\n  \"subtotal_raw\": \"1,230.84\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"1,230.84\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 268
+        },
+        {
+          "id": "tr_0dc291e8cb69",
+          "ok": true,
+          "latency_s": 2.5095960278995335,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"0009108\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"FUK-758\",\n      \"description_raw\": \"Air filter regulator\",\n      \"quantity_raw\": \"880\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"282.14\",\n      \"line_total_raw\": \"248,283.20\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"KKC-328\",\n      \"description_raw\": \"Flow meter pulse output\",\n      \"quantity_raw\": \"867\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"54.40\",\n      \"line_total_raw\": \"47,164.80\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"TAA-325\",\n      \"description_raw\": \"Crimp terminal ring\",\n      \"quantity_raw\": \"100\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.25\",\n      \"line_total_raw\": \"25.00\"\n    }\n  ],\n  \"subtotal_raw\": \"295,473.00\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"295,473.00\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 355
+        },
+        {
+          "id": "tr_e30feeab0b29",
+          "ok": true,
+          "latency_s": 2.00628329673782,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"XLV-841\",\n      \"description_raw\": \"Power supply 12V 5A\",\n      \"quantity_raw\": \"10\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"148.49\",\n      \"line_total_raw\": \"1484.90\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"TGL-987\",\n      \"description_raw\": \"Encoder 600 PPR\",\n      \"quantity_raw\": \"200\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"143.09\",\n      \"line_total_raw\": \"28618.00\"\n    }\n  ],\n  \"invoice_number_raw\": \"2026/42284\",\n  \"currency_raw\": \"USD\",\n  \"subtotal_raw\": \"30102.90\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"30102.90\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 280
+        },
+        {
+          "id": "tr_e308592901b8",
+          "ok": true,
+          "latency_s": 1.8902223980985582,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"SI-002077\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"02-2766\",\n      \"description_raw\": \"Signal cable 2m\",\n      \"quantity_raw\": \"60\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"3.40\",\n      \"line_total_raw\": \"204.00\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"30-3866\",\n      \"description_raw\": \"Timing belt HTD 5M\",\n      \"quantity_raw\": \"6\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"96.61\",\n      \"line_total_raw\": \"579.66\"\n    }\n  ],\n  \"subtotal_raw\": \"783.66\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"783.66\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 264
+        },
+        {
+          "id": "tr_01ed9dbd532f",
+          "ok": true,
+          "latency_s": 1.9283621809445322,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"INV-2025-64803\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"35-6436\",\n      \"description_raw\": \"Ferrite core clip\",\n      \"quantity_raw\": \"535\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"1.59\",\n      \"line_total_raw\": \"850.65\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"46-0263\",\n      \"description_raw\": \"Thermocouple type K\",\n      \"quantity_raw\": \"24\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"0.70\",\n      \"line_total_raw\": \"16.80\"\n    }\n  ],\n  \"subtotal_raw\": \"867.45\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"867.45\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 267
+        },
+        {
+          "id": "tr_9cc3a8fe31ef",
+          "ok": true,
+          "latency_s": 3.5672557619400322,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"0050591\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"GDX-941\",\n      \"description_raw\": \"Motor driver board\",\n      \"quantity_raw\": \"20\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"98.312\",\n      \"line_total_raw\": \"1966.24\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"055051\",\n      \"description_raw\": \"Toggle switch SPDT\",\n      \"quantity_raw\": \"100\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"127.51\",\n      \"line_total_raw\": \"12751.00\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"XVV-896\",\n      \"description_raw\": \"Ferrite core clip\",\n      \"quantity_raw\": \"306\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"185.03\",\n      \"line_total_raw\": \"56619.18\"\n    },\n    {\n      \"row_index\": 4,\n      \"sku_raw\": \"XPY-708\",\n      \"description_raw\": \"Voltage regulator module\",\n      \"quantity_raw\": \"4\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"20.6830\",\n      \"line_total_raw\": \"82.73\"\n    },\n    {\n      \"row_index\": 5,\n      \"sku_raw\": \"012619\",\n      \"description_raw\": \"Spirit level vial\",\n      \"quantity_raw\": \"250\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"69.14\",\n      \"line_total_raw\": \"17285.00\"\n    }\n  ],\n  \"subtotal_raw\": \"88704.15\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"88704.15\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 515
+        },
+        {
+          "id": "tr_943ead4253cd",
+          "ok": true,
+          "latency_s": 2.6127118449658155,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"INV-2025-77421\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"BJJ-181\",\n      \"description_raw\": \"Signal cable 2m\",\n      \"quantity_raw\": \"1,200\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"299.97\",\n      \"line_total_raw\": \"359,964.00\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"HLA-848\",\n      \"description_raw\": \"Rubber foot 15mm\",\n      \"quantity_raw\": \"250\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"59.11\",\n      \"line_total_raw\": \"14,777.50\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"GGA-992\",\n      \"description_raw\": \"Precision shim pack\",\n      \"quantity_raw\": \"70\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"428.10\",\n      \"line_total_raw\": \"29,967.00\"\n    }\n  ],\n  \"subtotal_raw\": \"404,708.50\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"404,708.50\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 371
+        },
+        {
+          "id": "tr_094c507908ef",
+          "ok": true,
+          "latency_s": 2.470436741132289,
+          "raw_response": "{\n  \"schema_version\": \"1.0\",\n  \"document_type\": \"invoice\",\n  \"invoice_number_raw\": \"0000121\",\n  \"currency_raw\": \"USD\",\n  \"items\": [\n    {\n      \"row_index\": 1,\n      \"sku_raw\": \"026242\",\n      \"description_raw\": \"LED indicator green\",\n      \"quantity_raw\": \"10\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"3.8044\",\n      \"line_total_raw\": \"38.04\"\n    },\n    {\n      \"row_index\": 2,\n      \"sku_raw\": \"035715\",\n      \"description_raw\": \"Motor driver board\",\n      \"quantity_raw\": \"250\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"114.14\",\n      \"line_total_raw\": \"28535.00\"\n    },\n    {\n      \"row_index\": 3,\n      \"sku_raw\": \"CWZ-979\",\n      \"description_raw\": \"Voltage regulator module\",\n      \"quantity_raw\": \"1000\",\n      \"unit_raw\": \"EA\",\n      \"unit_price_raw\": \"96.30\",\n      \"line_total_raw\": \"96300.00\"\n    }\n  ],\n  \"subtotal_raw\": \"124873.04\",\n  \"tax_raw\": \"0.00\",\n  \"discount_raw\": \"0.00\",\n  \"total_raw\": \"124873.04\"\n}",
+          "finish_reason": "stop",
+          "prompt_tokens": 1045,
+          "completion_tokens": 350
+        }
+      ],
+      "server_field_accuracy": 0.9981,
+      "offline_hf_field_accuracy_same_docs": 0.9406,
+      "identical_raw_rate": 0.0,
+      "prompt_tokens": [
+        1045
+      ],
+      "bench": {
+        "1": {
+          "requests": 20,
+          "failures": 0,
+          "wall_s": 52.55,
+          "docs_per_min": 22.84,
+          "p50_s": 2.43,
+          "p95_s": 4.19,
+          "gpu_mem_mb_max": 37069
+        },
+        "4": {
+          "requests": 20,
+          "failures": 0,
+          "wall_s": 15.62,
+          "docs_per_min": 76.84,
+          "p50_s": 2.77,
+          "p95_s": 4.73,
+          "gpu_mem_mb_max": 37500
+        },
+        "8": {
+          "requests": 20,
+          "failures": 0,
+          "wall_s": 10.09,
+          "docs_per_min": 118.93,
+          "p50_s": 3.03,
+          "p95_s": 5.23,
+          "gpu_mem_mb_max": 37069
+        },
+        "16": {
+          "requests": 20,
+          "failures": 0,
+          "wall_s": 7.13,
+          "docs_per_min": 168.33,
+          "p50_s": 3.65,
+          "p95_s": 5.85,
+          "gpu_mem_mb_max": 37069
+        }
+      }
+    }
+  }
+}

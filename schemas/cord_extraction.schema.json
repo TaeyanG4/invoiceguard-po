@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:invoiceguard:cord-extraction:1.0",
+  "title": "CORD v2 receipt extraction, raw printed strings (docs/20_DECISIONS_V6.md)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "items", "subtotal", "tax", "total"],
+  "$defs": {
+    "value": {"type": ["string", "null"], "maxLength": 200},
+    "sub_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "count", "unit_price", "price"],
+      "properties": {
+        "name": {"$ref": "#/$defs/value"},
+        "count": {"$ref": "#/$defs/value"},
+        "unit_price": {"$ref": "#/$defs/value"},
+        "price": {"$ref": "#/$defs/value"}
+      }
+    }
+  },
+  "properties": {
+    "schema_version": {"const": "cord-raw-1.0"},
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["row_index", "name", "count", "unit_price", "price", "sub_items"],
+        "properties": {
+          "row_index": {"type": "integer", "minimum": 1},
+          "name": {"$ref": "#/$defs/value"},
+          "count": {"$ref": "#/$defs/value"},
+          "unit_price": {"$ref": "#/$defs/value"},
+          "price": {"$ref": "#/$defs/value"},
+          "sub_items": {"type": "array", "maxItems": 30, "items": {"$ref": "#/$defs/sub_item"}}
+        }
+      }
+    },
+    "subtotal": {"$ref": "#/$defs/value"},
+    "tax": {"$ref": "#/$defs/value"},
+    "total": {"$ref": "#/$defs/value"}
+  }
+}
