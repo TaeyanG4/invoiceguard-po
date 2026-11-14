@@ -14,6 +14,18 @@
 - **Reproducibility:** every evaluation number (training · dev · final · paired CI) is produced by the scripts in this repository, given the pinned dataset revision, base-model revision and seed. Data and weights are downloaded, not stored here, and training ran with a single seed.
 - **Honesty:** anything that was not run is recorded as `not_run` / `blocked`.
 
+### One-minute summary
+
+| What it shows | Result | Details |
+|---|---|---|
+| Fine-tuning effect on real photos | CORD v2 receipt test (frozen, run once): M1-cord − M0 **+0.065 [+0.027, +0.107]**, format-insensitive +0.055 [+0.019, +0.095] → criteria fixed before training met | [CORD results](#cord-v2--real-receipt-photos) |
+| Serving the trained model without losing quality | vLLM accuracy 0.849 → **0.960** (cause: adapter/base precision mismatch, fixed by the dequantised NF4 merge), FP8 throughput +23–33 % | [section 12](#12-cloud-reproduction-on-runpod) |
+| Training reproduced on another GPU | A40 retrain: mean loss within 0.0002, dev outputs 8/8 identical | [section 12](#12-cloud-reproduction-on-runpod) |
+| Invoice extraction + PO reconciliation | unseen-layout test: M1 0.921 · M0 0.897 (not significant) · OCR rules 0.210 | [section 1](#1-at-a-glance) |
+| Evaluation integrity | single-test-run guard, frozen hashes checked in CI, 209 pytest tests | [section 6](#6-results) |
+| Cost | two RunPod runs, about $2.16 (estimate); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
+| Limits | the only real photos are receipts; unit price fell 0.82 → 0.72 after fine-tuning; training seeds in [section 6](#cord-v2--real-receipt-photos) | [section 11](#11-cost-and-limitations) |
+
 ![Admin dashboard — overview](docs/images/dashboard-overview.png)
 
 <sub>Overview page of the local admin dashboard (read-only, 127.0.0.1; the UI is in Korean). Every value is read as recorded from `reports/` and `manifests/`.<br>

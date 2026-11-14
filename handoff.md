@@ -18,6 +18,11 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
+## 2026-11-15 02:15 — seed 학습 중단·재시작 (WDDM 메모리 밀림), README 1분 요약
+- **사고:** seed 20261114 학습이 step 55(01:58)부터 5.9 s/step → 110 s/step으로 느려짐(GPU 15.6/16 GB, 98 % 사용률에 84 W). 01:58에 학습 중인데 `.venv-ml` Python으로 `import invoiceguard.vlm.train` 확인을 돌린 직후다. Windows WDDM이 새 CUDA 컨텍스트 때문에 학습 프로세스 메모리를 공유 메모리로 밀어낸 것으로 판단(남은 예상 5시간 이상). 두 백그라운드 작업을 TaskStop하고 남은 bash·python 4개를 PID로 종료, GPU 282 MiB 확인. 학습 결과물(어댑터·예측)은 생기기 전이라 지울 것 없음. 로그는 `artifacts/logs/cord_seeds_chain_aborted_wddm.log`로 보존.
+- **재시작:** 02:14경 seed 반복 → 단가 실험을 한 체인으로 다시 시작(같은 run id, 수정 2·3 그대로). 재발 방지: 학습이 도는 동안 torch를 여는 Python은 실행하지 않는다(메모리에 기록).
+- **README:** 영·한 맨 위에 "1분 요약" 표(실사진 효과, 서빙 회복, 재현, 대사, 무결성, 비용, 한계) — Fable 지적("README 961줄").
+
 ## 2026-11-15 02:00 — 2차 평가 반영 R1–R4 완료, seed 반복·단가 개선 실험 실행 중
 - **R1 test 가드** (`src/invoiceguard/cord_guard.py`, infer.py가 사용): 같은 arm의 두 번째 test(예측 폴더를 지워도 커밋된 `reports/eval/cord_*.json`으로 막음), 끝난 실행 ID의 세트 변경, 동결 뒤 바뀐 채점기(cord_eval·cord·model_output 해시)를 거부. `tests/test_cord_freeze.py` 7개가 CI에서 채점기·프롬프트·manifest = 동결 해시, test 보고서는 arm마다 1개·동결 설정을 검사. 실제 상태로 확인: 새 실행 ID의 M1-cord test → `cord_test_already_run`·`cord_test_already_scored` 거부.
 - **R2 문장:** README L97(회귀 기준은 두 세트, 나머지 중 최대 하락 faded −0.067), L498(수정 1은 M0 dev 18건 본 뒤), L514(지어낸 필드가 "훨씬 적게"), L676(서버 자동 테스트 6개 + 실제 요청 6/6), L818(GPU 결론은 20문서 범위, 문서 1건 차이는 배제 못 함). docs/20에 기록 정정 절.
