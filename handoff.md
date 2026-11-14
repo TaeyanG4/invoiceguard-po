@@ -18,6 +18,15 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
+## 2026-11-15 02:00 — 2차 평가 반영 R1–R4 완료, seed 반복·단가 개선 실험 실행 중
+- **R1 test 가드** (`src/invoiceguard/cord_guard.py`, infer.py가 사용): 같은 arm의 두 번째 test(예측 폴더를 지워도 커밋된 `reports/eval/cord_*.json`으로 막음), 끝난 실행 ID의 세트 변경, 동결 뒤 바뀐 채점기(cord_eval·cord·model_output 해시)를 거부. `tests/test_cord_freeze.py` 7개가 CI에서 채점기·프롬프트·manifest = 동결 해시, test 보고서는 arm마다 1개·동결 설정을 검사. 실제 상태로 확인: 새 실행 ID의 M1-cord test → `cord_test_already_run`·`cord_test_already_scored` 거부.
+- **R2 문장:** README L97(회귀 기준은 두 세트, 나머지 중 최대 하락 faded −0.067), L498(수정 1은 M0 dev 18건 본 뒤), L514(지어낸 필드가 "훨씬 적게"), L676(서버 자동 테스트 6개 + 실제 요청 6/6), L818(GPU 결론은 20문서 범위, 문서 1건 차이는 배제 못 함). docs/20에 기록 정정 절.
+- **R3:** `vllm_bench up()`이 컨테이너 전에 짝 검사 → NF4 어댑터를 bf16 원본에 붙이면 거부(`--allow-precision-mismatch`로만), 테스트 1개.
+- **R4:** 검수 API `add_row`·`delete_row`(행 번호 재부여, 경고 재계산), 모든 경고에 `key`, 빠진 PO 행 경고는 SKU별 키. 테스트 1개, README 8장.
+- 테스트 209개 실패 0, verify_pack 306 · contracts 63 pass. 커밋 3daa2a6.
+- **R5 seed:** `run_cord_seeds.sh` 01:52:39 시작(seed 20261114 → 20261115, 각 학습 약 24분 + dev 약 14분).
+- **R6 분석 (dev만):** M1-cord 단가 누락 10칸 중 8칸은 행은 냈는데 단가만 null(단가 = 금액으로 두 번 인쇄, 또는 "@" 단가를 금액 칸에). train에서 단가 인쇄 품목 29 %. → **수정 3**(단가 인쇄 영수증 272장 2배, dev만, 판정 사전 고정) 커밋 4b0e6de 후 `run_cord_up.sh`를 seed 체인 뒤에 자동 실행하도록 대기.
+
 ## 2026-11-15 01:52 — 2차 평가: Fable 79 · astra 88, 반영 계획(단계 4), seed 사전 고정
 - **Fable 2 = 79/100** (1차 70, `reports/reviews/fable-2.md`, 165초): 치명적 공백 없음. 약점 — 단일 seed, CORD 단가 하락 분석 없음, 서빙과 실데이터 분리. 사전 등록 허점 4개(원안·수정 1이 한 커밋, 시각 정정 기록 없음, test 1회 가드 약함, 동결 전 원격 시각 없음). README 수치 과장 없음, 문장 3곳 수정 요청. 90 경로: CORD 실패 분석·개선(+2.5), CORD vLLM 서빙(+2.5, 유료), seed 2개(+2), 회귀 게이트·가드(+1.5), 한영 혼합 레이아웃(+1.5), 문서 정정(+1).
 - **astra 2 = 88/100** (1차 76, `reports/reviews/astra-2.md`): 치명적 공백 없음, vLLM 해결·정밀도 원인 분리를 높게 평가. 약점 — test 1회 강제의 구현 결함(완료된 test 실행 ID를 cord:dev로 재사용하면 통과, 평가기 해시 미검사), 단가·모호수량, 검수 API에 행 추가·삭제 없음, 구형 `vllm_bench up()`이 bf16 기본 모델에 NF4 어댑터를 붙임. README 3곳 한정 필요(L818 GPU 결론, L97 회귀 문장, L514 "지어낸 필드 없이").
