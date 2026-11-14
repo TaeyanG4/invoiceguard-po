@@ -18,6 +18,13 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
+## 2026-11-15 04:58 — 로컬 GPU 경합으로 R5·R6 대기, 3차 평가 의뢰
+- 사용자 결정: GPU 실험은 "Local, when PC is free"(03:10경). `scripts/realdocs/gpu_free_runner.py`로 PC가 빌 때만 실행.
+- 02:12 재시작한 seed 학습도 02:23부터 다시 느려짐(10 → 354 s/step) — osu!·NVIDIA Overlay가 함께 실행 중. 03:08 중단.
+- 실행기 1차(03:13–04:53): osu!가 계속 실행되어 20번 재시작 후 중단. 실행기 결함도 있었다 — 이전 시도의 느린 속도 줄을 새 시도에 그대로 읽어 정상 시작을 30초 만에 멈춤. 학습 프로세스는 시작 1분 안에 GPU를 약 15.9 GB까지 잡는다(정상 동작). 로그 `artifacts/logs/gpu_runner_attempt1.log`.
+- 수정(d0d8c2d): osu! 등 게임 프로세스가 떠 있으면 대기, 속도는 이번 시도 출력만으로 판단, 메모리만 꽉 찼다고 멈추지 않음. 04:5x 재시작 — osu!가 꺼질 때까지 대기 중.
+- 3차 평가: `reports/reviews/briefs/review-3-brief.md`(감점표 요청, R5·R6은 not_run으로 명시) + `review_constraints.md`(하드웨어·시간 한계, README 길이는 사용자 결정)로 Fable·astra 동시 의뢰.
+
 ## 2026-11-15 02:15 — seed 학습 중단·재시작 (WDDM 메모리 밀림), README 1분 요약
 - **사고:** seed 20261114 학습이 step 55(01:58)부터 5.9 s/step → 110 s/step으로 느려짐(GPU 15.6/16 GB, 98 % 사용률에 84 W). 01:58에 학습 중인데 `.venv-ml` Python으로 `import invoiceguard.vlm.train` 확인을 돌린 직후다. Windows WDDM이 새 CUDA 컨텍스트 때문에 학습 프로세스 메모리를 공유 메모리로 밀어낸 것으로 판단(남은 예상 5시간 이상). 두 백그라운드 작업을 TaskStop하고 남은 bash·python 4개를 PID로 종료, GPU 282 MiB 확인. 학습 결과물(어댑터·예측)은 생기기 전이라 지울 것 없음. 로그는 `artifacts/logs/cord_seeds_chain_aborted_wddm.log`로 보존.
 - **재시작:** 02:14경 seed 반복 → 단가 실험을 한 체인으로 다시 시작(같은 run id, 수정 2·3 그대로). 재발 방지: 학습이 도는 동안 torch를 여는 Python은 실행하지 않는다(메모리에 기록).
