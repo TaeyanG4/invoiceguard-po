@@ -9,7 +9,7 @@
 - completed: T00–T09 (T05 개선 시도는 음성 결과, T06 최소 검수 API · 검수 UI 미구현). 추가: 정밀도 비교(P3), NF4 역양자화 병합(P8a), 어댑터–정밀도 짝 검사(P15), 서빙 회귀 테스트(P12), RunPod 실행 2(L40S: vLLM 정확도 회복 · FP8 · bf16 LoRA), CORD v2 트랙(dev · 학습 · 동결 · test 1회, 사전 기준 충족)
 - vLLM 서빙: 로컬은 **blocked**(드라이버 561.17 = CUDA 12.6 < vLLM 0.11.2 요구 12.9). RunPod에서 측정 — 실행 1 A40 속도, 실행 2 L40S에서 원인(어댑터·기본 모델 정밀도 불일치)을 확인하고 NF4 역양자화 병합본으로 **0.960 회복**(HF 경로와 같음), FP8 처리량 +23–33 % (`reports/runpod2/vllm_run2_*.json`)
 - blocked / not_run:
-  - RunPod: 실행 1 A40 43분(약 $0.43) · 실행 2 L40S 1시간 33분(약 $1.73), 둘 다 백업 해시 확인 후 삭제 · list-pods 0 확인. 합계 약 $2.16(추정, 청구 확정값 아님). 활성 승인 없음(`reports/RUNPOD_APPROVAL.md` approved: false). 다음 유료 실행은 새 견적 · 새 승인 필요
+  - RunPod: 실행 1 A40 43분($0.437) · 실행 2 L40S 1시간 33분($1.725), 둘 다 백업 해시 확인 후 삭제 · list-pods 0 확인. 합계 **$2.162(청구 기록, `reports/runpod2/billing.json`)**. 활성 승인 없음(`reports/RUNPOD_APPROVAL.md` approved: false). 다음 유료 실행은 새 견적 · 새 승인 필요
   - CORD RunPod 재현(C7): not_run (선택, 승인 필요)
   - seed 반복: not_run (모든 학습 seed 1개 · 1회)
   - 어려운 합성 데이터 렌더러 v2(Q1–Q3): not_run — CORD 실데이터로 방향 변경

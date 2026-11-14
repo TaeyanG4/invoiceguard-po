@@ -128,3 +128,19 @@ def test_a_finished_test_run_id_cannot_be_reused_for_dev(fake_repo):
     d = _ran_test(fake_repo, "t1")
     assert cord_guard.check_run_sets(d / "run_metadata.json", ["cord:dev"])  # problem text, not None
     assert cord_guard.check_run_sets(d / "run_metadata.json", ["cord:test"]) is None
+
+
+def test_scorer_dependencies_are_pinned_to_the_freeze_commit(fake_repo):
+    """astra review 4: evaluation.py / public_data.py etc. decide the score too, so they are pinned like the evaluator."""
+    deps = json.loads((REPO / "configs" / "frozen_cord_v1_deps.json").read_text(encoding="utf-8"))
+    for rel, digest in deps["dependency_sha256"].items():
+        assert hashlib.sha256((REPO / rel).read_bytes()).hexdigest() == digest, rel
+    assert deps["freeze_commit"].startswith(FROZEN["git_commit"][:7])
+    # a changed dependency is refused like a changed evaluator
+    (fake_repo / "src" / "dep.py").write_bytes(b"x = 1\n")  # bytes: no newline translation on Windows
+    (fake_repo / "configs" / "frozen_cord_v1_deps.json").write_text(json.dumps(
+        {"dependency_sha256": {"src/dep.py": hashlib.sha256(b"x = 1\n").hexdigest()}}), encoding="utf-8")
+    frozen = json.loads((fake_repo / "configs" / "frozen_cord_v1.json").read_text(encoding="utf-8"))
+    assert cord_guard.frozen_file_problems(frozen, fake_repo) == []
+    (fake_repo / "src" / "dep.py").write_bytes(b"x = 2\n")
+    assert cord_guard.frozen_file_problems(frozen, fake_repo) == ["frozen_mismatch:dependency:src/dep.py"]

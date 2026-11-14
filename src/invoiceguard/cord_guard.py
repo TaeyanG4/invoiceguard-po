@@ -29,9 +29,16 @@ def _same_arm(fp: dict, other: dict) -> bool:
 
 
 def frozen_file_problems(frozen: dict, repo: Path = REPO) -> list[str]:
-    """Evaluator files must be byte-identical to the freeze (they decide the verdict)."""
-    return [f"frozen_mismatch:evaluator:{rel}" for rel, digest in (frozen.get("evaluator_sha256") or {}).items()
-            if _sha(repo / rel) != digest]
+    """Evaluator files must be byte-identical to the freeze (they decide the verdict), and so must the files they import
+    (configs/frozen_cord_v1_deps.json: their contents at the freeze commit — astra review 4)."""
+    problems = [f"frozen_mismatch:evaluator:{rel}" for rel, digest in (frozen.get("evaluator_sha256") or {}).items()
+                if _sha(repo / rel) != digest]
+    deps = repo / "configs" / "frozen_cord_v1_deps.json"
+    if deps.exists():
+        problems += [f"frozen_mismatch:dependency:{rel}"
+                     for rel, digest in json.loads(deps.read_text(encoding="utf-8"))["dependency_sha256"].items()
+                     if _sha(repo / rel) != digest]
+    return problems
 
 
 def check_cord_frozen(fp: dict, run_id: str | None, repo: Path = REPO, frozen_path: Path | None = None) -> list[str]:

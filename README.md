@@ -7,7 +7,7 @@
 [![ci](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml/badge.svg)](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml)
 ![data](https://img.shields.io/badge/data-synthetic%20%2B%20CORD%20real%20receipts-lightgrey)
 ![gpu](https://img.shields.io/badge/GPU-local%20RTX%204070%20Ti%20SUPER-informational)
-![runpod](https://img.shields.io/badge/RunPod-A40%20%2B%20L40S%20%C2%B7%20est.%20%242.16-673ab7)
+![runpod](https://img.shields.io/badge/RunPod-A40%20%2B%20L40S%20%C2%B7%20billed%20%242.16-673ab7)
 
 - **Model:** Qwen3-VL-2B-Instruct (NF4) + a QLoRA adapter — trained, evaluated and served on one local GPU; the training was reproduced, vLLM serving accuracy recovered and FP8 measured on rented RunPod A40 and L40S GPUs ([section 12](#12-cloud-reproduction-on-runpod))
 - **Data:** public InvoiceOCR-Synth and the self-generated Invoice–PO documents are synthetic. The base model already gets those almost right, so they cannot separate the fine-tuning effect; human-labelled **real receipt photos from CORD v2** (CC BY 4.0) were added ([CORD results](#cord-v2--real-receipt-photos)). No claim is made about real company or customs documents.
@@ -23,7 +23,7 @@
 | Training reproduced on another GPU | A40 retrain: mean loss within 0.0002, dev outputs 8/8 identical | [section 12](#12-cloud-reproduction-on-runpod) |
 | Invoice extraction + PO reconciliation | unseen-layout test: M1 0.921 · M0 0.897 (not significant) · OCR rules 0.210 | [section 1](#1-at-a-glance) |
 | Evaluation integrity | single-test-run guard, frozen hashes checked in CI, 209 pytest tests | [section 6](#6-results) |
-| Cost | two RunPod runs, about $2.16 (estimate); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
+| Cost | two RunPod runs, billed $2.16 ([`billing.json`](reports/runpod2/billing.json)); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
 | Limits | the only real photos are receipts; unit price fell 0.82 → 0.72 after fine-tuning; the test verdict rests on one seed; on dev all three seeds beat M0 by +0.044 to +0.060 ([section 6](#cord-v2--real-receipt-photos)) | [section 11](#11-cost-and-limitations) |
 
 ![Admin dashboard — overview](docs/images/dashboard-overview.png)
@@ -458,6 +458,10 @@ M1 scores higher on OOD clean than on IID clean because this OOD is one template
 
 <!-- field-table:end -->
 
+**Per-field paired differences (same 40 documents, family bootstrap 95% CI)** — [`final_field_ci.md`](reports/eval/final_field_ci.md)
+- M1 − M0: SKU +0.024 [−0.024, +0.068], unit price +0.018 [−0.034, +0.066], quantity +0.024 [−0.006, +0.059] — **none significant**. The only field whose CI is above 0 is line total +0.076 [+0.019, +0.139].
+- M1 − B0: significant on all 11 fields except currency (1.000 for all three), e.g. SKU +0.900 [+0.823, +0.963].
+
 ### What does 0.000 mean?
 
 | | Cause | What was checked |
@@ -547,6 +551,7 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 - **Per field (test):** subtotal 0.64 → 0.91, total 0.59 → 0.91 and tax 0.43 → 0.67 rose sharply; item unit price 0.82 → 0.72 and item price 0.84 → 0.82 went down (same direction as dev). Sub-items are weak for every arm (0.00–0.30).
 - **The adapter trained only on synthetic invoices (M1 v1) does not transfer to receipts:** −0.474 [−0.543, −0.400] against M0 on test; 25 of 100 outputs are not readable JSON and total accuracy is 0.12. Outside the format it learned, fine-tuning can hurt.
 - dev and test point the same way (dev +0.0497 → test +0.065).
+- **A drop hidden by the average:** the overall criterion showed no regression (−0.003), but the field-level regression gate ([`regression_gate.py`](src/invoiceguard/regression_gate.py), run in CI) shows own-dev invoice numbers fell 0.958 → 0.833 (3 of 24) after adding CORD. As a result that was already final, it is recorded as a known drop with its reason ([`regression_gate.json`](configs/regression_gate.json)); any new field drop fails CI.
 
 **Seed repeats (amendment 2, CORD dev only, criteria fixed before training)** — the same recipe trained twice more with only the seed changed.
 
@@ -556,9 +561,10 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 | 20261114 | 0.756 | +0.044 [+0.000, +0.087] | +0.033 [+0.000, +0.067] | 0.64 |
 | 20261115 | 0.772 | +0.060 [+0.017, +0.103] | +0.043 [+0.008, +0.079] | 0.66 |
 
-- All three seeds beat M0 (differences +0.044 to +0.060), mean **+0.051** → the pre-registered "robust to the seed" criterion (all above 0, mean at least +0.03) is met.
+- All three seeds beat M0 (differences +0.044 to +0.060), mean **+0.051** → the pre-registered "robust to the seed" criterion (point estimates all above 0, mean at least +0.03) is met. It is a point-estimate rule: the CI lower bound is 0.000 for seed 20261114, and on the format-insensitive metric only seed 20261115 has a dev CI above 0.
 - The extra seeds are not frozen arms, so they did not run CORD test; the test verdict (+0.065) remains the single run of seed 20261113.
 - The unit-price drop (0.64–0.68 against M0's 0.82) appears for all three seeds, so it is not one seed's accident.
+- Sub-items swing strongly between seeds (counts 8 · 3 · 8 of 32, names 14 · 10 · 14 of 49); with so few scored fields, one seed cannot settle this field.
 
 **Unit-price attempt (amendment 3, dev only, exploratory) — no effect.** The 272 train receipts with a printed unit price were added a second time (1,374 records) and the same recipe retrained.
 - Item unit price 0.68 → 0.70 (+0.02), overall strict −0.004 [−0.032, +0.021]. The pre-registered rule (unit price +0.10 or more with at most a 0.01 overall drop) is not met on unit price: "no effect".
@@ -595,7 +601,7 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 | Output parity<br><sub>server vs offline</sub> | M0 and M1 raw outputs 100% identical<br><sub>same prompt tokens (1045)</sub> |
 | Throughput · latency<br><sub>M1</sub> | concurrency 1: 4.0 docs/min, p50 16.1s / p95 18.4s<br>concurrency 2: 4.2 docs/min, p50 26.6s / p95 36.3s<br><sub>the worker is serial, so waiting time grows — not a batching effect</sub> |
 | Concurrency 4 | 7 of 10 requests recorded as failures<br><sub>the first bench did not store status codes; the re-run that records them (below) shows all 7 were **429 (queue full)**</sub> |
-| **Every answer scored · sustained load** (re-run 11-15)<br><sub>M1, 10 own dev documents</sub> | accuracy 0.936 · 0.936 · 0.962 at concurrency 1 · 2 · 4 (3 successes at 4), raw outputs all identical to concurrency 1, 0 truncated<br>**5-minute sustained load (concurrency 2):** 25/25 HTTP 200, accuracy 0.943, 4.56 docs/min, p50 24.9 s / p95 32.8 s, GPU memory flat at 3.36 GB<br><sub>[`hf_peft_nf4_local_v2.json`](reports/serving/hf_peft_nf4_local_v2.json) · [`hf_peft_nf4_local_sustained.json`](reports/serving/hf_peft_nf4_local_sustained.json)</sub> |
+| **Every answer scored · sustained load** (re-run 11-15)<br><sub>M1, 10 own dev documents</sub> | accuracy 0.936 · 0.936 · 0.962 at concurrency 1 · 2 · 4 (3 successes at 4), raw outputs all identical to concurrency 1, 0 truncated<br>**5-minute sustained load (concurrency 2):** 25/25 HTTP 200, accuracy 0.943, 4.56 docs/min, p50 24.9 s / p95 32.8 s, peak GPU memory 3.36 GB (the bench records the maximum only)<br><sub>[`hf_peft_nf4_local_v2.json`](reports/serving/hf_peft_nf4_local_v2.json) · [`hf_peft_nf4_local_sustained.json`](reports/serving/hf_peft_nf4_local_sustained.json)</sub> |
 | Timeout cancellation | a 3-second request → 504 at 3.1 s; right after, the worker reports `busy:false`<br><sub>generation is stopped with StoppingCriteria, so no orphaned inference keeps running</sub> |
 | GPU memory | about 3.1GB<br><sub>nvidia-smi, other processes included</sub> |
 | LIVE demo | review API (LIVE_MODEL) → extraction 15.2 s → `UNIT_PRICE_DIFF` detected → approval → snapshot export<br><sub>the extraction matched the gold rows</sub> |
@@ -666,7 +672,7 @@ A local, read-only dashboard (the UI is in Korean).
 | Overview · stages & gates | pipeline stages, KPIs, FINAL bars, blocked items<br><sub>T00–T09 tasks, G0–G7 acceptance gates</sub> |
 | Public data · own Invoice–PO | filtered lists → document image + gold labels + visibility masks<br><sub>own data also shows the PO and reconciliation results</sub> |
 | Splits · manifests | split statistics, leakage checks, freeze status |
-| CORD receipts · CORD evaluation | receipt photo + gold + every recorded run's prediction (M0 · M1 v1 · M1-cord), compared cell by cell<br><sub>pre-registered criteria table, dev/test bars, paired differences (CI), per-field accuracy, training loss, elapsed time — test cells not run yet stay blank</sub> |
+| CORD receipts · CORD evaluation | receipt photo + gold + every recorded run's prediction (M0 · M1 v1 · M1-cord), compared cell by cell<br><sub>pre-registered criteria table, dev/test bars, paired differences (CI), per-field accuracy, training loss, elapsed time — test cells stay blank until a test result file exists</sub> |
 | Model & evaluation · serving | B0 · M0 · M1 bars (95% CI · lenient), paired differences, training loss<br><sub>latency · throughput · cancellation · output parity</sub> |
 | Review API · tests · cloud & cost | T06 record and LIVE demo, pytest summary, budget plan and approval form |
 
@@ -683,10 +689,10 @@ A local, read-only dashboard (the UI is in Korean).
 | LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` loop + our own verified completion-only collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
 | Training correctness checks | loss-mask audit 360/360, 10-step smoke, reload parity<br><sub>[`reports/model/`](reports/model)</sub> |
 | Reproducibility on another machine | the frozen training re-run on a RunPod A40: loss curve within 0.002 per step, identical outputs on dev<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
-| Cloud GPU operation | Runpod via MCP: real quote → approval → Pod → SSH and tunnel checks → training → SHA256 backup → delete, about $0.43 (estimate)<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
+| Cloud GPU operation | Runpod via MCP: real quote → approval → Pod → SSH and tunnel checks → training → SHA256 backup → delete, billed $0.44 · $1.73<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | Extraction accuracy · failure analysis · improvement | per-set evaluator · paired bootstrap, failure taxonomy, one improvement and its **negative result**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | Real-document evaluation · pre-registration | human-labelled CORD v2 receipt photos added as a separate task; metrics and pass criteria fixed before training; content duplicates removed; test frozen and run once<br><sub>[`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) · [`cord_eval.py`](src/invoiceguard/cord_eval.py)</sub> |
-| Automated scoring · regression tests | 200+ pytest tests (rules B01–B12, evaluation E01–E05, API A01–A08 + row edits, serving core, adapter pairing, CORD scorer, dashboard, README tables)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · freeze and hash guards</sub> |
+| Automated scoring · regression tests | 200+ pytest tests (rules B01–B12, evaluation E01–E05, API A01–A08 + row edits, serving core, adapter pairing, CORD scorer and freeze guards, field-level regression gate, dashboard, README tables)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · freeze and hash guards</sub> |
 | Serving · performance measurement | own Transformers + PEFT GPU server (not a serving framework) — real timeout cancellation and bounded queue, measured<br><sub>[`reports/serving/`](reports/serving)</sub><br>vLLM 0.11.2 on RunPod: continuous batching measured at concurrency 1–8 |
 | OCR / document AI | Tesseract baseline B0<br><sub>general rules built from train/dev only, isolated in Docker</sub> |
 | Table-structured documents · domain rules | renderer for 6 structurally different invoice layouts, PO reconciliation rules |
@@ -697,7 +703,7 @@ A local, read-only dashboard (the UI is in Korean).
 ## 11. Cost and limitations
 
 **Cost**
-- Cloud spend **about $2.16** (estimate) — run 1 on an A40, 43 min, about $0.43, plus run 2 on an L40S, 1 h 33 min, about $1.73; one Pod each time ([section 12](#12-cloud-reproduction-on-runpod)). Computed as time × rate, not settled billing.
+- Cloud spend **$2.16 (billed)** — run 1 on an A40, 43 min, $0.437, plus run 2 on an L40S, 1 h 33 min, $1.725; one Pod each time ([section 12](#12-cloud-reproduction-on-runpod)). GPU $2.122 + Pod disk $0.041; storage and serverless $0. Read from the Runpod billing API, read-only ([`billing.json`](reports/runpod2/billing.json)); it matches the earlier time × rate estimate.
 - Local GPU: one training run about 22 min; final M0 · M1 inference about 49 min (B0 OCR time not recorded). CORD: M1-cord training 22.6 min, dev inference 20.7 · 20.9 · 13.6 min, regression on the existing dev sets 29.7 min.
 
 **Limitations**
@@ -739,7 +745,7 @@ The goal was not a better model but evidence that the training **runs correctly 
 | Machine | 9 vCPU Xeon Gold 6342 · 50 GB RAM<br><sub>container disk 80 GB + volume 20 GB</sub> |
 | Image | `runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404`<br><sub>official template; its torch is not used — the run installs the repository's own lockfile</sub> |
 | Access | SSH on `22/tcp` only<br><sub>the model API listens on 127.0.0.1 inside the Pod and is reached through an SSH tunnel</sub> |
-| Price · time · cost | $0.60/h (GPU 0.59 + disks 0.014) · 43 min · **about $0.43**<br><sub>estimate from time × price; billing records lag by up to an hour</sub> |
+| Price · time · cost | $0.60/h (GPU 0.59 + disks 0.014) · 43 min · **$0.437 (billed)**<br><sub>GPU $0.426 + disk $0.011, [`billing.json`](reports/runpod2/billing.json)</sub> |
 
 | Pod details and price | Telemetry during the vLLM benchmark |
 |---|---|
@@ -820,7 +826,7 @@ Rented once more to answer what run 1 left open: why M1's accuracy dropped under
 | plain LoRA on bf16 + three dev-44 evaluations | 35 min |
 | 8B teacher drafts, 169 photos | 17.5 min |
 | backup · deletion | 2.7 min |
-| **total · cost** | **1 h 33 min · about $1.73 (estimate)** |
+| **total · cost** | **1 h 33 min · $1.725 (billed)** |
 
 <sub>Built from the step timestamps in the Pod logs ([`timeline.md`](reports/runpod2/timeline.md)). The Pod was deleted after the backup was hash-verified, and a fresh listing showed 0 Pods.</sub>
 
@@ -970,7 +976,7 @@ python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --sm
 bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord training → M1-cord dev → regression on the existing dev sets
 .venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
 bash scripts/realdocs/run_cord_test.sh           # once per arm
-.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # checks the freeze; test reports are write-once
+.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # checks the freeze; test reports are write-once (score only through this entry: cord_eval.py stays byte-identical to the freeze and is not run directly)
 .venv/Scripts/python.exe -m invoiceguard.cord_score compare cord_test_m1cord_nf4 cord_test_m0_nf4
 .venv/Scripts/python.exe scripts/realdocs/cord_failure_report.py                                          # dev failure types
 ```

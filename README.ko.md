@@ -7,7 +7,7 @@
 [![ci](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml/badge.svg)](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml)
 ![data](https://img.shields.io/badge/data-synthetic%20%2B%20CORD%20real%20receipts-lightgrey)
 ![gpu](https://img.shields.io/badge/GPU-local%20RTX%204070%20Ti%20SUPER-informational)
-![runpod](https://img.shields.io/badge/RunPod-A40%20%2B%20L40S%20%C2%B7%20est.%20%242.16-673ab7)
+![runpod](https://img.shields.io/badge/RunPod-A40%20%2B%20L40S%20%C2%B7%20billed%20%242.16-673ab7)
 
 - **모델:** Qwen3-VL-2B-Instruct(NF4) + QLoRA 어댑터 — 로컬 GPU 1장에서 학습·평가·서빙했고, RunPod A40 · L40S를 빌려 학습 재현, vLLM 서빙 정확도 회복, FP8 측정을 했습니다([12장](#12-runpod-클라우드-재현))
 - **데이터:** 공개 InvoiceOCR-Synth와 자체 생성 Invoice–PO는 합성입니다. 합성 데이터에서는 기본 모델도 거의 다 맞혀 파인튜닝 효과를 가를 수 없어, 사람이 라벨을 단 **실사진 영수증 CORD v2**(CC BY 4.0)를 추가했습니다([CORD 결과](#cord-v2--실사진-영수증)). 실제 기업·통관 문서 성능은 주장하지 않습니다.
@@ -23,7 +23,7 @@
 | 다른 GPU에서 학습 재현 | A40 재학습: 평균 loss 차이 0.0002, dev 출력 8/8 동일 | [12장](#12-runpod-클라우드-재현) |
 | 인보이스 추출 + 발주서 대사 | 미학습 레이아웃 test: M1 0.921 · M0 0.897(차이 유의하지 않음) · OCR 규칙 0.210 | [1장](#1-한눈에-보기) |
 | 평가 무결성 | test 1회 가드, 동결 해시를 CI가 검사, pytest 209개 | [6장](#6-결과) |
-| 비용 | RunPod 2회 약 $2.16(추정), 나머지는 로컬 GPU 1장 | [11장](#11-비용과-한계) |
+| 비용 | RunPod 2회 청구 $2.16([`billing.json`](reports/runpod2/billing.json)), 나머지는 로컬 GPU 1장 | [11장](#11-비용과-한계) |
 | 한계 | 실사진은 영수증뿐, 단가는 파인튜닝 뒤 0.82 → 0.72로 하락, test 판정은 seed 1개 결과이고, dev에서는 seed 3개 모두 M0보다 +0.044~+0.060([6장](#cord-v2--실사진-영수증)) | [11장](#11-비용과-한계) |
 
 ![관리자 대시보드 — 개요](docs/images/dashboard-overview.png)
@@ -456,6 +456,10 @@ M1이 OOD clean에서 IID clean보다 높은 것은 이 OOD가 같은 생성기�
 
 <!-- field-table:end -->
 
+**필드별 paired 차이 (같은 40문서, family bootstrap 95% CI)** — [`final_field_ci.md`](reports/eval/final_field_ci.md)
+- M1 − M0: 품번 +0.024 [−0.024, +0.068], 단가 +0.018 [−0.034, +0.066], 수량 +0.024 [−0.006, +0.059] — 모두 **유의하지 않습니다**. CI가 0 위인 필드는 행 금액 +0.076 [+0.019, +0.139] 하나뿐입니다.
+- M1 − B0: 통화(셋 다 1.000)를 뺀 11개 필드 모두 유의합니다(예: 품번 +0.900 [+0.823, +0.963]).
+
 ### 0.000은 무엇을 뜻하나
 
 | | 원인 | 확인한 사실 |
@@ -545,6 +549,7 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 - **필드별(test):** 소계 0.64 → 0.91, 합계 0.59 → 0.91, 세금 0.43 → 0.67이 크게 올랐고, 품목 단가 0.82 → 0.72, 품목 금액 0.84 → 0.82는 내려갔습니다(dev와 같은 방향). 하위 품목은 세 arm 모두 약합니다(0.00–0.30).
 - **합성 인보이스로만 학습한 어댑터(M1 v1)는 영수증으로 옮겨 가지 못했습니다.** test에서 M0보다 −0.474 [−0.543, −0.400]이고, 출력 100건 중 25건이 JSON으로 읽히지 않았으며 합계 정확도는 0.12입니다. 학습한 형식 밖에서는 파인튜닝이 해가 될 수 있습니다.
 - dev와 test의 방향이 같습니다(dev +0.0497 → test +0.065).
+- **필드별로 숨은 하락:** 평균 기준(−0.003)으로는 회귀가 없었지만, 필드별 회귀 게이트([`regression_gate.py`](src/invoiceguard/regression_gate.py), CI에서 실행)로 보면 CORD를 더한 뒤 자체 dev 인보이스 번호가 0.958 → 0.833(24건 중 3건)으로 떨어졌습니다. 이미 확정된 결과라 사유와 함께 "알려진 하락"으로 기록했고([`regression_gate.json`](configs/regression_gate.json)), 앞으로 생기는 필드 하락은 CI가 실패시킵니다.
 
 **seed 반복 (수정 2, CORD dev만, 학습 전에 기준 고정)** — 같은 레시피를 seed만 바꿔 두 번 더 학습했습니다.
 
@@ -554,9 +559,10 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 | 20261114 | 0.756 | +0.044 [+0.000, +0.087] | +0.033 [+0.000, +0.067] | 0.64 |
 | 20261115 | 0.772 | +0.060 [+0.017, +0.103] | +0.043 [+0.008, +0.079] | 0.66 |
 
-- 세 seed 모두 M0보다 높고(차이 +0.044 ~ +0.060), 평균 **+0.051**입니다 → 미리 정한 "seed에 견고함" 기준(모두 0보다 크고 평균 +0.03 이상)을 충족합니다.
+- 세 seed 모두 M0보다 높고(차이 +0.044 ~ +0.060), 평균 **+0.051**입니다 → 미리 정한 "seed에 견고함" 기준(점추정이 모두 0보다 크고 평균 +0.03 이상)을 충족합니다. 점추정 기준이라는 점에 주의하세요. seed 20261114는 CI 하한이 0.000이고, 형식 무시 지표에서 dev CI가 0 위인 것은 seed 20261115뿐입니다.
 - 추가 seed는 동결된 arm이 아니어서 CORD test는 돌리지 않았습니다. test 판정(+0.065)은 seed 20261113 한 번의 결과 그대로입니다.
 - 단가 하락(0.64–0.68, M0 0.82)은 세 seed에서 모두 나타나, 특정 seed의 우연이 아닙니다.
+- 하위 품목은 seed에 따라 크게 흔들립니다(수량 8 · 3 · 8칸 / 32, 이름 14 · 10 · 14칸 / 49). 채점 칸이 적어 이 필드의 점수는 seed 하나로 판단하기 어렵습니다.
 
 **단가 개선 시도 (수정 3, dev만, exploratory) — 효과 없음.** 단가가 인쇄된 train 영수증 272장을 한 번 더 넣어(1,374건) 같은 레시피로 학습했습니다.
 - 품목 단가 0.68 → 0.70(+0.02), 전체 strict −0.004 [−0.032, +0.021]. 미리 정한 기준(단가 +0.10 이상이고 전체 하락 0.01 이내) 중 단가 기준을 채우지 못해 "효과 없음"입니다.
@@ -593,7 +599,7 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 | 출력 동일성<br><sub>서버 vs 오프라인</sub> | M0 · M1 모두 원문 100% 동일<br><sub>같은 프롬프트 토큰 1045개</sub> |
 | 처리량 · 지연<br><sub>M1</sub> | 동시 1: 4.0 문서/분, p50 16.1s / p95 18.4s<br>동시 2: 4.2 문서/분, p50 26.6s / p95 36.3s<br><sub>직렬 작업자라 대기 시간이 늘어난 것이며, 배치 효과가 아님</sub> |
 | 동시 4 | 10건 중 7건 실패 기록<br><sub>첫 벤치는 상태 코드를 저장하지 않았습니다. 상태 코드를 기록하는 재측정(아래)에서 7건 모두 **429(대기열 초과)**로 확인</sub> |
-| **모든 답 채점 · 지속 부하** (11-15 재측정)<br><sub>M1, 자체 dev 10장</sub> | 동시 1 · 2 · 4의 정확도 0.936 · 0.936 · 0.962(성공 3건), 원문이 동시 1과 모두 같음, 잘림 0<br>**5분 지속 부하(동시 2):** 25건 모두 200, 정확도 0.943, 분당 4.56문서, p50 24.9s / p95 32.8s, GPU 메모리 3.36GB로 일정<br><sub>[`hf_peft_nf4_local_v2.json`](reports/serving/hf_peft_nf4_local_v2.json) · [`hf_peft_nf4_local_sustained.json`](reports/serving/hf_peft_nf4_local_sustained.json)</sub> |
+| **모든 답 채점 · 지속 부하** (11-15 재측정)<br><sub>M1, 자체 dev 10장</sub> | 동시 1 · 2 · 4의 정확도 0.936 · 0.936 · 0.962(성공 3건), 원문이 동시 1과 모두 같음, 잘림 0<br>**5분 지속 부하(동시 2):** 25건 모두 200, 정확도 0.943, 분당 4.56문서, p50 24.9s / p95 32.8s, GPU 메모리 최대 3.36GB(벤치는 최댓값만 기록)<br><sub>[`hf_peft_nf4_local_v2.json`](reports/serving/hf_peft_nf4_local_v2.json) · [`hf_peft_nf4_local_sustained.json`](reports/serving/hf_peft_nf4_local_sustained.json)</sub> |
 | 타임아웃 취소 | 3초 제한 요청 → 3.1초에 504, 직후 작업자 `busy:false`<br><sub>StoppingCriteria로 생성을 중단해 남는 추론이 없음</sub> |
 | GPU 메모리 | 약 3.1GB<br><sub>nvidia-smi, 다른 프로세스 포함</sub> |
 | LIVE 시연 | 검수 API(LIVE_MODEL) → 추출 15.2s → `UNIT_PRICE_DIFF` 검출 → 승인 → 스냅샷 export<br><sub>추출 결과가 정답 행과 일치</sub> |
@@ -664,7 +670,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 | 개요 · 진행 단계·게이트 | 파이프라인 단계, KPI, FINAL 막대, 차단 항목<br><sub>T00–T09 작업, G0–G7 인수 게이트</sub> |
 | 공개 데이터 · 자체 Invoice–PO | 필터 목록 → 문서 이미지 + 정답 + 가시성 마스크<br><sub>자체 데이터는 발주서와 대사 결과까지</sub> |
 | 분할·manifest | 분할 통계, 누수 검사, 동결 상태 |
-| CORD 영수증 · CORD 평가 | 영수증 사진 + 정답 + 기록된 실행(M0 · M1 v1 · M1-cord)의 예측을 칸마다 비교<br><sub>사전 고정 기준 표, dev/test 막대, paired 차이(CI), 필드별 정확도, 학습 loss, 걸린 시간 — 아직 실행하지 않은 test 칸은 빈칸</sub> |
+| CORD 영수증 · CORD 평가 | 영수증 사진 + 정답 + 기록된 실행(M0 · M1 v1 · M1-cord)의 예측을 칸마다 비교<br><sub>사전 고정 기준 표, dev/test 막대, paired 차이(CI), 필드별 정확도, 학습 loss, 걸린 시간 — test 결과 파일이 생기기 전까지 test 칸은 빈칸</sub> |
 | 모델·평가 · 서빙 | B0 · M0 · M1 막대(95% CI · lenient), paired 차이, 학습 loss<br><sub>지연 · 처리량 · 취소 · 출력 동일성</sub> |
 | 검수 API · 테스트 · 클라우드·비용 | T06 기록과 LIVE 시연, pytest 요약, 예산 계획과 승인 양식 |
 
@@ -681,10 +687,10 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 | LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` 루프 + 직접 만든 검증 collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
 | 학습 정확성 검증 | loss mask 감사 360/360, 10-step smoke, 재로드 일치<br><sub>[`reports/model/`](reports/model)</sub> |
 | 다른 머신에서의 재현 | 동결 학습을 RunPod A40에서 다시 돌림: step별 loss 차이 0.002 이내, dev 출력 동일<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
-| 클라우드 GPU 운영 | MCP로 Runpod 운영: 실제 견적 → 승인 → Pod → SSH · 터널 검사 → 학습 → SHA256 백업 → 삭제, 약 $0.43(추정)<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
+| 클라우드 GPU 운영 | MCP로 Runpod 운영: 실제 견적 → 승인 → Pod → SSH · 터널 검사 → 학습 → SHA256 백업 → 삭제, 청구 $0.44 · $1.73<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | 추출 정확도 · 실패 분석 · 개선 | 세트별 평가기 · paired bootstrap, 실패 분류, 개선 1건과 **음성 결과**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | 실문서 평가 · 사전 등록 | 사람 라벨 실사진 영수증 CORD v2를 별도 태스크로 추가, 지표·통과 기준을 학습 전에 고정, 내용 중복 제거, test 1회 동결<br><sub>[`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) · [`cord_eval.py`](src/invoiceguard/cord_eval.py)</sub> |
-| 자동 채점 · 회귀 테스트 | pytest 200개 이상(규칙 B01–B12, 평가 E01–E05, API A01–A08 + 행 수정, 서빙 코어, 어댑터 짝 검사, CORD 채점기, 대시보드, README 표)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · 동결 · 해시 가드</sub> |
+| 자동 채점 · 회귀 테스트 | pytest 200개 이상(규칙 B01–B12, 평가 E01–E05, API A01–A08 + 행 수정, 서빙 코어, 어댑터 짝 검사, CORD 채점기 · 동결 가드, 필드별 회귀 게이트, 대시보드, README 표)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · 동결 · 해시 가드</sub> |
 | 서빙 · 성능 측정 | 직접 만든 Transformers + PEFT GPU 서버(서빙 프레임워크 아님) — 실제 타임아웃 취소 · bounded queue 실측<br><sub>[`reports/serving/`](reports/serving)</sub><br>RunPod에서 vLLM 0.11.2: 동시성 1–8의 연속 배칭 측정 |
 | OCR / 문서 AI | Tesseract 기준선 B0<br><sub>train/dev만 보고 만든 일반 규칙, Docker 격리</sub> |
 | 표 구조 문서 · 도메인 규칙 | 구조가 다른 인보이스 레이아웃 6종 렌더러, PO 대사 규칙 |
@@ -695,7 +701,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 ## 11. 비용과 한계
 
 **비용**
-- 클라우드 지출 **약 $2.16**(추정) — 실행 1 A40 43분 약 $0.43 + 실행 2 L40S 1시간 33분 약 $1.73, 각각 Pod 1대([12장](#12-runpod-클라우드-재현)). 시간 × 단가로 계산한 값이며 청구 기록 확정값은 아닙니다.
+- 클라우드 지출 **$2.16(청구 기록)** — 실행 1 A40 43분 $0.437 + 실행 2 L40S 1시간 33분 $1.725, 각각 Pod 1대([12장](#12-runpod-클라우드-재현)). GPU $2.122 + Pod 디스크 $0.041이고 스토리지 · 서버리스 요금은 0입니다. Runpod 청구 API를 읽기 전용으로 조회한 값이며([`billing.json`](reports/runpod2/billing.json)), 앞서 시간 × 단가로 계산한 추정과 같습니다.
 - 로컬 GPU: 학습 1회 약 22분, final M0 · M1 추론 약 49분(B0 OCR 시간은 기록 없음). CORD: M1-cord 학습 22.6분, dev 추론 20.7 · 20.9 · 13.6분, 기존 dev 회귀 29.7분.
 
 **한계**
@@ -737,7 +743,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 | 머신 | 9 vCPU Xeon Gold 6342 · 50 GB RAM<br><sub>container 디스크 80 GB + volume 20 GB</sub> |
 | 이미지 | `runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404`<br><sub>공식 템플릿. 이미지의 torch는 쓰지 않고 저장소 lockfile을 그대로 설치</sub> |
 | 접속 | SSH `22/tcp`만 공개<br><sub>모델 API는 Pod 안 127.0.0.1에서만 열고 SSH 터널로 접근</sub> |
-| 단가 · 시간 · 비용 | 시간당 $0.60 (GPU 0.59 + 디스크 0.014) · 43분 · **약 $0.43**<br><sub>시간 × 단가로 계산한 추정값. 청구 기록은 최대 1시간 늦게 반영</sub> |
+| 단가 · 시간 · 비용 | 시간당 $0.60 (GPU 0.59 + 디스크 0.014) · 43분 · **$0.437 (청구)**<br><sub>GPU $0.426 + 디스크 $0.011, [`billing.json`](reports/runpod2/billing.json)</sub> |
 
 | Pod 상세와 요금 | vLLM 벤치 중 텔레메트리 |
 |---|---|
@@ -818,7 +824,7 @@ flowchart TB
 | bf16 위 일반 LoRA 학습 + dev 44건 평가 3종 | 35분 |
 | 8B 교사 초안 169장 | 17.5분 |
 | 백업 · 삭제 | 2.7분 |
-| **합계 · 비용** | **1시간 33분 · 약 $1.73 (추정)** |
+| **합계 · 비용** | **1시간 33분 · $1.725 (청구)** |
 
 <sub>Pod 로그의 단계 시각으로 만든 표입니다([`timeline.md`](reports/runpod2/timeline.md)). Pod는 백업을 해시로 확인한 뒤 삭제했고, 다시 조회해 0개임을 확인했습니다.</sub>
 
@@ -968,7 +974,7 @@ python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --sm
 bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord 학습 → M1-cord dev → 기존 dev 회귀
 .venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
 bash scripts/realdocs/run_cord_test.sh           # arm마다 한 번
-.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # 동결 검사, test 보고서는 한 번만 씀
+.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # 동결 검사, test 보고서는 한 번만 씀 (채점은 이 입구만 씀: cord_eval.py는 동결 해시에 묶여 그대로 두지만 직접 실행하지 않음)
 .venv/Scripts/python.exe -m invoiceguard.cord_score compare cord_test_m1cord_nf4 cord_test_m0_nf4
 .venv/Scripts/python.exe scripts/realdocs/cord_failure_report.py                                          # dev 실패 유형
 ```

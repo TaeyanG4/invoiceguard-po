@@ -1,0 +1,33 @@
+{
+ "source": "Runpod billing API (read-only MCP list-pod-billing and list-billing), queried 2026-11-15",
+ "window_utc": [
+  "2026-11-13T00:00:00Z",
+  "2026-11-16T00:00:00Z"
+ ],
+ "pods": [
+  {
+   "pod_id": "jwvf173fyus06x",
+   "run": "run 1 (A40, CA-MTL-1)",
+   "gpu_usd": 0.4264157771249302,
+   "disk_usd": 0.010879629757255316,
+   "total_usd": 0.4372954068821855
+  },
+  {
+   "pod_id": "t5c8go2mwmeh8u",
+   "run": "run 2 (L40S, EUR-IS-2)",
+   "gpu_usd": 1.695396602153778,
+   "disk_usd": 0.02962963073514402,
+   "total_usd": 1.725026232888922
+  }
+ ],
+ "account_totals_usd": {
+  "pod_gpu": 2.1218123792787082,
+  "pod_disk": 0.040509260492399335,
+  "storage": 0.0,
+  "serverless": 0.0,
+  "clusters": 0.0,
+  "total": 2.1623216397711076
+ },
+ "active_pods_at_query": 0,
+ "note": "Settled billing; replaces the earlier time x rate estimates ($0.43, $1.73, $2.16), which it matches."
+}

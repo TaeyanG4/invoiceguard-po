@@ -1,0 +1,383 @@
+{
+ "set": "trade:test (FINAL, 40 documents, unseen layouts T05/T06)",
+ "runs": {
+  "M1": "m1_final_v1",
+  "M0": "m0_final_v1",
+  "B0": "b0_final_v12"
+ },
+ "method": "family-cluster paired bootstrap, 2000 resamples, seed 20261113, strict scorer as score_run",
+ "fields": {
+  "sku_raw": {
+   "M1": {
+    "accuracy": 0.9,
+    "correct": 153,
+    "scored": 170
+   },
+   "M0": {
+    "accuracy": 0.8765,
+    "correct": 149,
+    "scored": 170
+   },
+   "B0": {
+    "accuracy": 0.0,
+    "correct": 0,
+    "scored": 170
+   },
+   "M1-M0": {
+    "diff": 0.0235,
+    "ci95": [
+     -0.0241,
+     0.0682
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.9,
+    "ci95": [
+     0.8229,
+     0.9632
+    ]
+   }
+  },
+  "description_raw": {
+   "M1": {
+    "accuracy": 0.9235,
+    "correct": 157,
+    "scored": 170
+   },
+   "M0": {
+    "accuracy": 0.8882,
+    "correct": 151,
+    "scored": 170
+   },
+   "B0": {
+    "accuracy": 0.0,
+    "correct": 0,
+    "scored": 170
+   },
+   "M1-M0": {
+    "diff": 0.0353,
+    "ci95": [
+     0.0,
+     0.0741
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.9235,
+    "ci95": [
+     0.8531,
+     0.9771
+    ]
+   }
+  },
+  "quantity_raw": {
+   "M1": {
+    "accuracy": 0.9059,
+    "correct": 154,
+    "scored": 170
+   },
+   "M0": {
+    "accuracy": 0.8824,
+    "correct": 150,
+    "scored": 170
+   },
+   "B0": {
+    "accuracy": 0.0,
+    "correct": 0,
+    "scored": 170
+   },
+   "M1-M0": {
+    "diff": 0.0235,
+    "ci95": [
+     -0.0065,
+     0.0588
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.9059,
+    "ci95": [
+     0.837,
+     0.9645
+    ]
+   }
+  },
+  "unit_raw": {
+   "M1": {
+    "accuracy": 0.9824,
+    "correct": 167,
+    "scored": 170
+   },
+   "M0": {
+    "accuracy": 0.9882,
+    "correct": 168,
+    "scored": 170
+   },
+   "B0": {
+    "accuracy": 0.0,
+    "correct": 0,
+    "scored": 170
+   },
+   "M1-M0": {
+    "diff": -0.0058,
+    "ci95": [
+     -0.0183,
+     0.0
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.9824,
+    "ci95": [
+     0.9617,
+     1.0
+    ]
+   }
+  },
+  "unit_price_raw": {
+   "M1": {
+    "accuracy": 0.8235,
+    "correct": 140,
+    "scored": 170
+   },
+   "M0": {
+    "accuracy": 0.8059,
+    "correct": 137,
+    "scored": 170
+   },
+   "B0": {
+    "accuracy": 0.0,
+    "correct": 0,
+    "scored": 170
+   },
+   "M1-M0": {
+    "diff": 0.0176,
+    "ci95": [
+     -0.0343,
+     0.0659
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.8235,
+    "ci95": [
+     0.7198,
+     0.924
+    ]
+   }
+  },
+  "line_total_raw": {
+   "M1": {
+    "accuracy": 0.9,
+    "correct": 153,
+    "scored": 170
+   },
+   "M0": {
+    "accuracy": 0.8235,
+    "correct": 140,
+    "scored": 170
+   },
+   "B0": {
+    "accuracy": 0.5,
+    "correct": 85,
+    "scored": 170
+   },
+   "M1-M0": {
+    "diff": 0.0765,
+    "ci95": [
+     0.019,
+     0.1394
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.4,
+    "ci95": [
+     0.2514,
+     0.5517
+    ]
+   }
+  },
+  "invoice_number_raw": {
+   "M1": {
+    "accuracy": 0.9,
+    "correct": 36,
+    "scored": 40
+   },
+   "M0": {
+    "accuracy": 0.925,
+    "correct": 37,
+    "scored": 40
+   },
+   "B0": {
+    "accuracy": 0.625,
+    "correct": 25,
+    "scored": 40
+   },
+   "M1-M0": {
+    "diff": -0.025,
+    "ci95": [
+     -0.075,
+     0.0
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.275,
+    "ci95": [
+     0.1,
+     0.475
+    ]
+   }
+  },
+  "currency_raw": {
+   "M1": {
+    "accuracy": 1.0,
+    "correct": 40,
+    "scored": 40
+   },
+   "M0": {
+    "accuracy": 1.0,
+    "correct": 40,
+    "scored": 40
+   },
+   "B0": {
+    "accuracy": 1.0,
+    "correct": 40,
+    "scored": 40
+   },
+   "M1-M0": {
+    "diff": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "subtotal_raw": {
+   "M1": {
+    "accuracy": 1.0,
+    "correct": 40,
+    "scored": 40
+   },
+   "M0": {
+    "accuracy": 0.975,
+    "correct": 39,
+    "scored": 40
+   },
+   "B0": {
+    "accuracy": 0.375,
+    "correct": 15,
+    "scored": 40
+   },
+   "M1-M0": {
+    "diff": 0.025,
+    "ci95": [
+     0.0,
+     0.075
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.625,
+    "ci95": [
+     0.475,
+     0.775
+    ]
+   }
+  },
+  "tax_raw": {
+   "M1": {
+    "accuracy": 1.0,
+    "correct": 40,
+    "scored": 40
+   },
+   "M0": {
+    "accuracy": 1.0,
+    "correct": 40,
+    "scored": 40
+   },
+   "B0": {
+    "accuracy": 0.775,
+    "correct": 31,
+    "scored": 40
+   },
+   "M1-M0": {
+    "diff": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.225,
+    "ci95": [
+     0.1,
+     0.35
+    ]
+   }
+  },
+  "discount_raw": {
+   "M1": {
+    "accuracy": 1.0,
+    "correct": 40,
+    "scored": 40
+   },
+   "M0": {
+    "accuracy": 1.0,
+    "correct": 40,
+    "scored": 40
+   },
+   "B0": {
+    "accuracy": 0.8,
+    "correct": 32,
+    "scored": 40
+   },
+   "M1-M0": {
+    "diff": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.2,
+    "ci95": [
+     0.075,
+     0.325
+    ]
+   }
+  },
+  "total_raw": {
+   "M1": {
+    "accuracy": 1.0,
+    "correct": 40,
+    "scored": 40
+   },
+   "M0": {
+    "accuracy": 0.975,
+    "correct": 39,
+    "scored": 40
+   },
+   "B0": {
+    "accuracy": 0.9,
+    "correct": 36,
+    "scored": 40
+   },
+   "M1-M0": {
+    "diff": 0.025,
+    "ci95": [
+     0.0,
+     0.075
+    ]
+   },
+   "M1-B0": {
+    "diff": 0.1,
+    "ci95": [
+     0.025,
+     0.2
+    ]
+   }
+  }
+ }
+}

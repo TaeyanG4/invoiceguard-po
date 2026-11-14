@@ -1,0 +1,52 @@
+{
+ "rule": "A field fails when its strict accuracy drops by more than max_drop against the baseline on the same set AND at least min_fields fewer fields are right. Fixed 2026-11-15 before the per-field numbers were inspected.",
+ "max_drop": 0.05,
+ "min_fields": 3,
+ "pairs": [
+  {
+   "new": "m1cord_dev_v1",
+   "base": "m1_dev_v1",
+   "sets": [
+    "trade:dev",
+    "public:dev|clean"
+   ],
+   "why": "docs/20 'no regression': adding CORD must not hurt the existing synthetic dev sets (the two sets named in the criterion)",
+   "accepted": {
+    "trade:dev|invoice_number_raw": "known regression found by this gate on 2026-11-15 (after the rule was fixed): adding CORD lost 3 of 24 invoice numbers on own dev (0.958 -> 0.833); the overall criterion (-0.003) hid it; reported in README section 6"
+   }
+  },
+  {
+   "new": "cord_dev_m1cordup_nf4",
+   "base": "cord_dev_m1cord_nf4",
+   "sets": [
+    "cord:dev"
+   ],
+   "why": "docs/20 amendment 3: the up-weighting attempt must not cost other fields",
+   "accepted": {
+    "cord:dev|sub.count": "amendment 3 (no effect) also lost sub-item counts: 8 -> 3 of 32; reported in README section 6",
+    "cord:dev|sub.name": "amendment 3: sub-item names 14 -> 10 of 49; reported in README section 6"
+   }
+  },
+  {
+   "new": "cord_dev_m1cord_s20261114_nf4",
+   "base": "cord_dev_m1cord_nf4",
+   "sets": [
+    "cord:dev"
+   ],
+   "why": "docs/20 amendment 2: seed repeats should not differ field by field beyond the gate",
+   "accepted": {
+    "cord:dev|sub.count": "seed variance: sub-item fields are few (32 counts, 49 names) and swing by 4-5 fields between seeds; reported with the seed table",
+    "cord:dev|sub.name": "seed variance (see sub.count)"
+   }
+  },
+  {
+   "new": "cord_dev_m1cord_s20261115_nf4",
+   "base": "cord_dev_m1cord_nf4",
+   "sets": [
+    "cord:dev"
+   ],
+   "why": "docs/20 amendment 2"
+  }
+ ],
+ "accepted_note": "'accepted' entries were added after the first gate run (2026-11-15) for results that were already final; each names the drop and where it is reported. Any other field over the limit fails CI."
+}

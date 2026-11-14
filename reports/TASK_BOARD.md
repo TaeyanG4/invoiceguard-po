@@ -26,7 +26,7 @@
 | G4 학습/재로드·M0/M1 dev | pass (local GPU; reports/model, reports/eval/dev_summary.md) |
 | G5 검수 API/경쟁조건 | pass (application_cpu_test 12 + live HF cancel/queue probe) |
 | G6 final·서빙 | pass: final pass (once, frozen); HF serving measured; vLLM on RunPod — run 2 recovered M1 accuracy (0.960 = HF) with the dequantised merge, FP8 measured |
-| G7 백업·과금 정리 | pass: local hash-verified backup; RunPod 실행 1·2 모두 백업 SHA256 일치·로컬 복원 확인 후 Pod 삭제, list-pods 0 확인 (합계 약 $2.16 추정) |
+| G7 백업·과금 정리 | pass: local hash-verified backup; RunPod 실행 1·2 모두 백업 SHA256 일치·로컬 복원 확인 후 Pod 삭제, list-pods 0 확인 (청구 $2.162, reports/runpod2/billing.json) |
 
 T03 승인을 기다리는 동안 독립적인 로컬 작업은 진행할 수 있다. GPU 결과 없는 기능 시연은 fixture/replay라고 명시한다.
 

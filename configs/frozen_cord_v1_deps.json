@@ -1,0 +1,15 @@
+{
+ "freeze": "configs/frozen_cord_v1.json",
+ "freeze_commit": "92892c5543e79c8084195e698e81ab684f03545d",
+ "note": "Files the CORD scorer imports besides the three evaluator files hashed in the freeze (astra review 4). Hashes are of the file contents at the freeze commit (git show <commit>:<path>), recorded 2026-11-15 after the test run; each matched the working tree when recorded. cord_guard / cord_score refuse a test run or test scoring if any of them changes.",
+ "recorded_at": "2026-11-15T08:38:34+0900",
+ "dependency_sha256": {
+  "src/invoiceguard/evaluation.py": "028a97ec3ac9cd671811650335f9333b8ed69e778660d0f4cca21a050579ed5f",
+  "src/invoiceguard/public_data.py": "72744d9560f3c51db3408cce5522faebc238ea16448e5633156087fd6ddfd829",
+  "src/invoiceguard/canonical.py": "270b6bd9317b4eb10553d7347e24e70140ed028cb076e9c9aba4b85455b72512",
+  "src/invoiceguard/normalization.py": "ae70673163d3bd167562c978010e5b46fcd2128d81d030e1e0f3cfb9d8927c9e",
+  "src/invoiceguard/public_visibility.py": "4189804ff8f2243ab57602051561bf4f731c91a54ec95e03745e7ab8ca7495bb",
+  "src/invoiceguard/extraction_request.py": "ea3d5710ce343326e71f1fe99e811a5ab4fdb93da0592ea2c31f064cd19d0e21",
+  "schemas/cord_extraction.schema.json": "0b26b3690026d71b2f2ff96f94487afb686c4562e403a5b4c45b2edaf093ae7e"
+ }
+}
