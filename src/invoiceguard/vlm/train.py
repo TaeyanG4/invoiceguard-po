@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import random
 import time
 from pathlib import Path
@@ -98,6 +99,12 @@ def main() -> int:
     out_dir = REPO / "artifacts" / "adapters" / run_id
     torch.manual_seed(seed)
     random.seed(seed)
+    # Optional cap on this process's GPU memory pool (allocator only — the math is unchanged). On the 16 GB Windows card
+    # the caching allocator grew to ~15.9 GB while only ~7 GB was in use, so any desktop app tipped it into shared
+    # system memory (5.9 -> 110-354 s/step, 2026-11-15). With a cap the allocator frees cache instead.
+    mem_fraction = os.environ.get("INVOICEGUARD_CUDA_MEM_FRACTION")
+    if mem_fraction:
+        torch.cuda.set_per_process_memory_fraction(float(mem_fraction))
 
     processor = load_processor()
     template = processor.chat_template or ""
@@ -158,7 +165,9 @@ def main() -> int:
         "adapter_dir": str(out_dir.relative_to(REPO)).replace("\\", "/"),
         "adapter_files_sha256": {p.name: _sha(p) for p in out_dir.iterdir() if p.is_file()},
         "train_manifests_sha256": manifests,
-        "env": _env() | ({"precision": "bf16_base_unquantised; lora_fp32; patch_embed_fp32"} if args.base_precision == "bf16" else {}),
+        "env": _env() | ({"precision": "bf16_base_unquantised; lora_fp32; patch_embed_fp32"} if args.base_precision == "bf16" else {})
+        | ({"cuda_memory_fraction": float(mem_fraction), "pytorch_cuda_alloc_conf": os.environ.get("PYTORCH_CUDA_ALLOC_CONF")}
+           if mem_fraction else {}),
     }
     (out_dir / "run_metadata.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n",
                                                encoding="utf-8", newline="\n")

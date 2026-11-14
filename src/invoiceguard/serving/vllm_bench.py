@@ -93,8 +93,9 @@ def _request(model: str, prompt: str, image_path: Path) -> dict:
         return {"ok": True, "latency_s": time.perf_counter() - start, "raw_response": choice["message"]["content"],
                 "finish_reason": choice.get("finish_reason"), "prompt_tokens": payload["usage"]["prompt_tokens"],
                 "completion_tokens": payload["usage"]["completion_tokens"]}
-    except Exception as exc:  # recorded, never dropped
-        return {"ok": False, "latency_s": time.perf_counter() - start, "error": repr(exc)[:200]}
+    except Exception as exc:  # recorded, never dropped — with the HTTP status when there is one (429 queue full, 504 deadline)
+        return {"ok": False, "latency_s": time.perf_counter() - start, "error": repr(exc)[:200],
+                "http_status": getattr(exc, "code", None)}
 
 
 def _gpu_mem_mb() -> int | None:
@@ -103,6 +104,72 @@ def _gpu_mem_mb() -> int | None:
         return int(out.stdout.strip().splitlines()[0])
     except (ValueError, IndexError):
         return None
+
+
+def _fields(record_id: str, raw: str, finish_reason: str | None) -> tuple[int, int]:
+    """(correct, scored) TRADE_RAW fields of one served answer, with the evaluation path's own scorer."""
+    from ..evaluation import parse_for_eval, score_trade_document
+
+    gold = json.loads((REPO / "data" / "processed" / "trade" / "gold" / f"{record_id}.json").read_text(encoding="utf-8"))
+    pred = {"raw_response": raw, "finish_reason": "length" if finish_reason == "length" else "stop"}
+    s = score_trade_document(gold, parse_for_eval(pred, "TRADE_RAW"))
+    return sum(c for c, _ in s["fields"].values()), sum(n for _, n in s["fields"].values())
+
+
+def _load(model: str, docs: list, conc: int, reps: int, duration_s: float | None, c1_raw: dict, request=None) -> dict:
+    """One load level. Every answer is kept and scored — not only latency (astra review 3: the old loop counted HTTP
+    successes only, so quality under concurrency and truncation were invisible). With duration_s the level runs as a
+    sustained load: `conc` requests stay in flight, cycling through the documents, until the time is up."""
+    request = request or _request
+    lat, mem, codes = [], [], {}
+    correct = scored = truncated = same_as_c1 = answered = 0
+    start = time.perf_counter()
+    order = [d for _ in range(reps) for d in docs] if not duration_s else None
+    sent = 0
+    with cf.ThreadPoolExecutor(max_workers=conc) as pool:
+        inflight: dict = {}
+
+        def submit_next() -> bool:
+            nonlocal sent
+            if order is not None:
+                if sent >= len(order):
+                    return False
+                d = order[sent]
+            else:
+                if time.perf_counter() - start >= duration_s:
+                    return False
+                d = docs[sent % len(docs)]
+            inflight[pool.submit(request, model, d.prompt(), d.image_path)] = d
+            sent += 1
+            return True
+
+        while len(inflight) < conc and submit_next():
+            pass
+        while inflight:
+            done, _ = cf.wait(list(inflight), return_when=cf.FIRST_COMPLETED)
+            for fut in done:
+                d = inflight.pop(fut)
+                r = fut.result()
+                mem.append(_gpu_mem_mb())
+                code = r.get("http_status", 200 if r["ok"] else None)
+                codes[str(code)] = codes.get(str(code), 0) + 1
+                if r["ok"]:
+                    answered += 1
+                    lat.append(r["latency_s"])
+                    truncated += r.get("finish_reason") == "length"
+                    c, n = _fields(d.record_id, r["raw_response"], r.get("finish_reason"))
+                    correct, scored = correct + c, scored + n
+                    same_as_c1 += (c1_raw.get(d.record_id) or "").strip() == (r["raw_response"] or "").strip()
+                submit_next()
+    wall = time.perf_counter() - start
+    lat.sort()
+    return {"requests": sent, "failures": sent - answered, "status_codes": codes, "wall_s": round(wall, 2),
+            "sustained_s": duration_s, "docs_per_min": round(60 * answered / wall, 2) if wall else None,
+            "p50_s": round(statistics.median(lat), 2) if lat else None,
+            "p95_s": round(lat[min(len(lat) - 1, int(0.95 * len(lat)))], 2) if lat else None,
+            "field_accuracy": round(correct / scored, 4) if scored else None, "fields": [correct, scored],
+            "truncated": truncated, "identical_to_concurrency1_rate": round(same_as_c1 / answered, 4) if answered else None,
+            "gpu_mem_mb_max": max(m for m in mem if m is not None) if any(m is not None for m in mem) else None}
 
 
 def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
@@ -140,28 +207,11 @@ def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
                     s_h = score_trade_document(gold, parse_for_eval(h, "TRADE_RAW"))
                     entry["hf_fields"] = [sum(c for c, _ in s_h["fields"].values()), sum(s for _, s in s_h["fields"].values())]
                 parity.append(entry)
+        c1_raw = {row["id"]: row.get("raw_response") for row in rows if row.get("ok")}
         bench = {}
         for conc in TARGET["conc"]:
-            lat, fails, mem = [], 0, []
-            start = time.perf_counter()
-            jobs = [d for _ in range(reps) for d in docs]
-            with cf.ThreadPoolExecutor(max_workers=conc) as pool:
-                futures = [pool.submit(_request, model, d.prompt(), d.image_path) for d in jobs]
-                for fut in cf.as_completed(futures):
-                    r = fut.result()
-                    mem.append(_gpu_mem_mb())
-                    if r["ok"]:
-                        lat.append(r["latency_s"])
-                    else:
-                        fails += 1
-            wall = time.perf_counter() - start
-            lat.sort()
-            bench[str(conc)] = {"requests": len(jobs), "failures": fails, "wall_s": round(wall, 2),
-                                "docs_per_min": round(60 * (len(jobs) - fails) / wall, 2),
-                                "p50_s": round(statistics.median(lat), 2) if lat else None,
-                                "p95_s": round(lat[min(len(lat) - 1, int(0.95 * len(lat)))], 2) if lat else None,
-                                "gpu_mem_mb_max": max(m for m in mem if m is not None) if any(m is not None for m in mem) else None}
-            print(label, arm, conc, bench[str(conc)], flush=True)
+            bench[str(conc)] = _load(model, docs, conc, reps, TARGET.get("duration_s"), c1_raw)
+            print(label, arm, conc, {k: v for k, v in bench[str(conc)].items() if k != "status_codes"}, flush=True)
         vc = sum(p["server_fields"][0] for p in parity)
         vs = sum(p["server_fields"][1] for p in parity)
         hc = sum(p.get("hf_fields", [0, 0])[0] for p in parity)
@@ -189,11 +239,14 @@ def main() -> int:
     parser.add_argument("--port", type=int, default=PORT)
     parser.add_argument("--conc", default="1,2,4,8")
     parser.add_argument("--arms", default="m0,m1", help="which served models to measure: m0 = served name base, m1 = served name m1")
+    parser.add_argument("--duration", type=float, default=None,
+                        help="sustained load: keep each concurrency level busy for this many seconds instead of reps × docs")
     parser.add_argument("--allow-precision-mismatch", action="store_true",
                         help="exploratory only: serve the NF4-trained adapter on the bf16 base (reproduces run 1)")
     args = parser.parse_args()
     TARGET["port"], TARGET["conc"] = args.port, tuple(int(x) for x in args.conc.split(","))
     TARGET["arms"] = tuple(args.arms.split(","))
+    TARGET["duration_s"] = args.duration
     if args.command == "up":
         up(args.quant, args.allow_precision_mismatch)
     elif args.command == "down":

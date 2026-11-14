@@ -34,6 +34,9 @@ SLOW_TRAIN_S_PER_IT, SLOW_INFER_S_PER_DOC, SLOW_CHECKS = 15.0, 60.0, 6
 # The trainer itself can grow past 16 GB through the CUDA caching allocator (seen 2026-11-15: python held ~15 GB at
 # 354 s/step). These settings make the allocator release cached blocks early; they change memory reuse, not the math.
 ALLOC_CONF = "garbage_collection_threshold:0.6,max_split_size_mb:256"
+# Hard cap on the trainer's pool (12 of 16 GB; the run peaks at ~7 GB allocated): the allocator then frees cache
+# instead of growing into shared memory when a desktop app holds a few hundred MB (train.py reads this variable).
+MEM_FRACTION = "0.75"
 # The trainer reserves nearly the whole 16 GB soon after loading (measured ~15.9 GB within a minute, 2026-11-15), so a
 # running game leaves too little memory even when idle in a menu: these processes mean "not free" while they exist.
 BUSY_PROCESSES = {"osu!", "leagueclient", "league of legends", "valorant", "valorant-win64-shipping"}
@@ -122,7 +125,7 @@ def run_unit(name: str, kind: str, cmd: list[str]) -> str:
     log(f"start {name}: {' '.join(cmd[2:])}")
     start_offset = unit_log.stat().st_size if unit_log.exists() else 0
     with unit_log.open("ab") as out:
-        env = os.environ | {"PYTORCH_CUDA_ALLOC_CONF": ALLOC_CONF}
+        env = os.environ | {"PYTORCH_CUDA_ALLOC_CONF": ALLOC_CONF, "INVOICEGUARD_CUDA_MEM_FRACTION": MEM_FRACTION}
         proc = subprocess.Popen(cmd, cwd=REPO, stdout=out, stderr=subprocess.STDOUT, env=env)
     slow, checks = 0, 0
     while proc.poll() is None:
