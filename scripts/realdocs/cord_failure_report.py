@@ -21,7 +21,8 @@ from invoiceguard import cord_eval as ce  # noqa: E402
 from invoiceguard.cord import load_gold, manifest_rows  # noqa: E402
 from invoiceguard.evaluation import parse_for_eval  # noqa: E402
 
-DEFAULT_RUNS = {"cord_dev_m0_nf4": "M0", "cord_dev_m1v1_nf4": "M1 v1", "cord_dev_m1cord_nf4": "M1-cord"}
+DEFAULT_RUNS = {"cord_dev_m0_nf4": "M0", "cord_dev_m1v1_nf4": "M1 v1", "cord_dev_m1cord_nf4": "M1-cord",
+                "cord_dev_m1cordup_nf4": "M1-cord-up (수정 3)"}
 GROUPS = ("item.name", "item.count", "item.unit_price", "item.price", "sub.name", "sub.count", "sub.price",
           "doc.subtotal", "doc.tax", "doc.total")
 

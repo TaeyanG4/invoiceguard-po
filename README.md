@@ -560,8 +560,13 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 - The extra seeds are not frozen arms, so they did not run CORD test; the test verdict (+0.065) remains the single run of seed 20261113.
 - The unit-price drop (0.64–0.68 against M0's 0.82) appears for all three seeds, so it is not one seed's accident.
 
+**Unit-price attempt (amendment 3, dev only, exploratory) — no effect.** The 272 train receipts with a printed unit price were added a second time (1,374 records) and the same recipe retrained.
+- Item unit price 0.68 → 0.70 (+0.02), overall strict −0.004 [−0.032, +0.021]. The pre-registered rule (unit price +0.10 or more with at most a 0.01 overall drop) is not met on unit price: "no effect".
+- The 5 empty unit prices on lines where unit price and total are the same printed number, and the 2 "@" unit prices put into the price field, are unchanged ([`cord_failure_dev.md`](reports/eval/cord_failure_dev.md)); showing the same documents more often did not fix this column confusion.
+- A "copy the total into an empty unit price" post-processing rule was not used: it would also fill unit prices that are not printed, bringing back the 160 invented values M0 produced.
+
 **dev failure types** ([`cord_failure_dev.md`](reports/eval/cord_failure_dev.md), same normalisation as the pre-registered scorer)
-- **Unit price is a trade-off.** M0 invented 160 unit prices that are not printed (mostly copying the line total); M1-cord cut that to 20, but left 10 of 50 printed unit prices empty — 5 on lines where unit price and total are the same printed number, 2 where an "@" unit price went into the price field. This analysis set amendment 3 (up-weighting receipts with printed unit prices).
+- **Unit price is a trade-off.** M0 invented 160 unit prices that are not printed (mostly copying the line total); M1-cord cut that to 20, but left 10 of 50 printed unit prices empty — 5 on lines where unit price and total are the same printed number, 2 where an "@" unit price went into the price field. This analysis set amendment 3 (up-weighting receipts with printed unit prices), which had no effect (above).
 - **Sub-items are mostly missed.** Of 50 gold sub-items M0 emitted 10 and M1-cord 27. M0 often emits sub-items as separate item rows (300 predicted rows against 221), shifting the rows after them.
 
 **One example** — `cord_dev_0084` from [section 3.5](#35-real-receipt-photos--cord-v2-cord_raw)

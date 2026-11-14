@@ -18,6 +18,11 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
+## 2026-11-15 08:20 — 수정 3 결과: 효과 없음, 로컬 서빙 지속 부하 측정 중
+- **수정 3 (단가 인쇄 영수증 2배, 1,374건, 22.1분, loss 0.0671):** dev 품목 단가 0.68 → 0.70, strict 0.762 → 0.758(−0.004 [−0.032, +0.021]), M0 대비 +0.046 [+0.002, +0.089]. 사전 기준(단가 +0.10 이상) 미충족 → **효과 없음**. "두 번 인쇄된 단가" 누락 5칸·"@" 2칸 그대로(`reports/eval/cord_failure_dev.md`). 단가 null을 금액으로 채우는 후처리는 지어냄(M0 160칸)을 되살려 쓰지 않음. README 6장에 기록.
+- GPU 실행기 6개 작업 모두 완료(ALL DONE 08:14, 메모리 상한 뒤 경합 0회).
+- **서빙 측정 (astra 3 지적):** 로컬 HF+PEFT 서버(M1 v1)에 `vllm_bench run --conc 1,2,4 --docs 10`(모든 답 채점) + `--duration 300 --conc 2`(5분 지속 부하) 실행 중.
+
 ## 2026-11-15 07:40 — 3차 지적 CPU 수정, 메모리 상한으로 GPU 학습 정상화, seed 반복 결과
 - **CPU 수정 (커밋 4beb38f · 062b108 · 9f6143c):** `cord_score.py`(test 채점·비교에 동결 검사, test 보고서 한 번만 쓰기 — 커밋된 test 보고서를 다시 채점하니 바이트 단위로 같음), `cord_guard.py`(끝났거나 채점된 test run 재개 금지), findings 스키마에 `key` + API 응답 스키마 검증, `TRAIN_DATA_SOURCES`(모든 --data가 읽는 manifest 해시 기록), `reports/eval/cord_failure_dev.md`(단가 맞바꿈: M0 지어냄 160칸 → M1-cord 20칸, 대신 인쇄된 단가 10칸 비움 / 하위 품목 정답 50 중 M0 10 · M1-cord 27), 벤치가 모든 동시성에서 답을 채점·잘림·상태 코드·`--duration` 지속 부하. 테스트 214개.
 - **GPU 원인 확정:** osu! 종료 후에도 학습이 step 1에서 멈춤(15.9 GB, 80 W) → 학습 프로세스의 메모리 풀이 실제 사용(약 7 GB)보다 훨씬 커져 데스크톱 0.8 GB만 더해져도 공유 메모리로 넘침. `set_per_process_memory_fraction(0.75)`(12 GB, `INVOICEGUARD_CUDA_MEM_FRACTION`, 보고서 env에 기록) 후 06:12부터 6.7–7 s/step, 7.4–8.8 GB, 220 W로 정상. docs/20에 결과 전 기록.
