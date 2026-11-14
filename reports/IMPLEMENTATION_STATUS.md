@@ -13,7 +13,7 @@
 | 공개 데이터 누수 없는 분할 (T02) | passed_with_evidence (application_cpu_test) | T02-a 로그, manifests/ |
 | 자체 Invoice–PO 합성·렌더러·대사 규칙·평가기 (T02/G2) | passed_with_evidence (application_cpu_test) | T02-b 로그 |
 | 관리자 대시보드(사이드바·데이터 직접 보기·평가/서빙 차트, 읽기 전용, 기본 다크) | implemented_local | `.venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765` (127.0.0.1) |
-| Git / GitHub | private repo `TaeyanG4/invoiceguard-po` (사용자 요청으로 생성·push) | 데이터·venv 제외 |
+| Git / GitHub | **public** repo `TaeyanG4/invoiceguard-po` (사용자 요청으로 생성 → 공개 전 작성자 이메일 noreply 재작성 후 재생성) | 데이터·venv 제외, `reports/HISTORY_REWRITE.md` |
 | 실제 RunPod 잔액·견적·Pod 접속 | not_run — 승인 요청 초안만 | reports/RUNPOD_APPROVAL.md |
 | 로컬 GPU smoke (RTX 4070 Ti SUPER, 사용자 승인) | M01 mask pass / 파일럿 8장 실행 / 10-step 학습 — 아래 로그 | reports/model/local_smoke_*.json |
 | RunPod(클라우드) 실행·비용 | not_run — 사용자 로그인·견적 승인 없음, 비용 $0 | reports/RUNPOD_APPROVAL.md (초안만) |
@@ -190,6 +190,11 @@
 - 대시보드 화면 캡처 6장(`docs/images/dashboard-*.png`, 로컬 headless Chrome, 기본 다크). 공개 데이터 화면의 문서 이미지는 InvoiceOCR-Synth(CC BY 4.0) — README 출처 절에 표기.
 - 공개 전 점검: 전체 git 이력에서 토큰·키·비밀번호 패턴 0건, 사용자 이름이 든 로컬 경로 0건, 1MB 넘는 추적 파일은 manifest 1개. 커밋 작성자 이메일은 공개 시 노출되므로 사용자 확인 대상.
 - 검증: `pytest` 164 passed / 1 skipped (`tests/test_readme_figures.py`: 차트 값 = 기록, 커밋된 SVG = 새 생성본, README 로컬 링크 존재).
+
+### 공개 전환 (사용자 요청, 2026-11-14)
+- 사용자 선택: 커밋 작성자 이메일을 GitHub noreply로 바꾸고 공개. 로컬에서 25개 커밋의 작성자·커미터 이메일만 재작성(트리 해시 25개 모두 동일, 재작성 전 이력은 로컬 bundle 백업), 이 저장소의 커밋 이메일 설정도 noreply로 변경.
+- GitHub는 force push 후에도 예전 커밋을 해시로 보여 주므로, 사용자 승인으로 기존 비공개 저장소를 삭제하고 같은 이름의 공개 저장소를 새로 만들어 재작성된 이력만 push. 예전 CI 실행 기록 6건은 함께 삭제됨.
+- 이전 기록에 적힌 커밋 해시는 재작성 전 값 — 대응표 `reports/HISTORY_REWRITE.md`. 동결 파일(`configs/frozen_v1*.json`)은 해시 가드 대상이라 고치지 않음.
 
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.

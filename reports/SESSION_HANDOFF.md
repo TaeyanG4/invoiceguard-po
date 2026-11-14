@@ -1,6 +1,6 @@
 # 세션 인계 — 최종 상태 (2026-11-14)
 
-- project_root: `H:\dev\invoiceguard-po` (Windows 10, PowerShell 5.1 + Git Bash), git `main`, remote `origin` = github.com/TaeyanG4/invoiceguard-po (**private**)
+- project_root: `H:\dev\invoiceguard-po` (Windows 10, PowerShell 5.1 + Git Bash), git `main`, remote `origin` = github.com/TaeyanG4/invoiceguard-po (**public**, 2026-11-14 작성자 이메일을 noreply로 재작성한 이력으로 새로 만듦 — `reports/HISTORY_REWRITE.md`)
 - push: 사용자 지시에 따라 프로젝트 완료 시 1회 push (이 문서 커밋 직후)
 - python_env: 제품/CPU `.venv` (3.11.9, `pip install -e ".[dev,app]"`), 모델 `.venv-ml` (정확한 버전 `requirements-ml.lock.txt`) — 둘 다 Git 제외
 - decision record: `docs/19_DECISIONS_V5.md` (방향·검토 Fable, 구현 Opus)
