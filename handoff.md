@@ -18,6 +18,11 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
+## 2026-11-15 05:05 — 3차 평가: Fable 82.5 · astra 89, GPU 작업 일시 정지
+- 사용자: "그럼 당분간 멈춰봐 osu 끝나면 알려줄게" → GPU 실행기 정지(작업은 시작 전, 남은 프로세스 없음, GPU 741 MiB). osu! 종료 알림 후 `gpu_free_runner.py cord_r5_r6` 재시작.
+- **Fable 3 = 82.5** (`reports/reviews/fable-3.md`, 감점 −17.5): seed 1개(−2), 단가 하락·개선 검증 없음(−3), CORD 모델 vLLM 서빙·작은 표본(−3), 무역 서류 종류(−1.5), 검수 UI(−1), 품번·모호수량·하위 품목(−2), 비용 추정·Pod 자동 정지·실행기 결함(−1.5), 회귀 게이트·채점 시 동결 검사·낡은 상태 표기·레시피 ablation(−3.5). 상승분은 무결성·문서·가드.
+- **astra 3 = 89** (`reports/reviews/astra-3.md`, 감점 −11): seed(−1), 단가(−2), 모호수량(−1), 하위 품목(−1), 고동시성 응답 미채점·지속 부하 없음(−2), `cord_eval score/compare`에 동결 검사 없음(−1), 같은 run 폴더만 있으면 유실 예측 재생성 가능(−1), `all_plus_cord_up` manifest 해시 미기록(−0.5), 문구 2곳(−0.5), 경고 `key`가 findings 스키마에 없음(−1). 단가 "분석 없음" 감점은 철회. "추가 GPU 없이 CPU 보완 2–3시간으로 90 가능"이라고 평가.
+
 ## 2026-11-15 04:58 — 로컬 GPU 경합으로 R5·R6 대기, 3차 평가 의뢰
 - 사용자 결정: GPU 실험은 "Local, when PC is free"(03:10경). `scripts/realdocs/gpu_free_runner.py`로 PC가 빌 때만 실행.
 - 02:12 재시작한 seed 학습도 02:23부터 다시 느려짐(10 → 354 s/step) — osu!·NVIDIA Overlay가 함께 실행 중. 03:08 중단.
