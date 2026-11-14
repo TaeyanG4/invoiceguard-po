@@ -80,4 +80,4 @@ dev에서 학습 설정을 정한 뒤, test를 돌리기 전에 `configs/frozen_
 - **평가:** CORD dev 100장만(로컬 4070 NF4). test는 이미 1회 썼으므로 돌리지 않는다. 그래서 결과는 exploratory다.
 - **판정 (사전 고정):** "개선"이라고 쓰는 조건은 두 가지다. dev 품목 단가 정확도가 M1-cord(0.68)보다 0.10 이상 오르고, dev 전체 strict 정확도가 M1-cord(0.762)보다 0.01 넘게 떨어지지 않아야 한다. 아니면 "효과 없음" 또는 "부작용"으로 그대로 보고한다. seed 차이(수정 2)도 함께 적는다.
 - 실행 스크립트: `scripts/realdocs/run_cord_up.sh` (seed 반복이 끝난 뒤 같은 GPU에서).
-- **실행 방식 변경 (2026-11-15 03:12, 커밋 4200c31, 결과 전):** 수정 2·3의 학습·평가는 `scripts/realdocs/gpu_free_runner.py cord_r5_r6`로 돌린다. 다른 프로그램이 GPU를 쓰지 않을 때만 작업을 시작하고, 도중에 GPU 경합이 생기면 그 작업을 멈췄다가 처음부터 다시 돌린다(학습은 0 step부터, 평가는 남은 문서부터). 학습 프로세스에는 `PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.6,max_split_size_mb:256`을 준다(메모리 재사용 방식만 바뀌고 계산은 같다). 이전 두 번의 시도는 GPU 메모리가 넘쳐 중단했다(handoff.md).
+- **실행 방식 변경 (2026-11-15 03:13, 커밋 4200c31, 결과 전):** 수정 2·3의 학습·평가는 `scripts/realdocs/gpu_free_runner.py cord_r5_r6`로 돌린다. 다른 프로그램이 GPU를 쓰지 않을 때만 작업을 시작하고, 도중에 GPU 경합이 생기면 그 작업을 멈췄다가 처음부터 다시 돌린다(학습은 0 step부터, 평가는 남은 문서부터). 학습 프로세스에는 `PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.6,max_split_size_mb:256`을 준다(메모리 재사용 방식만 바뀌고 계산은 같다). 이전 두 번의 시도는 GPU 메모리가 넘쳐 중단했다(handoff.md).
