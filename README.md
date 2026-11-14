@@ -132,17 +132,17 @@ There are three kinds of data, all synthetic. Each is shown below with real samp
 
 | formal_corporate (189) | modern_minimal (130) | utility_bill (177) |
 |:---:|:---:|:---:|
-| ![formal_corporate sample](docs/images/data/public-formal_corporate.jpg) | ![modern_minimal sample](docs/images/data/public-modern_minimal.jpg) | ![utility_bill sample](docs/images/data/public-utility_bill.jpg) |
+| <img src="docs/images/data/public-formal_corporate.jpg" alt="formal_corporate sample" width="240"> | <img src="docs/images/data/public-modern_minimal.jpg" alt="modern_minimal sample" width="240"> | <img src="docs/images/data/public-utility_bill.jpg" alt="utility_bill sample" width="240"> |
 | <sub>corporate sales invoice · train / dev / IID</sub> | <sub>minimal-style invoice · train / dev / IID</sub> | <sub>utility bill · train / dev / IID</sub> |
 | **pos_thermal (187)** | **event_ticket (132)** | **freelancer_invoice (123)** |
-| ![pos_thermal sample](docs/images/data/public-pos_thermal.jpg) | ![event_ticket sample](docs/images/data/public-event_ticket.jpg) | ![freelancer_invoice sample](docs/images/data/public-freelancer_invoice.jpg) |
+| <img src="docs/images/data/public-pos_thermal.jpg" alt="pos_thermal sample" width="240"> | <img src="docs/images/data/public-event_ticket.jpg" alt="event_ticket sample" width="240"> | <img src="docs/images/data/public-freelancer_invoice.jpg" alt="freelancer_invoice sample" width="240"> |
 | <sub>thermal receipt · mostly masked, few trainable</sub> | <sub>order summary · descriptions printed in upper case → never trainable, appears in dev / IID</sub> | <sub>**held out of training → OOD only**</sub> |
 
 **Three image qualities** — every document is published in all three (same crop of one utility bill)
 
 | clean | faded | bad_scan |
 |:---:|:---:|:---:|
-| ![clean](docs/images/data/public-quality-clean.jpg) | ![faded](docs/images/data/public-quality-faded.jpg) | ![bad_scan](docs/images/data/public-quality-bad_scan.jpg) |
+| <img src="docs/images/data/public-quality-clean.jpg" alt="clean" width="240"> | <img src="docs/images/data/public-quality-faded.jpg" alt="faded" width="240"> | <img src="docs/images/data/public-quality-bad_scan.jpg" alt="bad_scan" width="240"> |
 
 <details>
 <summary><b>Label example</b> — what the model must output for this utility bill</summary>
@@ -172,10 +172,10 @@ There are three kinds of data, all synthetic. Each is shown below with real samp
 
 | T01 · train (54) | T02 · train (54) | T03 · train (52) |
 |:---:|:---:|:---:|
-| ![T01](docs/images/data/trade-T01.jpg) | ![T02](docs/images/data/trade-T02.jpg) | ![T03](docs/images/data/trade-T03.jpg) |
+| <img src="docs/images/data/trade-T01.jpg" alt="T01" width="240"> | <img src="docs/images/data/trade-T02.jpg" alt="T02" width="240"> | <img src="docs/images/data/trade-T03.jpg" alt="T03" width="240"> |
 | <sub>classic grid, SKU-first columns</sub> | <sub>description-first striped table</sub> | <sub>two-line list entries, no grid</sub> |
 | **T04 · dev (24)** | **T05 · test (20)** | **T06 · test (20)** |
-| ![T04](docs/images/data/trade-T04.jpg) | ![T05](docs/images/data/trade-T05.jpg) | ![T06](docs/images/data/trade-T06.jpg) |
+| <img src="docs/images/data/trade-T04.jpg" alt="T04" width="240"> | <img src="docs/images/data/trade-T05.jpg" alt="T05" width="240"> | <img src="docs/images/data/trade-T06.jpg" alt="T06" width="240"> |
 | <sub>quantity-first columns, dark banner</sub> | <sub>price before quantity, meta at the bottom</sub> | <sub>item cards in two columns, totals above</sub> |
 
 **Seven scenarios** — what differs from the PO, and the alert the rules must raise
@@ -231,7 +231,7 @@ The same crop of one dev document (`tr_69cab78e7dcd`) and its three degradations
 
 | original | blur + JPEG | fade + noise | skew + low-res |
 |:---:|:---:|:---:|:---:|
-| ![original](docs/images/data/stress-original.jpg) | ![blur + JPEG](docs/images/data/stress-blur_jpeg.jpg) | ![fade + noise](docs/images/data/stress-fade_noise.jpg) | ![skew + low-res](docs/images/data/stress-skew_lowres.jpg) |
+| <img src="docs/images/data/stress-original.jpg" alt="original" width="180"> | <img src="docs/images/data/stress-blur_jpeg.jpg" alt="blur + JPEG" width="180"> | <img src="docs/images/data/stress-fade_noise.jpg" alt="fade + noise" width="180"> | <img src="docs/images/data/stress-skew_lowres.jpg" alt="skew + low-res" width="180"> |
 | | <sub>Gaussian blur r 1.3, JPEG q 30</sub> | <sub>contrast 0.55, brightness 1.12, noise 0.18</sub> | <sub>rotate 1.5–2.5°, downscale to 55 % and back</sub> |
 
 ### 3.4 IID and OOD

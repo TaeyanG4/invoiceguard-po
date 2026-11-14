@@ -132,17 +132,17 @@ flowchart LR
 
 | formal_corporate (189) | modern_minimal (130) | utility_bill (177) |
 |:---:|:---:|:---:|
-| ![formal_corporate 샘플](docs/images/data/public-formal_corporate.jpg) | ![modern_minimal 샘플](docs/images/data/public-modern_minimal.jpg) | ![utility_bill 샘플](docs/images/data/public-utility_bill.jpg) |
+| <img src="docs/images/data/public-formal_corporate.jpg" alt="formal_corporate 샘플" width="240"> | <img src="docs/images/data/public-modern_minimal.jpg" alt="modern_minimal 샘플" width="240"> | <img src="docs/images/data/public-utility_bill.jpg" alt="utility_bill 샘플" width="240"> |
 | <sub>기업 판매 인보이스 · 학습 / dev / IID</sub> | <sub>미니멀 양식 인보이스 · 학습 / dev / IID</sub> | <sub>공과금 청구서 · 학습 / dev / IID</sub> |
 | **pos_thermal (187)** | **event_ticket (132)** | **freelancer_invoice (123)** |
-| ![pos_thermal 샘플](docs/images/data/public-pos_thermal.jpg) | ![event_ticket 샘플](docs/images/data/public-event_ticket.jpg) | ![freelancer_invoice 샘플](docs/images/data/public-freelancer_invoice.jpg) |
+| <img src="docs/images/data/public-pos_thermal.jpg" alt="pos_thermal 샘플" width="240"> | <img src="docs/images/data/public-event_ticket.jpg" alt="event_ticket 샘플" width="240"> | <img src="docs/images/data/public-freelancer_invoice.jpg" alt="freelancer_invoice 샘플" width="240"> |
 | <sub>감열지 영수증 · 대부분 마스크, 학습 가능 일부</sub> | <sub>주문 요약 · 설명이 대문자로 인쇄돼 학습 불가, dev / IID에 등장</sub> | <sub>**학습에서 뺀 양식 → OOD 전용**</sub> |
 
 **이미지 품질 3종** — 모든 문서가 세 가지 품질로 들어 있습니다(같은 공과금 청구서의 같은 부분)
 
 | clean | faded | bad_scan |
 |:---:|:---:|:---:|
-| ![clean](docs/images/data/public-quality-clean.jpg) | ![faded](docs/images/data/public-quality-faded.jpg) | ![bad_scan](docs/images/data/public-quality-bad_scan.jpg) |
+| <img src="docs/images/data/public-quality-clean.jpg" alt="clean" width="240"> | <img src="docs/images/data/public-quality-faded.jpg" alt="faded" width="240"> | <img src="docs/images/data/public-quality-bad_scan.jpg" alt="bad_scan" width="240"> |
 
 <details>
 <summary><b>정답 예시</b> — 이 공과금 청구서에서 모델이 내야 하는 출력</summary>
@@ -172,10 +172,10 @@ flowchart LR
 
 | T01 · 학습 (54) | T02 · 학습 (54) | T03 · 학습 (52) |
 |:---:|:---:|:---:|
-| ![T01](docs/images/data/trade-T01.jpg) | ![T02](docs/images/data/trade-T02.jpg) | ![T03](docs/images/data/trade-T03.jpg) |
+| <img src="docs/images/data/trade-T01.jpg" alt="T01" width="240"> | <img src="docs/images/data/trade-T02.jpg" alt="T02" width="240"> | <img src="docs/images/data/trade-T03.jpg" alt="T03" width="240"> |
 | <sub>전통적인 격자, SKU가 첫 열</sub> | <sub>설명이 첫 열인 줄무늬 표</sub> | <sub>격자 없이 두 줄짜리 목록</sub> |
 | **T04 · dev (24)** | **T05 · test (20)** | **T06 · test (20)** |
-| ![T04](docs/images/data/trade-T04.jpg) | ![T05](docs/images/data/trade-T05.jpg) | ![T06](docs/images/data/trade-T06.jpg) |
+| <img src="docs/images/data/trade-T04.jpg" alt="T04" width="240"> | <img src="docs/images/data/trade-T05.jpg" alt="T05" width="240"> | <img src="docs/images/data/trade-T06.jpg" alt="T06" width="240"> |
 | <sub>수량이 첫 열, 어두운 배너</sub> | <sub>단가가 수량보다 앞, 메타 정보는 아래</sub> | <sub>2열 품목 카드, 합계가 위</sub> |
 
 **시나리오 7종** — 발주서와 무엇이 다르고, 규칙이 어떤 경고를 내야 하는지
@@ -231,7 +231,7 @@ dev 문서 하나(`tr_69cab78e7dcd`)의 같은 부분과 그 열화본 3종입�
 
 | 원본 | blur + JPEG | fade + noise | skew + 저해상도 |
 |:---:|:---:|:---:|:---:|
-| ![원본](docs/images/data/stress-original.jpg) | ![blur + JPEG](docs/images/data/stress-blur_jpeg.jpg) | ![fade + noise](docs/images/data/stress-fade_noise.jpg) | ![skew + 저해상도](docs/images/data/stress-skew_lowres.jpg) |
+| <img src="docs/images/data/stress-original.jpg" alt="원본" width="180"> | <img src="docs/images/data/stress-blur_jpeg.jpg" alt="blur + JPEG" width="180"> | <img src="docs/images/data/stress-fade_noise.jpg" alt="fade + noise" width="180"> | <img src="docs/images/data/stress-skew_lowres.jpg" alt="skew + 저해상도" width="180"> |
 | | <sub>가우시안 블러 r 1.3, JPEG q 30</sub> | <sub>대비 0.55, 밝기 1.12, 노이즈 0.18</sub> | <sub>1.5–2.5° 회전, 55 %로 줄였다 다시 키움</sub> |
 
 ### 3.4 IID와 OOD
