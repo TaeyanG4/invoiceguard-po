@@ -29,9 +29,9 @@ SETS = [
     ("public:ood_final|bad_scan", "공개 OOD · bad_scan", "freelancer · 학습 제외"),
 ]
 THEMES = {
-    "light": {"ink": "#1f2328", "mute": "#59636e", "grid": "#d1d9e0", "zero": "#818b98", "bg": "#ffffff",
+    "light": {"ink": "#1f2328", "mute": "#59636e", "grid": "#d1d9e0", "zero": "#818b98", "bg": "#ffffff", "border": "#d1d9e0",
               "series": {"b0": "#2a78d6", "m0": "#eb6834", "m1": "#1baf7a"}},
-    "dark": {"ink": "#e6edf3", "mute": "#9198a1", "grid": "#3d444d", "zero": "#7d8590", "bg": "#0d1117",
+    "dark": {"ink": "#e6edf3", "mute": "#9198a1", "grid": "#3d444d", "zero": "#7d8590", "bg": "#151b23", "border": "#3d444d",
              "series": {"b0": "#3987e5", "m0": "#d95926", "m1": "#199e70"}},
 }
 FONT = "'Segoe UI','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif"
@@ -66,13 +66,17 @@ def _t(x: float, y: float, text: str, color: str, size: float = 12, anchor: str 
             f'text-anchor="{anchor}">{escape(text)}</text>')
 
 
-MARGIN = 14  # breathing room so the first glyphs and end caps are never clipped
+MARGIN = 20  # padding inside the card so the first glyphs and end caps are never clipped
 
 
-def _svg(width: int, height: int, body: list[str], title: str) -> str:
+def _svg(width: int, height: int, body: list[str], title: str, th: dict) -> str:
+    """Wrap a figure in an opaque rounded card of its own theme colours. GitHub picks the light or dark
+    variant from the viewer's browser/OS setting, which can differ from the GitHub theme; the card keeps
+    the text readable on either page background."""
     w, h = width + 2 * MARGIN, height + 2 * MARGIN
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" '
             f'font-family="{FONT}" role="img" aria-label="{escape(title)}">\n<title>{escape(title)}</title>\n'
+            f'<rect x="0.5" y="0.5" width="{w - 1}" height="{h - 1}" rx="12" fill="{th["bg"]}" stroke="{th["border"]}"/>\n'
             f'<g transform="translate({MARGIN},{MARGIN})">\n' + "\n".join(body) + "\n</g>\n</svg>\n")
 
 
@@ -139,7 +143,7 @@ def final_accuracy_svg(finals: dict[str, dict], mode: str) -> str:
                 label += f"  (◇ {len_v:.3f})"
             body.append(_t(X(end) + 8, cy + 4, label, th["ink"], 11.5, weight=600))
     body.append(_t(0, height - 8, "strict 필드 정확도 · FINAL (설정 동결 후 1회) · 원본: reports/eval/*_final_*.json · 합성 데이터", th["mute"], 11))
-    return _svg(width, height, body, "FINAL strict field accuracy by set: B0, M0, M1")
+    return _svg(width, height, body, "FINAL strict field accuracy by set: B0, M0, M1", th)
 
 
 def paired_svg(comps: list[tuple[str, dict]], mode: str) -> str:
@@ -178,7 +182,7 @@ def paired_svg(comps: list[tuple[str, dict]], mode: str) -> str:
             fill = th["ink"] if sig else th["bg"]
             body.append(f'<circle cx="{X(d):.1f}" cy="{cy:.1f}" r="5" fill="{fill}" stroke="{th["ink"]}" stroke-width="1.5"/>')
             body.append(_t(px + panel_w + 10, cy + 4, f"{d:+.3f} [{lo:+.2f}, {hi:+.2f}]", th["ink"], 11, weight=600 if sig else 400))
-    return _svg(width, height, body, "Paired differences in strict field accuracy with 95% CI")
+    return _svg(width, height, body, "Paired differences in strict field accuracy with 95% CI", th)
 
 
 def training_svg(report: dict, mode: str) -> str:
@@ -206,7 +210,7 @@ def training_svg(report: dict, mode: str) -> str:
                    f"{report.get('run_id')}", th["ink"], 11.5, weight=600))
     body.append(_t(x0, height - 8, f"x = optimizer step (micro batch {cfg.get('micro_batch')} × grad accum {cfg.get('grad_accum')}, lr {cfg.get('lr')}, "
                    f"{cfg.get('scheduler')}, warmup {cfg.get('warmup_ratio')}) · 원본: reports/model/train_m1_standard_v1.json", th["mute"], 11))
-    return _svg(width, height, body, "M1 QLoRA training loss per optimizer step")
+    return _svg(width, height, body, "M1 QLoRA training loss per optimizer step", th)
 
 
 def build(out: Path = OUT) -> list[Path]:

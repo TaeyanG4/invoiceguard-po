@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="988" height="298" viewBox="0 0 988 298" font-family="'Segoe UI','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif" role="img" aria-label="M1 QLoRA training loss per optimizer step">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="310" viewBox="0 0 1000 310" font-family="'Segoe UI','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif" role="img" aria-label="M1 QLoRA training loss per optimizer step">
 <title>M1 QLoRA training loss per optimizer step</title>
-<g transform="translate(14,14)">
+<rect x="0.5" y="0.5" width="999" height="309" rx="12" fill="#151b23" stroke="#3d444d"/>
+<g transform="translate(20,20)">
 <line x1="60" y1="210.0" x2="920" y2="210.0" stroke="#3d444d" stroke-width="1"/>
 <text x="52.0" y="214.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="end">0.00</text>
 <line x1="60" y1="165.0" x2="920" y2="165.0" stroke="#3d444d" stroke-width="1"/>

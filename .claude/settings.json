@@ -13,8 +13,7 @@
       "Bash(ssh *)",
       "Bash(scp *)",
       "Bash(rsync *)",
-      "Bash(runpodctl *)",
-      "Bash(git push *)"
+      "Bash(runpodctl *)"
     ]
   }
 }
