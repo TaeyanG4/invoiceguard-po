@@ -14,6 +14,7 @@ Usage: python -m invoiceguard.dashboard_server [--port 8765] [--run-tests]
     /api/trade/rows?split=&template=&scenario_type=&mini_role=&injection=&q=&offset=&limit=
     /api/trade/doc/<doc_id>                   TRADE_RAW gold, PO, oracle findings, manifest, hash checks
     /api/trade/image/<doc_id>                 PNG
+    /static/favicon.svg (also /favicon.ico)   the dashboard icon
 
 * Every ID is matched with a strict full-match regex AND must exist in the committed manifest; the
   client never supplies a file path. Anything else is 400/404.
@@ -60,6 +61,8 @@ STATIC_ROUTES = {
     "/static/app.js": ("app.js", "text/javascript; charset=utf-8"),
     "/static/theme.js": ("theme.js", "text/javascript; charset=utf-8"),
     "/static/app.css": ("app.css", "text/css; charset=utf-8"),
+    "/static/favicon.svg": ("favicon.svg", "image/svg+xml"),
+    "/favicon.ico": ("favicon.svg", "image/svg+xml"),  # browsers probe this path even with <link rel=icon>
 }
 CSP = ("default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; "
        "base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
@@ -68,6 +71,8 @@ MAX_OFFSET = 1_000_000
 NONE_VALUE = "none"  # filter value for a null role
 MAX_SMOKE_FILES = 10
 MAX_SMOKE_PAIRS = 400
+MAX_RECORD_FILES = 20
+MAX_RECORD_BYTES = 256 * 1024  # training/serving records are a few KB; anything larger is skipped, not truncated
 
 VISIBILITY_KO = {
     "visible_exact": "보임·채점", "not_printed": "미인쇄", "printed_rounded": "반올림 인쇄",
@@ -288,6 +293,23 @@ def _flatten(value: Any, prefix: str = "") -> list[list[str]]:
     return [[prefix or "(value)", value if isinstance(value, str) else json.dumps(value, ensure_ascii=False)]]
 
 
+def _read_record(path: Path) -> Any:
+    if path.stat().st_size > MAX_RECORD_BYTES:
+        raise ValueError("skipped: file larger than the dashboard limit")
+    return _read_json(path)
+
+
+def _records(errors: dict[str, str], folder: Path, rel: str) -> dict[str, Any]:
+    """Parsed JSON records of one reports/ folder (training runs, serving measurements), as written by the
+    project's own scripts. Shown as recorded; oversize files are listed as skipped instead of being cut."""
+    out: dict[str, Any] = {}
+    for path in sorted(folder.glob("*.json"))[:MAX_RECORD_FILES]:
+        content = _safe(errors, f"{rel}/{path.name}", lambda path=path: _read_record(path))
+        if content is not None:
+            out[path.name if rel.endswith("model") else path.stem] = content
+    return out
+
+
 def status_body(store: DataStore) -> dict[str, Any]:
     repo = store.repo
     errors: dict[str, str] = {}
@@ -308,8 +330,11 @@ def status_body(store: DataStore) -> dict[str, Any]:
             sets = (content.get("run_metadata") or {}).get("sets") or []
             stage = "final" if any(x in ("public:iid_final", "public:ood_final", "trade:test") for x in sets) else (
                 "dev" if any("dev" in x or x.startswith("stress:") for x in sets) else "train_diagnostic")
+            meta = content.get("run_metadata") or {}
             evaluations.append({"file": f"reports/eval/{path.name}", "run_id": content["run_id"], "arm": content.get("arm"),
                                 "stage": stage, "denominator_check": content.get("denominator_check"),
+                                "adapter_sha256": (meta.get("fingerprint") or {}).get("adapter_sha256"),
+                                "wall_seconds": meta.get("wall_seconds"),
                                 "headline": content["headline"]})
         elif path.name.startswith("compare_") and "sets" in content:
             comparisons.append({"file": f"reports/eval/{path.name}", "a": content.get("a"), "b": content.get("b"),
@@ -320,12 +345,15 @@ def status_body(store: DataStore) -> dict[str, Any]:
         "hardware": (config or {}).get("hardware"),
         "approval": _safe(errors, "approval", lambda: snap.parse_kv(snap._read(repo / "reports" / "RUNPOD_APPROVAL.md") or "")),
         "handoff": _safe(errors, "handoff", lambda: snap.parse_kv(snap._read(repo / "reports" / "SESSION_HANDOFF.md") or "")),
+        "handoff_decision": _safe(errors, "handoff_decision", lambda: snap.parse_decision(snap._read(repo / "reports" / "SESSION_HANDOFF.md") or "")),
         "public_profile": _safe(errors, "public_profile", lambda: _read_json(repo / "reports" / "data" / "public_profile.json")),
         "public_manifest": _safe(errors, "public_manifest", lambda: _read_json(repo / "manifests" / "public_canonical_v1.summary.json")),
         "trade_manifest": _safe(errors, "trade_manifest", lambda: _read_json(repo / "manifests" / "trade_raw_v1.summary.json")),
         "results": _safe(errors, "results", lambda: _read_json(repo / "reports" / "RESULTS_TEMPLATE.json")),
         "junit": _safe(errors, "junit", lambda: snap.parse_junit(repo / "artifacts" / "dashboard" / "pytest_junit.xml")),
         "local_smoke": smoke,
+        "model_reports": _records(errors, repo / "reports" / "model", "reports/model"),
+        "serving": _records(errors, repo / "reports" / "serving", "reports/serving"),
         "local_data": {"public_parquet": store.public_available(), "trade_files": store.trade_available(),
                        "public_cached_images": store.cached_count()},
         "labels": {"status_ko": snap.STATUS_KO, "status_class": snap.STATUS_CLASS, "visibility_ko": VISIBILITY_KO},

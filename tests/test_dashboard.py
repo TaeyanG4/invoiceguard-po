@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from invoiceguard import dashboard_server as ds
-from invoiceguard.dashboard import build_html, collect, parse_kv, parse_task_board
+from invoiceguard.dashboard import build_html, collect, parse_decision, parse_kv, parse_task_board
 from invoiceguard.public_data import shard_paths
 
 REPO = Path(__file__).resolve().parents[1]
@@ -40,8 +40,30 @@ def test_dashboard_escapes_untrusted_text_and_shows_not_run():
     data["tasks"][0]["evidence"] = "<script>alert(1)</script>"
     page = build_html(data)
     assert "<script>alert(1)</script>" not in page and "&lt;script&gt;" in page
-    assert "미실행" in page  # model matrix stays not_run without real results
     assert "http://" not in page and "https://" not in page  # self-contained, no external fetches
+    data["final_evals"] = {}
+    assert build_html(data).count("미실행") >= 9  # without scoring files every model cell stays not_run
+
+
+def test_snapshot_model_table_comes_from_final_scoring_files():
+    data = collect(REPO / "artifacts" / "does-not-exist" / "junit.xml")
+    for arm, run in data["final_evals"].items():
+        assert run["run_id"].startswith(arm + "_final")
+        cell = f"{run['headline']['trade:test']['fields_acc']:.3f}"
+        assert cell in build_html(data)
+
+
+def test_gate_status_suffix_is_normalised():
+    _, gates = parse_task_board("| G3 x | partial: local only |\n| G0 y | pass (scope) |\n| G7 z | pass (local): backup ok |\n")
+    assert [(g["status"], g["detail"]) for g in gates] == [("partial", "local only"), ("pass", "scope"), ("pass", "local: backup ok")]
+
+
+def test_user_decision_paragraph_is_read_from_the_handoff():
+    text = "- push: x\n\n## 사용자 결정 (2026-11-14, 종료 후)\nRunPod를 **쓰지 않기로** 결정.\n두 번째 줄.\n\n## 재개 시\n1. a\n"
+    assert parse_decision(text) == "RunPod를 **쓰지 않기로** 결정. 두 번째 줄."
+    assert parse_decision("- push: x\n") is None
+    real = parse_decision((REPO / "reports" / "SESSION_HANDOFF.md").read_text(encoding="utf-8"))
+    assert real and "RunPod" in real
 
 
 # ---------------------------------------------------------------------- server: bind + static page
@@ -69,10 +91,20 @@ def test_static_page_has_no_external_urls_and_no_markup_sinks():
         for sink in ("innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "eval(", "new Function"):
             assert sink not in js, (script, sink)
     html = (ds.STATIC_DIR / "index.html").read_text(encoding="utf-8")
-    assert set(re.findall(r'(?:src|href)="([^"#]+)"', html)) == {"/static/app.css", "/static/app.js", "/static/theme.js"}
-    for label in ("개요", "진행 단계·게이트", "공개 데이터", "자체 Invoice–PO", "분할·manifest", "모델·학습",
-                  "RunPod 비용·승인", "테스트", "검수 앱"):
+    assert set(re.findall(r'(?:src|href)="([^"#]+)"', html)) == {"/static/app.css", "/static/app.js", "/static/theme.js",
+                                                                "/static/favicon.svg"}
+    for label in ("개요", "진행 단계·게이트", "공개 데이터", "자체 Invoice–PO", "분할·manifest", "모델·평가",
+                  "서빙", "검수 API", "테스트", "클라우드·비용"):
         assert label in html
+    js = (ds.STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    for page in re.findall(r'data-page="(\w+)"', html):
+        assert re.search(rf"\b{page}: page\w+", js), page  # every sidebar entry has a route
+
+
+def test_favicon_is_a_plain_svg_without_scripts_or_links():
+    svg = (ds.STATIC_DIR / "favicon.svg").read_text(encoding="utf-8")
+    assert svg.startswith("<svg") and "<script" not in svg and "href" not in svg and "foreignObject" not in svg
+    assert re.findall(r"https?://[^\"]+", svg) == ["http://www.w3.org/2000/svg"]  # namespace only, nothing fetched
 
 
 def test_local_smoke_values_are_flattened_raw_not_interpreted():
@@ -211,16 +243,34 @@ def test_public_doc_and_image_endpoints(server):
 
 
 
-def test_theme_toggle_light_and_dark():
+def test_theme_is_dark_by_default_with_a_light_toggle():
     html = (ds.STATIC_DIR / "index.html").read_text(encoding="utf-8")
     css = (ds.STATIC_DIR / "app.css").read_text(encoding="utf-8")
     js = (ds.STATIC_DIR / "app.js").read_text(encoding="utf-8")
-    assert 'id="themetoggle"' in html
+    theme = (ds.STATIC_DIR / "theme.js").read_text(encoding="utf-8")
+    assert 'id="themetoggle"' in html and '<html lang="ko" data-theme="dark">' in html
     assert html.index("/static/theme.js") < html.index("/static/app.css")  # applied before first paint
-    assert ':root[data-theme="dark"]' in css and ':root:not([data-theme="light"])' in css  # explicit choice beats OS
-    assert "localStorage" in js and "try {" in js  # remembered, but never required
+    root = css[css.index(":root{"):css.index("}", css.index(":root{"))]
+    assert "color-scheme:dark" in root and ':root[data-theme="light"]' in css  # dark tokens are the base
+    assert "prefers-color-scheme" not in css  # the OS setting no longer picks the theme
+    assert 'var theme = "dark"' in theme and '=== "light"' in theme  # only an explicit light choice changes it
+    assert "localStorage" in js and "try {" in js and "try {" in theme  # remembered, but never required
 
 
-def test_theme_script_is_served(server):
+def test_theme_script_and_favicon_are_served(server):
     status, headers, body = _get(server, "/static/theme.js")
     assert status == 200 and headers["Content-Type"].startswith("text/javascript") and b"ig-theme" in body
+    for path in ("/static/favicon.svg", "/favicon.ico"):
+        status, headers, body = _get(server, path)
+        assert status == 200 and headers["Content-Type"] == "image/svg+xml" and body.startswith(b"<svg")
+
+
+def test_status_carries_recorded_serving_and_training_runs(server):
+    data = json.loads(_get(server, "/api/status")[2])
+    assert set(data["serving"]) >= {"hf_peft_nf4_local", "hf_cancel_probe", "live_e2e_demo"}
+    assert data["serving"]["hf_cancel_probe"]["timeout_cancel_test"]["http_status"] == 504
+    train = data["model_reports"]["train_m1_standard_v1.json"]
+    finals = {e["run_id"]: e for e in data["evaluations"] if e["stage"] == "final"}
+    assert finals["m1_final_v1"]["adapter_sha256"] == train["adapter_files_sha256"]["adapter_model.safetensors"]
+    assert all(g["status"] in data["labels"]["status_ko"] for g in data["gates"])
+    assert data["handoff_decision"] and not data["errors"]

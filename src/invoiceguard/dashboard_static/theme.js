@@ -1,9 +1,9 @@
-// Applies the saved theme before first paint (loaded synchronously in <head>; no inline script under the CSP).
-// "light" / "dark" are explicit user choices; with nothing saved the page follows the OS (prefers-color-scheme).
+// Applied before first paint: dark by default; an explicit light choice is remembered per browser.
 (function () {
   "use strict";
+  var theme = "dark";
   try {
-    var saved = window.localStorage.getItem("ig-theme");
-    if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);
-  } catch (e) { /* storage unavailable: follow the OS */ }
+    if (window.localStorage.getItem("ig-theme") === "light") theme = "light";
+  } catch (e) { /* storage blocked: stay on the dark default */ }
+  document.documentElement.setAttribute("data-theme", theme);
 })();

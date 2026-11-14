@@ -1,11 +1,15 @@
 // InvoiceGuard-PO read-only admin dashboard (Korean UI).
 // Every value from the API is inserted as text (textContent / text nodes) — never parsed as markup.
 // The page only talks to its own origin (same-origin JSON/PNG endpoints); no CDN, no external fetch.
+// Charts are plain elements positioned through the CSSOM (allowed by the CSP); no chart library.
 "use strict";
 (function () {
   const main = document.getElementById("main");
   const sidebar = document.getElementById("sidebar");
   const toggle = document.getElementById("navtoggle");
+  const backdrop = document.getElementById("backdrop");
+  const crumbs = document.getElementById("crumbs");
+  const tip = document.getElementById("tip");
   const PAGE_SIZE = 50;
   const PUBLIC_ID_RE = /^synth_\d{4}_[0-9a-f]{8}\.png$/;
   const TRADE_ID_RE = /^tr_[0-9a-f]{12}$/;
@@ -29,6 +33,7 @@
         else if (k === "href") el.setAttribute("href", safeHref(v));
         else if (k === "src") el.setAttribute("src", safeHref(v));
         else if (k === "width") el.style.width = v; // CSSOM, allowed by the CSP
+        else if (k === "css") for (const [p, val] of Object.entries(v)) el.style[p] = val;
         else if (k.startsWith("on") && typeof v === "function") el.addEventListener(k.slice(2), v);
         else el.setAttribute(k, String(v));
       }
@@ -46,21 +51,44 @@
   const txt = (v) => (v === null || v === undefined || v === "" ? "—" : String(v));
   const mono = (v) => h("span", { class: "mono" }, txt(v));
   const short = (v, n) => (v ? String(v).slice(0, n || 12) + "…" : "—");
+  const fmt = (v, d) => (v === null || v === undefined || Number.isNaN(Number(v)) ? "—" : Number(v).toFixed(d === undefined ? 3 : d));
+  const signed = (v, d) => (v === null || v === undefined ? "—" : (Number(v) >= 0 ? "+" : "−") + Math.abs(Number(v)).toFixed(d === undefined ? 3 : d));
+  const clean = (v) => (v === null || v === undefined ? "" : String(v).replace(/\*\*/g, "").replace(/`/g, ""));
+  // a SESSION_HANDOFF status line without its "해제: ..." (how to unblock) clause; the user decision is shown beside it
+  const recordedStatus = (v) => clean(v).split(" 해제:")[0].trim();
+  const pct = (v) => (Math.max(0, Math.min(1, Number(v) || 0)) * 100).toFixed(2) + "%";
+
+  // statuses in the task board may carry a suffix: "passed_with_evidence (local) · RunPod blocked", "partial: ..."
+  function statusKey(s) {
+    return String(s || "").trim().split(/[\s(]/)[0].replace(/:$/, "") || "unknown";
+  }
+  function toneOf(key) {
+    return LABELS.status_class[key] || (key === "partial" ? "warn" : "idle");
+  }
   function pill(status, label) {
-    const cls = LABELS.status_class[status] || "idle";
-    return h("span", { class: "pill " + cls }, label || LABELS.status_ko[status] || txt(status));
+    const key = statusKey(status);
+    return h("span", { class: "pill " + toneOf(key) }, label || LABELS.status_ko[key] || txt(key));
   }
   const pillCls = (cls, label) => h("span", { class: "pill " + cls }, label);
   const yesNo = (b, yes, no) => (b === true ? pillCls("ok", yes || "예") : b === false ? pillCls("bad", no || "아니오") : pillCls("warn", "미확인"));
+  const FLAG_RE = /blocked|not_run|failed/i; // a passed step whose note still names something unfinished
+  function statusExtra(status) {
+    const s = String(status || "").trim();
+    const key = statusKey(s);
+    return s.slice(s.indexOf(key) + key.length).replace(/^[:\s·]+/, "").trim();
+  }
   function card(title, ...children) {
-    return h("section", { class: "card" }, title ? h("h2", null, title) : null, ...children);
+    return h("section", { class: "card" }, title ? h("div", { class: "cardhead" }, h("h2", null, title)) : null, ...children);
+  }
+  function cardH(title, hint, ...children) {
+    return h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, title), hint ? h("span", { class: "hint" }, hint) : null), ...children);
   }
   function kv(pairs) {
-    return h("table", { class: "kv" }, pairs.filter(Boolean).map(([k, v]) => h("tr", null, h("th", null, k), h("td", null, v instanceof Node ? v : txt(v)))));
+    return h("table", { class: "kv" }, h("tbody", null, pairs.filter(Boolean).map(([k, v]) => h("tr", null, h("th", null, k), h("td", null, v instanceof Node ? v : txt(v))))));
   }
-  function table(headers, rows, cls) {
-    return h("div", { class: "tablewrap" }, h("table", { class: "grid " + (cls || "") },
-      h("thead", null, h("tr", null, headers.map((x) => h("th", null, x)))),
+  function table(headers, rows, cls, wrapCls) {
+    return h("div", { class: "tablewrap " + (wrapCls || "") }, h("table", { class: "grid " + (cls || "") },
+      h("thead", null, h("tr", null, headers.map((x) => (Array.isArray(x) ? h("th", { class: x[1] }, x[0]) : h("th", null, x))))),
       h("tbody", null, rows)));
   }
   function bars(counts, labeler) {
@@ -72,9 +100,41 @@
       h("span", { class: "bv" }, String(v)))));
   }
   const banner = (text, kind) => h("p", { class: "banner " + (kind || "") }, text);
-  function pageHead(title, meta) {
-    return h("div", { class: "pagehead" }, h("h1", null, title), meta ? h("span", { class: "meta" }, meta) : null);
+  function pageHead(title, meta, source) {
+    return h("div", { class: "pagehead" },
+      h("div", null, h("h1", null, title), meta ? h("div", { class: "meta" }, meta) : null),
+      source ? h("span", { class: "src", title: source }, source) : null);
   }
+  function kpi(label, value, unit, sub, tone, meter) {
+    return h("div", { class: "kpi" },
+      h("div", { class: "kl" }, tone ? h("span", { class: "dot " + tone }) : null, label),
+      h("div", { class: "kn" }, value, unit ? h("small", null, unit) : null),
+      sub ? h("div", { class: "ks" }, sub) : null,
+      meter !== undefined && meter !== null ? h("div", { class: "meter" }, h("i", { class: tone === "ok" ? "ok" : null, width: pct(meter) })) : null);
+  }
+  function details(title, ...children) {
+    return h("details", { class: "card fold" }, h("summary", null, h("h2", null, title)), h("div", { class: "foldbody" }, ...children));
+  }
+
+  // ------------------------------------------------------------------ tooltip (hover + keyboard focus)
+  function hideTip() { tip.hidden = true; }
+  function placeTip(x, y) {
+    const r = tip.getBoundingClientRect();
+    let left = x + 14, top = y + 16;
+    if (left + r.width > window.innerWidth - 8) left = x - r.width - 14;
+    if (top + r.height > window.innerHeight - 8) top = y - r.height - 14;
+    tip.style.left = Math.max(8, left) + "px";
+    tip.style.top = Math.max(8, top) + "px";
+  }
+  function attachTip(el, build) {
+    const show = (x, y) => { tip.replaceChildren(...build()); tip.hidden = false; placeTip(x, y); };
+    el.addEventListener("pointerenter", (e) => show(e.clientX, e.clientY));
+    el.addEventListener("pointermove", (e) => placeTip(e.clientX, e.clientY));
+    el.addEventListener("pointerleave", hideTip);
+    el.addEventListener("focus", () => { const r = el.getBoundingClientRect(); show(r.left + Math.min(r.width, 240) / 2, r.bottom); });
+    el.addEventListener("blur", hideTip);
+  }
+  const tipLine = (label, value) => h("div", null, h("span", { class: "tl" }, label + " "), value);
 
   // ------------------------------------------------------------------ API
   async function api(path) {
@@ -94,7 +154,7 @@
     return s;
   }
   function errorBox(e) {
-    return card("오류", h("p", { class: "err" }, "불러오지 못했습니다: ", mono(e.message), e.detail ? [" (", mono(e.detail), ")"] : null),
+    return card("불러오지 못했습니다", h("p", { class: "err" }, mono(e.message), e.detail ? [" (", mono(e.detail), ")"] : null),
       h("p", { class: "sub" }, "서버가 실행 중인지, 주소의 ID·필터가 올바른지 확인하세요."));
   }
   function statusErrors(s) {
@@ -102,57 +162,235 @@
     return keys.length ? banner("일부 기록을 읽지 못했습니다(동시 편집 중일 수 있음): " + keys.map((k) => k + " — " + s.errors[k]).join(" / "), "bad") : null;
   }
 
+  // ------------------------------------------------------------------ evaluation helpers
+  const ARMS = {
+    b0: { name: "B0", desc: "OCR 규칙 기반 (Tesseract)", cls: "s-b0" },
+    m0: { name: "M0", desc: "Qwen3-VL-2B 기본 · NF4", cls: "s-m0" },
+    m1: { name: "M1", desc: "M0 + QLoRA 어댑터", cls: "s-m1" },
+  };
+  const ARM_ORDER = ["b0", "m0", "m1"];
+  const IID_DESC = "IID 풀 · freelancer 외 5개 템플릿 (event_ticket은 학습에 없음)";
+  const SET_INFO = {
+    "trade:test": ["자체 test", "학습에 없던 레이아웃 T05·T06"],
+    "public:iid_final|clean": ["공개 IID · clean", IID_DESC],
+    "public:iid_final|faded": ["공개 IID · faded", IID_DESC],
+    "public:iid_final|bad_scan": ["공개 IID · bad_scan", IID_DESC],
+    "public:ood_final|clean": ["공개 OOD · clean", "freelancer · 학습 제외"],
+    "public:ood_final|faded": ["공개 OOD · faded", "freelancer · 학습 제외"],
+    "public:ood_final|bad_scan": ["공개 OOD · bad_scan", "freelancer · 학습 제외"],
+    "trade:dev": ["자체 dev", ""],
+    "public:dev|clean": ["공개 dev · clean", ""],
+    "public:dev_stress|faded": ["공개 dev · faded", "열화 품질"],
+    "public:dev_stress|bad_scan": ["공개 dev · bad_scan", "열화 품질"],
+    "stress:blur_jpeg": ["stress · blur+JPEG", "dev 전용 합성 열화"],
+    "stress:fade_noise": ["stress · fade+noise", "dev 전용 합성 열화"],
+    "stress:skew_lowres": ["stress · skew+저해상도", "dev 전용 합성 열화"],
+  };
+  const SET_ORDER = Object.keys(SET_INFO);
+  const setInfo = (k) => SET_INFO[k] || [k, ""];
+  function orderSets(keys) {
+    const rank = (k) => (SET_ORDER.indexOf(k) < 0 ? 999 : SET_ORDER.indexOf(k));
+    return keys.slice().sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+  }
+  const runKey = (id) => String(id || "").split("_")[0].toLowerCase();
+  const runName = (id) => (ARMS[runKey(id)] ? ARMS[runKey(id)].name : runKey(id).toUpperCase());
+  function mainRuns(evals, stage) {
+    const out = {};
+    const runs = evals.filter((e) => e.stage === stage).sort((a, b) => String(a.run_id).localeCompare(String(b.run_id)));
+    for (const e of runs) if (ARMS[runKey(e.run_id)]) out[runKey(e.run_id)] = e; // latest version per arm
+    return out;
+  }
+  function armLegend(extra) {
+    return h("div", { class: "legend" },
+      ARM_ORDER.map((k) => h("span", { class: "key" }, h("span", { class: "sw " + ARMS[k].cls }), h("b", null, ARMS[k].name), " " + ARMS[k].desc)),
+      h("span", { class: "key" }, h("span", { class: "cikey" }), "95% CI (base/family bootstrap)"),
+      extra === false ? null : h("span", { class: "key" }, h("span", { class: "lenkey" }), "lenient (strict JSON 실패 시 코드펜스 제거 후 채점)"));
+  }
+  function armChart(byArm, sets) {
+    const arms = ARM_ORDER.filter((k) => byArm[k]);
+    const grid = h("div", { class: "armchart" },
+      h("div", { class: "axis", "aria-hidden": "true" }, [0, 0.25, 0.5, 0.75, 1].map((t) => h("span", { css: { left: pct(t) } }, t === 0 ? "0" : t.toFixed(2)))));
+    for (const k of sets) {
+      const [label, desc] = setInfo(k);
+      const first = arms.map((a) => byArm[a].headline[k]).find(Boolean);
+      grid.append(h("div", { class: "setlabel" }, label, h("small", null, [desc, first ? "n " + first.n : null].filter(Boolean).join(" · "))));
+      const rows = h("div", { class: "setbars" });
+      for (const a of arms) {
+        const v = byArm[a].headline[k];
+        if (!v) { rows.append(h("div", { class: "armbar" }, h("span", { class: "val", css: { left: "0%" } }, ARMS[a].name + " 미측정"))); continue; }
+        const acc = Number(v.fields_acc) || 0;
+        const ci = Array.isArray(v.ci95) ? v.ci95.map(Number) : null;
+        const lenient = Number(v.json_valid) < 1 && v.lenient_fields_acc !== null && v.lenient_fields_acc !== undefined ? Number(v.lenient_fields_acc) : null;
+        const end = Math.max(acc, ci ? ci[1] : 0, lenient === null ? 0 : lenient);
+        const summary = ARMS[a].name + " · " + label + " · strict " + fmt(acc) + (ci ? " [" + fmt(ci[0], 2) + "–" + fmt(ci[1], 2) + "]" : "");
+        const bar = h("div", { class: "armbar", tabindex: "0", role: "img", "aria-label": summary },
+          h("i", { class: "fill " + ARMS[a].cls + (acc === 0 ? " zero" : ""), css: { width: pct(acc) } }),
+          ci ? h("b", { class: "ci", css: { left: pct(ci[0]), width: pct(Math.max(0, ci[1] - ci[0])) } }) : null,
+          lenient !== null ? h("em", { class: "len", css: { left: pct(lenient) } }) : null,
+          h("span", { class: "val", css: { left: pct(end) } }, fmt(acc), lenient !== null ? h("small", null, " · ◇ " + fmt(lenient)) : null));
+        attachTip(bar, () => [h("b", null, ARMS[a].name + " · " + label),
+          tipLine("strict 필드 정확도", fmt(acc) + (ci ? "  [" + fmt(ci[0], 2) + "–" + fmt(ci[1], 2) + "]" : "")),
+          tipLine("문서 exact", fmt(v.doc_exact, 2)), tipLine("strict JSON 유효율", fmt(v.json_valid, 2)),
+          lenient !== null ? tipLine("lenient 정확도", fmt(lenient)) : null,
+          tipLine("문서 수", String(v.n)), h("div", { class: "tl" }, byArm[a].run_id)]);
+        rows.append(bar);
+      }
+      grid.append(rows);
+    }
+    return grid;
+  }
+  function forestPlot(c) {
+    const pos = (d) => (((Math.max(-1, Math.min(1, Number(d))) + 1) / 2) * 100).toFixed(2) + "%";
+    const A = runName(c.a), B = runName(c.b);
+    const grid = h("div", { class: "forest" },
+      h("div", { class: "faxis", "aria-hidden": "true" }, [-1, -0.5, 0, 0.5, 1].map((t) => h("span", { css: { left: pos(t) } }, t > 0 ? "+" + t : t < 0 ? "−" + Math.abs(t) : "0"))));
+    for (const k of orderSets(Object.keys(c.sets || {}))) {
+      const v = c.sets[k];
+      const d = Number(v.field_acc_diff);
+      const ci = Array.isArray(v.field_acc_diff_ci95) ? v.field_acc_diff_ci95.map(Number) : null;
+      const sig = ci ? ci[0] > 0 || ci[1] < 0 : null;
+      const [label, desc] = setInfo(k);
+      grid.append(h("div", { class: "fl" }, label, h("small", null, [desc, "n " + v.n_docs].filter(Boolean).join(" · "))));
+      const track = h("div", { class: "ft", tabindex: "0", role: "img", "aria-label": A + " − " + B + " " + label + " " + signed(d) },
+        h("i", { class: "zero" }),
+        ci ? h("b", { class: "ci", css: { left: pos(ci[0]), width: (Math.max(0, ci[1] - ci[0]) * 50).toFixed(2) + "%" } }) : null,
+        h("em", { class: "pt" + (sig ? "" : " ns"), css: { left: pos(d) } }));
+      attachTip(track, () => [h("b", null, A + " − " + B + " · " + label), tipLine("필드 정확도 차이", signed(d) + (ci ? "  [" + signed(ci[0]) + ", " + signed(ci[1]) + "]" : "")),
+        tipLine("문서 exact 차이", signed(v.doc_exact_diff, 2)), tipLine("같은 문서 / 클러스터", v.n_docs + " / " + v.n_clusters)]);
+      grid.append(track,
+        h("div", { class: "fv" }, signed(d) + (ci ? "  [" + signed(ci[0]) + ", " + signed(ci[1]) + "]" : "")),
+        h("div", { class: "fs" }, sig === null ? pillCls("idle", "CI 없음") : sig ? pillCls(d > 0 ? "ok" : "warn", (d > 0 ? A : B) + " 우세") : pillCls("idle", "유의하지 않음")));
+    }
+    return grid;
+  }
+  function forestCard(comps, title) {
+    if (!comps.length) return null;
+    const body = h("div");
+    const buttons = comps.map((c, i) => h("button", { type: "button", "aria-pressed": i === 0 ? "true" : "false", onclick: () => show(i) }, runName(c.a) + " − " + runName(c.b)));
+    function show(i) {
+      buttons.forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
+      body.replaceChildren(forestPlot(comps[i]));
+    }
+    show(0);
+    return h("section", { class: "card" },
+      h("div", { class: "cardhead" }, h("h2", null, title), h("div", { class: "segtabs", role: "group", "aria-label": "비교 선택" }, buttons)),
+      h("div", { class: "legend" }, h("span", { class: "key" }, h("span", { class: "dot run" }), "CI가 0을 포함하지 않음 (유의)"),
+        h("span", { class: "key" }, h("span", { class: "dot idle" }), "CI가 0을 포함 (유의하지 않음)"), h("span", { class: "key" }, "같은 문서 쌍, cluster bootstrap 95% CI")),
+      body);
+  }
+  function stageComps(comps, evals, stage) {
+    const ids = new Set(evals.filter((e) => e.stage === stage).map((e) => e.run_id));
+    const order = (c) => ({ "m1-m0": 0, "m1-b0": 1, "m0-b0": 2 }[runKey(c.a) + "-" + runKey(c.b)] ?? 9);
+    return comps.filter((c) => ids.has(c.a) && ids.has(c.b)).sort((x, y) => order(x) - order(y));
+  }
+  function evalTable(runs) {
+    const sets = orderSets(Array.from(new Set(runs.flatMap((e) => Object.keys(e.headline)))));
+    return table(["set"].concat(runs.map((e) => [h("span", null, runName(e.run_id), h("div", { class: "sub mono" }, e.run_id)), ""])),
+      sets.map((k) => {
+        const vals = runs.map((e) => e.headline[k]);
+        const best = Math.max(...vals.filter(Boolean).map((v) => Number(v.fields_acc)));
+        return h("tr", null, h("td", null, setInfo(k)[0], h("div", { class: "sub mono" }, k)),
+          vals.map((v) => h("td", { class: v && Number(v.fields_acc) === best ? "best" : null }, v
+            ? [fmt(v.fields_acc), h("div", { class: "sub" }, "exact " + fmt(v.doc_exact, 2) + " · JSON " + fmt(v.json_valid, 2) + " · n " + v.n),
+              v.ci95 ? h("div", { class: "sub" }, "CI " + v.ci95.join("–")) : null,
+              Number(v.json_valid) < 1 && v.lenient_fields_acc != null ? h("div", { class: "sub" }, "lenient " + fmt(v.lenient_fields_acc)) : null]
+            : pill("not_run"))));
+      }), "small");
+  }
+
   // ------------------------------------------------------------------ pages
+  const FLOW = [
+    ["데이터·분할", ["T01", "T02"], "공개 합성 + 자체 Invoice–PO, 누수 없는 분할"],
+    ["QLoRA 학습", ["T03", "T04"], "Qwen3-VL-2B NF4 + LoRA, 로컬 GPU"],
+    ["dev 분석·개선", ["T05"], "실패 분류, 개선 시도 1회"],
+    ["검수 API", ["T06"], "CAS·승인 스냅샷·export"],
+    ["GPU 서빙", ["T07"], "HF+PEFT 서버, 취소·대기열"],
+    ["final 평가", ["T08"], "동결 후 1회, B0·M0·M1"],
+    ["백업·정리", ["T09"], "해시 검증 백업"],
+  ];
   async function pageOverview(view) {
     const s = await status();
-    const tasks = s.tasks || [], gates = s.gates || [], ho = s.handoff || {}, ap = s.approval || {};
-    const done = tasks.filter((t) => t.status === "passed_with_evidence").length;
+    const tasks = s.tasks || [], gates = s.gates || [], ho = s.handoff || {};
+    const byId = Object.fromEntries(tasks.map((t) => [t.id, t]));
+    const done = tasks.filter((t) => statusKey(t.status) === "passed_with_evidence").length;
+    const gPass = gates.filter((g) => statusKey(g.status) === "pass").length;
+    const gPartial = gates.filter((g) => statusKey(g.status) === "partial").length;
     const junit = s.junit;
-    const pm = s.public_manifest, tm = s.trade_manifest, pp = s.public_profile;
-    const resultsStatus = (s.results && s.results.status) || "not_run";
-    const kpis = [
-      ["진행 단계", done + "/" + tasks.length, "증거로 통과한 T단계"],
-      ["인수 게이트", gates.filter((g) => g.status === "pass").length + "/" + gates.length, "G0–G7 중 통과"],
-      ["CPU 테스트", junit ? (junit.tests - junit.failures - junit.errors) + "/" + junit.tests : "—", junit ? "pytest 통과 · " + junit.mtime : "junit 기록 없음 (테스트 페이지 참고)"],
-      ["클라우드 지출 기록", ho.actual_spend_from_this_package ? ho.actual_spend_from_this_package.split(" ")[0] : "미확인", "SESSION_HANDOFF 기록값 · 계정 잔액 미검증"],
-      ["공개 데이터", pp ? pp.counts.rows_actual.toLocaleString() + "장" : "—", pp ? "base " + pp.counts.base_documents_actual + " · 합성 영어 · SKU 정답 없음" : "프로파일 없음"],
-      ["자체 Invoice–PO", tm ? tm.documents + "건" : "—", tm ? "train/dev/test " + ["train", "dev", "test"].map((k) => tm.by_split[k] || 0).join("/") + " · 합성·가상 회사" : "manifest 없음"],
-      ["모델 M0 / M1", resultsStatus === "not_run" ? "미실행" : resultsStatus, "결과 파일 상태 (수치 없음)"],
-      ["RunPod 승인", ap.approved === "true" ? "승인됨" : "승인 없음", "활성 Pod: " + txt(ho.active_pods_from_this_package)],
-    ];
+    const evals = s.evaluations || [];
+    const finals = mainRuns(evals, "final");
+    const den = Object.values(finals).map((e) => e.denominator_check).filter(Boolean);
+    const finalSets = orderSets(Array.from(new Set(Object.values(finals).flatMap((e) => Object.keys(e.headline)))));
+    const passed = junit ? junit.tests - junit.failures - junit.errors - junit.skipped : null;
+    const flow = h("ol", { class: "flow" }, FLOW.map(([name, ids, sub]) => {
+      const keys = ids.map((i) => statusKey((byId[i] || {}).status));
+      const notes = ids.map((i) => statusExtra((byId[i] || {}).status)).filter(Boolean);
+      const ok = keys.every((k) => k === "passed_with_evidence");
+      return h("li", { class: ok ? "is-ok" : "is-warn", title: ids.join(", ") },
+        h("div", { class: "fh" }, name), h("div", { class: "fs" }, sub),
+        notes.length ? h("div", { class: "fs" }, notes.some((x) => FLAG_RE.test(x)) ? [h("span", { class: "dot warn" }), " "] : null, notes.join(" / ")) : null);
+    }));
+    const blockers = [
+      s.handoff_decision ? ["사용자 결정", clean(s.handoff_decision)] : null,
+      ho["vLLM 서빙"] ? ["vLLM 서빙", recordedStatus(ho["vLLM 서빙"])] : null,
+      ho.RunPod ? ["RunPod", clean(ho.RunPod)] : null,
+      ...gates.filter((g) => statusKey(g.status) !== "pass").map((g) => [g.id + " " + g.name,
+        (statusKey(g.status) === "partial" ? "부분 통과" : LABELS.status_ko[statusKey(g.status)] || statusKey(g.status)) + (g.detail ? " — " + g.detail : "")]),
+    ].filter(Boolean);
+    const complete = den.length && den.every((d) => d.predicted === d.expected && !d.missing);
     const ld = s.local_data || {};
     add(view, [
-      pageHead("개요", "읽기 전용 · reports/, manifests/, configs/ 기록 기준"),
-      banner("이 화면은 저장소에 기록된 증거만 보여줍니다. 기록에 없는 GPU·과금·모델 결과는 미실행/미확인으로 표시하며 추정치를 만들지 않습니다. 공개 데이터와 자체 Invoice–PO는 모두 합성 자료입니다."),
+      h("section", { class: "card hero" },
+        h("div", { class: "eyebrow" }, "INVOICEGUARD-PO · 로컬 MVP"),
+        h("h1", null, "영어 인보이스 이미지 → VLM 추출 → 발주서 대사 → 사람 검수"),
+        h("p", null, "합성 영어 인보이스에서 SKU·수량·단가를 VLM(Qwen3-VL-2B + QLoRA)으로 추출하고, 독립 발주서와 규칙 기반으로 대사한 뒤 사람이 승인한 버전만 내보냅니다. 이 화면은 저장소의 기록(reports/, manifests/, configs/)만 읽어서 보여주며 수치를 추정하지 않습니다."),
+        flow),
       statusErrors(s),
-      h("div", { class: "kpis" }, kpis.map(([a, b, c]) => h("div", { class: "kpi" }, h("div", { class: "kl" }, a), h("div", { class: "kn" }, b), h("div", { class: "ks" }, c)))),
+      h("div", { class: "kpis" },
+        kpi("진행 단계", String(done), "/ " + tasks.length, "증거로 통과한 T00–T09", done === tasks.length ? "ok" : "warn", tasks.length ? done / tasks.length : 0),
+        kpi("인수 게이트", String(gPass), "/ " + gates.length, gPartial ? "부분 통과 " + gPartial + "개 (아래 차단 항목)" : "G0–G7", gPartial ? "warn" : "ok", gates.length ? gPass / gates.length : 0),
+        kpi("FINAL 평가", den.length ? String(Math.min(...den.map((d) => d.predicted))) : "—", den.length ? "/ " + den[0].expected + " 문서" : "",
+          den.length ? "동결 후 1회 · " + Object.keys(finals).map((k) => ARMS[k].name).join("·") + " 같은 문서" + (complete ? " · 누락 0" : " · 누락 있음") : "final 기록 없음", complete ? "ok" : den.length ? "warn" : "idle"),
+        kpi("CPU 테스트", passed === null ? "—" : String(passed), junit ? "/ " + junit.tests : "", junit ? "건너뜀 " + junit.skipped + " · 실패 " + (junit.failures + junit.errors) + " · " + junit.mtime : "junit 기록 없음", junit && !junit.failures && !junit.errors ? "ok" : "warn", junit ? passed / Math.max(1, junit.tests) : null),
+        kpi("클라우드 지출", ho.active_paid_resources_from_this_project && /^none/.test(ho.active_paid_resources_from_this_project) ? "$0" : "미확인", "", clean(ho.active_paid_resources_from_this_project) || "SESSION_HANDOFF 기록 없음", "idle")),
+      finalSets.length
+        ? h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "FINAL 결과 — strict 필드 정확도"), h("a", { href: "#/model" }, "모델·평가에서 자세히 →")),
+          armLegend(), armChart(finals, finalSets),
+          h("p", { class: "note" }, "합성 데이터·작은 표본(세트당 20~40문서)이므로 사례 증거로 읽어야 합니다. 막대에 마우스를 올리면 문서 exact·JSON 유효율·CI가 보입니다."))
+        : card("FINAL 결과", h("p", null, pill("not_run"), " final 채점 파일이 없습니다.")),
       h("div", { class: "cols" },
-        card("현재 작업 (SESSION_HANDOFF)", kv([
-          ["현재 단계", ho.current_task], ["마지막 완료", ho.last_completed_implementation_task],
-          ["프로필", ho.current_profile], ["과금 승인", ho.billing_approval],
-          ["이 프로젝트의 활성 Pod", ho.active_pods_from_this_package], ["계정 전체 과금 리소스", ho.actual_account_active_resources],
-          ["로컬 프로세스", ho.running_local_processes],
-        ])),
-        card("로컬 데이터 상태", kv([
-          ["공개 parquet", ld.public_parquet ? pillCls("ok", "있음") : pillCls("warn", "없음 — 이미지·정답 표시 불가")],
-          ["자체 Invoice–PO 파일", ld.trade_files ? pillCls("ok", "있음") : pillCls("warn", "없음 — 이미지·정답·PO 표시 불가")],
-          ["캐시된 공개 이미지", String(ld.public_cached_images || 0) + "장 (data/processed/public/cache/)"],
-          ["공개 manifest", pm ? h("span", null, mono(short(pm.sha256, 16)), " · ", pm.frozen ? "동결됨" : "미동결") : "없음"],
-          ["자체 manifest", tm ? h("span", null, mono(short(tm.sha256, 16)), " · ", tm.frozen ? "동결됨" : "미동결") : "없음"],
+        cardH("차단·미실행 항목", "기록 그대로", blockers.length ? h("ul", { class: "timeline" }, blockers.map(([k, v]) => h("li", { class: "is-warn" }, h("div", { class: "tt" }, k), h("div", { class: "td" }, v)))) : h("p", { class: "sub" }, "기록된 차단 항목 없음")),
+        cardH("현재 상태", "reports/SESSION_HANDOFF.md", kv([
+          ["프로필", clean(ho.profile)], ["모델", clean(ho.model)], ["final", clean(ho.final)], ["백업", clean(ho.backup)],
+          ["실행 중 프로세스", clean(ho.running_processes)], ["유료 리소스", clean(ho.active_paid_resources_from_this_project)], ["push", clean(ho.push)],
         ]))),
+      cardH("로컬 데이터", "Git에 넣지 않는 원본·캐시", kv([
+        ["공개 parquet", ld.public_parquet ? pillCls("ok", "있음") : pillCls("warn", "없음 — 이미지·정답 표시 불가")],
+        ["자체 Invoice–PO 파일", ld.trade_files ? pillCls("ok", "있음") : pillCls("warn", "없음 — 이미지·정답·PO 표시 불가")],
+        ["캐시된 공개 이미지", String(ld.public_cached_images || 0) + "장 (data/processed/public/cache/)"],
+        ["공개 manifest", s.public_manifest ? h("span", null, mono(short(s.public_manifest.sha256, 16)), " · ", s.public_manifest.frozen ? "동결됨" : "미동결") : "없음"],
+        ["자체 manifest", s.trade_manifest ? h("span", null, mono(short(s.trade_manifest.sha256, 16)), " · ", s.trade_manifest.frozen ? "동결됨" : "미동결") : "없음"],
+      ])),
     ]);
   }
 
   async function pageProgress(view) {
     const s = await status();
+    const tasks = s.tasks || [], gates = s.gates || [];
     add(view, [
-      pageHead("진행 단계·게이트", "reports/TASK_BOARD.md"),
+      pageHead("진행 단계·게이트", "T00–T09 작업과 G0–G7 인수 게이트 · 증거 문구는 기록 원문", "reports/TASK_BOARD.md"),
       statusErrors(s),
-      card("진행 단계 T00–T09", table(["ID", "작업 · 증거/차단 사유", "실행 위치", "상태"],
-        (s.tasks || []).map((t) => h("tr", null, h("td", { class: "mono" }, t.id),
-          h("td", null, t.name, h("div", { class: "sub" }, t.evidence)), h("td", null, t.where), h("td", null, pill(t.status)))))),
-      card("인수 게이트 G0–G7 (docs/16)", h("ul", { class: "gates" }, (s.gates || []).map((g) => h("li", null,
-        pill(g.status), h("b", { class: "mono" }, g.id), " ", g.name, g.detail ? h("div", { class: "sub" }, g.detail) : null)))),
+      cardH("진행 단계 T00–T09", tasks.filter((t) => statusKey(t.status) === "passed_with_evidence").length + "/" + tasks.length + " 증거 통과",
+        h("ol", { class: "steps" }, tasks.map((t) => {
+          const key = statusKey(t.status), extra = statusExtra(t.status);
+          return h("li", { class: "is-" + (key === "passed_with_evidence" ? (FLAG_RE.test(extra) ? "warn" : "ok") : toneOf(key)) },
+            h("span", { class: "sid" }, t.id),
+            h("div", null, h("div", null, h("span", { class: "sname" }, t.name), h("span", { class: "swhere" }, t.where)), h("div", { class: "sub" }, t.evidence)),
+            h("div", { class: "sstat" }, pill(key), extra ? h("small", null, extra) : null));
+        }))),
+      cardH("인수 게이트 G0–G7", "docs/16_RUNTIME_RELEASE_GATES.md",
+        h("div", { class: "gategrid" }, gates.map((g) => h("div", { class: "gate" },
+          h("div", { class: "gh" }, h("span", { class: "gid" }, g.id), pill(g.status, statusKey(g.status) === "partial" ? "부분 통과" : null)),
+          h("div", { class: "gn" }, g.name), g.detail ? h("div", { class: "sub" }, g.detail) : null)))),
     ]);
   }
 
@@ -165,8 +403,8 @@
     p.set("limit", String(PAGE_SIZE));
     return { params: p, page };
   }
-  function filterBar(base, query, facets, defs, searchLabel) {
-    const form = h("form", { class: "filters", onsubmit: (e) => { e.preventDefault(); go(); } });
+  function filterBar(base, query, facets, defs, searchLabel, total) {
+    const form = h("form", { class: "toolbar", role: "search", onsubmit: (e) => { e.preventDefault(); go(); } });
     const controls = {};
     function go() {
       const p = new URLSearchParams();
@@ -184,7 +422,7 @@
     q.value = query.get("q") || "";
     q.addEventListener("change", go);
     controls.q = q;
-    form.append(h("label", null, searchLabel, q), h("a", { class: "btn", href: base }, "초기화"));
+    form.append(h("label", null, searchLabel, q), h("a", { class: "btn", href: base }, "초기화"), h("span", { class: "count" }, total.toLocaleString() + "건"));
     return form;
   }
   function pager(base, query, res, page) {
@@ -192,9 +430,9 @@
     const link = (n) => { const p = new URLSearchParams(query); p.set("page", String(n)); return base + "?" + p.toString(); };
     const start = res.total ? res.offset + 1 : 0, end = Math.min(res.total, res.offset + res.limit);
     return h("div", { class: "pager" },
-      h("a", { class: "btn", href: link(page - 1), "aria-disabled": page <= 1 ? "true" : "false" }, "이전"),
+      h("a", { class: "btn", href: page <= 1 ? null : link(page - 1), "aria-disabled": page <= 1 ? "true" : "false" }, "← 이전"),
       h("span", null, start + "–" + end + " / " + res.total + "건 · " + page + "/" + pages + "쪽"),
-      h("a", { class: "btn", href: link(page + 1), "aria-disabled": page >= pages ? "true" : "false" }, "다음"));
+      h("a", { class: "btn", href: page >= pages ? null : link(page + 1), "aria-disabled": page >= pages ? "true" : "false" }, "다음 →"));
   }
   const rowLink = (href, cells) => h("tr", { class: "rowlink", onclick: () => { location.hash = href; } }, cells);
 
@@ -207,22 +445,22 @@
     const [s, res] = await Promise.all([status(), api("/api/public/rows?" + params.toString())]);
     const pm = s.public_manifest;
     add(view, [
-      pageHead("공개 데이터", "InvoiceOCR-Synth · PUBLIC_CANONICAL · 이미지 1장 = (base, 품질)"),
+      pageHead("공개 데이터", "InvoiceOCR-Synth · PUBLIC_CANONICAL · 이미지 1장 = (base, 품질)", pm ? "manifest " + short(pm.sha256, 12) : "manifests/public_canonical_v1"),
       banner("공개 합성 영어 데이터입니다. SKU·단위·원문 인쇄 형식 정답은 없습니다. 정답(gold)은 평가·학습 라벨이며 모델 입력이 아닙니다.", "info"),
-      card(null, filterBar("#/public", query, res.facets, [
+      h("section", { class: "card" }, filterBar("#/public", query, res.facets, [
         ["pool", "pool"], ["standard_role", "standard 역할"], ["mini_role", "mini 역할"], ["template", "템플릿"],
         ["quality", "품질"], ["eligible", "학습 가능", (v) => (v === "true" ? "가능" : "불가")],
-      ], "base_id 검색"),
-      table(["base_id", "품질", "템플릿", "pool", "standard", "mini", "학습", "품목", "채점/마스크 필드"],
+      ], "base_id 검색", res.total),
+      table(["base_id", "품질", "템플릿", "pool", "standard", "mini", "학습", ["품목", "num"], ["채점/마스크", "num"]],
         res.page.map((r) => rowLink("#/public/" + encodeURIComponent(r.base_id) + "/" + r.quality, [
           h("td", null, h("a", { class: "mono", href: "#/public/" + encodeURIComponent(r.base_id) + "/" + r.quality }, r.base_id)),
           h("td", null, r.quality), h("td", { class: "mono" }, r.template), h("td", null, r.pool),
           h("td", null, txt(r.standard_role)), h("td", null, txt(r.mini_role)),
           h("td", null, r.train_eligible ? pillCls("ok", "가능") : h("span", null, pillCls("idle", "불가"), h("div", { class: "sub mono" }, txt(r.train_ineligible_reason)))),
           h("td", { class: "num" }, String(r.n_items)), h("td", { class: "num" }, r.n_scored_fields + " / " + r.n_masked_fields),
-        ])), "small"),
-      pager("#/public", query, res, page)),
-      pm ? h("p", { class: "sub" }, "manifest ", mono(short(pm.sha256, 16)), " · seed ", String(pm.seed), " · 행 클릭 시 이미지·정답·가시성 상세") : null,
+        ])), "small", "tall"),
+      pager("#/public", query, res, page),
+      pm ? h("p", { class: "note" }, "seed ", String(pm.seed), " · 행을 누르면 이미지·정답·필드 가시성 상세") : null),
     ]);
   }
   function visCell(value, vis, fieldStatus, isText) {
@@ -231,6 +469,16 @@
       h("span", { class: "val " + (isText ? "raw" : "mono") }, txt(value)),
       masked ? h("div", null, h("span", { class: "vis " + (vis === "not_printed" || vis === "source_empty" ? "idle" : "warn") }, LABELS.visibility_ko[vis] || vis), h("code", { class: "vcode" }, vis)) : null,
       fieldStatus && fieldStatus !== "ok" ? h("div", { class: "sub" }, "라벨 상태: ", mono(fieldStatus)) : null);
+  }
+  function imageFigure(url, alt, available, placeholder) {
+    const figure = h("div", { class: "figure" }, h("div", { class: "ph" }, placeholder));
+    if (available) {
+      const img = h("img", { src: url, alt, decoding: "async" });
+      img.addEventListener("load", () => figure.replaceChildren(img));
+      img.addEventListener("error", () => figure.replaceChildren(h("div", { class: "ph" }, "이미지를 불러오지 못했습니다 (로컬 원본 또는 해시 불일치 확인).")));
+      img.addEventListener("click", () => figure.classList.toggle("zoom"));
+    }
+    return figure;
   }
   async function pagePublicDoc(view, segs) {
     const baseId = segs[0], quality = segs[1] || "clean";
@@ -243,36 +491,30 @@
     const m = d.meta;
     const imgUrl = "/api/public/image/" + encodeURIComponent(baseId) + "/" + quality;
     const current = d.qualities.find((q) => q.quality === quality) || {};
-    const figure = h("div", { class: "figure" }, h("div", { class: "ph" },
-      current.image_cached ? "이미지 불러오는 중…" : "이미지 추출 중… 처음 한 번은 parquet에서 꺼내 캐시하므로 몇 초 걸릴 수 있습니다."));
-    if (d.public_parquet_available || current.image_cached) {
-      const img = h("img", { src: imgUrl, alt: baseId + " (" + quality + ") 문서 이미지", decoding: "async" });
-      img.addEventListener("load", () => figure.replaceChildren(img));
-      img.addEventListener("error", () => figure.replaceChildren(h("div", { class: "ph" }, "이미지를 불러오지 못했습니다 (로컬 원본 또는 해시 불일치 확인).")));
-      img.addEventListener("click", () => figure.classList.toggle("zoom"));
-    } else {
-      figure.replaceChildren(h("div", { class: "ph" }, "로컬 parquet 없음 — 이미지 표시 불가"));
-    }
+    const available = d.public_parquet_available || current.image_cached;
+    const figure = imageFigure(imgUrl, baseId + " (" + quality + ") 문서 이미지", available,
+      !available ? "로컬 parquet 없음 — 이미지 표시 불가" : current.image_cached ? "이미지 불러오는 중…" : "이미지 추출 중… 처음 한 번은 parquet에서 꺼내 캐시하므로 몇 초 걸릴 수 있습니다.");
     const g = d.gold;
     const FIELDS = [["description", "설명 (description)", true], ["quantity", "수량", false], ["unit_price", "단가", false], ["amount", "금액", false]];
     const goldTable = g.available
       ? table(["#"].concat(FIELDS.map((f) => f[1])), g.items.map((it) => h("tr", null, h("td", { class: "mono" }, String(it.row_index)),
-        FIELDS.map(([f, , isText]) => visCell(it[f], it.visibility && it.visibility[f], it.field_status && it.field_status[f], isText)))))
+        FIELDS.map(([f, , isText]) => visCell(it[f], it.visibility && it.visibility[f], it.field_status && it.field_status[f], isText)))), "small")
       : h("p", { class: "err" }, "정답을 표시할 수 없습니다: ", mono(g.reason));
     add(view, [
-      h("a", { href: lastPublicList }, "← 공개 데이터 목록"),
-      pageHead(baseId, m.template + " · " + m.pool),
+      h("a", { class: "back", href: lastPublicList }, "← 공개 데이터 목록"),
+      pageHead(baseId, m.template + " · " + m.pool + " · " + quality),
       h("div", { class: "tabs" }, d.qualities.map((q) => h("a", { href: "#/public/" + encodeURIComponent(baseId) + "/" + q.quality, class: q.quality === quality ? "active" : null },
         q.quality + (q.standard_role ? " · std:" + q.standard_role : "") + (q.mini_role ? " · mini:" + q.mini_role : "")))),
       h("div", { class: "cols detail" },
-        card("문서 이미지 (모델 입력 후보)", figure, h("p", { class: "sub" }, "클릭하면 원본 크기 토글 · ", h("a", { href: imgUrl, target: "_blank", rel: "noopener noreferrer" }, "새 탭에서 열기"),
-          " · sha256 ", mono(short(current.image_sha256, 16)))),
-        h("div", { class: "view" },
-          card(h("span", null, "정답 (gold) ", h("span", { class: "tag gold" }, "평가·학습 라벨 · 모델 입력 아님")),
+        h("section", { class: "card sticky" }, h("div", { class: "cardhead" }, h("h2", null, "문서 이미지"), h("span", { class: "hint" }, "모델 입력 후보")), figure,
+          h("p", { class: "note" }, "클릭하면 원본 크기 토글 · ", h("a", { href: imgUrl, target: "_blank", rel: "noopener noreferrer" }, "새 탭에서 열기"),
+            " · sha256 ", mono(short(current.image_sha256, 16)))),
+        h("div", { class: "stackv" },
+          h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "정답 (gold)"), h("span", { class: "tag gold" }, "평가·학습 라벨 · 모델 입력 아님")),
             h("p", { class: "sub" }, "PUBLIC_CANONICAL 4개 필드. 빗금 칸은 렌더러 기준으로 이미지에 그대로 보이지 않아 채점·학습에서 마스크되는 필드입니다. 값은 원문 그대로이며 PO에 맞추지 않습니다."),
-            goldTable,
-            h("div", { class: "legend" }, Object.entries(LABELS.visibility_ko).map(([k, v]) => h("span", null, h("code", null, k), " ", v)))),
-          card("manifest 메타데이터", kv([
+            h("div", { class: "cap" }), goldTable,
+            h("div", { class: "keyrow" }, Object.entries(LABELS.visibility_ko).map(([k, v]) => h("span", null, h("code", null, k), " ", v)))),
+          cardH("manifest 메타데이터", null, kv([
             ["template / pool", m.template + " / " + m.pool], ["group_id", mono(m.group_id)],
             ["학습 가능", m.train_eligible ? pillCls("ok", "가능") : h("span", null, pillCls("idle", "불가"), " ", mono(m.train_ineligible_reason))],
             ["채점 / 마스크 필드", m.n_scored_fields + " / " + m.n_masked_fields], ["품목 수", m.n_items],
@@ -292,22 +534,22 @@
     const [s, res] = await Promise.all([status(), api("/api/trade/rows?" + params.toString())]);
     const tm = s.trade_manifest;
     add(view, [
-      pageHead("자체 Invoice–PO", "TRADE_RAW · 합성·가상 회사 · 렌더러 문자열 그대로"),
+      pageHead("자체 Invoice–PO", "TRADE_RAW · 합성·가상 회사 · 렌더러 문자열 그대로", tm ? "manifest " + short(tm.sha256, 12) : "manifests/trade_raw_v1"),
       banner("자체 생성한 합성 문서입니다. 정답(gold)·발주서(PO)·시나리오 정보는 평가 데이터이며 모델 입력이 아닙니다.", "info"),
-      card(null, filterBar("#/trade", query, res.facets, [
+      h("section", { class: "card" }, filterBar("#/trade", query, res.facets, [
         ["split", "split"], ["template", "레이아웃"], ["scenario_type", "시나리오"], ["mini_role", "mini 역할"],
         ["injection", "주입 문구", (v) => (v === "true" ? "포함" : "없음")],
-      ], "doc_id 검색"),
-      table(["doc_id", "split", "레이아웃", "시나리오", "기대 코드", "행", "mini", "주입 문구"],
+      ], "doc_id 검색", res.total),
+      table(["doc_id", "split", "레이아웃", "시나리오", "기대 코드", ["행", "num"], "mini", "주입 문구"],
         res.page.map((r) => rowLink("#/trade/" + r.doc_id, [
           h("td", null, h("a", { class: "mono", href: "#/trade/" + r.doc_id }, r.doc_id)),
           h("td", null, r.split), h("td", { class: "mono" }, r.template), h("td", null, r.scenario_type),
           h("td", null, h("div", { class: "chips" }, (r.expected_codes || []).length ? r.expected_codes.map((c) => h("code", null, c)) : h("span", { class: "sub" }, "없음"))),
           h("td", { class: "num" }, String(r.n_rows)), h("td", null, txt(r.mini_role)),
           h("td", null, r.has_injection_text ? pillCls("warn", "포함") : ""),
-        ])), "small"),
-      pager("#/trade", query, res, page)),
-      tm ? h("p", { class: "sub" }, "manifest ", mono(short(tm.sha256, 16)), " · ", tm.generator_version, " · 행 클릭 시 이미지·정답·PO·대사 결과") : null,
+        ])), "small", "tall"),
+      pager("#/trade", query, res, page),
+      tm ? h("p", { class: "note" }, tm.generator_version, " · 행을 누르면 이미지·정답·PO·대사 결과") : null),
     ]);
   }
   const GOLD_ITEM_COLS = ["row_index", "sku_raw", "description_raw", "quantity_raw", "unit_raw", "unit_price_raw", "line_total_raw"];
@@ -332,48 +574,42 @@
     const d = await api("/api/trade/doc/" + docId);
     const m = d.meta, integ = d.integrity || {};
     const imgUrl = "/api/trade/image/" + docId;
-    const figure = h("div", { class: "figure" }, h("div", { class: "ph" }, "이미지 불러오는 중…"));
-    if (integ.image !== null) {
-      const img = h("img", { src: imgUrl, alt: docId + " 문서 이미지", decoding: "async" });
-      img.addEventListener("load", () => figure.replaceChildren(img));
-      img.addEventListener("error", () => figure.replaceChildren(h("div", { class: "ph" }, "이미지를 불러오지 못했습니다.")));
-      img.addEventListener("click", () => figure.classList.toggle("zoom"));
-    } else {
-      figure.replaceChildren(h("div", { class: "ph" }, "로컬 이미지 없음"));
-    }
+    const figure = imageFigure(imgUrl, docId + " 문서 이미지", integ.image !== null, integ.image !== null ? "이미지 불러오는 중…" : "로컬 이미지 없음");
     const o = d.oracle;
     const findings = o && !o.findings.length ? h("p", { class: "sub" }, "발견 사항 없음 (findings 0건)") : o ? table(["코드", "심각도", "행", "필드", "기대(PO 등)", "관측(인보이스)", "메시지"],
       o.findings.map((f) => h("tr", null, h("td", null, h("code", null, f.code)),
         h("td", null, pillCls(f.severity === "blocker" ? "bad" : "warn", f.severity === "blocker" ? "차단" : "경고")),
         h("td", { class: "mono" }, txt(f.row_index)), h("td", { class: "mono" }, txt(f.field)),
-        h("td", { class: "raw" }, txt(f.expected)), h("td", { class: "raw" }, txt(f.observed)), h("td", null, f.message))), "small") : null;
+        h("td", { class: "raw" }, txt(f.expected)), h("td", { class: "raw" }, txt(f.observed)), h("td", { class: "msg" }, f.message))), "small") : null;
     add(view, [
-      h("a", { href: lastTradeList }, "← 자체 Invoice–PO 목록"),
+      h("a", { class: "back", href: lastTradeList }, "← 자체 Invoice–PO 목록"),
       pageHead(docId, m.split + " · " + m.template + " · " + m.scenario_type),
       m.has_injection_text ? banner("이 문서 이미지에는 프롬프트 주입 문구가 들어 있습니다(견고성 테스트용). 화면에는 일반 텍스트로만 표시하며 어떤 지시도 실행하지 않습니다.") : null,
       h("div", { class: "cols detail" },
-        card("문서 이미지 (모델 입력 후보)", figure, h("p", { class: "sub" }, "클릭하면 원본 크기 토글 · ", h("a", { href: imgUrl, target: "_blank", rel: "noopener noreferrer" }, "새 탭에서 열기"),
-          " · ", m.width + "×" + m.height, " · sha256 ", mono(short(m.image_sha256, 16)))),
-        h("div", { class: "view" },
-          card(h("span", null, "정답 (gold, TRADE_RAW) ", h("span", { class: "tag gold" }, "평가 데이터 · 모델 입력 아님")),
+        h("section", { class: "card sticky" }, h("div", { class: "cardhead" }, h("h2", null, "문서 이미지"), h("span", { class: "hint" }, "모델 입력 후보")), figure,
+          h("p", { class: "note" }, "클릭하면 원본 크기 토글 · ", h("a", { href: imgUrl, target: "_blank", rel: "noopener noreferrer" }, "새 탭에서 열기"),
+            " · ", m.width + "×" + m.height, " · sha256 ", mono(short(m.image_sha256, 16)))),
+        h("div", { class: "stackv" },
+          h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "대사 결과"), h("span", { class: "hint" }, "기대 코드 vs oracle")),
+            kv([
+              ["기대 코드 (manifest)", h("div", { class: "chips" }, d.expected_codes.length ? d.expected_codes.map((c) => h("code", null, c)) : "없음")],
+              ["oracle 코드", d.oracle_codes ? h("div", { class: "chips" }, d.oracle_codes.length ? d.oracle_codes.map((c) => h("code", null, c)) : "없음") : "미실행 (정답 파일 없음)"],
+              ["일치", d.codes_match === null ? pillCls("warn", "미확인") : yesNo(d.codes_match, "일치", "불일치")],
+              ["case_status", o ? mono(o.case_status) : "—"], ["reference_total_difference", o ? mono(o.reference_total_difference) : "—"],
+            ]), h("p", { class: "note" }, "oracle_fixture = 정답(gold)과 발주서로 규칙 엔진을 돌린 기준 결과입니다. 모델 예측 결과가 아닙니다."), findings),
+          h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "정답 (gold, TRADE_RAW)"), h("span", { class: "tag gold" }, "평가 데이터 · 모델 입력 아님")),
             d.gold ? [kv(scalarPairs(d.gold, ["items"])), h("h3", null, "품목 (원문 문자열)"), itemsTable(d.gold.items, GOLD_ITEM_COLS)]
               : h("p", { class: "err" }, "로컬 정답 파일 없음")),
-          card(h("span", null, "발주서 (PO) ", h("span", { class: "tag po" }, "대사 입력 · 모델 입력 아님")),
+          h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "발주서 (PO)"), h("span", { class: "tag po" }, "대사 입력 · 모델 입력 아님")),
             d.po ? [kv(scalarPairs(d.po, ["items"])), h("h3", null, "발주 행"), itemsTable(d.po.items, PO_ITEM_COLS)]
-              : h("p", { class: "err" }, "로컬 발주서 파일 없음")))),
-      card("대사 결과 — 기대 코드 vs oracle", kv([
-        ["기대 코드 (manifest)", h("div", { class: "chips" }, d.expected_codes.length ? d.expected_codes.map((c) => h("code", null, c)) : "없음")],
-        ["oracle 코드", d.oracle_codes ? h("div", { class: "chips" }, d.oracle_codes.length ? d.oracle_codes.map((c) => h("code", null, c)) : "없음") : "미실행 (정답 파일 없음)"],
-        ["일치", d.codes_match === null ? pillCls("warn", "미확인") : yesNo(d.codes_match, "일치", "불일치")],
-        ["case_status", o ? mono(o.case_status) : "—"], ["reference_total_difference", o ? mono(o.reference_total_difference) : "—"],
-      ]), h("p", { class: "sub" }, "oracle_fixture = 정답(gold)과 발주서로 규칙 엔진을 돌린 기준 결과입니다. 모델 예측 결과가 아닙니다."), findings),
-      card("manifest 메타데이터·무결성", kv([
-        ["gold / PO / 이미지 sha256", h("span", null, yesNo(integ.gold, "gold 일치", "gold 불일치"), yesNo(integ.po, "PO 일치", "PO 불일치"), yesNo(integ.image, "이미지 일치", "이미지 불일치"))],
-        ["split / standard / mini", m.split + " / " + txt(m.standard_role) + " / " + txt(m.mini_role)],
-        ["family_id", mono(m.family_id)], ["scenario_type / transaction_diff", m.scenario_type + " / " + String(m.transaction_diff)],
-        ["render_check / quality", m.render_check + " / " + m.quality], ["fonts", m.font_regular + " · " + m.font_bold],
-        ["generator / seed", m.generator_version + " / " + m.seed], ["origin / task", m.origin + " / " + m.task],
-      ])),
+              : h("p", { class: "err" }, "로컬 발주서 파일 없음")),
+          cardH("manifest 메타데이터·무결성", null, kv([
+            ["gold / PO / 이미지 sha256", h("span", null, yesNo(integ.gold, "gold 일치", "gold 불일치"), yesNo(integ.po, "PO 일치", "PO 불일치"), yesNo(integ.image, "이미지 일치", "이미지 불일치"))],
+            ["split / standard / mini", m.split + " / " + txt(m.standard_role) + " / " + txt(m.mini_role)],
+            ["family_id", mono(m.family_id)], ["scenario_type / transaction_diff", m.scenario_type + " / " + String(m.transaction_diff)],
+            ["render_check / quality", m.render_check + " / " + m.quality], ["fonts", m.font_regular + " · " + m.font_bold],
+            ["generator / seed", m.generator_version + " / " + m.seed], ["origin / task", m.origin + " / " + m.task],
+          ])))),
     ]);
   }
 
@@ -381,32 +617,33 @@
   async function pageSplits(view) {
     const s = await status();
     const pm = s.public_manifest, tm = s.trade_manifest, pp = s.public_profile;
-    const parts = [pageHead("분할·manifest", "manifests/*.summary.json · reports/data/public_profile.json"), statusErrors(s)];
+    const parts = [pageHead("분할·manifest", "누수 없는 분할과 동결된 manifest 요약", "manifests/*.summary.json"), statusErrors(s)];
     if (pm) {
       const roles = ["train", "dev", "dev_stress", "iid_final", "ood_final"];
       const prof = pm.profiles || {};
       const leakChecks = Object.entries(pm.checks || {}).filter(([k]) => k !== "pass");
-      parts.push(card(h("span", null, "공개 InvoiceOCR-Synth ", h("span", { class: "tag" }, "PUBLIC_CANONICAL · 합성")),
+      parts.push(h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "공개 InvoiceOCR-Synth"), h("span", { class: "tag" }, "PUBLIC_CANONICAL · 합성")),
         kv([["manifest", mono(pm.manifest)], ["sha256", mono(pm.sha256)], ["seed / revision", h("span", null, String(pm.seed), " / ", mono(short(pm.revision, 12)))],
           ["행 / base / group", pm.rows + " / " + pm.base_documents + " / " + pm.groups], ["누수 검사", yesNo(pm.checks && pm.checks.pass, "통과", "실패")],
           ["동결", pm.frozen ? pillCls("ok", "동결됨") : pillCls("warn", "미동결 — 프로필 선택 후 동결")]]),
         h("div", { class: "cols" },
-          h("div", null, h("div", { class: "cap" }, "pool별 base 문서"), bars(pm.pool_base_docs)),
-          h("div", null, h("div", { class: "cap" }, "마스크 사유 (학습 불가 base)"), bars(pm.ineligible_reasons))),
+          h("div", null, h("h3", null, "pool별 base 문서"), bars(pm.pool_base_docs)),
+          h("div", null, h("h3", null, "마스크 사유 (학습 불가 base)"), bars(pm.ineligible_reasons))),
         h("h3", null, "standard / mini 역할 (이미지 행)"),
-        table(["역할", "standard 이미지", "mini 이미지", "standard 채점 필드", "standard 마스크 필드", "mini 채점 필드", "mini 마스크 필드"],
+        table(["역할", ["standard 이미지", "num"], ["mini 이미지", "num"], ["standard 채점", "num"], ["standard 마스크", "num"], ["mini 채점", "num"], ["mini 마스크", "num"]],
           roles.map((r) => h("tr", null, h("td", null, r), ["standard", "mini"].map((p) => h("td", { class: "num" }, String(((prof[p] || {}).image_rows_by_role || {})[r] || 0))),
             ["standard", "mini"].map((p) => [h("td", { class: "num" }, String(((prof[p] || {}).scored_fields_by_role || {})[r] || 0)), h("td", { class: "num" }, String(((prof[p] || {}).masked_fields_by_role || {})[r] || 0))]))), "small"),
-        h("h3", null, "템플릿별 학습 가능 base"), kv(Object.entries(pm.train_eligible_by_template || {}).map(([k, v]) => [k, v])),
-        h("h3", null, "필드 가시성 (전체 base)"), bars(pm.field_status_counts_all_bases),
+        h("div", { class: "cols" },
+          h("div", null, h("h3", null, "템플릿별 학습 가능 base"), kv(Object.entries(pm.train_eligible_by_template || {}).map(([k, v]) => [k, v]))),
+          h("div", null, h("h3", null, "필드 가시성 (전체 base)"), bars(pm.field_status_counts_all_bases))),
         leakChecks.length ? [h("h3", null, "검사 항목"), kv(leakChecks.map(([k, v]) => [k, h("span", { class: "raw" }, typeof v === "object" ? JSON.stringify(v) : String(v))]))] : null));
     } else parts.push(card("공개 manifest", h("p", null, "manifests/public_canonical_v1.summary.json 없음")));
     if (pp) {
-      parts.push(card("공개 데이터 프로파일 (T01)", kv([["dataset / revision", h("span", null, pp.dataset_id, " @ ", mono(short(pp.revision, 12)))],
+      parts.push(cardH("공개 데이터 프로파일 (T01)", "reports/data/public_profile.json", kv([["dataset / revision", h("span", null, pp.dataset_id, " @ ", mono(short(pp.revision, 12)))],
         ["license / origin", pp.license_tag + " / " + pp.origin], ["SKU 정답", pp.sku_labels_available ? "있음" : "없음"],
-        ["자동 검사", h("span", null, Object.entries(pp.checks || {}).map(([k, v]) => h("span", null, yesNo(v.pass, "통과", "실패"), h("small", null, k), " ")))]]),
-        h("div", { class: "cols" }, h("div", null, h("div", { class: "cap" }, "템플릿별 base 문서"), bars(pp.counts.templates_base_docs)),
-          h("div", null, h("div", { class: "cap" }, "문서당 품목 수"), bars(pp.counts.items_per_doc)))));
+        ["자동 검사", h("span", { class: "chips" }, Object.entries(pp.checks || {}).map(([k, v]) => h("span", null, yesNo(v.pass, k, k))))]]),
+        h("div", { class: "cols" }, h("div", null, h("h3", null, "템플릿별 base 문서"), bars(pp.counts.templates_base_docs)),
+          h("div", null, h("h3", null, "문서당 품목 수"), bars(pp.counts.items_per_doc)))));
     }
     if (tm) {
       const types = Object.keys(Object.values(tm.type_by_template || {})[0] || {});
@@ -416,77 +653,140 @@
         for (const tpl of tpls) rows.push(h("tr", null, h("td", null, split), h("td", { class: "mono" }, tpl), types.map((t) => h("td", { class: "num" }, String((byType[t] || {})[tpl] || "·")))));
       }
       const leaks = (tm.checks && tm.checks.split_leaks) || {};
-      parts.push(card(h("span", null, "자체 Invoice–PO ", h("span", { class: "tag" }, "TRADE_RAW · 합성·가상 회사")),
+      parts.push(h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "자체 Invoice–PO"), h("span", { class: "tag" }, "TRADE_RAW · 합성·가상 회사")),
         kv([["manifest", mono(tm.manifest)], ["sha256", mono(tm.sha256)], ["문서", tm.documents + " (train/dev/test = " + ["train", "dev", "test"].map((k) => tm.by_split[k] || 0).join(" / ") + ")"],
           ["mini (train/dev/test)", ["train", "dev", "test"].map((k) => (tm.mini_by_split || {})[k] || 0).join(" / ")],
           ["렌더=정답 검사", yesNo(tm.checks && tm.checks.all_render_checks_pass, "통과", "실패")],
           ["레이아웃 holdout", yesNo(tm.checks && tm.checks.template_holdout_respected, "지켜짐", "위반")],
-          ["split 누수", h("span", null, Object.entries(leaks).map(([k, v]) => h("span", null, (v || []).length ? pillCls("bad", k + " " + v.length) : pillCls("ok", k + " 0"))))],
+          ["split 누수", h("span", { class: "chips" }, Object.entries(leaks).map(([k, v]) => ((v || []).length ? pillCls("bad", k + " " + v.length) : pillCls("ok", k + " 0"))))],
           ["주입 문구 문서", String((tm.checks || {}).injection_text_docs)], ["동결", tm.frozen ? pillCls("ok", "동결됨") : pillCls("warn", "미동결")]]),
-        h("h3", null, "split × 레이아웃 × 시나리오"), table(["split", "layout"].concat(types), rows, "small"),
-        h("div", { class: "cols" }, h("div", null, h("div", { class: "cap" }, "문서당 행 수"), bars(tm.rows_per_doc)),
-          h("div", null, h("div", { class: "cap" }, "글꼴"), bars(tm.fonts_used))),
-        tm.note ? h("p", { class: "sub" }, tm.note) : null));
+        h("h3", null, "split × 레이아웃 × 시나리오"), table(["split", "layout"].concat(types.map((t) => [t, "num"])), rows, "small"),
+        h("div", { class: "cols" }, h("div", null, h("h3", null, "문서당 행 수"), bars(tm.rows_per_doc)),
+          h("div", null, h("h3", null, "글꼴"), bars(tm.fonts_used))),
+        tm.note ? h("p", { class: "note" }, tm.note) : null));
     } else parts.push(card("자체 manifest", h("p", null, "manifests/trade_raw_v1.summary.json 없음")));
     add(view, parts);
   }
 
-  // ---- evaluation tables (reports/eval/*.json written by invoiceguard.score_run; shown as recorded)
-  function evalCards(evals, comps) {
-    const fmt = (v) => (v === null || v === undefined) ? "—" : Number(v).toFixed(3);
-    const out = [];
-    ["final", "dev"].forEach((stage) => {
-      const runs = evals.filter((e) => e.stage === stage);
-      if (!runs.length) {
-        out.push(card(stage === "final" ? "FINAL 평가 (동결 후 1회)" : "DEV 평가", h("p", null, pill("not_run"), " 해당 단계 채점 결과 파일 없음")));
-        return;
-      }
-      const sets = Array.from(new Set(runs.flatMap((e) => Object.keys(e.headline)))).sort();
-      const rows = runs.map((e) => h("tr", null, h("td", { class: "mono" }, e.run_id),
-        sets.map((k) => { const v = e.headline[k];
-          return h("td", null, v ? [h("b", null, fmt(v.fields_acc)), h("div", { class: "sub" }, "exact " + fmt(v.doc_exact) + " · json " + fmt(v.json_valid) + " · n " + v.n),
-            v.ci95 ? h("div", { class: "sub" }, "CI " + v.ci95.join("–")) : null] : pill("not_run")); })));
-      out.push(card(stage === "final" ? "FINAL 평가 (동결 후 1회) — strict 필드 정확도" : "DEV 평가 — strict 필드 정확도 (final 아님)",
-        h("div", { class: "tablewrap" }, table(["run"].concat(sets), rows, "small")),
-        h("p", { class: "sub" }, "세트별로만 집계합니다(clean·stress·iid·ood·test 합산 없음). 셀 아래: 문서 exact · strict JSON 유효율 · 문서 수 · base/family 단위 bootstrap 95% CI. 원본: reports/eval/*.json")));
-    });
-    if (comps.length) {
-      out.push(card("Paired 차이 (A − B, 같은 문서, cluster bootstrap 95% CI)", comps.map((c) => [
-        h("h3", { class: "mono" }, c.a + "  −  " + c.b),
-        h("div", { class: "tablewrap" }, table(["set", "n", "필드 정확도 차이", "95% CI", "문서 exact 차이"],
-          Object.entries(c.sets).map(([k, v]) => h("tr", null, h("td", { class: "mono" }, k), h("td", null, String(v.n_docs)),
-            h("td", null, (v.field_acc_diff >= 0 ? "+" : "") + fmt(v.field_acc_diff)), h("td", null, v.field_acc_diff_ci95.join(" ~ ")),
-            h("td", null, (v.doc_exact_diff >= 0 ? "+" : "") + fmt(v.doc_exact_diff)))), "small"))])));
-    }
-    return out;
+  // ---- model / evaluation / training
+  function sparkline(values) {
+    const tpl = document.getElementById("tpl-spark");
+    if (!tpl || values.length < 2) return null;
+    const svg = tpl.content.firstElementChild.cloneNode(true);
+    const lo = Math.min(...values), hi = Math.max(...values), span = hi - lo || 1;
+    const pts = values.map((v, i) => (i / (values.length - 1) * 100).toFixed(2) + "," + (3 + (1 - (v - lo) / span) * 34).toFixed(2));
+    svg.querySelector(".spark-line").setAttribute("points", pts.join(" "));
+    svg.querySelector(".spark-area").setAttribute("points", "0,40 " + pts.join(" ") + " 100,40");
+    return svg;
   }
-
-  // ---- model / training
+  function trainingCard(reports, finalAdapter) {
+    const runs = Object.entries(reports || {}).filter(([name, r]) => /^train_m1/.test(name) && r && r.run_id).map(([, r]) => r);
+    if (!runs.length) return card("M1 학습 기록", h("p", null, pill("not_run"), " reports/model/train_m1*.json 없음"));
+    const used = (r) => finalAdapter && ((r.adapter_files_sha256 || {})["adapter_model.safetensors"] || "") === finalAdapter;
+    const primary = runs.find(used) || runs[0];
+    const losses = (primary.loss_log || []).map((x) => Number(x.loss)).filter((x) => !Number.isNaN(x));
+    const tr = primary.trainable || {}, cfg = primary.config || {}, env = primary.env || {};
+    return h("section", { class: "card" },
+      h("div", { class: "cardhead" }, h("h2", null, "M1 QLoRA 학습"), h("span", { class: "hint" }, "reports/model/" + "train_" + primary.run_id + ".json")),
+      h("div", { class: "cols" },
+        h("div", null,
+          kv([
+            ["run", h("span", null, mono(primary.run_id), " ", used(primary) ? pillCls("ok", "final에 사용한 어댑터") : null)],
+            ["프레임워크", primary.framework],
+            ["기본 모델", h("span", null, primary.base_model, " @ ", mono(short(primary.base_revision, 12)))],
+            ["정밀도", env.precision],
+            ["학습 기록", primary.records + "건 (" + Object.entries(primary.records_by_task || {}).map(([k, v]) => k + " " + v).join(" · ") + ")"],
+            ["optimizer step", primary.optimizer_steps + " (micro batch " + cfg.micro_batch + " × grad accum " + cfg.grad_accum + ", ≈" + fmt(primary.epochs_equivalent, 2) + " epoch)"],
+            ["학습률 / 스케줄", cfg.lr + " · " + cfg.scheduler + " · warmup " + cfg.warmup_ratio],
+            ["학습 파라미터", (tr.trainable_params || 0).toLocaleString() + " / " + (tr.total_params || 0).toLocaleString() + " (vision 학습 " + (tr.visual_trainable ? "예" : "아니오") + ")"],
+            ["시간 / 최대 VRAM", fmt(primary.train_seconds / 60, 1) + "분 · " + primary.peak_vram_gb + " GB"],
+            ["GPU / 환경", env.gpu + " · torch " + env.torch + " · transformers " + env.transformers + " · peft " + env.peft + " · bnb " + env.bitsandbytes],
+            ["어댑터 sha256", mono(short((primary.adapter_files_sha256 || {})["adapter_model.safetensors"], 20))],
+          ])),
+        h("div", null,
+          h("div", { class: "cap" }, "학습 loss (step별 기록)"),
+          losses.length > 1 ? h("div", { class: "sparkbox" }, sparkline(losses),
+            h("div", { class: "sparkmeta" }, h("span", null, "step 1 · " + fmt(losses[0], 3)), h("span", null, "평균 train_loss " + fmt(primary.train_loss, 4)), h("span", null, "step " + losses.length + " · " + fmt(losses[losses.length - 1], 3))))
+            : h("p", { class: "sub" }, "loss 기록 없음"),
+          runs.length > 1 ? [h("h3", null, "다른 학습 실행"), table(["run", ["step", "num"], ["train_loss", "num"], ["기록", "num"], "어댑터"],
+            runs.map((r) => h("tr", null, h("td", { class: "mono" }, r.run_id), h("td", { class: "num" }, String(r.optimizer_steps)), h("td", { class: "num" }, fmt(r.train_loss, 4)),
+              h("td", { class: "num" }, String(r.records)), h("td", null, used(r) ? pillCls("ok", "final 사용") : finalAdapter ? pillCls("idle", "미채택") : "—"))), "small")] : null)));
+  }
   async function pageModel(view) {
     const s = await status();
-    const r = s.results || {}, ho = s.handoff || {};
-    const cols = ["public IID final", "public OOD final", "trade final"];
+    const evals = s.evaluations || [], comps = s.comparisons || [];
+    const finals = mainRuns(evals, "final"), devs = mainRuns(evals, "dev");
+    const finalSets = orderSets(Array.from(new Set(Object.values(finals).flatMap((e) => Object.keys(e.headline)))));
+    const devSets = orderSets(Array.from(new Set(Object.values(devs).flatMap((e) => Object.keys(e.headline))))).filter((k) => k !== "stress:all");
+    const finalAdapter = (finals.m1 || {}).adapter_sha256;
+    const byStage = (st) => evals.filter((e) => e.stage === st).sort((a, b) => ARM_ORDER.indexOf(runKey(a.run_id)) - ARM_ORDER.indexOf(runKey(b.run_id)) || String(a.run_id).localeCompare(String(b.run_id)));
     add(view, [
-      pageHead("모델·학습", "M0 base vs M1 adapter · 동일 frozen manifest·NF4·프롬프트·생성 설정"),
-      banner("측정된 결과 파일이 없으면 모든 칸은 미실행입니다. 이 페이지는 수치를 추정하거나 채우지 않습니다."),
+      pageHead("모델·평가", "B0 OCR vs M0 기본 VLM vs M1 QLoRA · 동일 frozen manifest·NF4·프롬프트·전처리·생성 설정", "reports/eval/*.json"),
+      banner("모든 수치는 합성 데이터 기준입니다." + (finalSets.length ? " FINAL은 설정을 동결한 뒤 한 번만 실행했고, 실패·누락 문서도 분모에 남깁니다." : "") + " 결과 파일이 없는 칸은 미실행으로 표시합니다.", "info"),
       statusErrors(s),
-      evalCards(s.evaluations || [], s.comparisons || []),
-      h("div", { class: "cols" },
-        card("기록된 모델 상태", kv([
-          ["model_revision / adapter_hash", ho["model_revision / adapter_hash"]], ["current_profile", ho.current_profile],
-          ["base 로딩 정밀도", r.base_loading_precision], ["adapter 로딩 정밀도", r.adapter_loading_precision],
-          ["model_revision", r.model_revision], ["adapter_sha256", r.adapter_sha256], ["gpu", r.gpu],
-          ["경고", (r.warnings || []).join(" / ")],
-        ])),
-        card("로컬 스모크 기록 (reports/model/local_smoke*.json)", (s.local_smoke || []).length
-          ? [h("p", { class: "sub" }, "파일 내용을 키/값 원문 그대로 보여줍니다. 대시보드는 해석·검증하지 않으며, 이는 frozen final 평가나 M0/M1 비교 결과가 아닙니다."),
-            s.local_smoke.map((f) => [h("h3", { class: "mono" }, f.path),
-              h("div", { class: "tablewrap" }, kv(f.pairs.map(([k, v]) => [h("span", { class: "mono" }, k), h("span", { class: "raw" }, v)])))])]
-          : h("p", null, pill("not_run"), "파일 없음 — 로컬 스모크 기록이 아직 없습니다."))),
+      finalSets.length
+        ? h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "FINAL — strict 필드 정확도"),
+            h("span", { class: "hint" }, Object.values(finals).map((e) => runName(e.run_id) + " " + (e.denominator_check ? e.denominator_check.predicted + "/" + e.denominator_check.expected : "?")).join(" · ") + " 문서")),
+          armLegend(), armChart(finals, finalSets),
+          h("p", { class: "note" }, "M0은 공개 세트에서 출력을 ```json 코드펜스로 감싸 strict JSON이 0%라 strict 정확도가 0입니다. ◇ 표시는 코드펜스를 벗긴 lenient 점수로, 읽기 능력과 형식 준수를 분리해 보여줍니다."))
+        : card("FINAL", h("p", null, pill("not_run"), " final 채점 파일 없음")),
+      forestCard(stageComps(comps, evals, "final"), "FINAL paired 차이 (A − B)"),
+      trainingCard(s.model_reports, finalAdapter),
+      devSets.length ? details("DEV 결과 (개발 중 비교 · final 아님)", armLegend(), armChart(devs, devSets), forestCard(stageComps(comps, evals, "dev"), "DEV paired 차이")) : null,
+      details("세부 표 — 실행별 원본 수치",
+        ["final", "dev"].map((st) => byStage(st).length ? [h("h3", null, st === "final" ? "FINAL" : "DEV"), evalTable(byStage(st))] : null),
+        h("p", { class: "note" }, "세트별로만 집계합니다(세트 합산 없음). 셀: strict 필드 정확도 · 문서 exact · strict JSON 유효율 · 문서 수 · base/family bootstrap 95% CI. 굵게 = 해당 세트 최고값.")),
+      (s.local_smoke || []).length ? details("로컬 스모크 기록 (원문 키/값)",
+        h("p", { class: "sub" }, "마스크 감사·파일럿·10-step 학습 스모크 파일을 해석하지 않고 그대로 보여줍니다. final 평가 결과가 아닙니다."),
+        s.local_smoke.map((f) => [h("h3", { class: "mono" }, f.path), kv(f.pairs.map(([k, v]) => [h("span", { class: "mono" }, k), h("span", { class: "raw" }, v)]))])) : null,
     ]);
   }
 
-  // ---- runpod
+  // ---- serving
+  async function pageServing(view) {
+    const s = await status();
+    const sv = s.serving || {}, ho = s.handoff || {};
+    const bench = sv.hf_peft_nf4_local, probe = sv.hf_cancel_probe;
+    const t07 = (s.tasks || []).find((t) => t.id === "T07");
+    const arms = bench ? Object.keys(bench.arms || {}) : [];
+    const m1c1 = bench && bench.arms.m1 && bench.arms.m1.bench ? bench.arms.m1.bench["1"] : null;
+    const allSame = arms.length > 0 && arms.every((a) => bench.arms[a].identical_raw_rate === 1);
+    const rows = [];
+    for (const a of arms) for (const [c, b] of Object.entries(bench.arms[a].bench || {})) {
+      rows.push(h("tr", null, h("td", null, h("span", { class: "sw " + (ARMS[a] || {}).cls }), " ", runName(a)), h("td", { class: "num" }, c),
+        h("td", { class: "num" }, String(b.requests)), h("td", { class: "num" }, b.failures ? h("b", null, String(b.failures)) : "0"),
+        h("td", { class: "num" }, fmt(b.docs_per_min, 2)), h("td", { class: "num" }, fmt(b.p50_s, 1) + "s"), h("td", { class: "num" }, fmt(b.p95_s, 1) + "s"),
+        h("td", { class: "num" }, String(b.gpu_mem_mb_max) + " MB")));
+    }
+    add(view, [
+      pageHead("서빙", "Transformers + PEFT 서버(로컬 RTX 4070 Ti SUPER, 127.0.0.1) 실측", "reports/serving/*.json"),
+      ho["vLLM 서빙"] ? banner("vLLM: " + recordedStatus(ho["vLLM 서빙"]) + (s.handoff_decision ? " — 사용자 결정: " + clean(s.handoff_decision) : "")) : t07 ? banner(t07.evidence) : null,
+      statusErrors(s),
+      bench ? h("div", { class: "kpis" },
+        kpi("서버 = 오프라인 출력", allSame ? "100" : arms.map((a) => fmt(bench.arms[a].identical_raw_rate * 100, 0)).join("/"), "%", "같은 " + (bench.docs || []).length + "문서 원문 출력 일치 (" + arms.map(runName).join("·") + ")", allSame ? "ok" : "warn"),
+        m1c1 ? kpi("M1 지연 p50 · 동시 1", fmt(m1c1.p50_s, 1), "s", "p95 " + fmt(m1c1.p95_s, 1) + "s · 요청 " + m1c1.requests + "건", "run") : null,
+        m1c1 ? kpi("M1 처리량 · 동시 1", fmt(m1c1.docs_per_min, 2), "문서/분", "GPU 1개, 배치 1 (동시 생성 없음)", "run") : null,
+        probe ? kpi("타임아웃 취소", String(probe.timeout_cancel_test.http_status), "", "제한 " + probe.timeout_cancel_test.request_timeout_s + "s · GPU " + fmt(probe.timeout_cancel_test.gpu_seconds, 2) + "s 후 중단", "ok") : null)
+        : card("벤치마크", h("p", null, pill("not_run"), " reports/serving/hf_peft_nf4_local.json 없음")),
+      bench ? h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "동시성별 지연·처리량"), h("span", { class: "hint" }, "최대 토큰 " + bench.max_tokens + " · warmup " + bench.warmups)),
+        table(["arm", ["동시 요청", "num"], ["요청", "num"], ["실패", "num"], ["문서/분", "num"], ["p50", "num"], ["p95", "num"], ["GPU 메모리 최대", "num"]], rows, "small"),
+        h("p", { class: "note" }, "서버는 GPU 작업을 한 번에 하나만 실행하고 대기열을 2개로 제한해 넘치는 요청을 429로 거절하도록 만들어져 있습니다. 동시 4의 실패 7건은 이 거절로 추정되지만, 이 벤치는 상태 코드를 기록하지 않아 미확인입니다. 문서/분·p50·p95는 성공한 요청만으로 계산했으므로 동시 4 행은 성공 3건 기준입니다. ", clean(bench.note))) : null,
+      h("div", { class: "cols" },
+        probe ? cardH("취소·대기열 프로브", probe.measured_at, kv([
+          ["요청 타임아웃", probe.timeout_cancel_test.request_timeout_s + "s → HTTP " + probe.timeout_cancel_test.http_status + " (경과 " + probe.timeout_cancel_test.wall_s + "s)"],
+          ["GPU 사용 시간", fmt(probe.timeout_cancel_test.gpu_seconds, 3) + "s — 마감 시각에 생성 중단"],
+          ["직후 상태", "busy " + probe.timeout_cancel_test.health_immediately_after.busy + " · 대기 " + probe.timeout_cancel_test.health_immediately_after.queued],
+          ["정상 M1 요청", "HTTP " + probe.normal_m1_request.http_status + " · " + probe.normal_m1_request.finish_reason + " · " + fmt(probe.normal_m1_request.gpu_seconds, 2) + "s"],
+          ["동시 " + probe.bounded_queue_test.concurrent_requests + "건", h("span", { class: "chips" }, probe.bounded_queue_test.status_codes.map((c) => pillCls(c === 200 ? "ok" : "warn", String(c))))],
+          ["결론", probe.bounded_queue_test.conclusion],
+        ])) : null,
+        bench ? cardH("출력 동일성 (서버 vs 오프라인 HF)", "같은 문서·같은 설정", kv(arms.map((a) => [runName(a),
+          "원문 일치 " + fmt(bench.arms[a].identical_raw_rate * 100, 0) + "% · 필드 정확도 서버 " + fmt(bench.arms[a].server_field_accuracy) + " / 오프라인 " + fmt(bench.arms[a].offline_hf_field_accuracy_same_docs)])),
+          h("p", { class: "note" }, "서빙 경로가 평가 경로와 같은 출력을 내는지 확인한 값입니다(문서 " + (bench.docs || []).length + "건).")) : null),
+    ]);
+  }
+
+  // ---- runpod / cloud cost
   async function pageRunpod(view) {
     const s = await status();
     const hw = s.hardware || {}, ap = s.approval || {}, ho = s.handoff || {};
@@ -494,20 +794,25 @@
     const seg = (cls, v, label) => h("i", { class: cls, width: total ? (100 * v / total).toFixed(0) + "%" : "0%" }, label + " $" + v);
     const apPairs = Object.entries(ap).map(([k, v]) => [h("span", { class: "mono" }, k),
       v === "null" ? pillCls("idle", "미확인 (null)") : v === "false" ? h("span", { class: "mono" }, "false") : v === "true" ? pillCls("ok", "true") : h("span", { class: "raw" }, v)]);
+    const unused = /^none/.test(ho.active_paid_resources_from_this_project || "");
     add(view, [
-      pageHead("RunPod 비용·승인", "reports/RUNPOD_APPROVAL.md · configs/project.yaml"),
+      pageHead("클라우드·비용", "RunPod 1-GPU 계획 · 승인 양식 · 실제 사용 기록", "reports/RUNPOD_APPROVAL.md · configs/project.yaml"),
+      ho.RunPod ? banner("RunPod: " + clean(ho.RunPod), "info") : null,
+      s.handoff_decision ? banner("사용자 결정: " + clean(s.handoff_decision), "info") : null,
       banner("유료 리소스 생성·재시작·변경은 실제 콘솔 견적을 사용자가 승인한 뒤에만 합니다. 예산 계산기는 과금 차단 장치가 아니며, Python을 멈춰도 Pod 과금은 멈추지 않습니다."),
       statusErrors(s),
+      h("div", { class: "kpis" },
+        kpi("이 프로젝트의 유료 리소스", unused ? "없음" : "확인 필요", "", clean(ho.active_paid_resources_from_this_project) || "기록 없음", unused ? "ok" : "warn"),
+        kpi("승인 상태", ap.approved === "true" ? "승인됨" : "승인 없음", "", "실제 견적 승인 양식 기준", ap.approved === "true" ? "ok" : "idle"),
+        kpi("계획 예산", "$" + txt(hw.gpu_compute_budget_usd), "+ $" + txt(hw.storage_and_shutdown_budget_usd), "GPU + 저장·정리, 여유 $" + txt(hw.reserve_usd) + " (미사용)", "idle")),
       h("div", { class: "cols" },
-        card("계획 예산 배분", total ? h("div", { class: "stack" }, seg("gpu", hw.gpu_compute_budget_usd, "GPU"), seg("oth", hw.storage_and_shutdown_budget_usd, "기타"), seg("res", hw.reserve_usd, "여유")) : null,
-          h("p", { class: "sub" }, "사용자 보고 잔액 약 $" + txt(total) + " (계정 잔액 미검증)."),
-          kv([["승인 상태", ap.approved === "true" ? pillCls("ok", "승인됨") : pillCls("warn", "승인 없음")],
-            ["이 프로젝트의 활성 Pod", ho.active_pods_from_this_package], ["계정 전체 과금 리소스", ho.actual_account_active_resources],
-            ["실제 지출 기록", ho.actual_spend_from_this_package], ["동시 유료 Pod 상한", hw.max_simultaneous_paid_pods],
+        cardH("계획 예산 배분", "사용자 보고 잔액 약 $" + txt(total) + " · 계정 잔액 미검증",
+          total ? h("div", { class: "stack" }, seg("gpu", hw.gpu_compute_budget_usd, "GPU"), seg("oth", hw.storage_and_shutdown_budget_usd, "기타"), seg("res", hw.reserve_usd, "여유")) : null,
+          kv([["동시 유료 Pod 상한", hw.max_simultaneous_paid_pods],
             ["soft stop", hw.spend_soft_stop_usd !== undefined ? "$" + hw.spend_soft_stop_usd : null], ["자동 충전 허용", String(hw.auto_top_up_authorized)],
             ["Full SSH 필요", String(hw.full_ssh_required)], ["콘솔 GPU 단가 (config)", hw.actual_console_gpu_rate_usd_per_hour === null ? "미확인" : hw.actual_console_gpu_rate_usd_per_hour],
             ["선호 GPU", hw.preferred_gpu], ["제안 디스크", "container " + txt(hw.container_disk_gb_proposed) + "GB · volume " + txt(hw.volume_disk_gb_proposed) + "GB"]])),
-        card("이번 실행 승인 양식 (원문 값)", apPairs.length ? kv(apPairs) : h("p", null, "RUNPOD_APPROVAL.md를 읽지 못했습니다."))),
+        cardH("이번 실행 승인 양식", "원문 값", apPairs.length ? kv(apPairs) : h("p", null, "RUNPOD_APPROVAL.md를 읽지 못했습니다."))),
     ]);
   }
 
@@ -515,40 +820,60 @@
   async function pageTests(view) {
     const s = await status();
     const j = s.junit;
+    const passed = j ? j.tests - j.failures - j.errors - j.skipped : 0;
     add(view, [
-      pageHead("테스트", "artifacts/dashboard/pytest_junit.xml"),
-      banner("CPU 기능 테스트(application_cpu_test) 결과입니다. 모델·GPU 결과가 아닙니다.", "info"),
-      j ? card("pytest 요약", kv([["통과", (j.tests - j.failures - j.errors) + " / " + j.tests], ["실패 / 오류 / 건너뜀", j.failures + " / " + j.errors + " / " + j.skipped],
-        ["소요", txt(j.time) + "s"], ["기록 시각", j.mtime]]),
-        h("h3", null, "파일별 테스트 수"), bars(j.by_file),
-        Object.keys(j.failed_by_file || {}).length ? [h("h3", null, "실패한 파일"), bars(j.failed_by_file)] : null)
-        : card("pytest 요약", h("p", null, pill("not_run"), "junit 기록이 없습니다.")),
-      card("다시 실행하는 방법", h("p", null, h("code", null, ".venv/Scripts/python.exe -m invoiceguard.dashboard --run-tests"), " 또는 서버 시작 시 ",
-        h("code", null, "-m invoiceguard.dashboard_server --run-tests")), h("p", { class: "sub" }, "대시보드는 읽기 전용이라 화면에서 테스트를 실행하지 않습니다.")),
+      pageHead("테스트", "CPU 기능 테스트(application_cpu_test) — 모델·GPU 결과가 아닙니다", "artifacts/dashboard/pytest_junit.xml"),
+      j ? h("div", { class: "kpis" },
+        kpi("통과", String(passed), "/ " + j.tests, "기록 " + j.mtime, j.failures || j.errors ? "warn" : "ok", passed / Math.max(1, j.tests)),
+        kpi("실패 · 오류", String(j.failures + j.errors), "", j.failures + j.errors ? "아래 실패 파일 참고" : "없음", j.failures + j.errors ? "bad" : "ok"),
+        kpi("건너뜀", String(j.skipped), "", "로컬 데이터가 없을 때 건너뛰는 테스트", "idle"),
+        kpi("소요 시간", fmt(j.time, 1), "s", "pytest 전체", "idle"))
+        : card("pytest 요약", h("p", null, pill("not_run"), " junit 기록이 없습니다.")),
+      j ? h("div", { class: "cols wide-left" },
+        cardH("파일별 테스트 수", Object.keys(j.by_file || {}).length + "개 파일", bars(j.by_file),
+          Object.keys(j.failed_by_file || {}).length ? [h("h3", null, "실패한 파일"), bars(j.failed_by_file)] : null),
+        cardH("다시 실행하는 방법", null, h("p", null, h("code", null, ".venv/Scripts/python.exe -m invoiceguard.dashboard --run-tests")),
+          h("p", null, "또는 서버 시작 시 ", h("code", null, "-m invoiceguard.dashboard_server --run-tests")),
+          h("p", { class: "sub" }, "대시보드는 읽기 전용이라 화면에서 테스트를 실행하지 않습니다."))) : null,
     ]);
   }
 
-  // ---- review app placeholder
+  // ---- review API (T06)
+  const STEP_KO = { create_po: "발주서 등록", upload: "인보이스 이미지 업로드", export_before_approval: "승인 전 export 시도",
+    extract_live: "실시간 VLM 추출 + 대사", approve: "사람 승인", export_json: "승인본 export (JSON)" };
+  const ENDPOINTS = [["get", "/health"], ["post", "/api/purchase-orders"], ["post", "/api/cases"], ["post", "/api/cases/{case_id}/extract"],
+    ["get", "/api/cases/{case_id}"], ["get", "/api/cases/{case_id}/image"], ["put", "/api/cases/{case_id}/review"],
+    ["post", "/api/cases/{case_id}/approve"], ["post", "/api/cases/{case_id}/reject"], ["get", "/api/cases/{case_id}/export"]];
   async function pageReview(view) {
     const s = await status();
     const t06 = (s.tasks || []).find((t) => t.id === "T06");
+    const demo = (s.serving || {}).live_e2e_demo;
     add(view, [
-      pageHead("검수 앱", "업로드 → 추출 → 수정·승인 → export (T06)"),
-      card("상태", kv([
-        ["T06 단계", t06 ? pill(t06.status) : pill("unknown")], ["앱", pill("not_implemented")],
-        ["검수 건 / 승인 / export", "— (앱 DB 없음)"], ["추론 큐·취소·격리", pill("not_run")],
-        ["버전 CAS · 승인 스냅샷", pill("not_run")], ["모델 서버", pillCls("warn", "연결 없음 — fixture로 대체하지 않음")],
-      ])),
-      card("계획된 흐름 (구현 전)", h("ul", { class: "plain" },
-        h("li", null, "영어 인보이스 이미지 업로드 → 실제 VLM 추출 (늦게 도착한 추론은 최신 수정·승인을 덮어쓰지 않음)"),
-        h("li", null, "독립 발주서와 대사 → 사유 코드(QTY_DIFF, UNIT_PRICE_DIFF, PO_LINE_NOT_FOUND …) 표시"),
-        h("li", null, "사람 검수·수정 → 승인 → 불변 승인 스냅샷 기반 버전 export"))),
+      pageHead("검수 API", "업로드 → 추출 → 수정·승인 → 승인본 export (FastAPI + SQLite)", "src/invoiceguard/app/"),
+      banner("검수용 화면(UI)은 아직 없습니다. 이 대시보드는 읽기 전용이며 검수 API를 호출하지 않습니다.", "info"),
+      t06 ? cardH("T06 상태", t06.where, h("div", null, pill(t06.status), statusExtra(t06.status) ? h("span", { class: "sub" }, " " + statusExtra(t06.status)) : null), h("p", { class: "note" }, t06.evidence)) : null,
+      h("div", { class: "cols" },
+        demo ? cardH("라이브 E2E 시연 기록", demo.doc_id + " · " + demo.scenario,
+          h("ol", { class: "timeline" }, (demo.steps || []).map((st) => {
+            const [name, code, ...rest] = st;
+            return h("li", { class: Number(code) >= 400 ? "is-warn" : null },
+              h("div", { class: "tt" }, (STEP_KO[name] || name) + " · HTTP " + code),
+              h("div", { class: "td" }, [name === "export_before_approval" && Number(code) === 409 ? "승인 전이라 거절 (의도된 동작)" : null, rest.map((x) => (Array.isArray(x) ? x.join(", ") : String(x))).join(" · ")].filter(Boolean).join(" — ")));
+          })),
+          demo.run ? h("p", { class: "note" }, "extractor ", mono(demo.run.extractor_mode), " · model ", mono(demo.run.model_label), " · ", fmt(demo.run.latency_s, 1), "s · 추출 = 정답 행 ", demo.extraction_equals_gold_rows ? "일치" : "불일치") : null)
+          : card("라이브 E2E 시연", h("p", null, pill("not_run"), " reports/serving/live_e2e_demo.json 없음")),
+        cardH("구현된 엔드포인트", "src/invoiceguard/app/api.py",
+          h("ul", { class: "endpoints" }, ENDPOINTS.map(([m, p]) => h("li", null, h("span", { class: "m " + m }, m.toUpperCase()), h("code", null, p)))),
+          h("p", { class: "note" }, "늦게 도착한 추론은 최신 수정·승인을 덮어쓰지 않습니다(버전 CAS). 승인 시 불변 스냅샷을 만들고 export는 승인본만 내보냅니다."))),
     ]);
   }
 
   // ------------------------------------------------------------------ router
   const PAGES = { overview: pageOverview, progress: pageProgress, public: pagePublic, trade: pageTrade, splits: pageSplits,
-    model: pageModel, runpod: pageRunpod, tests: pageTests, review: pageReview };
+    model: pageModel, serving: pageServing, runpod: pageRunpod, tests: pageTests, review: pageReview };
+  const PAGE_META = { overview: ["요약", "개요"], progress: ["요약", "진행 단계·게이트"], public: ["데이터", "공개 데이터"], trade: ["데이터", "자체 Invoice–PO"],
+    splits: ["데이터", "분할·manifest"], model: ["모델·서빙", "모델·평가"], serving: ["모델·서빙", "서빙"], review: ["운영", "검수 API"],
+    tests: ["운영", "테스트"], runpod: ["운영", "클라우드·비용"] };
   function parseHash() {
     const raw = (location.hash || "").replace(/^#/, "") || "/overview";
     const qi = raw.indexOf("?");
@@ -556,17 +881,34 @@
     const segs = path.split("/").filter(Boolean).map((x) => { try { return decodeURIComponent(x); } catch (e) { return ""; } });
     return { segs, query: new URLSearchParams(qi >= 0 ? raw.slice(qi + 1) : "") };
   }
-  function setNav(page) {
-    for (const a of document.querySelectorAll("nav a")) a.classList.toggle("active", a.dataset.page === page);
-    sidebar.classList.remove("open");
-    toggle.setAttribute("aria-expanded", "false");
+  function setNavOpen(open) {
+    sidebar.classList.toggle("open", open);
+    backdrop.hidden = !open;
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-label", open ? "메뉴 닫기" : "메뉴 열기");
+  }
+  function setNav(page, segs) {
+    for (const a of document.querySelectorAll("nav a")) {
+      const on = a.dataset.page === page;
+      a.classList.toggle("active", on);
+      if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    }
+    const [group, title] = PAGE_META[page];
+    crumbs.replaceChildren();
+    add(crumbs, [h("span", null, group), h("span", { class: "sep" }, "/"), h("b", null, title),
+      segs.length ? [h("span", { class: "sep" }, "/"), h("span", { class: "mono" }, segs[0])] : null]);
+    document.title = title + " · InvoiceGuard 관리자";
+    setNavOpen(false);
   }
   async function route() {
     const token = ++routeToken;
+    hideTip();
     const { segs, query } = parseHash();
     const name = PAGES[segs[0]] ? segs[0] : "overview";
-    setNav(name);
-    const timer = setTimeout(() => { if (token === routeToken) main.replaceChildren(h("p", { class: "loading" }, "불러오는 중…")); }, 150);
+    setNav(name, segs.slice(1));
+    const timer = setTimeout(() => {
+      if (token === routeToken) main.replaceChildren(h("div", { class: "skeleton", "aria-hidden": "true" }, h("div", { class: "sk tall" }), h("div", { class: "sk" }), h("div", { class: "sk" })));
+    }, 150);
     const view = h("div", { class: "view" });
     try {
       await PAGES[name](view, segs.slice(1), query);
@@ -578,34 +920,32 @@
     main.replaceChildren(view);
     window.scrollTo(0, 0);
   }
-  toggle.addEventListener("click", () => {
-    const open = sidebar.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-  });
-  // ---- light/dark toggle: explicit choice wins over the OS setting and is remembered per browser
+  document.querySelector(".skip").addEventListener("click", (e) => { e.preventDefault(); main.focus(); });
+  toggle.addEventListener("click", () => setNavOpen(!sidebar.classList.contains("open")));
+  backdrop.addEventListener("click", () => setNavOpen(false));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { setNavOpen(false); hideTip(); } });
+  document.getElementById("refresh").addEventListener("click", route);
+  window.addEventListener("scroll", hideTip, { passive: true });
+
+  // ---- theme: dark by default; the light choice is remembered per browser
   const themeBtn = document.getElementById("themetoggle");
-  const osDark = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-  function currentTheme() {
-    const explicit = document.documentElement.getAttribute("data-theme");
-    if (explicit === "light" || explicit === "dark") return explicit;
-    return osDark && osDark.matches ? "dark" : "light";
-  }
+  const themeLabel = document.getElementById("themelabel");
+  const currentTheme = () => (document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark");
   function paintThemeButton() {
     const dark = currentTheme() === "dark";
-    themeBtn.textContent = dark ? "☀ 라이트 모드" : "☾ 다크 모드";
-    themeBtn.setAttribute("aria-pressed", dark ? "true" : "false");
+    themeLabel.textContent = dark ? "라이트 모드" : "다크 모드";
     themeBtn.setAttribute("aria-label", dark ? "라이트 모드로 전환" : "다크 모드로 전환");
   }
-  if (themeBtn) {
-    themeBtn.addEventListener("click", () => {
-      const next = currentTheme() === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      try { window.localStorage.setItem("ig-theme", next); } catch (e) { /* not remembered, still applied */ }
-      paintThemeButton();
-    });
-    if (osDark && osDark.addEventListener) osDark.addEventListener("change", paintThemeButton);
+  themeBtn.addEventListener("click", () => {
+    const next = currentTheme() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      if (next === "light") window.localStorage.setItem("ig-theme", "light");
+      else window.localStorage.removeItem("ig-theme");
+    } catch (e) { /* not remembered, still applied */ }
     paintThemeButton();
-  }
+  });
+  paintThemeButton();
   window.addEventListener("hashchange", route);
   route();
 })();

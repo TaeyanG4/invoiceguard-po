@@ -32,11 +32,12 @@ E = html.escape
 STATUS_CLASS = {
     "passed_with_evidence": "ok", "pass": "ok", "completed": "ok",
     "in_progress": "run", "not_started": "idle", "not_run": "idle", "not_implemented": "idle",
-    "blocked": "warn", "failed": "bad", "unknown": "warn",
+    "blocked": "warn", "failed": "bad", "unknown": "warn", "partial": "warn",
 }
 STATUS_KO = {
     "passed_with_evidence": "증거 있음 통과", "pass": "통과", "in_progress": "진행 중", "not_started": "시작 전",
     "not_run": "미실행", "blocked": "차단", "failed": "실패", "not_implemented": "미구현", "unknown": "미확인",
+    "partial": "부분 통과",
 }
 
 
@@ -56,8 +57,11 @@ def parse_task_board(text: str) -> tuple[list[dict], list[dict]]:
         if re.fullmatch(r"T0\d", cells[0]) and len(cells) >= 5:
             tasks.append({"id": cells[0], "name": cells[1], "where": cells[2], "status": cells[3], "evidence": cells[4]})
         elif re.match(r"G\d ", cells[0]) and len(cells) >= 2:
-            status = cells[1].split(" ")[0]
-            gates.append({"id": cells[0][:2], "name": cells[0][3:], "status": status, "detail": cells[1][len(status):].strip(" ()")})
+            # "pass (scope)", "partial: detail" or "pass (local): detail"
+            m = re.match(r"^(\w+)\s*(?:\(([^)]*)\))?[:\s]*(.*)$", cells[1])
+            status, scope, rest = (m.group(1), m.group(2), m.group(3).strip()) if m else (cells[1], None, "")
+            gates.append({"id": cells[0][:2], "name": cells[0][3:], "status": status,
+                          "detail": ": ".join(x for x in (scope, rest) if x)})
     return tasks, gates
 
 
@@ -68,6 +72,12 @@ def parse_kv(text: str) -> dict[str, str]:
         if m:
             out[m.group(1).strip()] = m.group(2).strip()
     return out
+
+
+def parse_decision(text: str) -> str | None:
+    """First paragraph under the "## 사용자 결정" heading of SESSION_HANDOFF.md, or None."""
+    m = re.search(r"^## 사용자 결정[^\n]*\n+(.+?)(?:\n\s*\n|\n#|\Z)", text, re.S | re.M)
+    return " ".join(m.group(1).split()) if m else None
 
 
 def run_tests(junit: Path) -> None:
@@ -130,8 +140,8 @@ def build_html(data: dict) -> str:
         ("인수 게이트", f"{sum(g['status'] == 'pass' for g in gates)}/{len(gates)}", "G0–G7 중 통과"),
         ("CPU 테스트", f"{junit['tests'] - junit['failures'] - junit['errors']}/{junit['tests']}" if junit else "—",
          f"pytest 통과 · {junit['mtime']}" if junit else "--run-tests로 실행"),
-        ("클라우드 지출", "$0.00" if handoff.get("actual_spend_from_this_package", "").startswith("$0") else "미확인",
-         "이 프로젝트가 만든 RunPod 리소스 없음" if "none_created" in handoff.get("active_pods_from_this_package", "") else "확인 필요"),
+        ("클라우드 지출", "$0" if handoff.get("active_paid_resources_from_this_project", "").startswith("none") else "미확인",
+         handoff.get("active_paid_resources_from_this_project", "SESSION_HANDOFF 기록 없음")),
     ]
     kpi_html = "".join(f'<div class="kpi"><div class="kl">{E(a)}</div><div class="kn">{E(b)}</div><div class="ks">{E(c)}</div></div>'
                        for a, b, c in kpis)
@@ -153,8 +163,7 @@ def build_html(data: dict) -> str:
         ("이번 실행 승인", pill("pass") if approval.get("approved") == "true" else '<span class="pill warn">승인 없음</span>'),
         ("실제 잔액", E(approval.get("actual_balance_usd", "null")).replace("null", "미확인")),
         ("콘솔 GPU 단가", E(approval.get("gpu_rate_usd_per_hour", "null")).replace("null", "미확인")),
-        ("이 프로젝트의 활성 Pod", E(handoff.get("active_pods_from_this_package", "unknown"))),
-        ("계정 전체 과금 리소스", E(handoff.get("actual_account_active_resources", "unknown"))),
+        ("이 프로젝트의 유료 리소스", E(handoff.get("active_paid_resources_from_this_project", "unknown"))),
         ("FullSSH 파일 왕복", pill("pass") if approval.get("full_ssh_file_roundtrip_verified") == "true" else pill("not_run")),
         ("자동 충전 허용", E(approval.get("auto_top_up_authorized", "false"))),
     ]
@@ -207,12 +216,24 @@ def build_html(data: dict) -> str:
     else:
         test_html = "<p class='sub'>테스트 결과 파일 없음 — <code>python -m invoiceguard.dashboard --run-tests</code></p>"
 
-    # --- model results matrix
-    results = data["results"] or {}
-    matrix = "".join(f"<tr><td class='mono'>{m}</td>" + "".join(f"<td>{pill('not_run')}</td>" for _ in range(3)) + "</tr>"
-                     for m in ("M0 base (NF4)", "M1 adapter (NF4)"))
-    model_html = (f"<table class='grid'><tr><th>모델</th><th>public IID final</th><th>public OOD final</th><th>trade final</th></tr>{matrix}</table>"
-                  f"<div class='sub'>결과 파일 상태: <b>{E(results.get('status', 'not_run'))}</b>. 실제 RunPod 추론 전에는 모든 수치가 비어 있음.</div>")
+    # --- model results: FINAL strict field accuracy as recorded in reports/eval (not_run when absent)
+    finals = data.get("final_evals") or {}
+    if finals:
+        arms = [a for a in ("b0", "m0", "m1") if a in finals]
+        sets = sorted({k for a in arms for k in finals[a]["headline"]}, key=lambda k: (not k.startswith("trade"), k))
+        head = "".join(f"<th>{E(a.upper())}</th>" for a in arms)
+        body = "".join(
+            f"<tr><td class='mono'>{E(k)}</td>" + "".join(
+                f"<td>{finals[a]['headline'][k]['fields_acc']:.3f}<div class='sub'>n {finals[a]['headline'][k]['n']}</div></td>"
+                if k in finals[a]["headline"] else f"<td>{pill('not_run')}</td>" for a in arms) + "</tr>" for k in sets)
+        model_html = (f"<table class='grid small'><tr><th>set</th>{head}</tr>{body}</table>"
+                      "<div class='sub'>strict 필드 정확도, 동결 후 1회 (reports/eval/*_final_*.json). 합성 데이터·작은 표본.</div>")
+    else:
+        matrix = "".join(f"<tr><td class='mono'>{m}</td>" + "".join(f"<td>{pill('not_run')}</td>" for _ in range(3)) + "</tr>"
+                         for m in ("B0 OCR", "M0 base (NF4)", "M1 adapter (NF4)"))
+        model_html = (f"<table class='grid'><tr><th>모델</th><th>public IID final</th><th>public OOD final</th><th>trade final</th></tr>{matrix}</table>"
+                      "<div class='sub'>final 채점 파일이 없어 모든 칸이 미실행입니다.</div>")
+    t06 = next((t for t in tasks if t["id"] == "T06"), None)
 
     generated = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
     return f"""<!doctype html>
@@ -249,16 +270,16 @@ code{{background:var(--idleb);padding:1px 5px;border-radius:5px}}
 </style></head><body>
 <header><h1>InvoiceGuard-PO · 관리자 대시보드</h1>
 <div class="meta">생성 {E(generated)} · 읽기 전용 · 원본: reports/, manifests/, configs/project.yaml</div>
-<div class="banner">이 화면은 기록된 증거만 보여줍니다. 실제 VLM 추론·QLoRA 학습·GPU 측정은 아직 실행하지 않았으며(not_run), 자체 Invoice–PO와 공개 데이터는 모두 합성 자료입니다.</div></header>
+<div class="banner">이 화면은 저장소에 기록된 증거만 보여줍니다. 기록이 없는 항목은 미실행/미확인으로 표시하며, 자체 Invoice–PO와 공개 데이터는 모두 합성 자료입니다. 대화형 대시보드: python -m invoiceguard.dashboard_server</div></header>
 <main>
 <div class="kpis">{kpi_html}</div>
 <section class="card wide"><h2>진행 단계 T00–T09</h2><table class="tasks"><tr><th>ID</th><th>작업 · 증거</th><th>위치</th><th>상태</th></tr>{task_rows}</table></section>
 <section class="card third"><h2>인수 게이트</h2><ul class="gates">{gate_rows}</ul></section>
 <section class="card half"><h2>RunPod 예산·과금 상태</h2>{budget}{kv_table(approval_pairs)}</section>
-<section class="card half"><h2>모델 평가 (M0 vs M1, 동일 manifest·NF4)</h2>{model_html}</section>
+<section class="card half"><h2>모델 평가 (B0 · M0 · M1, 동일 manifest·NF4)</h2>{model_html}</section>
 <section class="card"><h2>데이터·분할</h2>{data_html}</section>
 <section class="card half"><h2>CPU 테스트</h2>{test_html}</section>
-<section class="card half"><h2>검수 앱 (업로드→추출→수정·승인→export)</h2>{kv_table([("상태", pill("not_implemented") + " T06에서 구현"), ("검수 건 / 승인 / export", "— (앱 DB 없음)"), ("추론 큐·타임아웃 격리", pill("not_run")), ("모델 서버", '<span class="pill warn">연결 없음</span> fixture로 대체하지 않음')])}</section>
+<section class="card half"><h2>검수 API (업로드→추출→수정·승인→export)</h2>{kv_table([("T06", (pill(t06["status"].split(" ")[0]) + " " + E(t06["evidence"])) if t06 else pill("unknown")), ("검수 화면 UI", pill("not_implemented"))])}</section>
 </main></body></html>"""
 
 
@@ -274,8 +295,20 @@ def collect(junit_path: Path) -> dict:
         "public_manifest": _json(REPO / "manifests" / "public_canonical_v1.summary.json"),
         "trade_manifest": _json(REPO / "manifests" / "trade_raw_v1.summary.json"),
         "results": _json(REPO / "reports" / "RESULTS_TEMPLATE.json"),
+        "final_evals": final_evals(REPO / "reports" / "eval"),
         "junit": parse_junit(junit_path),
     }
+
+
+def final_evals(folder: Path) -> dict[str, dict]:
+    """Latest FINAL scoring file per arm (b0/m0/m1) as written by invoiceguard.score_run; {} when none exist."""
+    out: dict[str, dict] = {}
+    for path in sorted(folder.glob("*_final_*.json")):
+        content = _json(path)
+        arm = path.name.split("_")[0]
+        if arm in ("b0", "m0", "m1") and isinstance(content, dict) and content.get("headline"):
+            out[arm] = content
+    return out
 
 
 def main() -> int:

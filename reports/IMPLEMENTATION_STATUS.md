@@ -12,7 +12,7 @@
 | 전체 공개 데이터 적재·이미지/정답 감사 (T01/G1) | passed_with_evidence | T01 로그, reports/data/ |
 | 공개 데이터 누수 없는 분할 (T02) | passed_with_evidence (application_cpu_test) | T02-a 로그, manifests/ |
 | 자체 Invoice–PO 합성·렌더러·대사 규칙·평가기 (T02/G2) | passed_with_evidence (application_cpu_test) | T02-b 로그 |
-| 관리자 대시보드(사이드바·데이터 직접 보기, 읽기 전용) | implemented_local | `.venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765` (127.0.0.1) |
+| 관리자 대시보드(사이드바·데이터 직접 보기·평가/서빙 차트, 읽기 전용, 기본 다크) | implemented_local | `.venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765` (127.0.0.1) |
 | Git / GitHub | private repo `TaeyanG4/invoiceguard-po` (사용자 요청으로 생성·push) | 데이터·venv 제외 |
 | 실제 RunPod 잔액·견적·Pod 접속 | not_run — 승인 요청 초안만 | reports/RUNPOD_APPROVAL.md |
 | 로컬 GPU smoke (RTX 4070 Ti SUPER, 사용자 승인) | M01 mask pass / 파일럿 8장 실행 / 10-step 학습 — 아래 로그 | reports/model/local_smoke_*.json |
@@ -174,6 +174,15 @@
 
 ### 사용자 결정 (2026-11-14)
 - RunPod·드라이버 업데이트를 하지 않기로 결정 → vLLM blocked, 클라우드 not_run을 최종 상태로 유지.
+
+### 대시보드 UI/UX 개편 2차 (사용자 요청: 기본 다크·favicon·화면 구성, 2026-11-14)
+- 기본 다크 모드(`theme.js`가 첫 페인트 전 적용, 라이트 선택만 브라우저에 기억), favicon(`dashboard_static/favicon.svg`, `/favicon.ico`도 같은 SVG), 상단 바(경로·새로고침·테마), 아이콘 사이드바·모바일 서랍 메뉴.
+- 페이지 10개: 개요(파이프라인 단계·KPI·FINAL 막대·차단 항목) / 진행 단계·게이트 / 공개 데이터 / 자체 Invoice–PO / 분할·manifest / 모델·평가(B0·M0·M1 막대 + 95% CI + lenient 표시, paired 차이 forest plot, M1 학습 loss 곡선·설정) / 서빙(신규: HF+PEFT 벤치·취소·대기열·출력 동일성) / 검수 API(T06 기록·LIVE 시연 단계·엔드포인트) / 테스트 / 클라우드·비용.
+- 모든 수치는 `reports/eval`, `reports/serving`, `reports/model`, TASK_BOARD, SESSION_HANDOFF 기록을 그대로 읽어 표시(추정 없음). 이전 화면의 오래된 표기(검수 앱 미구현·모델 결과 미실행·RESULTS_TEMPLATE 기반 상태) 제거. 게이트 상태 `partial:` 정규화.
+- 차트 색: 검증된 범주 팔레트 앞 3칸(B0 파랑·M0 주황·M1 청록), 모드별 단계 사용, `validate_palette.js` 다크·라이트 all-pairs 통과(라이트 청록 대비 2.82:1 → 값 라벨·표로 보완).
+- 정적 스냅샷(`python -m invoiceguard.dashboard`)도 final 채점 파일의 strict 정확도 표를 보여주도록 수정(파일 없으면 미실행).
+- Fable 검토(MUST-FIX 4 · OPTIONAL 8) 반영: 공개 IID 설명 정정("학습과 같은 템플릿" → IID 풀, event_ticket은 학습에 없음 — manifest 확인), 본문 건너뛰기 링크가 라우팅을 바꾸던 문제, vLLM 문구에서 '해제' 제안을 빼고 SESSION_HANDOFF의 사용자 결정 문단(`handoff_decision`)을 함께 표시, 배너 글자색이 상태 클래스와 충돌하던 문제, 동시 4 실패 7건 설명을 "429로 추정·상태 코드 미기록"과 "성공 3건 기준 지표"로 정정, T05 (negative)·T06 (minimal API) 단서 표시, G7 상세 괄호 파싱, 409 라벨 범위, final 없을 때 문구, 비활성 페이지 링크·닫힌 모바일 서랍 키보드 접근, 기록 파일 삭제 중 500 방지.
+- 검증: `pytest` 161 passed / 1 skipped (`tests/test_dashboard.py` 다크 기본·favicon·상태 기록·게이트 정규화·사용자 결정 파싱 테스트 추가), 브라우저에서 다크/라이트·데스크톱/모바일·콘솔 오류 0 확인.
 
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.
