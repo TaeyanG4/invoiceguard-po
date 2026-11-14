@@ -184,5 +184,12 @@
 - Fable 검토(MUST-FIX 4 · OPTIONAL 8) 반영: 공개 IID 설명 정정("학습과 같은 템플릿" → IID 풀, event_ticket은 학습에 없음 — manifest 확인), 본문 건너뛰기 링크가 라우팅을 바꾸던 문제, vLLM 문구에서 '해제' 제안을 빼고 SESSION_HANDOFF의 사용자 결정 문단(`handoff_decision`)을 함께 표시, 배너 글자색이 상태 클래스와 충돌하던 문제, 동시 4 실패 7건 설명을 "429로 추정·상태 코드 미기록"과 "성공 3건 기준 지표"로 정정, T05 (negative)·T06 (minimal API) 단서 표시, G7 상세 괄호 파싱, 409 라벨 범위, final 없을 때 문구, 비활성 페이지 링크·닫힌 모바일 서랍 키보드 접근, 기록 파일 삭제 중 500 방지.
 - 검증: `pytest` 161 passed / 1 skipped (`tests/test_dashboard.py` 다크 기본·favicon·상태 기록·게이트 정규화·사용자 결정 파싱 테스트 추가), 브라우저에서 다크/라이트·데스크톱/모바일·콘솔 오류 0 확인.
 
+### README 재구성·공개 준비 (사용자 요청, 2026-11-14)
+- README를 13개 절로 재구성: 한눈에 보기 / 시스템 구성 / 데이터(종류별 표·분할 다이어그램·문서 상세 화면) / 모델과 학습 / 평가 설계 / 결과 / 서빙 / 검수 API(상태 다이어그램) / 관리자 대시보드 / 직무 역량 ↔ 증거 / 비용과 한계 / 재현 / 출처.
+- 차트: `python -m invoiceguard.readme_figures` → `docs/images/{final-accuracy,paired-diff,training-loss}-{light,dark}.svg` (reports/eval·reports/model 기록에서 생성, 외부 라이브러리 없음, GitHub 라이트/다크 `<picture>`). 다이어그램: Mermaid 4개(시스템·데이터 분할·평가 절차·검수 API 상태), Mermaid 11에서 렌더 확인.
+- 대시보드 화면 캡처 6장(`docs/images/dashboard-*.png`, 로컬 headless Chrome, 기본 다크). 공개 데이터 화면의 문서 이미지는 InvoiceOCR-Synth(CC BY 4.0) — README 출처 절에 표기.
+- 공개 전 점검: 전체 git 이력에서 토큰·키·비밀번호 패턴 0건, 사용자 이름이 든 로컬 경로 0건, 1MB 넘는 추적 파일은 manifest 1개. 커밋 작성자 이메일은 공개 시 노출되므로 사용자 확인 대상.
+- 검증: `pytest` 164 passed / 1 skipped (`tests/test_readme_figures.py`: 차트 값 = 기록, 커밋된 SVG = 새 생성본, README 로컬 링크 존재).
+
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.
