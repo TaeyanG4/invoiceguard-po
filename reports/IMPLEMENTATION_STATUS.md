@@ -1,6 +1,6 @@
 # 구현 상태 — InvoiceGuard-PO (package v4 기반 구현 진행 기록)
 
-마지막 갱신: 2026-11-14 / 세션 2 — RunPod 재현 (Claude Code desktop, Opus 5.5)
+마지막 갱신: 2026-11-15 / 세션 3 — RunPod 실행 2 · CORD v2 실사진 트랙 (Claude Code desktop, Opus 5.5). 세부 작업 내역은 `handoff.md`(최신순).
 
 ## 요약 표
 | 구분 | 상태 | 근거 또는 다음 조치 |
@@ -16,10 +16,11 @@
 | Git / GitHub | **public** repo `TaeyanG4/invoiceguard-po` (사용자 요청으로 생성 → 공개 전 작성자 이메일 noreply 재작성 후 재생성) | 데이터·venv 제외, `reports/HISTORY_REWRITE.md` |
 | 실제 RunPod 잔액·견적·Pod 접속 | passed_with_evidence (2026-11-14, MCP 조회 + 콘솔, 사용자 승인 "A40로 승인") | reports/RUNPOD_APPROVAL.md |
 | 로컬 GPU smoke (RTX 4070 Ti SUPER, 사용자 승인) | M01 mask pass / 파일럿 8장 실행 / 10-step 학습 — 아래 로그 | reports/model/local_smoke_*.json |
-| RunPod(클라우드) 실행·비용 | passed_with_evidence — A40 1대 43분, 동결 M1 재학습이 사전 고정 기준 5개 통과, vLLM 측정, 백업·복원 확인 후 삭제, 약 $0.43 | reports/runpod/RUNPOD_RUN.md |
+| RunPod(클라우드) 실행·비용 | passed_with_evidence — 실행 1 A40 43분(동결 M1 재학습이 사전 고정 기준 5개 통과, vLLM 측정, 약 $0.43) · 실행 2 L40S 1시간 33분(vLLM 정확도 회복, FP8, bf16 LoRA, 약 $1.73). 둘 다 백업·복원 확인 후 삭제 | reports/runpod/RUNPOD_RUN.md, reports/runpod2/timeline.md |
 | 검수 API·버전·승인·동시성 / 검수 화면 UI | API implemented + tested (12) · LIVE 종단 시연 / **UI not_implemented** (읽기 전용 관리자 대시보드만) | src/invoiceguard/app/, reports/serving/live_e2e_demo.json |
 | 로컬 GPU 본학습·dev·final 평가 | passed_with_evidence (HF NF4, final 1회) | reports/model/, reports/eval/dev_summary.md, reports/eval/final_summary.md |
-| 서빙 | HF+PEFT 서버 실측 passed_with_evidence · vLLM: 로컬 blocked(드라이버), **RunPod A40에서 측정**(속도). vLLM에서 M1 정확도 저하는 원인 미확정 | reports/serving/vllm_bf16_a40.json |
+| 서빙 | HF+PEFT 서버 실측 passed_with_evidence(큐·데드라인 회귀 테스트 6개) · vLLM: 로컬 blocked(드라이버), RunPod에서 측정 — 정확도 저하 원인(어댑터·기본 모델 정밀도 불일치) 확인 후 역양자화 병합으로 0.960 회복, FP8 +23–33 % | reports/quant/, reports/runpod2/vllm_run2_*.json |
+| CORD v2 실사진 영수증 트랙 (docs/20) | passed_with_evidence — 사전 고정 기준 2개 충족(test 1회: M1-cord − M0 +0.065 [+0.027, +0.107]) | reports/eval/cord_*.json, configs/frozen_cord_v1.json |
 
 ## 환경 (T00, 2026-11-14 확인)
 - OS: Windows 10 Pro 10.0.19045, PowerShell 5.1 + Git Bash (MINGW). WSL 사용 안 함.
@@ -221,6 +222,17 @@
 - 해시: Pod 어댑터 `adapter_model.safetensors` d8103a220c4c30984d99ead47d1858656ee1d9701b05c3b62acafd4d66337d4d, 백업 tgz 1afa8544d600e124c2dc059e0d786f79d3831a7a9285a64656a9d09170df1b0c.
 - 검사: pytest 164 passed · 1 skipped. 깨끗한 복사본 기준 verify_pack 190 · verify_contracts 63 · verify_claude_pack 293 pass(로컬 작업 폴더 전체는 `.venv-ml` 등 로컬 전용 파일 때문에 원래부터 실패).
 - 비용: 43분 24초 × $0.60/hr ≈ $0.43(계산값), 콘솔 잔액 $9.81 → $9.56(18:44, 반영 지연 가능). 남은 유료 리소스 없음.
+
+### 세션 3 — 정밀도 원인 규명 · RunPod 실행 2 · CORD v2 (2026-11-14 19:00 ~ 11-15 01:30 KST)
+| 항목 | 결과 | 근거 |
+|---|---|---|
+| P3 정밀도 비교 (로컬, 자체 dev 20) | M1: NF4 0.960, int8/bf16/fp16/fp32 0.847–0.849 → 원인은 어댑터를 학습한 기본 모델 정밀도 불일치 | reports/quant/precision_dev20.md |
+| P8a 역양자화 병합 (로컬) | 0.960, 11.3 s/문서 | 같은 파일 |
+| P15 어댑터–정밀도 짝 검사 | infer · hf_server가 짝이 안 맞으면 거부, 테스트 7개 | src/invoiceguard/vlm/pairing.py |
+| P12 서빙 회귀 테스트 | torch 없는 큐·데드라인 코어, 테스트 6개. 리팩터링한 실제 GPU 서버에 요청 6건(M0·M1 각 3, 자체 dev): 원문이 오프라인 HF 출력과 6/6 동일, 실패 0 | tests/test_serving_core.py, reports/serving/hf_server_refactor_smoke.json |
+| RunPod 실행 2 (L40S, 승인) | vLLM 병합본 0.960, FP8 +23–33 % 처리량, bf16 LoRA 253초 · QLoRA와 유의차 없음, GPU 간 병합본 비트 차이 59/625 텐서 | reports/runpod2/ |
+| CORD v2 (로컬 4070 NF4) | dev M0 0.712 · M1 v1 0.304 · M1-cord 0.762 → 동결 → test M0 0.689 · M1 v1 0.215 · M1-cord 0.754, 사전 기준 충족, 기존 dev 회귀 없음 | reports/eval/cord_*.json, docs/20_DECISIONS_V6.md |
+| CPU 테스트 | 200개 중 실패 0 · 건너뜀 1, verify_pack 264 · verify_contracts 63 pass, GitHub CI pass (93db6dd) | .github/workflows/ci.yml |
 
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.

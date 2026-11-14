@@ -18,6 +18,12 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
+## 2026-11-15 01:50 — 재평가 준비: 상태 문서 갱신, P12 실제 요청 확인, CORD 백업, 평가 의뢰
+- **P12:** 리팩터링한 HF+PEFT 서버(127.0.0.1:8001, M1 v1 어댑터)에 `vllm_bench run --docs 3 --conc 1` → M0·M1 각 3건 원문이 오프라인 dev 출력과 **6/6 동일**, 실패 0, M1 p50 17.7초(`reports/serving/hf_server_refactor_smoke.json`). 서버는 TaskStop 후 포트 8001 닫힘·고아 프로세스 없음 확인.
+- **백업:** CORD 어댑터·예측 원문 18파일을 `H:/dev/invoiceguard-po-backup`에 복사, 해시 일치(`reports/backup_inventory_cord.json`).
+- **상태 문서:** `reports/SESSION_HANDOFF.md` 다시 씀(실행 2·CORD 반영, vLLM 해결, not_run 목록), `IMPLEMENTATION_STATUS.md`·`TASK_BOARD.md`에 실행 2·CORD·P12 반영(G6·G7 갱신, 추가 트랙 표).
+- **평가 의뢰:** `reports/reviews/briefs/review-2-brief.md` + `review_constraints.md`(하드웨어·시간 한계 항목 제외)로 Fable(하위 에이전트)·astra(`consult_astra.py`) 동시 의뢰.
+
 ## 2026-11-15 01:30 — CORD test 판정: 파인튜닝 효과 사전 기준 충족, CI 실패 1회 수정, push
 - **test 실행** (`run_cord_test.sh`, 로컬 4070 NF4, 동결 `configs/frozen_cord_v1.json`, arm마다 1회): M0 00:32–00:53(1,217.7초) · M1-cord 00:53–01:05(669.2초) · M1 v1 01:05–01:22(1,060.4초). 전체 50분.
 - **결과** (`reports/eval/cord_test_*.json`, 펜스 하나만 벗긴 출력): strict M0 **0.689**(729/1,058) · M1 v1 0.215 · M1-cord **0.754**(798/1,058). 형식 무시 0.737 / 0.278 / 0.792. F1 0.640 / 0.363 / 0.822. 미중복 85건 0.671 / 0.200 / 0.734. 펜스 없는 JSON 0/100 · 75/100 · 100/100. 지어낸 필드 264 · 116 · 42.

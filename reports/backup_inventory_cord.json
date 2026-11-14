@@ -1,0 +1,120 @@
+{
+ "created": "2026-11-15T01:39:32",
+ "destination_kind": "local folder outside repo",
+ "scope": "CORD track: M1-cord adapter and every CORD dev/test/regression prediction run (raw responses + run metadata)",
+ "files": 18,
+ "total_bytes": 7110850,
+ "restore_hash_check": "pass",
+ "mismatches": 0,
+ "note": "CORD images/gold are re-buildable from the pinned dataset revision and are not copied",
+ "inventory": [
+  {
+   "path": "artifacts/adapters/m1_cord_v1/adapter_config.json",
+   "bytes": 1001,
+   "sha256": "bd34dea4018228dd0b508faad36ed3ae30476059b337aef349764127635579b3",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/adapters/m1_cord_v1/adapter_model.safetensors",
+   "bytes": 6438952,
+   "sha256": "630d3dd1251f4badf931cc88326483ce3eb0ebcc5cc4ac33ca2330630e58e965",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/adapters/m1_cord_v1/README.md",
+   "bytes": 5348,
+   "sha256": "21d1ca83514603f1023479043d311ef97545ebf87430cc6b90192fb24af9a9e0",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/adapters/m1_cord_v1/run_metadata.json",
+   "bytes": 33251,
+   "sha256": "8da98ba61268168b90788e820f10bc09ac32c6f0977070c7257882845bcfad92",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_dev_m0_nf4/predictions.jsonl",
+   "bytes": 89288,
+   "sha256": "1fefdd42291c04bbe667a4d53a15a2437f8f49671c690dd4443a0c9f981b54e4",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_dev_m0_nf4/run_metadata.json",
+   "bytes": 3591,
+   "sha256": "80cb5ce1f96aa674aab68cf42fccb0b17e88c38eae79b311a919617ddb7ad51e",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_dev_m1v1_nf4/predictions.jsonl",
+   "bytes": 80739,
+   "sha256": "0c85e78d005efc008aaef9c872c639a4e94d2928d93759624babb8584f1c8666",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_dev_m1v1_nf4/run_metadata.json",
+   "bytes": 3685,
+   "sha256": "397dfc7c618f16a1ec33a75c29b0856711bdb2115831f46ea1cb4e86fa31e39f",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_dev_m1cord_nf4/predictions.jsonl",
+   "bytes": 60085,
+   "sha256": "cd9c17e1b81a9a5cf60523ba679f3625307c12794278b7cb17d0a3a94ba9d5ac",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_dev_m1cord_nf4/run_metadata.json",
+   "bytes": 3683,
+   "sha256": "cd23f5066489ea4a03fc524efa377593c35c2105d0752fa47b957abcbe24c52e",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/m1cord_dev_v1/predictions.jsonl",
+   "bytes": 130026,
+   "sha256": "6f87e954dfa92dd5d2c8c5ab34ac4dacffdd6dddd6e44cff2b50524220120d1e",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/m1cord_dev_v1/run_metadata.json",
+   "bytes": 5770,
+   "sha256": "7585f9655f1f1c5a160faae5efbac66d1f046606cb35a6712009ef9f71dc9139",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_test_m0_nf4/predictions.jsonl",
+   "bytes": 97284,
+   "sha256": "0e435d1927fcc08eba77ea2cc8901425f7f502f35b2cc984cca716cb52abfe6f",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_test_m0_nf4/run_metadata.json",
+   "bytes": 3693,
+   "sha256": "9c51eafe15d1f27c1afbe0c6484ded44d80d494ee4ba58738f6a4a970a9c6dee",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_test_m1v1_nf4/predictions.jsonl",
+   "bytes": 84534,
+   "sha256": "8d1e8eb705c0c112ddbdeacf54f638d3fbd0bd0781be95c4990e9c40fd1bf723",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_test_m1v1_nf4/run_metadata.json",
+   "bytes": 3788,
+   "sha256": "38d259ca91c49dd6da449bd133326e5d0cc3d3643a34b5f52d5e365dff8bb075",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_test_m1cord_nf4/predictions.jsonl",
+   "bytes": 62347,
+   "sha256": "4e2fa9ebbf4926e95862bc481afd3ef156e8fafc7924a8ccea35ea03c5f66e70",
+   "restored_sha256_match": true
+  },
+  {
+   "path": "artifacts/predictions/cord_test_m1cord_nf4/run_metadata.json",
+   "bytes": 3785,
+   "sha256": "3448ae8a41f840be1c52c1e51a4eda2d1317c8e96e34370af0c5c5e0eabf988f",
+   "restored_sha256_match": true
+  }
+ ]
+}
