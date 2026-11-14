@@ -94,7 +94,7 @@ What differs between the sets is summarised in [6. Results › Evaluation sets](
 - M1-cord, trained with 742 CORD train photos added, is **+0.065 [+0.027, +0.107] over M0 on test**, and the format-insensitive accuracy (digits and letters only) is +0.055 [+0.019, +0.095]. Both criteria fixed before training (≥ +0.05 with CI lower bound > 0; format-insensitive CI lower bound > 0) are met. On the 85 documents whose gold is not in train it is +0.064 [+0.021, +0.109].
 - On dev it was +0.0497, 0.0003 short of the criterion; no setting was changed after looking at dev.
 - M1 v1, trained only on synthetic invoices, scores **0.47 below the base model** on receipt photos (test −0.474 [−0.543, −0.400]): outside the format it learned, fine-tuning can hurt.
-- On the existing synthetic dev sets M1-cord did not fall below M1 v1 (own dev −0.003, public dev clean +0.033).
+- On the two dev sets named in the criterion, M1-cord stayed within the allowed 0.03 drop against M1 v1 (own dev −0.003, public dev clean +0.033). Of the other five dev sets checked, the largest drop was public dev faded −0.067 (8 documents).
 
 ---
 
@@ -495,8 +495,8 @@ dev results and failure taxonomy: [`dev_summary.md`](reports/eval/dev_summary.md
 On the synthetic sets M1−M0 was not significant, so the same 2B model is trained and evaluated once more on human-labelled receipt photos. The metrics and pass criteria were fixed before training in [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md).
 
 - **Same conditions:** all three arms on the local RTX 4070 Ti SUPER · NF4 · same prompt · same preprocessing · greedy · batch 1. M1-cord was trained on the NF4 base, so it is evaluated on NF4 (adapter–precision pairing check).
-- **Primary metric:** only fields with a gold value, matched by position, exact after NFKC and whitespace collapsing. M0 wrapped every dev answer in a ```` ```json ```` fence, so field scores use the output with that one fence stripped (truncation and syntax errors are not repaired), and the fence-free JSON rate is reported separately as a format metric (amendment 1, made before any CORD training or test run).
-- **Test runs once:** after looking at dev, the settings were frozen in [`configs/frozen_cord_v1.json`](configs/frozen_cord_v1.json); each arm ran test once (2026-11-15 00:32–01:22 KST; M0 20.3 min · M1-cord 11.2 min · M1 v1 17.7 min).
+- **Primary metric:** only fields with a gold value, matched by position, exact after NFKC and whitespace collapsing. M0 wrapped every dev answer in a ```` ```json ```` fence, so field scores use the output with that one fence stripped (truncation and syntax errors are not repaired), and the fence-free JSON rate is reported separately as a format metric (amendment 1, made after seeing 18 M0 dev outputs and before any CORD training or test run; see the record correction in docs/20).
+- **Test runs once:** after looking at dev, the settings were frozen in [`configs/frozen_cord_v1.json`](configs/frozen_cord_v1.json); each arm ran test once (2026-11-15 00:32–01:22 KST; M0 20.3 min · M1-cord 11.2 min · M1 v1 17.7 min). The run guard ([`cord_guard.py`](src/invoiceguard/cord_guard.py)) refuses a second test run of an arm (even after deleting the prediction folder, via the committed scoring report), a set change on a finished run id, and a scorer edited after the freeze; CI checks that the scorer, prompt and manifest still match the frozen hashes ([`test_cord_freeze.py`](tests/test_cord_freeze.py)).
 
 <!-- cord-metrics:start -->
 
@@ -511,7 +511,7 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 | row-count match · whole-document match | 0.67 · 0.01 | 0.32 · 0.00 | **0.83 · 0.33** | 0.63 · 0.02 | 0.28 · 0.00 | **0.77 · 0.33** |
 | inference time | 12.4 s/doc | 12.5 s/doc | 8.2 s/doc | 12.2 s/doc | 10.6 s/doc | 6.7 s/doc |
 
-<sub>Source: `reports/eval/cord_*.json` · scorer [`cord_eval.py`](src/invoiceguard/cord_eval.py). Bold = best value within the same split. M1-cord is faster because it answers without a fence and without invented fields, so it generates fewer tokens.</sub>
+<sub>Source: `reports/eval/cord_*.json` · scorer [`cord_eval.py`](src/invoiceguard/cord_eval.py). Bold = best value within the same split. M1-cord is faster because it answers without a fence and with far fewer invented fields, so it generates fewer tokens.</sub>
 
 <!-- cord-metrics:end -->
 
@@ -610,7 +610,9 @@ reject is allowed from every state except `extracting`, and re-extraction from e
   A timeout quarantines the backend (503) until its health check passes again.
 - **Immutable snapshots:** approval stores a snapshot and its SHA256; export returns only the valid approved snapshot of the current version.<br>
   After a restart, cases left in `extracting` become `failed/INTERRUPTED`.
-- There is **no review UI yet** — only the API, 12 tests and the LIVE demo record.
+- **Row-level review:** besides editing values, a reviewer can add a row the model missed (`add_row`) and delete a row it invented (`delete_row`); rows are renumbered and findings recomputed.
+- **One key per finding:** every finding carries the `key` that `/approve` expects, and each missing PO line gets its own key, so each needs its own reason.
+- There is **no review UI yet** — only the API, 13 tests and the LIVE demo record.
 
 ---
 
@@ -650,7 +652,7 @@ A local, read-only dashboard (the UI is in Korean).
 | Cloud GPU operation | Runpod via MCP: real quote → approval → Pod → SSH and tunnel checks → training → SHA256 backup → delete, about $0.43 (estimate)<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | Extraction accuracy · failure analysis · improvement | per-set evaluator · paired bootstrap, failure taxonomy, one improvement and its **negative result**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | Real-document evaluation · pre-registration | human-labelled CORD v2 receipt photos added as a separate task; metrics and pass criteria fixed before training; content duplicates removed; test frozen and run once<br><sub>[`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) · [`cord_eval.py`](src/invoiceguard/cord_eval.py)</sub> |
-| Automated scoring · regression tests | 160+ pytest tests (rules B01–B12, evaluation E01–E05, API A01–A08, dashboard)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · freeze and hash guards</sub> |
+| Automated scoring · regression tests | 200+ pytest tests (rules B01–B12, evaluation E01–E05, API A01–A08 + row edits, serving core, adapter pairing, CORD scorer, dashboard, README tables)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · freeze and hash guards</sub> |
 | Serving · performance measurement | own Transformers + PEFT GPU server (not a serving framework) — real timeout cancellation and bounded queue, measured<br><sub>[`reports/serving/`](reports/serving)</sub><br>vLLM 0.11.2 on RunPod: continuous batching measured at concurrency 1–8 |
 | OCR / document AI | Tesseract baseline B0<br><sub>general rules built from train/dev only, isolated in Docker</sub> |
 | Table-structured documents · domain rules | renderer for 6 structurally different invoice layouts, PO reconciliation rules |
@@ -673,7 +675,7 @@ A local, read-only dashboard (the UI is in Korean).
 - Serving
   - vLLM was measured only on RunPod. Run 1's accuracy drop was traced (adapter/base precision mismatch) and recovered in run 2 by merging into the dequantised weights; merged files differ slightly between GPUs, so they must be built once and moved by hash.
   - The own HF server has no batching (batch 1, serial worker); batching was measured only with vLLM on RunPod (section 12).
-  - The bench uses 10 documents and one repetition; the serving server has no automated tests of its own, only manual probes.
+  - The bench uses 10 documents and one repetition. The server's queue, deadline and error handling have 6 automated regression tests ([`test_serving_core.py`](tests/test_serving_core.py)), and the refactored GPU server returned raw outputs identical to offline evaluation on 6/6 real requests ([`hf_server_refactor_smoke.json`](reports/serving/hf_server_refactor_smoke.json)); sustained-load tests are not done.
 - Even at the same precision, outputs can diverge on about one document per GPU (last-bit rounding → one greedy token), so comparisons were kept within one GPU ([section 12](#12-cloud-reproduction-on-runpod)).
 - The RunPod reproduction is one seed and one run; its dev parity covers 8 documents. An automatic stop inside the Pod could not be set (permission), so the run was watched until the Pod was deleted.
 - FSDP / DeepSpeed were not used: they are unnecessary for a 2B model on a single GPU ([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
@@ -815,7 +817,7 @@ Rented once more to answer what run 1 left open: why M1's accuracy dropped under
 
 ### Do results differ by GPU? — local 4070 · A40 · L40S
 
-**Conclusion:** accuracy was decided by **precision**, not by the GPU — how the weights were loaded, and whether the adapter sat on the same base it was trained on. With matching precision the three GPUs reached the same accuracy; they differed only in speed, available features (FP8, memory) and cost.
+**Conclusion (on the 20 documents measured):** the large accuracy differences came from **precision**, not from the GPU — how the weights were loaded, and whether the adapter sat on the same base it was trained on. With matching precision the three GPUs agreed except for one diverging document, so a GPU or runtime effect of that size cannot be ruled out; beyond that they differed in speed, available features (FP8, memory) and cost.
 
 **1) Effect of precision** — same GPU (local 4070), the same 20 own dev documents (522 fields), HF reference path
 

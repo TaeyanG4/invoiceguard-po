@@ -78,3 +78,20 @@ def test_real_frozen_adapter_is_nf4():
     if not (d / "run_metadata.json").exists():
         pytest.skip("frozen adapter not present in this checkout (git-ignored artifacts)")
     assert pairing.adapter_base(d)["precision"] == "nf4"
+
+
+def test_local_vllm_up_refuses_the_nf4_adapter_on_the_raw_bf16_base(tmp_path, monkeypatch):
+    """astra review 2: the old vllm_bench up() path attached the NF4-trained adapter to the raw bf16 checkpoint."""
+    from invoiceguard.serving import vllm_bench
+
+    adapter = _adapter(tmp_path, "m1", {"base_revision": REV, "config": {"base_precision": "nf4"}, "env": {}})
+    model = tmp_path / REV
+    model.mkdir()
+    monkeypatch.setattr(vllm_bench, "ADAPTER_DIR", adapter)
+    monkeypatch.setattr(vllm_bench, "MODEL_DIR", model)
+    started = []
+    monkeypatch.setattr(vllm_bench.subprocess, "run", lambda *a, **k: started.append(a))
+    with pytest.raises(pairing.PairingError):
+        vllm_bench.up("none")
+    assert started == []  # refused before any docker command
+    assert vllm_bench.pairing_for_up(allow_mismatch=True)["mismatch_allowed"] is True

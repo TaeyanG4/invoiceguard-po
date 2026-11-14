@@ -66,7 +66,34 @@ class ApiError(Exception):
 
 
 def finding_key(f: dict) -> str:
-    return f"{f['code']}|{f['row_index']}|{f['field']}"
+    """Stable id a reviewer's disposition is attached to. Row-less PO_LINE_NOT_FOUND can occur once per missing PO
+    line, so its key carries the PO SKU — two missing lines need two separate reasons (astra review 2)."""
+    key = f"{f['code']}|{f['row_index']}|{f['field']}"
+    return f"{key}|{f['expected']}" if f["code"] == "PO_LINE_NOT_FOUND" and f["row_index"] is None else key
+
+
+def apply_row_op(current: dict, edit: dict) -> None:
+    """Reviewer adds a row the model missed or deletes a row it invented. Rows are renumbered 1..n in printed
+    order afterwards, so later edits in the same request use the new numbering; findings are recomputed."""
+    items = current.setdefault("items", [])
+    if edit["op"] == "delete_row":
+        idx = edit.get("row_index")
+        if not any(r["row_index"] == idx for r in items):
+            raise ApiError(422, "BAD_ROW", "없는 행입니다.")
+        items[:] = [r for r in items if r["row_index"] != idx]
+    else:
+        values = edit.get("values") or {}
+        after = edit.get("after_row_index", len(items))
+        if not isinstance(values, dict) or set(values) - ROW_FIELDS:
+            raise ApiError(422, "BAD_FIELD", "추가할 행의 필드가 올바르지 않습니다.")
+        if any(v is not None and not isinstance(v, str) for v in values.values()):
+            raise ApiError(422, "BAD_VALUE", "값은 문자열 또는 null이어야 합니다.")
+        if not isinstance(after, int) or not 0 <= after <= len(items):
+            raise ApiError(422, "BAD_ROW", "after_row_index가 범위를 벗어났습니다.")
+        position = next((i + 1 for i, r in enumerate(items) if r["row_index"] == after), 0) if after else 0
+        items.insert(position, {"row_index": None, **{f: values.get(f) for f in sorted(ROW_FIELDS)}})
+    for i, r in enumerate(items, start=1):
+        r["row_index"] = i
 
 
 def csv_safe(value: Any) -> str:
@@ -149,6 +176,8 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None) -> FastAPI:
                              (case["document_id"], case["case_id"])).fetchone()
             findings = reconcile(current, po, "human_review" if source == "review" else "live_model",
                                  duplicate_of_case=dup["case_id"] if dup else None)
+            for f in findings["findings"]:  # the exact key /approve expects in `dispositions`
+                f["key"] = finding_key(f)
             norm = normalization_to_json(normalize_invoice(current))
         db.execute("INSERT INTO case_versions VALUES (?,?,?,?,?,?,?,?)",
                    (case["case_id"], version, source, run_id, json.dumps(current) if current is not None else None,
@@ -312,6 +341,12 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None) -> FastAPI:
                 raise ApiError(409, "NOTHING_TO_REVIEW", "검수할 추출 결과가 없습니다.")
             current = json.loads(ver["current_json"])
             for edit in body.get("edits", []):
+                op = edit.get("op", "set")
+                if op in ("add_row", "delete_row"):
+                    apply_row_op(current, edit)
+                    continue
+                if op != "set":
+                    raise ApiError(422, "BAD_OP", "op는 set, add_row, delete_row 중 하나입니다.")
                 field, value = edit.get("field"), edit.get("value")
                 if value is not None and not isinstance(value, str):
                     raise ApiError(422, "BAD_VALUE", "값은 문자열 또는 null이어야 합니다.")

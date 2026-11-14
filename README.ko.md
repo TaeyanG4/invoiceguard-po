@@ -94,7 +94,7 @@
 - CORD train 742장을 더해 학습한 M1-cord는 **test에서 M0보다 +0.065 [+0.027, +0.107]**이고, 숫자·글자만 비교하는 형식 무시 정확도도 +0.055 [+0.019, +0.095]입니다. 학습 전에 정한 두 기준(+0.05 이상이고 CI 하한 > 0, 형식 무시 차이의 CI 하한 > 0)을 모두 충족했습니다. train과 정답이 겹치지 않는 85건에서도 +0.064 [+0.021, +0.109]입니다.
 - dev에서는 +0.0497로 기준에 0.0003 모자랐고, dev 결과를 보고 바꾼 설정은 없습니다.
 - 합성 인보이스로만 학습한 M1 v1은 영수증 사진에서 기본 모델보다 **0.47 낮습니다**(test −0.474 [−0.543, −0.400]). 학습한 형식 밖에서는 파인튜닝이 오히려 해가 될 수 있다는 사례입니다.
-- 기존 합성 dev 세트에서는 M1-cord가 M1 v1보다 떨어지지 않았습니다(자체 dev −0.003, 공개 dev clean +0.033).
+- 기준에 정한 dev 두 세트에서 M1-cord는 M1 v1 대비 허용 하락(0.03) 안이었습니다(자체 dev −0.003, 공개 dev clean +0.033). 함께 확인한 나머지 dev 5세트 중 가장 크게 떨어진 것은 공개 dev faded −0.067(8문서)입니다.
 
 ---
 
@@ -493,8 +493,8 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 합성 세트에서는 M1−M0가 유의하지 않았습니다. 그래서 사람이 라벨을 단 실사진 영수증으로 같은 2B 모델을 한 번 더 학습하고 평가합니다. 지표와 통과 기준은 학습 전에 [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)에 고정했습니다.
 
 - **같은 조건:** 세 arm 모두 로컬 RTX 4070 Ti SUPER · NF4 · 같은 프롬프트 · 같은 전처리 · greedy · batch 1입니다. M1-cord는 NF4 위에서 학습했으므로 NF4에서 평가합니다(어댑터·정밀도 짝 검사).
-- **주 지표:** 정답에 값이 있는 필드만 위치대로 맞춰 NFKC · 공백 정리 후 완전 일치. M0가 dev 답을 모두 ```` ```json ````로 감싸서, 필드 점수는 펜스 하나만 벗긴 출력으로 계산하고(잘림 · 문법 오류는 고치지 않음) 펜스 없는 JSON 비율은 형식 지표로 따로 둡니다(학습·test 전에 정한 수정 1).
-- **test는 한 번만:** dev를 본 뒤 [`configs/frozen_cord_v1.json`](configs/frozen_cord_v1.json)에 설정을 동결했고, arm마다 한 번 실행했습니다(2026-11-15 00:32–01:22, M0 20.3분 · M1-cord 11.2분 · M1 v1 17.7분).
+- **주 지표:** 정답에 값이 있는 필드만 위치대로 맞춰 NFKC · 공백 정리 후 완전 일치. M0가 dev 답을 모두 ```` ```json ````로 감싸서, 필드 점수는 펜스 하나만 벗긴 출력으로 계산하고(잘림 · 문법 오류는 고치지 않음) 펜스 없는 JSON 비율은 형식 지표로 따로 둡니다(M0 dev 출력 18건을 본 뒤, CORD 학습·test 전에 정한 수정 1 — docs/20의 기록 정정 참고).
+- **test는 한 번만:** dev를 본 뒤 [`configs/frozen_cord_v1.json`](configs/frozen_cord_v1.json)에 설정을 동결했고, arm마다 한 번 실행했습니다(2026-11-15 00:32–01:22, M0 20.3분 · M1-cord 11.2분 · M1 v1 17.7분). 실행 가드([`cord_guard.py`](src/invoiceguard/cord_guard.py))는 같은 arm의 두 번째 test 실행(예측 폴더를 지워도 커밋된 채점 보고서로 막음), 끝난 실행 ID의 세트 변경, 동결 뒤 바뀐 채점기를 거부하고, CI가 채점기 · 프롬프트 · manifest가 동결 해시와 같은지 검사합니다([`test_cord_freeze.py`](tests/test_cord_freeze.py)).
 
 <!-- cord-metrics:start -->
 
@@ -509,7 +509,7 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 | 행 수 일치 · 문서 전체 일치 | 0.67 · 0.01 | 0.32 · 0.00 | **0.83 · 0.33** | 0.63 · 0.02 | 0.28 · 0.00 | **0.77 · 0.33** |
 | 추론 시간 | 12.4초/문서 | 12.5초/문서 | 8.2초/문서 | 12.2초/문서 | 10.6초/문서 | 6.7초/문서 |
 
-<sub>원본: `reports/eval/cord_*.json` · 채점기 [`cord_eval.py`](src/invoiceguard/cord_eval.py). 굵게 = 같은 split에서 가장 좋은 값. M1-cord의 추론이 짧은 것은 펜스와 지어낸 필드 없이 답해 토큰이 적기 때문입니다.</sub>
+<sub>원본: `reports/eval/cord_*.json` · 채점기 [`cord_eval.py`](src/invoiceguard/cord_eval.py). 굵게 = 같은 split에서 가장 좋은 값. M1-cord의 추론이 짧은 것은 펜스 없이, 지어낸 필드도 훨씬 적게 답해 토큰이 적기 때문입니다.</sub>
 
 <!-- cord-metrics:end -->
 
@@ -608,7 +608,9 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
   타임아웃이 나면 백엔드를 격리(503)하고, health check가 통과하면 풉니다.
 - **불변 스냅샷:** 승인 시 스냅샷과 SHA256을 저장하고, export는 현재 버전의 유효한 승인 스냅샷만 돌려줍니다.<br>
   재시작하면 `extracting`에 남은 케이스는 `failed/INTERRUPTED`로 바뀝니다.
-- 검수용 **화면 UI는 아직 없습니다.** API, 테스트 12개, LIVE 종단 시연 기록만 있습니다.
+- **행 단위 수정:** 값 수정 외에, 모델이 빠뜨린 행을 추가(`add_row`)하고 지어낸 행을 삭제(`delete_row`)할 수 있습니다. 행 번호는 다시 매기고 대사 경고는 새로 계산합니다.
+- **경고마다 고유 키:** 각 경고에 승인 사유를 붙일 `key`가 들어 있고, 발주서 행이 여러 개 빠지면 경고마다 따로 사유를 받습니다.
+- 검수용 **화면 UI는 아직 없습니다.** API, 테스트 13개, LIVE 종단 시연 기록만 있습니다.
 
 ---
 
@@ -648,7 +650,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 | 클라우드 GPU 운영 | MCP로 Runpod 운영: 실제 견적 → 승인 → Pod → SSH · 터널 검사 → 학습 → SHA256 백업 → 삭제, 약 $0.43(추정)<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | 추출 정확도 · 실패 분석 · 개선 | 세트별 평가기 · paired bootstrap, 실패 분류, 개선 1건과 **음성 결과**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | 실문서 평가 · 사전 등록 | 사람 라벨 실사진 영수증 CORD v2를 별도 태스크로 추가, 지표·통과 기준을 학습 전에 고정, 내용 중복 제거, test 1회 동결<br><sub>[`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) · [`cord_eval.py`](src/invoiceguard/cord_eval.py)</sub> |
-| 자동 채점 · 회귀 테스트 | pytest 160개 이상(규칙 B01–B12, 평가 E01–E05, API A01–A08, 대시보드)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · 동결 · 해시 가드</sub> |
+| 자동 채점 · 회귀 테스트 | pytest 200개 이상(규칙 B01–B12, 평가 E01–E05, API A01–A08 + 행 수정, 서빙 코어, 어댑터 짝 검사, CORD 채점기, 대시보드, README 표)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · 동결 · 해시 가드</sub> |
 | 서빙 · 성능 측정 | 직접 만든 Transformers + PEFT GPU 서버(서빙 프레임워크 아님) — 실제 타임아웃 취소 · bounded queue 실측<br><sub>[`reports/serving/`](reports/serving)</sub><br>RunPod에서 vLLM 0.11.2: 동시성 1–8의 연속 배칭 측정 |
 | OCR / 문서 AI | Tesseract 기준선 B0<br><sub>train/dev만 보고 만든 일반 규칙, Docker 격리</sub> |
 | 표 구조 문서 · 도메인 규칙 | 구조가 다른 인보이스 레이아웃 6종 렌더러, PO 대사 규칙 |
@@ -671,7 +673,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 - 서빙
   - vLLM은 RunPod에서만 측정했습니다. 실행 1의 정확도 저하는 원인(어댑터·기본 모델 정밀도 불일치)을 찾아 실행 2에서 역양자화 병합으로 회복했지만, 병합본은 GPU마다 비트가 조금 다르므로 한 곳에서 만들어 해시로 옮겨야 합니다.
   - 직접 만든 HF 서버는 배칭이 없습니다(batch 1, 직렬 작업자). 배칭은 RunPod의 vLLM에서만 측정했습니다(12장).
-  - 벤치는 문서 10장 · 반복 1회이고, 서빙 서버 자체의 자동 테스트 없이 수동 probe만 있습니다.
+  - 벤치는 문서 10장 · 반복 1회입니다. 서버의 대기열 · 데드라인 · 오류 처리는 자동 회귀 테스트 6개가 있고([`test_serving_core.py`](tests/test_serving_core.py)), 리팩터링한 GPU 서버는 실제 요청 6건에서 원문이 오프라인 평가와 6/6 같았습니다([`hf_server_refactor_smoke.json`](reports/serving/hf_server_refactor_smoke.json)). 장시간 부하 테스트는 하지 않았습니다.
 - 같은 정밀도에서도 GPU마다 출력이 문서 1건 정도 갈릴 수 있습니다(소수점 끝자리 차이 → greedy 토큰 하나). 그래서 비교는 한 GPU 안에서만 했습니다([12장](#12-runpod-클라우드-재현)).
 - RunPod 재현은 seed 1개 · 1회이고, dev parity는 8건입니다. Pod 안 자동 정지는 권한 문제로 걸지 못해, Pod를 삭제할 때까지 지켜보며 진행했습니다.
 - FSDP / DeepSpeed는 2B 모델 · 단일 GPU에서 필요가 없어 쓰지 않았습니다([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
@@ -813,7 +815,7 @@ flowchart TB
 
 ### GPU마다 결과가 다른가 — 로컬 4070 · A40 · L40S
 
-**결론:** 정확도를 정한 것은 GPU가 아니라 **정밀도**였습니다. 가중치를 어떤 형식으로 올렸는지, 어댑터를 학습할 때와 같은 기본 모델에 붙였는지가 결과를 갈랐습니다. 정밀도를 맞추면 세 GPU의 정확도는 같은 수준이었고, GPU는 속도 · 쓸 수 있는 기능(FP8 · 메모리) · 비용에서만 달랐습니다.
+**결론 (측정한 20문서 범위):** 큰 정확도 차이를 만든 것은 GPU가 아니라 **정밀도**였습니다. 가중치를 어떤 형식으로 올렸는지, 어댑터를 학습할 때와 같은 기본 모델에 붙였는지가 결과를 갈랐습니다. 정밀도를 맞추면 세 GPU는 문서 1건이 갈린 것 말고는 같았습니다. 그래서 그 정도 크기의 GPU · 실행 환경 영향은 배제할 수 없고, 그 밖에는 속도 · 쓸 수 있는 기능(FP8 · 메모리) · 비용에서 달랐습니다.
 
 **1) 정밀도의 영향** — 같은 GPU(로컬 4070), 같은 자체 dev 20건(필드 522개), HF 기준 경로
 

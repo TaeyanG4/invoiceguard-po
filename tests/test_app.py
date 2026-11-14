@@ -221,3 +221,35 @@ def test_bad_dispositions_are_422_not_500(make):
     case = new_case(client)
     client.post(f"/api/cases/{case}/extract", json={"expected_version": 0})
     assert client.post(f"/api/cases/{case}/approve", json={"expected_version": 1, "dispositions": ["x"]}).status_code == 422
+
+
+def test_reviewer_can_delete_and_add_rows_and_po_line_warnings_have_their_own_keys(make):
+    """astra review 2: a reviewer must be able to remove an invented row and restore a missed one; findings carry the
+    exact key that /approve expects, and each missing PO line gets its own key."""
+    from invoiceguard.app.api import finding_key
+
+    _, client, _ = make(Scripted(json.dumps(INVOICE)))
+    case = new_case(client)
+    v = client.post(f"/api/cases/{case}/extract", json={"expected_version": 0}).json()["version"]
+    row2 = {k: v2 for k, v2 in INVOICE["items"][1].items() if k != "row_index"}
+    gone = client.put(f"/api/cases/{case}/review", json={"expected_version": v, "reason": "row 2 is a duplicate print",
+                      "edits": [{"op": "delete_row", "row_index": 2}]})
+    assert gone.status_code == 200, gone.text
+    keys = [f["key"] for f in gone.json()["findings"]]
+    assert f"PO_LINE_NOT_FOUND|None|sku|{PO['items'][1]['sku']}" in keys
+    assert len(client.get(f"/api/cases/{case}").json()["current"]["items"]) == 1
+    back = client.put(f"/api/cases/{case}/review", json={"expected_version": gone.json()["version"], "reason": "row was printed",
+                      "edits": [{"op": "add_row", "after_row_index": 1, "values": row2}]})
+    assert back.status_code == 200, back.text
+    items = client.get(f"/api/cases/{case}").json()["current"]["items"]
+    assert [r["row_index"] for r in items] == [1, 2] and items[1]["sku_raw"] == row2["sku_raw"]
+    assert "PO_LINE_NOT_FOUND" not in [f["code"] for f in back.json()["findings"]]
+    disp = {f["key"]: {"decision": "confirmed_variance", "reason": "agreed"} for f in back.json()["findings"]}
+    ok = client.post(f"/api/cases/{case}/approve", json={"expected_version": back.json()["version"], "dispositions": disp})
+    assert ok.status_code == 200, ok.text
+    bad = client.put(f"/api/cases/{case}/review", json={"expected_version": back.json()["version"], "reason": "x",
+                     "edits": [{"op": "add_row", "values": {"not_a_field": "1"}}]})
+    assert bad.status_code == 422
+    a = {"code": "PO_LINE_NOT_FOUND", "row_index": None, "field": "sku", "expected": "A-1"}
+    assert finding_key(a) != finding_key(a | {"expected": "B-2"})
+    assert finding_key({"code": "QTY_DIFF", "row_index": 1, "field": "quantity", "expected": "3"}) == "QTY_DIFF|1|quantity"

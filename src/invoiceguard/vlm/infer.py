@@ -73,30 +73,7 @@ def check_frozen(fp: dict) -> list[str]:
     return errors
 
 
-FROZEN_CORD = REPO / "configs" / "frozen_cord_v1.json"
-
-
-def check_cord_frozen(fp: dict, run_id: str | None) -> list[str]:
-    """cord:test runs once per frozen arm (docs/20): same generation settings, manifest, prompt and an allowed adapter."""
-    if not FROZEN_CORD.exists():
-        return ["frozen_cord_config_missing"]
-    frozen = json.loads(FROZEN_CORD.read_text(encoding="utf-8"))
-    errors = [f"frozen_mismatch:{k}" for k in ("model_revision", "max_pixels", "max_new_tokens", "do_sample", "precision",
-                                               "batch_size", "padding_side") if frozen["generation"].get(k) != fp.get(k)]
-    if frozen["cord_prompt_sha256"] != fp.get("cord_prompt_sha256"):
-        errors.append("frozen_mismatch:cord_prompt_sha256")
-    if frozen["cord_manifest_sha256"] != fp.get("cord_manifest_sha256"):
-        errors.append("frozen_mismatch:cord_manifest_sha256")
-    arms = frozen["arms"]  # name -> {"arm": m0|m1, "adapter_sha256": ...}
-    if not any(a["arm"] == fp["arm"] and a.get("adapter_sha256") == fp.get("adapter_sha256") for a in arms.values()):
-        errors.append("arm_or_adapter_not_frozen")
-    for meta_path in (REPO / "artifacts" / "predictions").glob("*/run_metadata.json"):  # test runs once per arm
-        old = json.loads(meta_path.read_text(encoding="utf-8"))
-        same_arm = old.get("fingerprint", {}).get("adapter_sha256") == fp.get("adapter_sha256") \
-            and old.get("fingerprint", {}).get("arm") == fp["arm"]
-        if "cord:test" in (old.get("sets") or []) and same_arm and old.get("run_id") != run_id:
-            errors.append(f"cord_test_already_run:{old.get('run_id')}")
-    return errors
+from ..cord_guard import FROZEN_CORD, check_cord_frozen, check_run_sets  # noqa: E402,F401 - torch-free, CPU-tested
 
 
 @torch.inference_mode()
@@ -204,6 +181,9 @@ def main() -> int:
         old = json.loads(meta_path.read_text(encoding="utf-8"))
         if old["fingerprint"] != fp:
             raise SystemExit("run-id exists with a different config; use a new run-id")
+        sets_problem = check_run_sets(meta_path, args.set)
+        if sets_problem:
+            raise SystemExit(sets_problem)
     done = set()
     if pred_path.exists():
         done = {json.loads(l)["id"] for l in pred_path.read_text(encoding="utf-8").splitlines() if l.strip()}

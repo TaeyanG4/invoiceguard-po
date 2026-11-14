@@ -32,7 +32,18 @@ TARGET = {"port": PORT, "conc": (1, 2, 4, 8), "arms": ("m0", "m1")}  # overridab
 MAX_TOKENS = 1536
 
 
-def up(quant: str) -> None:
+def pairing_for_up(allow_mismatch: bool = False) -> dict:
+    """up() serves the raw bf16 checkpoint with the LoRA adapter attached (--enable-lora). The M1 adapter was trained
+    on the NF4 base, so this pairing is refused (P15; run 1 lost 0.960 -> 0.849 this way) unless explicitly allowed
+    for a precision experiment. The fixed path is the dequantised-NF4 merge served without LoRA (reports/runpod2/)."""
+    from ..vlm.pairing import check
+    return check(ADAPTER_DIR, "bf16", MODEL_DIR.name, MODEL_DIR, allow_mismatch=allow_mismatch)
+
+
+def up(quant: str, allow_mismatch: bool = False) -> None:
+    pairing = pairing_for_up(allow_mismatch)  # raises PairingError before any container starts
+    if pairing["mismatch_allowed"]:
+        print("WARNING: serving an adapter on a base it was not trained on (exploratory): " + "; ".join(pairing["problems"]))
     subprocess.run(["docker", "rm", "-f", CONTAINER], capture_output=True)
     args = ["docker", "run", "-d", "--name", CONTAINER, "--gpus", "all", "--ipc", "host",
             "-p", f"127.0.0.1:{PORT}:8000",  # loopback only; never 0.0.0.0
@@ -178,11 +189,13 @@ def main() -> int:
     parser.add_argument("--port", type=int, default=PORT)
     parser.add_argument("--conc", default="1,2,4,8")
     parser.add_argument("--arms", default="m0,m1", help="which served models to measure: m0 = served name base, m1 = served name m1")
+    parser.add_argument("--allow-precision-mismatch", action="store_true",
+                        help="exploratory only: serve the NF4-trained adapter on the bf16 base (reproduces run 1)")
     args = parser.parse_args()
     TARGET["port"], TARGET["conc"] = args.port, tuple(int(x) for x in args.conc.split(","))
     TARGET["arms"] = tuple(args.arms.split(","))
     if args.command == "up":
-        up(args.quant)
+        up(args.quant, args.allow_precision_mismatch)
     elif args.command == "down":
         down()
     else:
