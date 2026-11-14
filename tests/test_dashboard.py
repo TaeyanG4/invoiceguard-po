@@ -61,14 +61,15 @@ def test_server_binds_loopback_only_by_default():
 
 
 def test_static_page_has_no_external_urls_and_no_markup_sinks():
-    for name in ("index.html", "app.js", "app.css"):
+    for name in ("index.html", "app.js", "app.css", "theme.js"):
         text = (ds.STATIC_DIR / name).read_text(encoding="utf-8")
         assert "http://" not in text and "https://" not in text and "//cdn" not in text, name
-    js = (ds.STATIC_DIR / "app.js").read_text(encoding="utf-8")
-    for sink in ("innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "eval(", "new Function"):
-        assert sink not in js, sink
+    for script in ("app.js", "theme.js"):
+        js = (ds.STATIC_DIR / script).read_text(encoding="utf-8")
+        for sink in ("innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "eval(", "new Function"):
+            assert sink not in js, (script, sink)
     html = (ds.STATIC_DIR / "index.html").read_text(encoding="utf-8")
-    assert set(re.findall(r'(?:src|href)="([^"#]+)"', html)) == {"/static/app.css", "/static/app.js"}
+    assert set(re.findall(r'(?:src|href)="([^"#]+)"', html)) == {"/static/app.css", "/static/app.js", "/static/theme.js"}
     for label in ("개요", "진행 단계·게이트", "공개 데이터", "자체 Invoice–PO", "분할·manifest", "모델·학습",
                   "RunPod 비용·승인", "테스트", "검수 앱"):
         assert label in html
@@ -207,3 +208,19 @@ def test_public_doc_and_image_endpoints(server):
     assert status == 200 and headers["Content-Type"] == "image/png"
     assert hashlib.sha256(png).hexdigest() == row["image_sha256"] and cached.exists()
     assert _get(server, f"/api/public/image/{row['base_id']}/bad_scan")[2] == png  # served from cache
+
+
+
+def test_theme_toggle_light_and_dark():
+    html = (ds.STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    css = (ds.STATIC_DIR / "app.css").read_text(encoding="utf-8")
+    js = (ds.STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    assert 'id="themetoggle"' in html
+    assert html.index("/static/theme.js") < html.index("/static/app.css")  # applied before first paint
+    assert ':root[data-theme="dark"]' in css and ':root:not([data-theme="light"])' in css  # explicit choice beats OS
+    assert "localStorage" in js and "try {" in js  # remembered, but never required
+
+
+def test_theme_script_is_served(server):
+    status, headers, body = _get(server, "/static/theme.js")
+    assert status == 200 and headers["Content-Type"].startswith("text/javascript") and b"ig-theme" in body

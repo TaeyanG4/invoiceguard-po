@@ -1,7 +1,9 @@
-:root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#667085;--line:#e4e7ec;--acc:#2f5bd3;--side:#fff;--hatch:#f3f4f6;
+:root{color-scheme:light;--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#667085;--line:#e4e7ec;--acc:#2f5bd3;--side:#fff;--hatch:#f3f4f6;
 --ok:#1f7a4d;--okb:#e3f4ea;--run:#2f5bd3;--runb:#e6edfc;--warn:#9a6200;--warnb:#fdf1d8;--bad:#b42318;--badb:#fde5e3;--idle:#5d6677;--idleb:#eef0f3}
-@media (prefers-color-scheme:dark){:root{--bg:#11141a;--card:#1a1f27;--ink:#e6e9ef;--mute:#98a2b3;--line:#2a313c;--acc:#7ea2ff;--side:#151a21;--hatch:#20262f;
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#11141a;--card:#1a1f27;--ink:#e6e9ef;--mute:#98a2b3;--line:#2a313c;--acc:#7ea2ff;--side:#151a21;--hatch:#20262f;
 --ok:#6fd39c;--okb:#173326;--run:#9db7ff;--runb:#1d2a4a;--warn:#f4c46b;--warnb:#3a2d12;--bad:#ff8a80;--badb:#3d1b19;--idle:#aab3c2;--idleb:#252b35}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#11141a;--card:#1a1f27;--ink:#e6e9ef;--mute:#98a2b3;--line:#2a313c;--acc:#7ea2ff;--side:#151a21;--hatch:#20262f;
+--ok:#6fd39c;--okb:#173326;--run:#9db7ff;--runb:#1d2a4a;--warn:#f4c46b;--warnb:#3a2d12;--bad:#ff8a80;--badb:#3d1b19;--idle:#aab3c2;--idleb:#252b35}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:14px/1.5 "Segoe UI","Malgun Gothic",system-ui,sans-serif}
@@ -10,6 +12,9 @@ a{color:var(--acc)}
 .sidebar{background:var(--side);border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
 .brand{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 8px 6px}
 .brand b{display:block;font-size:15px}.brand small{display:block;color:var(--mute);font-size:12px}
+.themetoggle{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.themetoggle:hover{background:var(--idleb)}
+.brandbtns{display:flex;gap:6px;align-items:center}
 .navtoggle{display:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:5px 12px;font:inherit;cursor:pointer}
 nav{display:flex;flex-direction:column;gap:2px}
 nav a{display:block;padding:7px 10px;border-radius:8px;color:var(--ink);text-decoration:none}

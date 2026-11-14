@@ -582,6 +582,30 @@
     const open = sidebar.classList.toggle("open");
     toggle.setAttribute("aria-expanded", open ? "true" : "false");
   });
+  // ---- light/dark toggle: explicit choice wins over the OS setting and is remembered per browser
+  const themeBtn = document.getElementById("themetoggle");
+  const osDark = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function currentTheme() {
+    const explicit = document.documentElement.getAttribute("data-theme");
+    if (explicit === "light" || explicit === "dark") return explicit;
+    return osDark && osDark.matches ? "dark" : "light";
+  }
+  function paintThemeButton() {
+    const dark = currentTheme() === "dark";
+    themeBtn.textContent = dark ? "☀ 라이트 모드" : "☾ 다크 모드";
+    themeBtn.setAttribute("aria-pressed", dark ? "true" : "false");
+    themeBtn.setAttribute("aria-label", dark ? "라이트 모드로 전환" : "다크 모드로 전환");
+  }
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const next = currentTheme() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { window.localStorage.setItem("ig-theme", next); } catch (e) { /* not remembered, still applied */ }
+      paintThemeButton();
+    });
+    if (osDark && osDark.addEventListener) osDark.addEventListener("change", paintThemeButton);
+    paintThemeButton();
+  }
   window.addEventListener("hashchange", route);
   route();
 })();
