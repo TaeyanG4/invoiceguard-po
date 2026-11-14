@@ -21,7 +21,7 @@ from pathlib import Path
 import torch
 
 from . import MODEL_DIR, MODEL_ID, MODEL_REVISION, REPO
-from .records import cord_records, public_records, trade_records
+from .records import cord_records, cord_unit_price_records, public_records, trade_records
 from .sft import IGNORE, encode, load_processor
 
 SEED = 20261113
@@ -71,9 +71,10 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=SEED, help="seed variance runs (P6); the frozen M1 used 20261113")
     parser.add_argument("--base-precision", choices=["nf4", "bf16"], default="nf4",
                         help="nf4 = QLoRA (frozen recipe); bf16 = plain LoRA on the unquantised base (P14)")
-    parser.add_argument("--data", choices=["all", "public_only", "all_plus_cord"], default="all",
+    parser.add_argument("--data", choices=["all", "public_only", "all_plus_cord", "all_plus_cord_up"], default="all",
                         help="P6 ablation: public_only drops the own TRADE_RAW training documents; "
-                             "all_plus_cord adds the train-eligible CORD v2 receipts (docs/20)")
+                             "all_plus_cord adds the train-eligible CORD v2 receipts (docs/20); all_plus_cord_up also repeats the "
+                             "CORD receipts with a printed unit price once (docs/20 amendment 3, exploratory)")
     args = parser.parse_args()
     seed = args.seed
 
@@ -84,9 +85,11 @@ def main() -> int:
     from .smoke import _env
 
     role_field = f"{args.profile}_role"
-    records = public_records(role_field) + (trade_records(role_field) if args.data in ("all", "all_plus_cord") else [])
-    if args.data == "all_plus_cord":
+    records = public_records(role_field) + (trade_records(role_field) if args.data in ("all", "all_plus_cord", "all_plus_cord_up") else [])
+    if args.data in ("all_plus_cord", "all_plus_cord_up"):
         records += cord_records("train")
+    if args.data == "all_plus_cord_up":
+        records += cord_unit_price_records()
     if args.with_aug1:
         records += trade_records(role_field, "train", manifest="trade_raw_aug1.jsonl")
     random.Random(seed).shuffle(records)

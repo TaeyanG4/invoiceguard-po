@@ -103,3 +103,13 @@ def cord_records(split: str, train_only_eligible: bool = True) -> list[Record]:
         rows = [r for r in rows if r["train_eligible"]]
     return [Record(r["id"], "CORD_RAW", OUT_DIR / "images" / f"{r['id']}.png", dump_answer(load_gold(r["id"])), split)
             for r in rows]
+
+
+def cord_unit_price_records() -> list[Record]:
+    """docs/20 amendment 3 (exploratory, dev only): the train-eligible CORD receipts whose gold has at least one printed
+    unit price, used as a second copy to up-weight them. On dev, M1-cord left 8 printed unit prices null on rows it did
+    emit (usually when the unit price equals the line total, or printed with "@")."""
+    from ..cord import load_gold
+
+    return [r for r in cord_records("train")
+            if any(it.get("unit_price") is not None for it in load_gold(r.record_id).get("items") or [])]
