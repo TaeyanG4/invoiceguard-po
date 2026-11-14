@@ -11,7 +11,7 @@
 
 - **Model:** Qwen3-VL-2B-Instruct (NF4) + a QLoRA adapter — trained, evaluated and served on one local GPU
 - **Data:** synthetic only. Public InvoiceOCR-Synth plus self-generated Invoice–PO documents; no claim is made about real company or customs documents.
-- **Reproducibility:** every evaluation number (training · dev · final · paired CI) is reproduced by the scripts in this repository.
+- **Reproducibility:** every evaluation number (training · dev · final · paired CI) is produced by the scripts in this repository, given the pinned dataset revision, base-model revision and seed. Data and weights are downloaded, not stored here, and training ran with a single seed.
 - **Honesty:** anything that was not run is recorded as `not_run` / `blocked`.
 
 ![Admin dashboard — overview](docs/images/dashboard-overview.png)
@@ -49,7 +49,7 @@ What differs between the sets is summarised in [6. Results › Evaluation sets](
 | Public OOD clean<br><sub>freelancer template · 20 docs</sub> | 0.000 ² | 0.000 ¹ | **0.973** |
 
 <sub>Values: strict field accuracy, FINAL (evaluated once after the settings were frozen).<br>
-¹ M0 wrapped all 120 public-set outputs in ```` ```json ```` code fences, so strict JSON parsing failed. Scored after stripping the fences (lenient), it reaches 0.00–0.82. The most likely cause is that the public prompt lacks a "no Markdown" instruction (see section 6).<br>
+¹ M0 wrapped all 120 public-set outputs in ```` ```json ```` code fences, so strict JSON parsing failed. Scored after stripping the fences (lenient), it reaches 0.00–0.82. The base model tends to add these fences; section 6 shows what was checked.<br>
 ² B0's rules do not contain the freelancer template's table-header words (v1.2), so it found no item rows in any of the 60 documents.<br>
 ³ M1−M0 = +0.024 [−0.001, 0.050], not significant. ⁴ M1−B0 = +0.149 [−0.15, 0.42], not significant.</sub>
 
@@ -376,14 +376,16 @@ M1 scores higher on OOD clean than on IID clean because this OOD is one template
 | **M0** | format failure<br><sub>it does read</sub> | all 120 public outputs start with ```` ```json ```` → strict JSON fails<br><sub>the same M0 produced plain JSON on the 40 own test documents and scored 0.897</sub> |
 | **B0** | recognition failure<br><sub>no table found</sub> | 0 item rows extracted on all 60 OOD documents<br><sub>its rules find the table by header words, so unseen layouts break it (on the own test, 22 of 40 documents also had 0 rows)</sub> |
 
-**Why does M0 do well only on the own test set?**
-- The two groups use different prompts.
-  - Own data, [`EXTRACT_V1.txt`](prompts/EXTRACT_V1.txt): "Return only one JSON object, **without Markdown** or commentary."
-  - Public data, [`EXTRACT_PUBLIC_CANONICAL.txt`](prompts/EXTRACT_PUBLIC_CANONICAL.txt): "Return one JSON object only" — no instruction against Markdown.
-- The same M0 returned plain JSON 40/40 times with the first prompt and fenced output 120/120 times with the second; that wording is the most likely cause.
-- Prompts are frozen, so they were not changed after the final run. M0's strict score on the public sets is therefore depressed by format; read its reading ability from the lenient column.
-- Even with fences stripped, scores on degraded documents stay low (OOD faded 0.000 · bad_scan 0.058) — reading itself is weak on degraded scans.
-- M1 was trained with the same prompts and learned to answer without fences, so its gain on the public sets is heavily mixed with this format effect.
+**Why does M0 score on the own test set but not on the public sets?**
+- M0 (the base model) tends to wrap its JSON in ```` ```json ```` fences, and strict scoring counts a fenced answer as unparsable.
+- Whether it does so depends on the input, not only on the prompt:
+  - Own test — clean renders, prompt [`EXTRACT_V1.txt`](prompts/EXTRACT_V1.txt) says "without Markdown": plain JSON **40/40**.
+  - Own dev stress — the same prompt on degraded images: plain JSON on only **0–17 %** of documents ([`dev_summary.md`](reports/eval/dev_summary.md)).
+  - Public sets — prompt [`EXTRACT_PUBLIC_CANONICAL.txt`](prompts/EXTRACT_PUBLIC_CANONICAL.txt) has no Markdown instruction: fenced **120/120**.
+- Before the freeze, adding "without Markdown code fences" to the public prompt was tried on 4 training images. Strict validity stayed 0/4 (3 of 4 still fenced), so the public prompt was kept ([`s2_prompt_ab_train.json`](reports/model/s2_prompt_ab_train.json), [`frozen_v1.json`](configs/frozen_v1.json)). The cause is not established.
+- In practice a one-line fence-stripping step would recover most of M0's score. It was not added because strict JSON is the frozen contract, so read M0's reading ability from the lenient column.
+- Even with fences stripped, M0 stays low on degraded public documents (OOD faded 0.000 · bad_scan 0.058) — reading itself is weak there.
+- M1 learned to answer without fences, so its gain over M0 on the public sets mixes this format effect with reading ability. On the own test set, where M0 already answers in plain JSON, M1−M0 is not significant.
 
 ### Paired differences (same documents, A − B)
 
@@ -509,7 +511,7 @@ A local, read-only dashboard (the UI is in Korean).
 | Training correctness checks | loss-mask audit 360/360, 10-step smoke, reload parity<br><sub>[`reports/model/`](reports/model)</sub> |
 | Extraction accuracy · failure analysis · improvement | per-set evaluator · paired bootstrap, failure taxonomy, one improvement and its **negative result**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | Automated scoring · regression tests | 160+ pytest tests (rules B01–B12, evaluation E01–E05, API A01–A08, dashboard)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · freeze and hash guards</sub> |
-| Serving · performance measurement | Transformers + PEFT GPU server — real timeout cancellation and bounded queue, measured<br><sub>[`reports/serving/`](reports/serving) · vLLM blocked</sub> |
+| Serving · performance measurement | own Transformers + PEFT GPU server (not a serving framework) — real timeout cancellation and bounded queue, measured<br><sub>[`reports/serving/`](reports/serving) · vLLM blocked</sub> |
 | OCR / document AI | Tesseract baseline B0<br><sub>general rules built from train/dev only, isolated in Docker</sub> |
 | Table-structured documents · domain rules | renderer for 6 structurally different invoice layouts, PO reconciliation rules |
 | Service integration | review API: extraction CAS, protection against late responses, approved-snapshot export |
@@ -526,7 +528,7 @@ A local, read-only dashboard (the UI is in Korean).
 - Synthetic data only, and small samples.
   - 20 base documents per public set, 40 own test documents, 1–10 cases per alert code
   - The degradation stress set is dev-only.
-- M0's low strict score is largely a format effect. The public prompt lacked a "no Markdown" instruction and, being frozen, was not changed.
+- M0's low strict score is largely a format effect (code fences). A pre-freeze prompt A/B did not remove it, and a fence-stripping step is not part of the frozen contract.
 - The ambiguous-quantity failure is not solved.
 - Serving
   - The serving framework (vLLM) could not be measured (blocked).

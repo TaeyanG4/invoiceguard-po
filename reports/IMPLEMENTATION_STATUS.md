@@ -207,5 +207,7 @@
 
 - (추가) README 6장 '평가 세트 구성'을 7개 세트별 표로 확장: 세트마다 문서 구성 · 템플릿/레이아웃 · 품목 수 · 채점 필드 수(1,260 / 208 / 328) · 마스크 내역과 그 세트의 실제 문서 샘플(`eval-*.jpg` 6장 추가).
 
+- (정정, Fable 완성도 검토) 위 'M0가 자체 test만 맞추는 이유'를 프롬프트 문구 누락으로 설명한 것은 자체 기록과 맞지 않아 README를 고침: 동결 전 프롬프트 A/B(`reports/model/s2_prompt_ab_train.json`)에서 'without Markdown code fences'를 넣어도 strict 0/4 그대로였고, 'without Markdown'이 있는 자체 프롬프트로도 dev stress에서 M0 strict 유효율 0.00–0.17(`reports/eval/dev_summary.md`). 원인은 미확정으로 기술. 함께 재현성 문구(고정 revision·seed 1개 조건)와 서빙 역량 표기(자체 서버, 프레임워크 아님)를 정정.
+
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.

@@ -11,7 +11,7 @@
 
 - **모델:** Qwen3-VL-2B-Instruct(NF4) + QLoRA 어댑터 — 로컬 GPU 1장에서 학습·평가·서빙
 - **데이터:** 모두 합성입니다. 공개 InvoiceOCR-Synth와 자체 생성 Invoice–PO를 쓰며, 실제 기업·통관 문서 성능은 주장하지 않습니다.
-- **재현성:** 평가 수치(학습 · dev · final · paired CI)는 이 저장소의 스크립트로 재현됩니다.
+- **재현성:** 평가 수치(학습 · dev · final · paired CI)는 고정한 데이터셋 revision · 기본 모델 revision · seed를 쓰면 이 저장소의 스크립트로 다시 만들어집니다. 데이터와 가중치는 내려받는 것이라 저장소에 없고, 학습은 seed 1개로 한 번 돌렸습니다.
 - **정직성:** 실행하지 않은 항목은 `not_run` / `blocked`로 남겼습니다.
 
 ![관리자 대시보드 — 개요](docs/images/dashboard-overview.png)
@@ -49,7 +49,7 @@
 | 공개 OOD clean<br><sub>freelancer 양식 · 20문서</sub> | 0.000 ² | 0.000 ¹ | **0.973** |
 
 <sub>값: strict 필드 정확도, FINAL(설정 동결 후 1회 평가).<br>
-¹ M0는 공개 세트 출력 120건을 모두 ```` ```json ```` 코드펜스로 감싸 strict JSON 파싱에 실패했습니다. 펜스를 벗기고 채점하면(lenient) 0.00–0.82입니다. 공개용 프롬프트에 "Markdown 없이" 문구가 빠진 것이 가장 유력한 원인입니다(아래 6장).<br>
+¹ M0는 공개 세트 출력 120건을 모두 ```` ```json ```` 코드펜스로 감싸 strict JSON 파싱에 실패했습니다. 펜스를 벗기고 채점하면(lenient) 0.00–0.82입니다. 기본 모델이 이런 펜스를 붙이는 경향이 있으며, 확인한 내용은 6장에 있습니다.<br>
 ² B0는 freelancer 양식의 표 헤더 단어를 규칙에 넣지 않아(v1.2) 60건 모두 품목 행을 하나도 찾지 못했습니다.<br>
 ³ M1−M0 = +0.024 [−0.001, 0.050], 유의하지 않음. ⁴ M1−B0 = +0.149 [−0.15, 0.42], 유의하지 않음.</sub>
 
@@ -374,14 +374,16 @@ M1이 OOD clean에서 IID clean보다 높은 것은 이 OOD가 같은 생성기�
 | **M0** | 형식 실패<br><sub>읽기는 함</sub> | 공개 세트 출력 120건이 모두 ```` ```json ````로 시작 → strict JSON 실패<br><sub>같은 M0가 자체 test 40건에서는 순수 JSON을 내서 0.897</sub> |
 | **B0** | 인식 실패<br><sub>표를 못 찾음</sub> | OOD 60건 모두 추출한 품목 행 0개<br><sub>헤더 단어로 표를 찾는 규칙이라 처음 보는 양식에 약함 (자체 test도 40건 중 22건이 행 0개)</sub> |
 
-**왜 M0는 자체 test만 맞추나**
-- 두 묶음은 프롬프트가 다릅니다.
-  - 자체용 [`EXTRACT_V1.txt`](prompts/EXTRACT_V1.txt): "Return only one JSON object, **without Markdown** or commentary."
-  - 공개용 [`EXTRACT_PUBLIC_CANONICAL.txt`](prompts/EXTRACT_PUBLIC_CANONICAL.txt): "Return one JSON object only" — Markdown 금지 문구가 없습니다.
-- 같은 M0가 앞의 프롬프트에서는 40/40 순수 JSON을, 뒤의 프롬프트에서는 120/120 코드펜스를 냈습니다. 문구 차이가 가장 유력한 원인입니다.
-- 프롬프트는 동결 대상이라 final 이후 고치지 않았습니다. 그래서 공개 세트의 M0 strict 점수는 형식 탓에 낮게 나온 값이며, 읽기 능력은 lenient 열로 봐야 합니다.
-- 펜스를 벗겨도 열화 문서(faded · bad_scan)에서는 점수가 낮습니다(OOD 0.000 · 0.058). 열화 문서에서는 읽기 자체도 약합니다.
-- M1은 같은 프롬프트로 학습해서 코드펜스 없이 답하게 됐습니다. M1의 공개 세트 이득에는 이 형식 효과가 크게 섞여 있습니다.
+**왜 M0는 자체 test에서만 점수가 나오나**
+- M0(기본 모델)는 JSON을 ```` ```json ```` 코드펜스로 감싸는 경향이 있고, strict 채점은 펜스가 붙은 답을 파싱 실패로 셉니다.
+- 펜스를 붙이는지는 프롬프트만이 아니라 입력에 따라서도 달라집니다.
+  - 자체 test — 깨끗한 렌더, 프롬프트 [`EXTRACT_V1.txt`](prompts/EXTRACT_V1.txt)에 "without Markdown" 있음: 순수 JSON **40/40**
+  - 자체 dev stress — 같은 프롬프트, 열화 이미지: 순수 JSON **0–17 %**뿐([`dev_summary.md`](reports/eval/dev_summary.md))
+  - 공개 세트 — 프롬프트 [`EXTRACT_PUBLIC_CANONICAL.txt`](prompts/EXTRACT_PUBLIC_CANONICAL.txt)에 Markdown 문구 없음: 코드펜스 **120/120**
+- 동결 전에 공개용 프롬프트에 "without Markdown code fences"를 넣어 학습 이미지 4장으로 시험했지만 strict 유효율은 0/4 그대로였습니다(4장 중 3장이 여전히 펜스). 그래서 공개용 프롬프트는 그대로 두었습니다([`s2_prompt_ab_train.json`](reports/model/s2_prompt_ab_train.json), [`frozen_v1.json`](configs/frozen_v1.json)). 원인은 확정하지 못했습니다.
+- 실무라면 펜스를 벗기는 후처리 한 줄로 M0 점수 대부분을 되살릴 수 있습니다. strict JSON이 동결된 계약이라 넣지 않았으니, M0의 읽기 능력은 lenient 열로 봐야 합니다.
+- 펜스를 벗겨도 열화된 공개 문서에서는 M0 점수가 낮습니다(OOD faded 0.000 · bad_scan 0.058). 그런 문서에서는 읽기 자체도 약합니다.
+- M1은 코드펜스 없이 답하도록 학습됐습니다. 그래서 공개 세트에서 M1이 M0보다 높은 차이에는 이 형식 효과와 읽기 능력이 섞여 있습니다. M0가 이미 순수 JSON을 내는 자체 test에서는 M1−M0가 유의하지 않습니다.
 
 ### Paired 차이 (같은 문서, A − B)
 
@@ -507,7 +509,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 | 학습 정확성 검증 | loss mask 감사 360/360, 10-step smoke, 재로드 일치<br><sub>[`reports/model/`](reports/model)</sub> |
 | 추출 정확도 · 실패 분석 · 개선 | 세트별 평가기 · paired bootstrap, 실패 분류, 개선 1건과 **음성 결과**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | 자동 채점 · 회귀 테스트 | pytest 160개 이상(규칙 B01–B12, 평가 E01–E05, API A01–A08, 대시보드)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · 동결 · 해시 가드</sub> |
-| 서빙 · 성능 측정 | Transformers + PEFT GPU 서버 — 실제 타임아웃 취소 · bounded queue 실측<br><sub>[`reports/serving/`](reports/serving) · vLLM은 blocked</sub> |
+| 서빙 · 성능 측정 | 직접 만든 Transformers + PEFT GPU 서버(서빙 프레임워크 아님) — 실제 타임아웃 취소 · bounded queue 실측<br><sub>[`reports/serving/`](reports/serving) · vLLM은 blocked</sub> |
 | OCR / 문서 AI | Tesseract 기준선 B0<br><sub>train/dev만 보고 만든 일반 규칙, Docker 격리</sub> |
 | 표 구조 문서 · 도메인 규칙 | 구조가 다른 인보이스 레이아웃 6종 렌더러, PO 대사 규칙 |
 | 서비스 연동 | 검수 API: 추출 CAS, 늦은 응답 덮어쓰기 방지, 승인 스냅샷 export |
@@ -524,7 +526,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 - 합성 데이터만 썼고 표본이 작습니다.
   - 공개 세트당 20 base, 자체 test 40문서, 경고 코드별 사례 1–10건
   - 열화 stress는 dev 전용입니다.
-- M0의 낮은 strict 점수는 형식 효과가 큽니다. 공개용 프롬프트에 "Markdown 없이" 문구가 빠져 있었고, 동결 후라 고치지 않았습니다.
+- M0의 낮은 strict 점수는 형식 효과(코드펜스)가 큽니다. 동결 전 프롬프트 A/B로도 없어지지 않았고, 펜스 제거 후처리는 동결된 계약에 들어 있지 않습니다.
 - 모호수량 실패는 해결되지 않았습니다.
 - 서빙
   - 서빙 프레임워크(vLLM)는 측정하지 못했습니다(blocked).
