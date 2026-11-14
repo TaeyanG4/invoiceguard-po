@@ -46,16 +46,18 @@ def check_cord_frozen(fp: dict, run_id: str | None, repo: Path = REPO, frozen_pa
     errors += frozen_file_problems(frozen, repo)
     if not any(a["arm"] == fp["arm"] and a.get("adapter_sha256") == fp.get("adapter_sha256") for a in frozen["arms"].values()):
         errors.append("arm_or_adapter_not_frozen")
-    own_dir = repo / "artifacts" / "predictions" / str(run_id)
     for meta_path in (repo / "artifacts" / "predictions").glob("*/run_metadata.json"):
         old = json.loads(meta_path.read_text(encoding="utf-8"))
-        if "cord:test" in (old.get("sets") or []) and _same_arm(fp, old.get("fingerprint") or {}) and old.get("run_id") != run_id:
+        if "cord:test" not in (old.get("sets") or []) or not _same_arm(fp, old.get("fingerprint") or {}):
+            continue
+        if old.get("run_id") != run_id:
             errors.append(f"cord_test_already_run:{old.get('run_id')}")
+        elif "finished" in old:  # the same run already completed: resuming would regenerate lost predictions (astra review 3)
+            errors.append(f"cord_test_run_finished:{run_id}")
     for report in (repo / "reports" / "eval").glob("cord_*.json"):
         data = json.loads(report.read_text(encoding="utf-8"))
         if "cord:test" in (data.get("sets") or {}) and _same_arm(fp, data.get("fingerprint") or {}):
-            if data.get("run_id") != run_id or not own_dir.exists():  # only resuming the same, still-present run is allowed
-                errors.append(f"cord_test_already_scored:{report.name}")
+            errors.append(f"cord_test_already_scored:{report.name}")  # once scored, never again — under any run id
     return errors
 
 

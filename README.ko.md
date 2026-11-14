@@ -24,7 +24,7 @@
 | 인보이스 추출 + 발주서 대사 | 미학습 레이아웃 test: M1 0.921 · M0 0.897(차이 유의하지 않음) · OCR 규칙 0.210 | [1장](#1-한눈에-보기) |
 | 평가 무결성 | test 1회 가드, 동결 해시를 CI가 검사, pytest 209개 | [6장](#6-결과) |
 | 비용 | RunPod 2회 약 $2.16(추정), 나머지는 로컬 GPU 1장 | [11장](#11-비용과-한계) |
-| 한계 | 실사진은 영수증뿐, 단가는 파인튜닝 뒤 0.82 → 0.72로 하락, 학습 seed 수는 [6장](#cord-v2--실사진-영수증) | [11장](#11-비용과-한계) |
+| 한계 | 실사진은 영수증뿐, 단가는 파인튜닝 뒤 0.82 → 0.72로 하락, test 판정은 학습 seed 1개 결과(seed 2개 추가는 dev로 사전 고정, [6장](#cord-v2--실사진-영수증)) | [11장](#11-비용과-한계) |
 
 ![관리자 대시보드 — 개요](docs/images/dashboard-overview.png)
 
@@ -546,6 +546,10 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 - **합성 인보이스로만 학습한 어댑터(M1 v1)는 영수증으로 옮겨 가지 못했습니다.** test에서 M0보다 −0.474 [−0.543, −0.400]이고, 출력 100건 중 25건이 JSON으로 읽히지 않았으며 합계 정확도는 0.12입니다. 학습한 형식 밖에서는 파인튜닝이 해가 될 수 있습니다.
 - dev와 test의 방향이 같습니다(dev +0.0497 → test +0.065).
 
+**dev 실패 유형** ([`cord_failure_dev.md`](reports/eval/cord_failure_dev.md), 사전 고정 채점기와 같은 정규화)
+- **단가는 맞바꿈입니다.** M0는 인쇄되지 않은 단가를 160칸 지어냈고(대부분 금액을 그대로 복사), M1-cord는 이를 20칸으로 줄였습니다. 대신 인쇄된 단가 50칸 중 10칸을 비웠습니다. 그중 5칸은 단가와 금액이 같은 숫자로 두 번 인쇄된 줄이고, 2칸은 "@"가 붙은 단가를 금액 칸에 넣은 경우입니다. 이 분석으로 수정 3(단가 인쇄 영수증 가중)을 정했습니다.
+- **하위 품목은 대부분 빠뜨립니다.** 정답 하위 품목 50개 중 M0는 10개, M1-cord는 27개만 냈습니다. M0는 하위 품목을 별도 품목 행으로 내는 경우가 많아(예측 품목 300행 대 정답 221행) 뒤 행이 밀립니다.
+
 **한 장의 예** — 위 [3.5절](#35-실사진-영수증--cord-v2-cord_raw)의 `cord_dev_0084`
 
 | 필드 | 정답 | M0 | M1-cord |
@@ -856,7 +860,7 @@ flowchart TB
 | M0 bf16 (자체 dev 20) | 0.994 <sub>HF</sub> | 0.969 <sub>vLLM</sub> | 0.998 <sub>vLLM</sub> |
 
 - 0.960 → 0.849 하락은 4070과 A40에서 **똑같이** 나타났습니다. 원인은 GPU가 아니라 정밀도 불일치입니다.
-- M0 bf16의 A40 0.969와 L40S 0.998은 20건 중 19건에서 맞힌 필드 수가 같고, 문서 1건(`tr_7d3690b30c40`)만 A40 27/42, L40S 42/42입니다. 20건 표본에서는 문서 1건이 0.03을 움직이므로 GPU 품질 차이로 볼 수 없습니다. A40 실행은 원문을 저장하지 않아 어느 토큰에서 갈렸는지는 확인하지 못했습니다(지금은 원문을 저장합니다).
+- M0 bf16의 A40 0.969와 L40S 0.998은 20건 중 19건에서 맞힌 필드 수가 같고, 문서 1건(`tr_7d3690b30c40`)만 A40 27/42, L40S 42/42입니다. 20건 표본에서는 문서 1건이 0.03을 움직이므로 이 차이가 GPU 품질 차이를 보여 주지는 않습니다. 다만 갈린 문서가 1건이고 A40 원문이 없어, 그 정도 크기의 GPU · 실행 환경 영향을 배제할 수도 없습니다. A40 실행은 원문을 저장하지 않아 어느 토큰에서 갈렸는지는 확인하지 못했습니다(지금은 원문을 저장합니다).
 
 **작은 차이가 생기는 이유**
 - GPU마다 코어(SM) 수, 쓰는 계산 커널(cuBLAS · bitsandbytes), CUDA · OS 버전이 달라 덧셈 순서가 바뀌고, 부동소수점 반올림이 마지막 자리에서 달라집니다.
@@ -946,8 +950,9 @@ python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --sm
 bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord 학습 → M1-cord dev → 기존 dev 회귀
 .venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
 bash scripts/realdocs/run_cord_test.sh           # arm마다 한 번
-.venv-ml/Scripts/python.exe -m invoiceguard.cord_eval score artifacts/predictions/cord_test_m1cord_nf4
-.venv-ml/Scripts/python.exe -m invoiceguard.cord_eval compare cord_test_m1cord_nf4 cord_test_m0_nf4
+.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # 동결 검사, test 보고서는 한 번만 씀
+.venv/Scripts/python.exe -m invoiceguard.cord_score compare cord_test_m1cord_nf4 cord_test_m0_nf4
+.venv/Scripts/python.exe scripts/realdocs/cord_failure_report.py                                          # dev 실패 유형
 ```
 
 **9) README 차트 · 데이터 샘플 다시 만들기** — 차트는 `reports/`의 기록에서, 샘플은 로컬 데이터에서 생성합니다.

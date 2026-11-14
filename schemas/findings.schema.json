@@ -94,6 +94,10 @@
           },
           "message": {
             "type": "string"
+          },
+          "key": {
+            "type": "string",
+            "description": "Disposition key the review API returns with every finding and expects in /approve (app/api.py finding_key). Not set by reconciliation alone."
           }
         }
       }

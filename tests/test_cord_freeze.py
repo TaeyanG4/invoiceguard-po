@@ -46,8 +46,9 @@ def test_committed_test_reports_are_one_per_frozen_arm_under_the_frozen_settings
 def fake_repo(request):
     root = REPO / "artifacts" / "test_cord_guard" / request.node.name
     shutil.rmtree(root, ignore_errors=True)
-    for rel in ("configs", "artifacts/predictions", "reports/eval", "src"):
+    for rel in ("configs", "artifacts/predictions", "reports/eval", "src", "manifests"):
         (root / rel).mkdir(parents=True)
+    (root / "manifests" / "cord_v2.jsonl").write_text("{}\n", encoding="utf-8")
     (root / "src" / "scorer.py").write_text("print('frozen scorer')\n", encoding="utf-8")
     frozen = {"generation": {k: 1 for k in cord_guard.GENERATION_KEYS}, "cord_prompt_sha256": "p", "cord_manifest_sha256": "m",
               "evaluator_sha256": {"src/scorer.py": hashlib.sha256((root / "src" / "scorer.py").read_bytes()).hexdigest()},
@@ -62,12 +63,14 @@ def _fp():
             **{k: 1 for k in cord_guard.GENERATION_KEYS}}
 
 
-def _ran_test(root, run_id):
+def _ran_test(root, run_id, finished=True, scored=True):
     d = root / "artifacts" / "predictions" / run_id
     d.mkdir()
-    (d / "run_metadata.json").write_text(json.dumps({"run_id": run_id, "sets": ["cord:test"], "fingerprint": _fp()}), encoding="utf-8")
-    (root / "reports" / "eval" / f"cord_{run_id}.json").write_text(  # scoring reports are named cord_<run>.json
-        json.dumps({"run_id": run_id, "fingerprint": _fp(), "sets": {"cord:test": {}}}), encoding="utf-8")
+    meta = {"run_id": run_id, "sets": ["cord:test"], "fingerprint": _fp()} | ({"finished": "2026-11-15T01:00:00"} if finished else {})
+    (d / "run_metadata.json").write_text(json.dumps(meta), encoding="utf-8")
+    if scored:
+        (root / "reports" / "eval" / f"cord_{run_id}.json").write_text(  # scoring reports are named cord_<run>.json
+            json.dumps({"run_id": run_id, "fingerprint": _fp(), "sets": {"cord:test": {}}}), encoding="utf-8")
     return d
 
 
@@ -83,9 +86,36 @@ def test_second_test_run_is_refused_even_after_deleting_the_predictions(fake_rep
         assert any(e.startswith("cord_test_already_scored") for e in cord_guard.check_cord_frozen(_fp(), run_id, repo=fake_repo))
 
 
-def test_resuming_the_same_present_run_is_allowed(fake_repo):
-    _ran_test(fake_repo, "t1")
+def test_only_an_interrupted_unscored_run_may_resume(fake_repo):
+    _ran_test(fake_repo, "t1", finished=False, scored=False)  # crashed half way: resuming the same run id is allowed
     assert cord_guard.check_cord_frozen(_fp(), "t1", repo=fake_repo) == []
+
+
+def test_a_finished_or_scored_run_cannot_resume_to_regenerate_lost_predictions(fake_repo):
+    """astra review 3: losing predictions.jsonl of a completed run must not let the same run id generate again."""
+    _ran_test(fake_repo, "t1", finished=True, scored=False)
+    assert "cord_test_run_finished:t1" in cord_guard.check_cord_frozen(_fp(), "t1", repo=fake_repo)
+    (fake_repo / "artifacts" / "predictions" / "t1" / "run_metadata.json").unlink()
+    _ran_test_report_only = fake_repo / "reports" / "eval" / "cord_t1.json"
+    _ran_test_report_only.write_text(json.dumps({"run_id": "t1", "fingerprint": _fp(), "sets": {"cord:test": {}}}), encoding="utf-8")
+    assert "cord_test_already_scored:cord_t1.json" in cord_guard.check_cord_frozen(_fp(), "t1", repo=fake_repo)
+
+
+def test_guarded_scoring_refuses_a_changed_scorer_and_a_changed_report(fake_repo, monkeypatch):
+    """astra review 3: scoring itself checks the freeze; a test report is write-once (re-scoring may only reproduce it)."""
+    from invoiceguard import cord_score
+
+    frozen = json.loads((fake_repo / "configs" / "frozen_cord_v1.json").read_text(encoding="utf-8"))
+    meta = {"sets": ["cord:test"], "fingerprint": _fp()}
+    (fake_repo / "src" / "scorer.py").write_text("print('edited after the freeze')\n", encoding="utf-8")
+    assert "frozen_mismatch:evaluator:src/scorer.py" in cord_score.freeze_problems(meta, frozen, repo=fake_repo)
+    assert cord_score.freeze_problems({"sets": ["cord:dev"], "fingerprint": {}}, frozen, repo=fake_repo) == []
+    report = fake_repo / "reports" / "eval" / "cord_t9.json"
+    assert cord_score.write_report(report, {"a": 1}, write_once=True) is True
+    assert cord_score.write_report(report, {"a": 1}, write_once=True) is False  # identical re-score
+    with pytest.raises(cord_score.ScoreRefused):
+        cord_score.write_report(report, {"a": 2}, write_once=True)
+    assert cord_score.write_report(report, {"a": 2}, write_once=False) is True  # dev reports may be refreshed
 
 
 def test_edited_scorer_and_unfrozen_adapter_are_refused(fake_repo):

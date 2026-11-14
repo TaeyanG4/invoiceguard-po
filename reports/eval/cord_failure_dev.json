@@ -1,0 +1,252 @@
+{
+ "cord_dev_m0_nf4": {
+  "run": "cord_dev_m0_nf4",
+  "by_group": {
+   "item.name": {
+    "ok": 159,
+    "wrong_value": 55,
+    "format_only": 4,
+    "omitted": 2
+   },
+   "item.count": {
+    "ok": 168,
+    "format_only": 27,
+    "omitted": 4,
+    "wrong_value": 11
+   },
+   "item.unit_price": {
+    "wrong_value": 4,
+    "ok": 41,
+    "format_only": 3,
+    "omitted": 2
+   },
+   "item.price": {
+    "ok": 189,
+    "format_only": 15,
+    "wrong_value": 14,
+    "omitted": 2
+   },
+   "sub.name": {
+    "ok": 10,
+    "omitted": 39
+   },
+   "sub.count": {
+    "omitted": 31,
+    "ok": 1
+   },
+   "sub.price": {
+    "omitted": 10,
+    "ok": 4
+   },
+   "doc.subtotal": {
+    "ok": 49,
+    "omitted": 10,
+    "format_only": 6,
+    "wrong_value": 2
+   },
+   "doc.tax": {
+    "wrong_value": 13,
+    "omitted": 8,
+    "ok": 23,
+    "format_only": 3
+   },
+   "doc.total": {
+    "ok": 73,
+    "wrong_value": 6,
+    "omitted": 12,
+    "format_only": 7
+   }
+  },
+  "invented_by_group": {
+   "item.unit_price": 160,
+   "doc.subtotal": 31,
+   "doc.tax": 44,
+   "sub.count": 9,
+   "sub.unit_price": 10,
+   "sub.price": 6,
+   "doc.total": 2,
+   "item.count": 6,
+   "sub.name": 0,
+   "item.price": 1
+  },
+  "rows": {
+   "gold_rows": 221,
+   "pred_rows": 300,
+   "docs_fewer_rows": 2,
+   "docs_more_rows": 27,
+   "gold_sub_items": 50,
+   "pred_sub_items": 10
+  },
+  "printed_unit_price_left_null": {
+   "unit price equals the line total (printed twice)": 1
+  },
+  "parse_status": "ok"
+ },
+ "cord_dev_m1v1_nf4": {
+  "run": "cord_dev_m1v1_nf4",
+  "by_group": {
+   "item.name": {
+    "omitted": 106,
+    "ok": 87,
+    "wrong_value": 24,
+    "format_only": 3
+   },
+   "item.count": {
+    "omitted": 100,
+    "format_only": 63,
+    "ok": 40,
+    "wrong_value": 7
+   },
+   "item.unit_price": {
+    "wrong_value": 4,
+    "ok": 23,
+    "omitted": 21,
+    "format_only": 2
+   },
+   "item.price": {
+    "omitted": 107,
+    "ok": 93,
+    "wrong_value": 7,
+    "format_only": 13
+   },
+   "sub.name": {
+    "ok": 21,
+    "omitted": 22,
+    "wrong_value": 6
+   },
+   "sub.count": {
+    "format_only": 3,
+    "omitted": 14,
+    "ok": 15
+   },
+   "sub.price": {
+    "ok": 8,
+    "omitted": 6
+   },
+   "doc.subtotal": {
+    "omitted": 59,
+    "ok": 6,
+    "format_only": 2
+   },
+   "doc.tax": {
+    "omitted": 43,
+    "format_only": 1,
+    "ok": 2,
+    "wrong_value": 1
+   },
+   "doc.total": {
+    "omitted": 83,
+    "ok": 11,
+    "wrong_value": 1,
+    "format_only": 3
+   }
+  },
+  "invented_by_group": {
+   "item.unit_price": 85,
+   "doc.subtotal": 7,
+   "doc.tax": 11,
+   "sub.count": 9,
+   "sub.unit_price": 27,
+   "sub.price": 19,
+   "doc.total": 0,
+   "item.count": 4,
+   "sub.name": 0,
+   "item.price": 1
+  },
+  "rows": {
+   "gold_rows": 221,
+   "pred_rows": 123,
+   "docs_fewer_rows": 53,
+   "docs_more_rows": 5,
+   "gold_sub_items": 50,
+   "pred_sub_items": 62
+  },
+  "printed_unit_price_left_null": {},
+  "parse_status": "json_invalid"
+ },
+ "cord_dev_m1cord_nf4": {
+  "run": "cord_dev_m1cord_nf4",
+  "by_group": {
+   "item.name": {
+    "ok": 164,
+    "wrong_value": 38,
+    "format_only": 7,
+    "omitted": 11
+   },
+   "item.count": {
+    "ok": 189,
+    "wrong_value": 8,
+    "omitted": 9,
+    "format_only": 4
+   },
+   "item.unit_price": {
+    "ok": 34,
+    "omitted": 10,
+    "format_only": 4,
+    "wrong_value": 2
+   },
+   "item.price": {
+    "ok": 177,
+    "format_only": 20,
+    "wrong_value": 11,
+    "omitted": 12
+   },
+   "sub.name": {
+    "wrong_value": 7,
+    "omitted": 28,
+    "ok": 14
+   },
+   "sub.count": {
+    "ok": 8,
+    "omitted": 24
+   },
+   "sub.price": {
+    "ok": 3,
+    "omitted": 11
+   },
+   "doc.subtotal": {
+    "ok": 56,
+    "omitted": 4,
+    "format_only": 5,
+    "wrong_value": 2
+   },
+   "doc.tax": {
+    "wrong_value": 10,
+    "ok": 34,
+    "format_only": 2,
+    "omitted": 1
+   },
+   "doc.total": {
+    "ok": 88,
+    "format_only": 9,
+    "wrong_value": 1
+   }
+  },
+  "invented_by_group": {
+   "item.unit_price": 20,
+   "doc.subtotal": 0,
+   "doc.tax": 1,
+   "sub.count": 0,
+   "sub.unit_price": 0,
+   "sub.price": 0,
+   "doc.total": 2,
+   "item.count": 0,
+   "sub.name": 0,
+   "item.price": 1
+  },
+  "rows": {
+   "gold_rows": 221,
+   "pred_rows": 237,
+   "docs_fewer_rows": 6,
+   "docs_more_rows": 6,
+   "gold_sub_items": 50,
+   "pred_sub_items": 27
+  },
+  "printed_unit_price_left_null": {
+   "unit price put in the price field ('@…')": 2,
+   "unit price equals the line total (printed twice)": 5,
+   "other": 1
+  },
+  "parse_status": "ok"
+ }
+}

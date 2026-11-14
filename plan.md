@@ -79,7 +79,7 @@ sources:
 ## 단계 4 — 2차 평가 반영 (11-15 01:52, 두 평가 공통 지적 우선)
 | # | 할 일 | 출처 | 위치·비용 | 상태 |
 |---|---|---|---|---|
-| R1 | CORD test 가드 강화: 실행 ID의 세트 변경 금지·이력 보존, 동결된 평가기·프롬프트 해시 검사(실행·채점 모두), CPU 회귀 테스트 | astra +2 · Fable D | CPU | **완료** (`cord_guard.py`, `tests/test_cord_freeze.py` 7개) |
+| R1 | CORD test 가드 강화: 실행 ID의 세트 변경 금지·이력 보존, 동결된 평가기·프롬프트 해시 검사 — 실행(`cord_guard.py`, 11-15 01:58)과 채점·비교(`cord_score.py`, 11-15 06:05, 3차 평가 지적), 끝난 run 재개 금지, CPU 회귀 테스트 | astra +2 · Fable D | CPU | **완료** (`cord_guard.py`, `tests/test_cord_freeze.py` 7개) |
 | R2 | 문장 정정: README L676(서버 자동 테스트 있음), L818(GPU 결론을 20문서 범위로 한정), L97(회귀 기준을 두 세트로 정확히), L514("지어낸 필드가 적어서"), 수정 1 시점 표현; docs/20 기록 정정 | 둘 다 +1 | CPU | **완료** |
 | R3 | 구형 vLLM 실행 경로(`vllm_bench up`)가 bf16 기본 모델에 NF4 어댑터를 붙이는 것을 짝 검사로 차단 | astra +1 | CPU | **완료** (`pairing_for_up`, 테스트 1개) |
 | R4 | 검수 API: 행 추가·삭제, 누락 PO 경고별 고유 ID, 회귀 테스트 | astra +1 | CPU | **완료** (`add_row`·`delete_row`, finding `key`, 테스트 1개) |

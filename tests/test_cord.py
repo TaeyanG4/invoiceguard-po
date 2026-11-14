@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import jsonschema
 
@@ -101,3 +102,16 @@ def test_prompt_is_registered_and_never_mentions_gold_inputs():
     text, digest = load_prompt("CORD_RAW")
     assert text.startswith("TASK: CORD_RAW") and len(digest) == 64
     assert "cord-raw-1.0" in text and "purchase order" not in text.lower()
+
+
+def test_every_training_data_option_pins_the_manifests_it_reads():
+    """astra review 3: all_plus_cord_up reads trade and CORD records, so its report must hash those manifests too."""
+    from invoiceguard.vlm.records import TRAIN_DATA_SOURCES, train_manifest_names
+
+    for data in ("all_plus_cord", "all_plus_cord_up"):
+        assert {"trade_raw_v1.jsonl", "cord_v2.jsonl"} <= set(train_manifest_names(data))
+    assert "cord_v2.jsonl" not in train_manifest_names("all") and train_manifest_names("all", True)[-1] == "trade_raw_aug1.jsonl"
+    import re
+    train_src = (Path(__file__).resolve().parents[1] / "src" / "invoiceguard" / "vlm" / "train.py").read_text(encoding="utf-8")
+    choices = re.search(r'"--data", choices=\[([^\]]+)\]', train_src).group(1)
+    assert {c.strip().strip('"') for c in choices.split(",")} == set(TRAIN_DATA_SOURCES)  # no option without a manifest list

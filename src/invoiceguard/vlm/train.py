@@ -21,7 +21,7 @@ from pathlib import Path
 import torch
 
 from . import MODEL_DIR, MODEL_ID, MODEL_REVISION, REPO
-from .records import cord_records, cord_unit_price_records, public_records, trade_records
+from .records import cord_records, cord_unit_price_records, public_records, trade_records, train_manifest_names
 from .sft import IGNORE, encode, load_processor
 
 SEED = 20261113
@@ -140,9 +140,7 @@ def main() -> int:
 
     losses = [{"step": h["step"], "loss": h["loss"], "lr": h.get("learning_rate"), "grad_norm": h.get("grad_norm")}
               for h in trainer.state.log_history if "loss" in h]
-    manifests = {name: _sha(REPO / "manifests" / name) for name in ("public_canonical_v1.jsonl",) + (("trade_raw_v1.jsonl",) if args.data in ("all", "all_plus_cord") else ())
-                 + (("cord_v2.jsonl",) if args.data == "all_plus_cord" else ())
-                 + (("trade_raw_aug1.jsonl",) if args.with_aug1 else ())}
+    manifests = {name: _sha(REPO / "manifests" / name) for name in train_manifest_names(args.data, args.with_aug1)}
     meta = {
         "run_id": run_id, "kind": "M1_qlora_sft",
         "framework": "trl 0.25.1 SFTTrainer (compute_loss = transformers Trainer loss; TRL logit metrics disabled for VRAM) + verified completion-only collator",

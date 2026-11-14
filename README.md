@@ -24,7 +24,7 @@
 | Invoice extraction + PO reconciliation | unseen-layout test: M1 0.921 · M0 0.897 (not significant) · OCR rules 0.210 | [section 1](#1-at-a-glance) |
 | Evaluation integrity | single-test-run guard, frozen hashes checked in CI, 209 pytest tests | [section 6](#6-results) |
 | Cost | two RunPod runs, about $2.16 (estimate); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
-| Limits | the only real photos are receipts; unit price fell 0.82 → 0.72 after fine-tuning; training seeds in [section 6](#cord-v2--real-receipt-photos) | [section 11](#11-cost-and-limitations) |
+| Limits | the only real photos are receipts; unit price fell 0.82 → 0.72 after fine-tuning; the test verdict rests on one training seed (two more seeds are pre-registered for dev, [section 6](#cord-v2--real-receipt-photos)) | [section 11](#11-cost-and-limitations) |
 
 ![Admin dashboard — overview](docs/images/dashboard-overview.png)
 
@@ -548,6 +548,10 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 - **The adapter trained only on synthetic invoices (M1 v1) does not transfer to receipts:** −0.474 [−0.543, −0.400] against M0 on test; 25 of 100 outputs are not readable JSON and total accuracy is 0.12. Outside the format it learned, fine-tuning can hurt.
 - dev and test point the same way (dev +0.0497 → test +0.065).
 
+**dev failure types** ([`cord_failure_dev.md`](reports/eval/cord_failure_dev.md), same normalisation as the pre-registered scorer)
+- **Unit price is a trade-off.** M0 invented 160 unit prices that are not printed (mostly copying the line total); M1-cord cut that to 20, but left 10 of 50 printed unit prices empty — 5 on lines where unit price and total are the same printed number, 2 where an "@" unit price went into the price field. This analysis set amendment 3 (up-weighting receipts with printed unit prices).
+- **Sub-items are mostly missed.** Of 50 gold sub-items M0 emitted 10 and M1-cord 27. M0 often emits sub-items as separate item rows (300 predicted rows against 221), shifting the rows after them.
+
 **One example** — `cord_dev_0084` from [section 3.5](#35-real-receipt-photos--cord-v2-cord_raw)
 
 | Field | Gold | M0 | M1-cord |
@@ -858,7 +862,7 @@ Rented once more to answer what run 1 left open: why M1's accuracy dropped under
 | M0 bf16 (own dev 20) | 0.994 <sub>HF</sub> | 0.969 <sub>vLLM</sub> | 0.998 <sub>vLLM</sub> |
 
 - The 0.960 → 0.849 drop appeared **identically** on the 4070 and the A40: the cause is the precision mismatch, not the GPU.
-- M0 bf16 on the A40 (0.969) and the L40S (0.998) match in correct-field counts on 19 of 20 documents; one document (`tr_7d3690b30c40`) scored 27/42 on the A40 and 42/42 on the L40S. With 20 documents one document moves the score by 0.03, so this is not a GPU quality difference. The A40 run did not store raw outputs, so the diverging token cannot be shown (raw outputs are stored now).
+- M0 bf16 on the A40 (0.969) and the L40S (0.998) match in correct-field counts on 19 of 20 documents; one document (`tr_7d3690b30c40`) scored 27/42 on the A40 and 42/42 on the L40S. With 20 documents one document moves the score by 0.03, so this does not show a GPU quality difference — but with one diverging document and no A40 raw output, a GPU or runtime effect of that size cannot be excluded either. The A40 run did not store raw outputs, so the diverging token cannot be shown (raw outputs are stored now).
 
 **Why small differences appear at all**
 - GPUs differ in core (SM) count, the kernels they pick (cuBLAS, bitsandbytes) and CUDA/OS versions, so the order of additions changes and floating-point rounding differs in the last bit.
@@ -948,8 +952,9 @@ python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --sm
 bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord training → M1-cord dev → regression on the existing dev sets
 .venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
 bash scripts/realdocs/run_cord_test.sh           # once per arm
-.venv-ml/Scripts/python.exe -m invoiceguard.cord_eval score artifacts/predictions/cord_test_m1cord_nf4
-.venv-ml/Scripts/python.exe -m invoiceguard.cord_eval compare cord_test_m1cord_nf4 cord_test_m0_nf4
+.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # checks the freeze; test reports are write-once
+.venv/Scripts/python.exe -m invoiceguard.cord_score compare cord_test_m1cord_nf4 cord_test_m0_nf4
+.venv/Scripts/python.exe scripts/realdocs/cord_failure_report.py                                          # dev failure types
 ```
 
 **9) Redraw the README charts and data samples** — charts come from the records in `reports/` (English and Korean sets); samples need the local data

@@ -113,3 +113,16 @@ def cord_unit_price_records() -> list[Record]:
 
     return [r for r in cord_records("train")
             if any(it.get("unit_price") is not None for it in load_gold(r.record_id).get("items") or [])]
+
+
+TRAIN_DATA_SOURCES = {  # --data option -> the manifests its records come from (recorded in the training report)
+    "public_only": ("public_canonical_v1.jsonl",),
+    "all": ("public_canonical_v1.jsonl", "trade_raw_v1.jsonl"),
+    "all_plus_cord": ("public_canonical_v1.jsonl", "trade_raw_v1.jsonl", "cord_v2.jsonl"),
+    "all_plus_cord_up": ("public_canonical_v1.jsonl", "trade_raw_v1.jsonl", "cord_v2.jsonl"),
+}
+
+
+def train_manifest_names(data: str, with_aug1: bool = False) -> tuple[str, ...]:
+    """Every manifest a training run reads, so its report pins all of them (astra review 3: all_plus_cord_up missed two)."""
+    return TRAIN_DATA_SOURCES[data] + (("trade_raw_aug1.jsonl",) if with_aug1 else ())

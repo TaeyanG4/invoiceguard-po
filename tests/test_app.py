@@ -244,6 +244,12 @@ def test_reviewer_can_delete_and_add_rows_and_po_line_warnings_have_their_own_ke
     items = client.get(f"/api/cases/{case}").json()["current"]["items"]
     assert [r["row_index"] for r in items] == [1, 2] and items[1]["sku_raw"] == row2["sku_raw"]
     assert "PO_LINE_NOT_FOUND" not in [f["code"] for f in back.json()["findings"]]
+    import jsonschema  # astra review 3: the API's findings (now with `key`) must still match the published schema
+    schema = json.loads((REPO / "schemas" / "findings.schema.json").read_text(encoding="utf-8"))
+    stored = client.get(f"/api/cases/{case}").json()["findings"]
+    jsonschema.validate(stored, schema)
+    jsonschema.validate({"schema_version": "1.0", "source": "human_review", "case_status": "needs_review",
+                         "findings": gone.json()["findings"]}, schema)  # includes the per-SKU PO_LINE_NOT_FOUND key
     disp = {f["key"]: {"decision": "confirmed_variance", "reason": "agreed"} for f in back.json()["findings"]}
     ok = client.post(f"/api/cases/{case}/approve", json={"expected_version": back.json()["version"], "dispositions": disp})
     assert ok.status_code == 200, ok.text
