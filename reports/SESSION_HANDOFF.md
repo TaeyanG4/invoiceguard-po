@@ -20,6 +20,9 @@
 - running_processes: 없음 (HF 모델 서버·검수 API는 시연 후 종료, 포트 8000/8001 닫힘 확인). 대시보드 미리보기 서버(127.0.0.1:8765)는 Claude 앱 Browser 패널에서 열려 있을 수 있음 — 과금 없음.
 - active_paid_resources_from_this_project: none (RunPod 미사용)
 
+## 사용자 결정 (2026-11-14, 프로젝트 종료 후)
+RunPod 사용과 NVIDIA 드라이버 업데이트를 **하지 않기로 결정**. vLLM 서빙 측정은 blocked, 클라우드 GPU 운영·비용 증거는 not_run으로 유지한다. 재개 시 사용자가 다시 요청하지 않으면 이 두 항목을 제안하지 않는다.
+
 ## 재개 시
 1. `prompts/CLAUDE_RESUME.md`로 시작하고 이 파일·`reports/IMPLEMENTATION_STATUS.md`를 대조한다.
 2. 남은 선택지: (a) 드라이버 업데이트 후 vLLM 벤치(`vllm_bench up` → `run --label vllm_bf16`), (b) RunPod 승인 시 S9(1-GPU, 견적·FullSSH·백업·종료 확인), (c) 검수 화면 UI.

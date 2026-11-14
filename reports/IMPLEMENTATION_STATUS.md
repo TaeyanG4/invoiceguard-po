@@ -172,5 +172,8 @@
 - README를 포트폴리오 첫 화면으로 재작성(원래 패키지 안내는 docs/PACKAGE_README_v4.md). `requirements-ml.lock.txt` 추가.
 - Fable 최종 검토(조건부 NO-GO) 반영: README의 과장 표현 정정(B0가 본 레이아웃 clean으로 한정·문서 exact는 B0 우위 명시, lenient 범위, 재현 범위, 미학습 템플릿 표기, 모호수량·오경보, 서빙 한계, UI 미구현), 인계 문서 갱신, 서빙 JSON의 vllm_* 키를 server_*로 개명(값 불변), CLAUDE_PACK_VALIDATION.json을 T00 실행본으로 복원(이후 작업 트리 실행은 Git 제외 자산(.venv-ml/models/artifacts) 때문에 no_asset 2건 실패 — 추적 파일 기준 0건, tests/test_repo_hygiene.py).
 
+### 사용자 결정 (2026-11-14)
+- RunPod·드라이버 업데이트를 하지 않기로 결정 → vLLM blocked, 클라우드 not_run을 최종 상태로 유지.
+
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.
