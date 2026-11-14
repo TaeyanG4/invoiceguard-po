@@ -82,6 +82,9 @@ record("unmeasured_metrics_null", results["status"] == "not_run" and all(v is No
 
 links = 0
 for md in ROOT.rglob("*.md"):
+    # local-only folders (virtualenvs, data, artifacts, models) are not part of the repository; CI never has them
+    if md.relative_to(ROOT).parts[0] in {".venv", ".venv-ml", "data", "artifacts", "models", "node_modules"}:
+        continue
     text = md.read_text(encoding="utf-8")
     for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", text):
         target = target.strip().split(" ", 1)[0]

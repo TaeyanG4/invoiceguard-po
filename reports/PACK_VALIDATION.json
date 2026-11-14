@@ -1,8 +1,13 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-14T09:54:35.829277+00:00",
+  "checked_at_utc": "2026-11-14T16:22:54.740920+00:00",
   "status": "pass",
   "checks": [
+    {
+      "check": "schema:cord_extraction.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
     {
       "check": "schema:extraction.schema.json",
       "status": "pass",
@@ -164,6 +169,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:src/invoiceguard/public_manifest.py",
       "status": "pass",
       "detail": ""
@@ -254,6 +264,41 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:prompts/EXTRACT_CORD_RAW.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:schemas/cord_extraction.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/realdocs/cord_fetch.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/cord.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:manifests/cord_v2.jsonl",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/model/train_m1_cord_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:reports/model",
       "status": "pass",
       "detail": ""
@@ -300,6 +345,26 @@
     },
     {
       "check": "link:README.ko.md:reports/eval/failures_m1_dev_v1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:configs/frozen_cord_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/eval/compare_m1cord_dev_v1__vs__m1_dev_v1.json",
       "status": "pass",
       "detail": ""
     },
@@ -369,6 +434,16 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:.github/workflows/ci.yml",
       "status": "pass",
       "detail": ""
@@ -399,7 +474,37 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:reports/quant",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/runpod2/timeline.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/runpod2/merge_tensor_diff.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/runpod2/teacher_drafts_summary.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/quant/precision_dev20.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/runpod2/merge_tensor_diff.json",
       "status": "pass",
       "detail": ""
     },
@@ -420,6 +525,11 @@
     },
     {
       "check": "link:README.md:docs/images/dashboard-overview.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/20_DECISIONS_V6.md",
       "status": "pass",
       "detail": ""
     },
@@ -514,6 +624,41 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:prompts/EXTRACT_CORD_RAW.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:schemas/cord_extraction.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/realdocs/cord_fetch.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/cord.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:manifests/cord_v2.jsonl",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/model/train_m1_cord_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:reports/model",
       "status": "pass",
       "detail": ""
@@ -560,6 +705,26 @@
     },
     {
       "check": "link:README.md:reports/eval/failures_m1_dev_v1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:configs/frozen_cord_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/compare_m1cord_dev_v1__vs__m1_dev_v1.json",
       "status": "pass",
       "detail": ""
     },
@@ -629,6 +794,16 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:.github/workflows/ci.yml",
       "status": "pass",
       "detail": ""
@@ -659,7 +834,37 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:reports/quant",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/runpod2/timeline.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/runpod2/merge_tensor_diff.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/runpod2/teacher_drafts_summary.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/quant/precision_dev20.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/runpod2/merge_tensor_diff.json",
       "status": "pass",
       "detail": ""
     },
@@ -879,7 +1084,167 @@
       "detail": ""
     },
     {
+      "check": "link:reports\\RUNPOD_APPROVAL.md:runpod2/timeline.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:reports\\RUNPOD_APPROVAL.md:runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../src/invoiceguard/vlm/train.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/runpod/train_compare.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../src/invoiceguard/evaluation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../.github/workflows/ci.yml",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/eval/dev_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../src/invoiceguard/reconciliation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/IMPLEMENTATION_STATUS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../plan.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../plan.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../src/invoiceguard/vlm/model.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/serving/vllm_bf16_a40.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-1.md:../../reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-direction-1.md:../../reports/quant/precision_dev20.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-direction-1.md:../../reports/eval/dev_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-direction-1.md:../../reports/eval/dev_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-direction-1.md:../../src/invoiceguard/reconciliation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-direction-1.md:../../src/invoiceguard/vlm/sft.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-direction-1.md:../../plan.md",
       "status": "pass",
       "detail": ""
     },
@@ -939,6 +1304,11 @@
       "detail": ""
     },
     {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:../quant",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:reports\\runpod\\RUNPOD_RUN.md:../serving/vllm_bf16_a40.json",
       "status": "pass",
       "detail": ""
@@ -951,7 +1321,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "159 local Markdown links"
+      "detail": "232 local Markdown links"
     }
   ],
   "not_performed": [
