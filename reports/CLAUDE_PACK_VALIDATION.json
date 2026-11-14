@@ -1,6 +1,6 @@
 {
   "scope": "static_claude_code_package_migration_only",
-  "checked_at_utc": "2026-11-13T16:34:09.282658+00:00",
+  "checked_at_utc": "2026-11-14T09:54:37.538414+00:00",
   "status": "pass",
   "checks": [
     {
@@ -89,12 +89,27 @@
       "detail": ""
     },
     {
+      "check": "utf8:README.ko.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:README.md",
       "status": "pass",
       "detail": ""
     },
     {
+      "check": "utf8:requirements-ml.lock.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:requirements-pack.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.claude/launch.json",
       "status": "pass",
       "detail": ""
     },
@@ -109,527 +124,12 @@
       "detail": ""
     },
     {
-      "check": "utf8:.venv/Lib/site-packages/typing_extensions.py",
+      "check": "utf8:configs/frozen_v1.json",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "utf8:.venv/Lib/site-packages/_virtualenv.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/converters.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/exceptions.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/filters.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/setters.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/validators.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/_cmp.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/_compat.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/_config.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/_funcs.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/_make.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/_next_gen.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/_version_info.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attr/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attrs/converters.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attrs/exceptions.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attrs/filters.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attrs/setters.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attrs/validators.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/attrs/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/cli.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/exceptions.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/protocols.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/validators.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/_format.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/_keywords.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/_legacy_keywords.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/_types.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/_typing.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/_utils.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/__main__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/const_vs_enum.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/contains.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/import_benchmark.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/issue232.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/json_schema_test_suite.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/nested_schemas.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/subcomponents.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/unused_registry.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/useless_applicator_schemas.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/useless_keywords.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/validator_creation.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/benchmarks/issue232/issue.json",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/fuzz_validate.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_cli.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_deprecations.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_exceptions.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_format.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_jsonschema_test_suite.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_types.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_utils.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/test_validators.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/_suite.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/typing/test_all_concrete_validators_match_protocol.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema/tests/typing/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema-4.26.0.dist-info/entry_points.txt",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/_core.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft201909/metaschema.json",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft202012/metaschema.json",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft3/metaschema.json",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft4/metaschema.json",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft6/metaschema.json",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/schemas/draft7/metaschema.json",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/tests/test_jsonschema_specifications.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/jsonschema_specifications/tests/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/pyyaml-6.0.3.dist-info/top_level.txt",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/exceptions.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/jsonschema.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/retrieval.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/typing.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/_attrs.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/_core.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_core.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_exceptions.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_jsonschema.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_referencing_suite.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/tests/test_retrieval.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/referencing/tests/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/rpds/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/rpds_py-2026.9.1.dist-info/sboms/rpds-py.cyclonedx.json",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/composer.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/constructor.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/cyaml.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/dumper.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/emitter.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/error.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/events.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/loader.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/nodes.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/parser.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/reader.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/representer.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/resolver.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/scanner.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/serializer.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/tokens.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/yaml/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Lib/site-packages/_yaml/__init__.py",
-      "status": "pass",
-      "detail": ""
-    },
-    {
-      "check": "utf8:.venv/Scripts/activate_this.py",
+      "check": "utf8:configs/frozen_v1_appendix.json",
       "status": "pass",
       "detail": ""
     },
@@ -734,6 +234,16 @@
       "detail": ""
     },
     {
+      "check": "utf8:docs/19_DECISIONS_V5.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:docs/PACKAGE_README_v4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:examples/expected_findings.json",
       "status": "pass",
       "detail": ""
@@ -760,6 +270,16 @@
     },
     {
       "check": "utf8:examples/test_cases.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:manifests/public_canonical_v1.summary.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:manifests/trade_raw_v1.summary.json",
       "status": "pass",
       "detail": ""
     },
@@ -794,6 +314,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/backup_inventory.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/CLAUDE_MIGRATION_SUMMARY.json",
       "status": "pass",
       "detail": ""
@@ -805,6 +330,11 @@
     },
     {
       "check": "utf8:reports/CONTRACT_VALIDATION.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/HISTORY_REWRITE.md",
       "status": "pass",
       "detail": ""
     },
@@ -854,6 +384,301 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/data/public_profile.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/data/public_visual_audit.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/b0_dev_v11.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/b0_dev_v12.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/b0_final_v12.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/b0_train_psm4_pre_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/b0_train_psm4_pre_v2.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/b0_train_psm4_pre_v3.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/b0_train_psm4_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/b0_train_v11.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/b0_train_v12.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_m0_final_v1__vs__b0_final_v12.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_m1v2_dev_v1__vs__m1_dev_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_m1_dev_v1__vs__b0_dev_v12.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_m1_dev_v1__vs__m0_dev_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_m1_final_v1__vs__b0_final_v12.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_m1_final_v1__vs__m0_final_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/dev_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/failures_b0_dev_v11.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/failures_b0_dev_v11.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/failures_m1_dev_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/failures_m1_dev_v1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/m0_dev_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/m0_final_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/m1v2_dev_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/m1_dev_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/m1_final_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/metric_contract_v2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/local_smoke_masks.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/local_smoke_pilot.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/local_smoke_train.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/s2_prompt_ab_train.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/train_dryrun_trl_2step_nobf16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/train_m1_standard_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/train_m1_standard_v2.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/inventory_local.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/inventory_pod.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/m1_pod_a40_adapter_config.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/parity_dev8.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/pod_env.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/pod_fetch.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/pod_freeze_ml.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/pod_freeze_vllm.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/pod_nvidia_smi.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/pod_smoke_masks.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/pod_smoke_train.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/restore_local_load.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/train_compare.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/train_m1_pod_a40.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/tunnel_api_check.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/predictions/local_m1pod_dev2/run_metadata.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/predictions/pod_m1pod_dev8/run_metadata.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod/predictions/pod_m1v1_dev8/run_metadata.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/hf_cancel_probe.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/hf_peft_nf4_local.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/live_e2e_demo.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/vllm_bf16_a40.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:schemas/extraction.schema.json",
       "status": "pass",
       "detail": ""
@@ -895,6 +720,301 @@
     },
     {
       "check": "utf8:scripts/verify_pack.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/runpod/compare_parity.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/runpod/compare_train.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/runpod/inventory.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/runpod/pod_fetch.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/backup.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/canonical.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/compare_runs.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/dashboard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/dashboard_server.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/evaluation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/extraction_request.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/failure_analysis.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/freeze.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/model_output.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/normalization.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/ocr_baseline.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/public_data.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/public_manifest.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/public_profile.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/public_visibility.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/readme_figures.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/readme_samples.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/reconciliation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/score_run.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/splits.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/app/extractors.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/app/server.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/app/uploads.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/app/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/serving/hf_server.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/serving/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/synth/augment.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/synth/build.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/synth/render.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/synth/scenarios.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/synth/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/vlm/infer.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/vlm/model.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/vlm/records.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/vlm/sft.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/vlm/smoke.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/vlm/stress.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/vlm/train.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/vlm/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_app.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_canonical.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_dashboard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_evaluation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_ocr_baseline.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_public_visibility.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_readme_figures.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_reconciliation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_repo_hygiene.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_splits.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_synth.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_vlm_masks.py",
       "status": "pass",
       "detail": ""
     },
@@ -959,7 +1079,7 @@
       "detail": ""
     },
     {
-      "check": "remote_asks",
+      "check": "no_prompting_ask_rules",
       "status": "pass",
       "detail": ""
     },
@@ -974,7 +1094,7 @@
       "detail": ""
     },
     {
-      "check": "not_preapproved",
+      "check": "approval_explicit",
       "status": "pass",
       "detail": ""
     },
@@ -1065,6 +1185,11 @@
     },
     {
       "check": "active_refs:CLAUDE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:README.ko.md",
       "status": "pass",
       "detail": ""
     },
@@ -1179,6 +1304,16 @@
       "detail": ""
     },
     {
+      "check": "active_refs:docs/19_DECISIONS_V5.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:docs/PACKAGE_README_v4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:examples/README.md",
       "status": "pass",
       "detail": ""
@@ -1204,6 +1339,11 @@
       "detail": ""
     },
     {
+      "check": "active_refs:reports/HISTORY_REWRITE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:reports/IMPLEMENTATION_STATUS.md",
       "status": "pass",
       "detail": ""
@@ -1225,6 +1365,41 @@
     },
     {
       "check": "active_refs:reports/TASK_BOARD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/data/public_visual_audit.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/eval/dev_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/eval/failures_b0_dev_v11.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/eval/failures_m1_dev_v1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/eval/metric_contract_v2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/runpod/RUNPOD_RUN.md",
       "status": "pass",
       "detail": ""
     },

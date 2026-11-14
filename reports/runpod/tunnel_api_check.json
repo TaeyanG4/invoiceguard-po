@@ -1,0 +1,15 @@
+{
+ "via": "ssh -L 127.0.0.1:8001 -> pod 127.0.0.1:18001",
+ "model": "m1pod",
+ "doc": "tr_69cab78e7dcd",
+ "ok": true,
+ "latency_s": 10.6,
+ "finish_reason": "stop",
+ "prompt_tokens": 1045,
+ "completion_tokens": 270,
+ "fields": [
+  26,
+  30
+ ],
+ "error": null
+}

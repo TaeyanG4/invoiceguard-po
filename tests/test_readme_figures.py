@@ -8,7 +8,7 @@ from invoiceguard import readme_figures as rf
 
 REPO = Path(__file__).resolve().parents[1]
 OUT = REPO / "artifacts" / "test_readme_figures"  # git-ignored; never the system temp dir
-NAMES = ("final-accuracy", "paired-diff", "training-loss")
+NAMES = ("final-accuracy", "paired-diff", "training-loss", "runpod-loss")
 
 
 def test_figures_are_drawn_from_the_recorded_results():
@@ -16,7 +16,10 @@ def test_figures_are_drawn_from_the_recorded_results():
     try:
         written = rf.build(OUT)
         expected = {f"{n}{infix}-{m}.svg" for n in NAMES for infix in rf.LANGS.values() for m in ("light", "dark")}
-        assert {p.name for p in written} == expected and len(expected) == 12
+        assert {p.name for p in written} == expected and len(expected) == 16
+        cmp = rf._json(REPO / "reports" / "runpod" / "train_compare.json")
+        for name in ("runpod-loss-light.svg", "runpod-loss-ko-dark.svg"):
+            assert f"{cmp['max_abs_step_diff']:.4f}" in (OUT / name).read_text(encoding="utf-8")
         finals = rf.load_finals()
         assert set(finals) == {"b0", "m0", "m1"}
         for name in ("final-accuracy-light.svg", "final-accuracy-ko-dark.svg"):

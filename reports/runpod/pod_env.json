@@ -1,0 +1,18 @@
+{
+ "python": "3.11.9",
+ "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+ "torch": "2.9.1+cu126",
+ "torch_cuda": "12.6",
+ "cuda_available": true,
+ "gpu": "NVIDIA A40",
+ "capability": [
+  8,
+  6
+ ],
+ "nvidia_smi": "NVIDIA A40, 595.91.07, 46068 MiB",
+ "transformers": "4.57.6",
+ "peft": "0.17.1",
+ "trl": "0.25.1",
+ "bitsandbytes": "0.48.2",
+ "accelerate": "1.10.1"
+}

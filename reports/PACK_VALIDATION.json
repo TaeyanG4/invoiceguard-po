@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-13T17:01:27.796744+00:00",
+  "checked_at_utc": "2026-11-14T09:54:35.829277+00:00",
   "status": "pass",
   "checks": [
     {
@@ -154,152 +154,522 @@
       "detail": ""
     },
     {
-      "check": "link:README.md:prompts/CLAUDE_START.md",
+      "check": "link:README.ko.md:README.md",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:CLAUDE.md",
+      "check": "link:README.ko.md:docs/images/dashboard-overview.png",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:.claude/settings.json",
+      "check": "link:README.ko.md:src/invoiceguard/public_manifest.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/17_CLAUDE_CODE_WORKFLOW.md",
+      "check": "link:README.ko.md:src/invoiceguard/splits.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:reports/SESSION_HANDOFF.md",
+      "check": "link:README.ko.md:src/invoiceguard/synth",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:reports/TASK_BOARD.md",
+      "check": "link:README.ko.md:src/invoiceguard/vlm/train.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/18_PACKAGE_MIGRATION.md",
+      "check": "link:README.ko.md:src/invoiceguard/vlm/infer.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:prompts/CLAUDE_START.md",
+      "check": "link:README.ko.md:src/invoiceguard/ocr_baseline.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:prompts/CLAUDE_RESUME.md",
+      "check": "link:README.ko.md:src/invoiceguard/evaluation.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:prompts/CLAUDE_RUNPOD_APPROVAL_CHECK.md",
+      "check": "link:README.ko.md:src/invoiceguard/score_run.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:prompts/CLAUDE_MODEL_AND_RELEASE.md",
+      "check": "link:README.ko.md:src/invoiceguard/compare_runs.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/00_PROJECT_BRIEF.md",
+      "check": "link:README.ko.md:src/invoiceguard/freeze.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/02_PRD.md",
+      "check": "link:README.ko.md:src/invoiceguard/reconciliation.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/01_DATA_PLAN.md",
+      "check": "link:README.ko.md:src/invoiceguard/serving/hf_server.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/04_DATA_CONTRACTS.md",
+      "check": "link:README.ko.md:src/invoiceguard/app/api.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/06_EVALUATION.md",
+      "check": "link:README.ko.md:src/invoiceguard/dashboard_server.py",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/15_LABEL_AND_METRIC_CONTRACT.md",
+      "check": "link:README.ko.md:src/invoiceguard/dashboard_static",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/03_ARCHITECTURE.md",
+      "check": "link:README.ko.md:reports/data",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/05_MODEL_PLAN.md",
+      "check": "link:README.ko.md:docs/images/dashboard-public-doc.png",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/07_API_UI.md",
+      "check": "link:README.ko.md:docs/images/dashboard-trade-doc.png",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/08_48H_EXECUTION.md",
+      "check": "link:README.ko.md:reports/model",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/12_RUNPOD_PLAYBOOK.md",
+      "check": "link:README.ko.md:reports/eval/metric_contract_v2.md",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/16_RUNTIME_RELEASE_GATES.md",
+      "check": "link:README.ko.md:reports/eval/final_summary.md",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/09_TEST_ACCEPTANCE.md",
+      "check": "link:README.ko.md:prompts/EXTRACT_V1.txt",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/10_DEMO_PORTFOLIO.md",
+      "check": "link:README.ko.md:reports/eval/dev_summary.md",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/13_DATASET_GATES.md",
+      "check": "link:README.ko.md:prompts/EXTRACT_PUBLIC_CANONICAL.txt",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/11_SOURCES_ADR.md",
+      "check": "link:README.ko.md:reports/model/s2_prompt_ab_train.json",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/14_FINAL_AUDIT.md",
+      "check": "link:README.ko.md:configs/frozen_v1.json",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:reports/CLAUDE_MIGRATION_SUMMARY.json",
+      "check": "link:README.ko.md:reports/eval/dev_summary.md",
       "status": "pass",
       "detail": ""
     },
     {
-      "check": "link:README.md:docs/17_CLAUDE_CODE_WORKFLOW.md",
+      "check": "link:README.ko.md:reports/eval/failures_m1_dev_v1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/serving/hf_server.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:docs/images/dashboard-serving.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:docs/images/dashboard-model.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:docs/images/dashboard-progress.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/vlm/train.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/model/train_m1_standard_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/model",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/runpod",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:scripts/runpod",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/eval",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:.github/workflows/ci.yml",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:docs/19_DECISIONS_V5.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/IMPLEMENTATION_STATUS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:scripts/runpod",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:docs/PACKAGE_README_v4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:README.ko.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/images/dashboard-overview.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/public_manifest.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/splits.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/synth",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/vlm/train.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/vlm/infer.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/ocr_baseline.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/evaluation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/score_run.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/compare_runs.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/freeze.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/reconciliation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/serving/hf_server.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/dashboard_server.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/dashboard_static",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/data",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/images/dashboard-public-doc.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/images/dashboard-trade-doc.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/model",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/metric_contract_v2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:prompts/EXTRACT_V1.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/dev_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:prompts/EXTRACT_PUBLIC_CANONICAL.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/model/s2_prompt_ab_train.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:configs/frozen_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/dev_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/failures_m1_dev_v1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/serving/hf_server.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/images/dashboard-serving.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/images/dashboard-model.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/images/dashboard-progress.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/vlm/train.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/model/train_m1_standard_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/model",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/runpod",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:scripts/runpod",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:.github/workflows/ci.yml",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/19_DECISIONS_V5.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/IMPLEMENTATION_STATUS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:scripts/runpod",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/PACKAGE_README_v4.md",
       "status": "pass",
       "detail": ""
     },
@@ -359,9 +729,229 @@
       "detail": ""
     },
     {
+      "check": "link:docs\\PACKAGE_README_v4.md:../prompts/CLAUDE_START.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:../CLAUDE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:../.claude/settings.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:17_CLAUDE_CODE_WORKFLOW.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:../reports/SESSION_HANDOFF.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:../reports/TASK_BOARD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:18_PACKAGE_MIGRATION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:../prompts/CLAUDE_START.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:../prompts/CLAUDE_RESUME.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:../prompts/CLAUDE_RUNPOD_APPROVAL_CHECK.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:../prompts/CLAUDE_MODEL_AND_RELEASE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:00_PROJECT_BRIEF.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:02_PRD.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:01_DATA_PLAN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:04_DATA_CONTRACTS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:06_EVALUATION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:15_LABEL_AND_METRIC_CONTRACT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:03_ARCHITECTURE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:05_MODEL_PLAN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:07_API_UI.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:08_48H_EXECUTION.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:12_RUNPOD_PLAYBOOK.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:16_RUNTIME_RELEASE_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:09_TEST_ACCEPTANCE.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:10_DEMO_PORTFOLIO.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:13_DATASET_GATES.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:11_SOURCES_ADR.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:14_FINAL_AUDIT.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:../reports/CLAUDE_MIGRATION_SUMMARY.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:docs\\PACKAGE_README_v4.md:17_CLAUDE_CODE_WORKFLOW.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\RUNPOD_APPROVAL.md:runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:../RUNPOD_APPROVAL.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:pod_nvidia_smi.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:pod_env.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:../../docs/images/runpod",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:pod_fetch.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:inventory_pod.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:train_compare.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:train_m1_pod_a40.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:parity_dev8.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:restore_local_load.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:predictions",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:../serving/vllm_bf16_a40.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\runpod\\RUNPOD_RUN.md:logs",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "41 local Markdown links"
+      "detail": "159 local Markdown links"
     }
   ],
   "not_performed": [

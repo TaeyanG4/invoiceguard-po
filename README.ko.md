@@ -7,9 +7,9 @@
 [![ci](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml/badge.svg)](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml)
 ![data](https://img.shields.io/badge/data-synthetic%20only-lightgrey)
 ![gpu](https://img.shields.io/badge/GPU-local%20RTX%204070%20Ti%20SUPER-informational)
-![cloud](https://img.shields.io/badge/cloud%20spend-%240-success)
+![runpod](https://img.shields.io/badge/RunPod-A40%20%C2%B7%2043%20min%20%C2%B7%20~%240.43-673ab7)
 
-- **모델:** Qwen3-VL-2B-Instruct(NF4) + QLoRA 어댑터 — 로컬 GPU 1장에서 학습·평가·서빙
+- **모델:** Qwen3-VL-2B-Instruct(NF4) + QLoRA 어댑터 — 로컬 GPU 1장에서 학습·평가·서빙했고, RunPod A40을 빌려 학습 재현과 vLLM 측정을 했습니다([12장](#12-runpod-클라우드-재현))
 - **데이터:** 모두 합성입니다. 공개 InvoiceOCR-Synth와 자체 생성 Invoice–PO를 쓰며, 실제 기업·통관 문서 성능은 주장하지 않습니다.
 - **재현성:** 평가 수치(학습 · dev · final · paired CI)는 고정한 데이터셋 revision · 기본 모델 revision · seed를 쓰면 이 저장소의 스크립트로 다시 만들어집니다. 데이터와 가중치는 내려받는 것이라 저장소에 없고, 학습은 seed 1개로 한 번 돌렸습니다.
 - **정직성:** 실행하지 않은 항목은 `not_run` / `blocked`로 남겼습니다.
@@ -17,17 +17,17 @@
 ![관리자 대시보드 — 개요](docs/images/dashboard-overview.png)
 
 <sub>로컬 관리자 대시보드(읽기 전용, 127.0.0.1)의 개요 화면입니다. 모든 값은 `reports/` · `manifests/`의 기록을 그대로 읽은 것입니다.<br>
-"10/10"은 증거가 있는 단계 수이며, T03 · T07은 로컬 부분만 통과했습니다(RunPod · vLLM은 blocked).</sub>
+"10/10"은 증거가 있는 단계 수입니다. 이 화면을 찍을 때 T03 · T07은 로컬 부분만 통과한 상태였고, RunPod 재현과 vLLM은 그 뒤에 실행했습니다([12장](#12-runpod-클라우드-재현)).</sub>
 
 ## 목차
 
 | | | |
 |---|---|---|
 | 1. [한눈에 보기](#1-한눈에-보기) | 6. [결과](#6-결과) | 11. [비용과 한계](#11-비용과-한계) |
-| 2. [시스템 구성](#2-시스템-구성) | 7. [서빙](#7-서빙) | 12. [재현](#12-재현) |
-| 3. [데이터](#3-데이터) | 8. [검수 API](#8-검수-api) | 13. [출처](#13-출처) |
+| 2. [시스템 구성](#2-시스템-구성) | 7. [서빙](#7-서빙) | 12. [RunPod 클라우드 재현](#12-runpod-클라우드-재현) |
+| 3. [데이터](#3-데이터) | 8. [검수 API](#8-검수-api) | 13. [재현](#13-재현) |
 | 4. [모델과 학습](#4-모델과-학습) | 9. [관리자 대시보드](#9-관리자-대시보드) | |
-| 5. [평가 설계](#5-평가-설계) | 10. [직무 역량 ↔ 증거](#10-직무-역량--증거) | |
+| 5. [평가 설계](#5-평가-설계) | 10. [직무 역량 ↔ 증거](#10-직무-역량--증거) | 14. [출처](#14-출처) |
 
 ---
 
@@ -428,11 +428,10 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 | GPU 메모리 | 약 3.1GB<br><sub>nvidia-smi, 다른 프로세스 포함</sub> |
 | LIVE 시연 | 검수 API(LIVE_MODEL) → 추출 15.2s → `UNIT_PRICE_DIFF` 검출 → 승인 → 스냅샷 export<br><sub>추출 결과가 정답 행과 일치</sub> |
 
-**vLLM: blocked**
-- `vllm/vllm-openai:v0.11.2`(Qwen3-VL 지원 버전)는 CUDA ≥ 12.9가 필요하고, 로컬 드라이버 561.17은 CUDA 12.6까지입니다.
-- 요구 조건 검사를 끄고 시도해도 컨테이너 안 PyTorch가 "No CUDA GPUs are available"로 실패했습니다.
-- 드라이버 업데이트와 클라우드 GPU를 쓰지 않기로 결정했으므로, vLLM 속도 · 양자화 정확도는 주장하지 않습니다.
-- 벤치 스크립트는 준비되어 있습니다: [`serving/vllm_bench.py`](src/invoiceguard/serving/vllm_bench.py)
+**vLLM: 로컬은 blocked, RunPod에서 측정**
+- 로컬에서는 `vllm/vllm-openai:v0.11.2`(Qwen3-VL 지원 버전)가 CUDA ≥ 12.9를 요구하는데 로컬 드라이버 561.17은 CUDA 12.6까지라 실행하지 못했습니다. 요구 조건 검사를 꺼도 컨테이너 안 PyTorch가 "No CUDA GPUs are available"로 실패했습니다.
+- 빌린 A40에서는 같은 벤치([`serving/vllm_bench.py`](src/invoiceguard/serving/vllm_bench.py))가 돌았습니다. M1이 동시성 1에서 분당 24문서, 동시성 8에서 149문서를 처리했고 실패 요청은 없었습니다.
+- 다만 vLLM에서 M1 정확도가 떨어져(0.849 vs 0.960) 속도만 씁니다. 자세한 내용은 [12장](#12-runpod-클라우드-재현)에 있습니다.
 
 ![서빙 페이지](docs/images/dashboard-serving.png)
 
@@ -507,9 +506,11 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 |---|---|
 | LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` + 검증 collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
 | 학습 정확성 검증 | loss mask 감사 360/360, 10-step smoke, 재로드 일치<br><sub>[`reports/model/`](reports/model)</sub> |
+| 다른 머신에서의 재현 | 동결 학습을 RunPod A40에서 다시 돌림: step별 loss 차이 0.002 이내, dev 출력 동일<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
+| 클라우드 GPU 운영 | MCP로 Runpod 운영: 실제 견적 → 승인 → Pod → SSH · 터널 검사 → 학습 → SHA256 백업 → 삭제, $0.43<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | 추출 정확도 · 실패 분석 · 개선 | 세트별 평가기 · paired bootstrap, 실패 분류, 개선 1건과 **음성 결과**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | 자동 채점 · 회귀 테스트 | pytest 160개 이상(규칙 B01–B12, 평가 E01–E05, API A01–A08, 대시보드)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · 동결 · 해시 가드</sub> |
-| 서빙 · 성능 측정 | 직접 만든 Transformers + PEFT GPU 서버(서빙 프레임워크 아님) — 실제 타임아웃 취소 · bounded queue 실측<br><sub>[`reports/serving/`](reports/serving) · vLLM은 blocked</sub> |
+| 서빙 · 성능 측정 | 직접 만든 Transformers + PEFT GPU 서버(서빙 프레임워크 아님) — 실제 타임아웃 취소 · bounded queue 실측<br><sub>[`reports/serving/`](reports/serving)</sub><br>RunPod에서 vLLM 0.11.2: 동시성 1–8의 연속 배칭 측정 |
 | OCR / 문서 AI | Tesseract 기준선 B0<br><sub>train/dev만 보고 만든 일반 규칙, Docker 격리</sub> |
 | 표 구조 문서 · 도메인 규칙 | 구조가 다른 인보이스 레이아웃 6종 렌더러, PO 대사 규칙 |
 | 서비스 연동 | 검수 API: 추출 CAS, 늦은 응답 덮어쓰기 방지, 승인 스냅샷 export |
@@ -519,7 +520,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 ## 11. 비용과 한계
 
 **비용**
-- 클라우드 지출 **$0** — RunPod은 쓰지 않았습니다(사용자 결정).
+- 클라우드 지출 **약 $0.43** — RunPod A40 Pod 1대를 시간당 $0.60에 43분 사용([12장](#12-runpod-클라우드-재현))
 - 학습 1회 약 22분, final M0 · M1 추론 약 49분(B0 OCR 시간은 기록 없음), 모두 로컬 GPU
 
 **한계**
@@ -529,10 +530,10 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 - M0의 낮은 strict 점수는 형식 효과(코드펜스)가 큽니다. 동결 전 프롬프트 A/B로도 없어지지 않았고, 펜스 제거 후처리는 동결된 계약에 들어 있지 않습니다.
 - 모호수량 실패는 해결되지 않았습니다.
 - 서빙
-  - 서빙 프레임워크(vLLM)는 측정하지 못했습니다(blocked).
+  - vLLM은 RunPod에서만 측정했습니다. 속도는 측정했지만 vLLM에서 M1 정확도가 떨어졌고 원인은 확정하지 못했습니다.
   - 양자화 비교 없음(NF4 단일), 배칭 없음(batch 1, 직렬 작업자)
   - 벤치는 문서 10장 · 반복 1회이고, 서빙 서버 자체의 자동 테스트 없이 수동 probe만 있습니다.
-- 클라우드 GPU 운영 · 비용 증거는 not_run입니다.
+- RunPod 재현은 seed 1개 · 1회이고, dev parity는 8건입니다. Pod 안 자동 정지는 권한 문제로 걸지 못해, Pod를 삭제할 때까지 지켜보며 진행했습니다.
 - FSDP / DeepSpeed는 2B 모델 · 단일 GPU에서 필요가 없어 쓰지 않았습니다([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
 - 검수 **화면 UI는 미구현**입니다(검수 API와 읽기 전용 관리자 대시보드만 있음).
 
@@ -542,7 +543,93 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 
 ---
 
-## 12. 재현
+## 12. RunPod 클라우드 재현
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/runpod/runpod-wordmark-on-dark.svg">
+  <img alt="Runpod" src="docs/images/runpod/runpod-wordmark-on-light.svg" height="34">
+</picture>
+
+동결한 M1 학습을 클라우드 GPU를 빌려 한 번 더 돌렸습니다.
+목적은 더 좋은 모델이 아니라, 학습이 **다른 머신에서도 제대로 돌고 같은 결과를 내는지** 증명하고 실제 서빙 프레임워크(vLLM)를 측정하는 것입니다.
+
+**대여한 서버**
+
+| 항목 | 사양 |
+|---|---|
+| GPU | NVIDIA A40 48 GB × 1 · Secure Cloud, CA-MTL-1<br><sub>드라이버 595.91 · CUDA 13.2 · Ampere (로컬 GPU는 Ada)</sub> |
+| 머신 | 9 vCPU Xeon Gold 6342 · 50 GB RAM<br><sub>container 디스크 80 GB + volume 20 GB</sub> |
+| 이미지 | `runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404`<br><sub>공식 템플릿. 이미지의 torch는 쓰지 않고 저장소 lockfile을 그대로 설치</sub> |
+| 접속 | SSH `22/tcp`만 공개<br><sub>모델 API는 Pod 안 127.0.0.1에서만 열고 SSH 터널로 접근</sub> |
+| 단가 · 시간 · 비용 | 시간당 $0.60 (GPU 0.59 + 디스크 0.014) · 43분 · **약 $0.43** |
+
+| Pod 상세와 요금 | vLLM 벤치 중 텔레메트리 |
+|---|---|
+| <img src="docs/images/runpod/console-pod-details.png" alt="Runpod 콘솔 — Pod 상세: A40, CA-MTL-1, 시간당 $0.60" width="400"> | <img src="docs/images/runpod/console-pod-telemetry.png" alt="Runpod 콘솔 — Pod 텔레메트리: A40 VRAM과 사용률" width="400"> |
+
+<sub>Pod가 실행 중일 때의 Runpod 콘솔입니다(계정 잔액 · 프로필은 가림). Pod `jwvf173fyus06x`는 실행 후 삭제했습니다.</sub>
+
+**진행 과정**
+
+```mermaid
+flowchart TB
+  subgraph P["1 · 준비"]
+    direction LR
+    A["계정 조회<br/>MCP · 읽기 전용"] --> B["실제 견적 → 승인"] --> C["Pod 생성 → 다시 조회"] --> D["호스트 키 · scp SHA256<br/>· SSH 터널"]
+  end
+  subgraph T["2 · 학습 검증"]
+    direction LR
+    E["같은 lockfile<br/>· 고정 다운로드"] --> F["마스크 감사<br/>· 입력 해시"] --> G["smoke · 10 step"] --> H["본 학습 · 80 step<br/>→ 로컬과 비교"]
+  end
+  subgraph S["3 · 서빙 · 정리"]
+    direction LR
+    I["dev parity"] --> J["vLLM 벤치"] --> K["백업 SHA256<br/>· 로컬 복원"] --> L["Pod 삭제<br/>→ $0/h 확인"]
+  end
+  P --> T
+  T --> S
+```
+
+- 인프라 조작은 Runpod MCP 서버(OAuth 로그인)로 했습니다. API 키를 만들거나 입력하지 않았고, 생성 · 삭제는 매번 다시 조회해 확인했습니다.
+- 실제 견적(GPU · 디스크 · 최대 시간 · 최대 비용 · 종료 계획)을 명시적으로 승인받기 전에는 과금되는 작업을 시작하지 않았습니다([`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md)).
+- 단계마다 검사를 두어, 하나라도 실패하면 뒤 단계가 실행되지 않게 했습니다([`scripts/runpod/`](scripts/runpod)).
+
+**학습 재현 결과**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/runpod-loss-ko-dark.svg">
+  <img alt="optimizer step별 loss — 로컬 RTX 4070 Ti SUPER와 RunPod A40 곡선이 겹침" src="docs/images/runpod-loss-ko-light.svg">
+</picture>
+
+| 기준<br><sub>Pod 결과가 나오기 전에 고정</sub> | 로컬<br><sub>RTX 4070 Ti SUPER · Windows</sub> | RunPod<br><sub>A40 · Linux</sub> | |
+|---|---:|---:|:---:|
+| step 1 loss<br><sub>상대 차이 ≤ 2 %</sub> | 0.3643 | 0.3641 | ✅ |
+| 80 step 평균 loss<br><sub>상대 차이 ≤ 10 %</sub> | 0.04872 | 0.04857 | ✅ |
+| 마지막 10 step 평균 loss<br><sub>절대 차이 ≤ 0.01</sub> | 0.00884 | 0.00882 | ✅ |
+| 구조<br><sub>micro-step 641개 마스크 재검사 · 학습 파라미터 1,605,632개(언어 q/v LoRA만) · 재로드 일치</sub> | 같음 | 같음 | ✅ |
+| 학습 시간 · 최대 VRAM | 1,308초 · 6.52 GB | 620초 · 6.52 GB | |
+
+- 학습 전에 모든 입력을 로컬과 대조했습니다. 패키지 버전이 같고(리눅스는 CUDA 런타임 휠만 추가), SHA256도 모두 같습니다: 모델 11개 파일, manifest 4개, 자체 이미지·정답 512개, parquet 샤드 2개, Pod에서 다시 추출한 공개 학습 이미지 200장. 마스크 감사 360/360.
+- 같은 자체 dev 8건을 기준 경로(HF NF4)로 추론했을 때, Pod에서 학습한 어댑터의 **원문 출력이 로컬 어댑터와 8/8 동일**했고 필드 정확도도 둘 다 200/204입니다.
+- 복원 확인: Pod 어댑터를 로컬 GPU에 올려 돌리면 Pod 출력과 글자 단위로 같습니다(2/2).
+
+**vLLM 0.11.2 서빙** — A40, bf16, 자체 dev 20건, max_tokens 1536, 실패 요청 0건
+
+| 모델 | 동시성 1 | 2 | 4 | 8 |
+|---|---:|---:|---:|---:|
+| M0 기본 | 분당 18.2문서<br><sub>p50 3.1초</sub> | 34.0<br><sub>3.3초</sub> | 62.7<br><sub>3.5초</sub> | 104.8<br><sub>3.9초</sub> |
+| M1 LoRA | 분당 24.3문서<br><sub>p50 2.2초</sub> | 47.1<br><sub>2.3초</sub> | 87.7<br><sub>2.4초</sub> | 149.3<br><sub>2.6초</sub> |
+
+- 연속 배칭 덕분에 동시성을 올리면 처리량이 거의 비례해 늘고, p50은 약 20 %만 늘었습니다.
+- **정확도 주의:** vLLM에서 M1은 0.849로, HF NF4 경로의 0.960보다 낮았습니다(M0는 0.969 vs 0.941).
+  - M1은 문서마다 정확히 4필드씩 틀렸고, 출력이 약 40토큰 짧았습니다. 문서 합계 4필드의 길이와 같습니다.
+  - 어댑터는 NF4로 양자화한 기본 모델 위에서 학습했는데, vLLM은 bf16 기본 모델에 붙였습니다. 이 불일치가 가장 유력한 원인이지만 확정하지 못했습니다. 이번 벤치가 원문 응답을 저장하지 않았기 때문입니다(지금은 저장하도록 고침).
+  - 그래서 이 vLLM 수치는 속도 측정으로만 쓰고, vLLM에서의 LoRA 서빙 품질은 미해결로 둡니다.
+
+전체 기록: [`reports/runpod/RUNPOD_RUN.md`](reports/runpod/RUNPOD_RUN.md)
+
+---
+
+## 13. 재현
 
 **0) 제품 · 평가 환경 (CPU)**
 ```bash
@@ -593,7 +680,15 @@ docker build -t invoiceguard-ocr:tesseract docker/ocr
 .venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765
 ```
 
-**7) README 차트 · 데이터 샘플 다시 만들기** — 차트는 `reports/`의 기록에서, 샘플은 로컬 데이터에서 생성합니다.
+**7) RunPod 재현** — 직접 SSH가 되는 승인된 Pod가 필요합니다([`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md)). Pod에서 저장소를 푼 위치에서:
+```bash
+bash scripts/runpod/pod_setup.sh    # Python 3.11.9 + lockfile, 고정 모델·데이터 다운로드와 SHA256 검사
+bash scripts/runpod/pod_train.sh    # 마스크 감사 → 입력 해시 → smoke → 80 step 학습 (단계마다 검사)
+bash scripts/runpod/pod_parity.sh   # 기준 경로(HF NF4)로 dev parity
+python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --smoke reports/runpod/pod_smoke_train.json
+```
+
+**8) README 차트 · 데이터 샘플 다시 만들기** — 차트는 `reports/`의 기록에서, 샘플은 로컬 데이터에서 생성합니다.
 ```bash
 .venv/Scripts/python.exe -m invoiceguard.readme_figures
 .venv/Scripts/python.exe -m invoiceguard.readme_samples
@@ -603,10 +698,11 @@ docker build -t invoiceguard-ocr:tesseract docker/ocr
 
 ---
 
-## 13. 출처
+## 14. 출처
 
 - **공개 데이터:** [alamgirqazi/invoice-ocr-synthetic](https://huggingface.co/datasets/alamgirqazi/invoice-ocr-synthetic), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
   - 이 데이터셋의 합성 이미지를 축소해 README 샘플(`docs/images/data/public-*.jpg`, 템플릿 6종과 품질 비교 3장)과 공개 데이터 화면 캡처(`docs/images/dashboard-public-doc.png`)에 넣었습니다.
   - 데이터 자체는 저장소에 포함하지 않습니다.
 - **기본 모델:** [Qwen/Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct) — 가중치는 저장소에 포함하지 않습니다.
 - **OCR:** [Tesseract](https://github.com/tesseract-ocr/tesseract) 4.1.1 (Docker 이미지 안에서 실행)
+- **클라우드 GPU:** [Runpod](https://www.runpod.io) — 12장의 워드마크는 Runpod 콘솔에서 가져온 것으로 제공사를 나타내는 용도로만 썼으며 Runpod의 상표입니다. 콘솔 캡처는 이 프로젝트가 빌린 Pod 화면입니다.

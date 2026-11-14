@@ -1,0 +1,10 @@
+vllm_bf16_a40 m0 1 {'requests': 40, 'failures': 0, 'wall_s': 132.18, 'docs_per_min': 18.16, 'p50_s': 3.08, 'p95_s': 5.25, 'gpu_mem_mb_max': 36129}
+vllm_bf16_a40 m0 2 {'requests': 40, 'failures': 0, 'wall_s': 70.68, 'docs_per_min': 33.96, 'p50_s': 3.25, 'p95_s': 5.48, 'gpu_mem_mb_max': 36129}
+vllm_bf16_a40 m0 4 {'requests': 40, 'failures': 0, 'wall_s': 38.26, 'docs_per_min': 62.73, 'p50_s': 3.46, 'p95_s': 5.84, 'gpu_mem_mb_max': 36129}
+vllm_bf16_a40 m0 8 {'requests': 40, 'failures': 0, 'wall_s': 22.91, 'docs_per_min': 104.78, 'p50_s': 3.89, 'p95_s': 6.5, 'gpu_mem_mb_max': 36129}
+vllm_bf16_a40 m1 1 {'requests': 40, 'failures': 0, 'wall_s': 98.64, 'docs_per_min': 24.33, 'p50_s': 2.24, 'p95_s': 4.17, 'gpu_mem_mb_max': 36129}
+vllm_bf16_a40 m1 2 {'requests': 40, 'failures': 0, 'wall_s': 51.0, 'docs_per_min': 47.06, 'p50_s': 2.26, 'p95_s': 4.23, 'gpu_mem_mb_max': 36129}
+vllm_bf16_a40 m1 4 {'requests': 40, 'failures': 0, 'wall_s': 27.35, 'docs_per_min': 87.74, 'p50_s': 2.4, 'p95_s': 4.39, 'gpu_mem_mb_max': 36129}
+vllm_bf16_a40 m1 8 {'requests': 40, 'failures': 0, 'wall_s': 16.08, 'docs_per_min': 149.25, 'p50_s': 2.62, 'p95_s': 4.9, 'gpu_mem_mb_max': 36129}
+/root/ig/reports/serving/vllm_bf16_a40.json
+EXIT=0

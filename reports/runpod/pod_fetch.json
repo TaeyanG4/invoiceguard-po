@@ -1,0 +1,24 @@
+{
+ "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+ "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+ "dataset_id": "alamgirqazi/invoice-ocr-synthetic",
+ "dataset_revision": "673ff85be462eb7f3715ec188a295dd17ca11115",
+ "checks": {
+  "model.safetensors": {
+   "sha256": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0",
+   "expected": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0",
+   "ok": true
+  },
+  "data/train-00000-of-00002.parquet": {
+   "sha256": "62b0432e30bc41baff495f0dfdfc64ffbccaaa39f1814e9528b7ed0d9f2085b3",
+   "expected": "62b0432e30bc41baff495f0dfdfc64ffbccaaa39f1814e9528b7ed0d9f2085b3",
+   "ok": true
+  },
+  "data/train-00001-of-00002.parquet": {
+   "sha256": "7e48694c5acb676a7d9853c07cba82affb652463ccf14b1f97e678302a7d968b",
+   "expected": "7e48694c5acb676a7d9853c07cba82affb652463ccf14b1f97e678302a7d968b",
+   "ok": true
+  }
+ },
+ "all_ok": true
+}

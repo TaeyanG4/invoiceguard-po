@@ -1,0 +1,3014 @@
+{
+ "groups": {
+  "model": {
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/.gitattributes": [
+    1519,
+    "11ad7efa24975ee4b0c3c3a38ed18737f0658a5f75a0a96787b576a78a023361"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/README.md": [
+    7136,
+    "5fc5be1ca9a3910399bd6239ee5086ab5d82a2a59c5d2b00e887a8835cc110e4"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/chat_template.json": [
+    5502,
+    "6f8a6a55027e3da5160105556cda5dd69f6423f1c32645f6730d32de7773d0c4"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/config.json": [
+    1505,
+    "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/generation_config.json": [
+    269,
+    "1e241830b48b397cb0900101421df5450baddc7adf01e5fc86b5615865f3bae4"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/merges.txt": [
+    1671839,
+    "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/model.safetensors": [
+    4255140312,
+    "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/preprocessor_config.json": [
+    390,
+    "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/tokenizer.json": [
+    7032403,
+    "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/tokenizer_config.json": [
+    10868,
+    "c2da771801886ad9ae98181793ffd3dfb7f1af30f6f7c6a4e15d7dbba52e2399"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/video_preprocessor_config.json": [
+    385,
+    "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13"
+   ],
+   "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/vocab.json": [
+    2776833,
+    "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+   ]
+  },
+  "manifests": {
+   "manifests/public_canonical_v1.jsonl": [
+    3752064,
+    "1495b06a45881dbfe8e911ff8f1ee6498786743a5cae989ff33bb584834320d7"
+   ],
+   "manifests/stress_v1.jsonl": [
+    22224,
+    "677167cf8a9a2ecb21fac1c172af259a43d0b82369e234c1e8e4a64bd4e5f853"
+   ],
+   "manifests/trade_raw_aug1.jsonl": [
+    20832,
+    "35e6acba1cc06170ac632855ad1ded4d83b27dbfc35a707c6d4385b98dd6ddd5"
+   ],
+   "manifests/trade_raw_v1.jsonl": [
+    208208,
+    "f818ae30cc855521b2a758942fc979263e9cdedf7b42d2743171678dd7fef0ae"
+   ]
+  },
+  "trade_images": {
+   "data/processed/trade/images/tr_002414b0a798.png": [
+    56125,
+    "e6ee6c844a5095fc7d4d575aabf0596231b8d1a05a520584f9dbbd0f5f853266"
+   ],
+   "data/processed/trade/images/tr_0093094e697e.png": [
+    94406,
+    "f9c21d271977e0db6308e55485c0cb951f9f3e8620bb2f0cf69368b85b158aa0"
+   ],
+   "data/processed/trade/images/tr_01ed9dbd532f.png": [
+    59589,
+    "0c31fa62aedc943b96bc7eca0540a755524edff6bf27317de44cf9acae1bd065"
+   ],
+   "data/processed/trade/images/tr_02421e2a7512.png": [
+    82060,
+    "621e7e9f7230d4772be4858f24c51f9cb1fe32f8bc2afdf5c1c72049fb575855"
+   ],
+   "data/processed/trade/images/tr_03980862d34e.png": [
+    88454,
+    "113f992f417698aaecc5b01928cc9f290a07da88a549e89cda66919502335899"
+   ],
+   "data/processed/trade/images/tr_03a99c835018.png": [
+    75887,
+    "b6d67b54861a8c3bf8ec41ea5fac826b80c6e1684bca2c5b1e8a6b5cc2b6b188"
+   ],
+   "data/processed/trade/images/tr_03b4c31e5759.png": [
+    90779,
+    "fd55c35ab98c14eac4b462a1ea0d1d803f1e4503c4f179e1f44deb2199b0bbdf"
+   ],
+   "data/processed/trade/images/tr_05503289ad66.png": [
+    69627,
+    "5806d70dad713857543bb0fad29bd72d823c0e7c07526b0c16f1ba193075a5b4"
+   ],
+   "data/processed/trade/images/tr_05504c13d093.png": [
+    86264,
+    "000d4dfb70fa4da13e7783928e4550bf9fc35fafa0ce76a383941f445cade2bc"
+   ],
+   "data/processed/trade/images/tr_0658d6ae1bfc.png": [
+    85528,
+    "48e79a59a15b98eecf46e2cc73b051d708067fe94ee313062cc566a00c22b5cd"
+   ],
+   "data/processed/trade/images/tr_08b5bc6e0127.png": [
+    89508,
+    "d6c59036f87e9675352630cfece80d8a5c8d3ee2939198cd194e450199467463"
+   ],
+   "data/processed/trade/images/tr_091f6b8c0b9d.png": [
+    97932,
+    "7b850557ff41b00b01f3f0cf643a64445a320cc240a33e2f54ee44d9b9632da7"
+   ],
+   "data/processed/trade/images/tr_094c507908ef.png": [
+    76694,
+    "acc9b26b4b75ba82db40721903e7b541810170092139e611aa375e3ba6d3dcf0"
+   ],
+   "data/processed/trade/images/tr_09b9e8bcd654.png": [
+    74503,
+    "726b467b60ca37f8047529ba708bb660352ada8e2f1e620204d10b32325f2434"
+   ],
+   "data/processed/trade/images/tr_09e43eb1f12a.png": [
+    87797,
+    "accfd7505280a9c47ab812f6997f484e7be8cad24b0ff56d3f98c90af3ab7171"
+   ],
+   "data/processed/trade/images/tr_0a715972eb33.png": [
+    84445,
+    "70f79e8d55dba1c5e6625075b3ad88898c68ae336fc10dc687ec558e52012725"
+   ],
+   "data/processed/trade/images/tr_0af26980b10c.png": [
+    84416,
+    "aac3faaba00665c8f31ced246d977530fc92b516473615d8c9ea459fe90aa25b"
+   ],
+   "data/processed/trade/images/tr_0b3019e33ef2.png": [
+    72907,
+    "0561d64b5c2bc2f7c492acd5ca68418067f86b9b16e20700cded219ba05b0ab1"
+   ],
+   "data/processed/trade/images/tr_0c8e4b5983f5.png": [
+    97309,
+    "94f8f5474bc0f51d30463012a93a8accfc6a0b8abe96a1382f57feb642fe8a21"
+   ],
+   "data/processed/trade/images/tr_0dc291e8cb69.png": [
+    78085,
+    "cb0103d1cdf2a69e0a4dab34235d2fe0a5b95d26df2fc40e0ca5f6cf0e802245"
+   ],
+   "data/processed/trade/images/tr_0e6795ece3a5.png": [
+    89090,
+    "734bde509285adc4c2910afbe8f006f88bfe9a67d9c195e889e59536f7dd076f"
+   ],
+   "data/processed/trade/images/tr_0ff9cc9281be.png": [
+    94810,
+    "7dcbb6cc9f9b72ab471aecdf4543de5aaaed5574ff219aee1bbf1d16e5e2b3bb"
+   ],
+   "data/processed/trade/images/tr_1194d7d09e63.png": [
+    83133,
+    "18f9ada6fe097d16f997a688c2d4e063a4425655964ffac1ce163fa7c22ec58f"
+   ],
+   "data/processed/trade/images/tr_11e68662d795.png": [
+    70313,
+    "3fe73e3958fb225f1bd52ce84bbc6ffb2da7e4bfdf178313cc1ee353504237d7"
+   ],
+   "data/processed/trade/images/tr_120df3f523cb.png": [
+    121788,
+    "96d88e1d870bb5c7cb903ec61705deac334414291f13ede123c779f9b6e14ec4"
+   ],
+   "data/processed/trade/images/tr_13901deb7272.png": [
+    92129,
+    "77fb31017a38cd677d71e49612fc78ecf9ddbd72c5dfacb11d3b62368a56aa9e"
+   ],
+   "data/processed/trade/images/tr_13df2537f2b7.png": [
+    94613,
+    "c10cc91de37a66f72b807cf89835848100bdad09b3fe777b7963054719b5e8bd"
+   ],
+   "data/processed/trade/images/tr_14243b34f0db.png": [
+    105978,
+    "29cfe8cb5d098256beafe087c2425becde548b95765700bced9f421964b13360"
+   ],
+   "data/processed/trade/images/tr_14389a58f408.png": [
+    81365,
+    "c3de3cd3575af238dc0d0c2e0cb973c6d3ad7572c0d054978e0033d60008704f"
+   ],
+   "data/processed/trade/images/tr_1482786b6cb0.png": [
+    82838,
+    "5ab86d4116d90525ec5a97807acce997a2774bb0dbe85fc3136da141d81823a7"
+   ],
+   "data/processed/trade/images/tr_14f8336bb5d9.png": [
+    62087,
+    "25af7e136aa51220d8270e2d3d18c421e033677611d5dce11cd17cf392797944"
+   ],
+   "data/processed/trade/images/tr_181c688047a4.png": [
+    80688,
+    "cddc5db630184086be1a2ba0f1f0b617ea8d13b7fee7a88543d1b8b79ff7f17f"
+   ],
+   "data/processed/trade/images/tr_18f1852e27a8.png": [
+    80217,
+    "824cf1ff6ffad0efd7edc3cf08386f8a4b388041b1baf8e92796dfa1933f041f"
+   ],
+   "data/processed/trade/images/tr_1a121bfc5d60.png": [
+    83867,
+    "54e9d565e6cc79d3d4bd9ea68ed2ae0698b9907ae676bd89e5cb517875f1b186"
+   ],
+   "data/processed/trade/images/tr_1a2081cc25da.png": [
+    75759,
+    "da454a29d737e18915f4d5faffd6283bb5e8535669a1f88408f4e9cc4df7d20c"
+   ],
+   "data/processed/trade/images/tr_1b8bec7f7de8.png": [
+    113894,
+    "6b40dab3eb329cfe21d33a4c37590b893c90012f3423c7114d4a6309dde42140"
+   ],
+   "data/processed/trade/images/tr_1f50ee56d02f.png": [
+    93990,
+    "10afff3db12a739872fb1b47c28622ac4495b700474d0fe78241520084f202c3"
+   ],
+   "data/processed/trade/images/tr_1f7e72d2e56e.png": [
+    95899,
+    "324941333b3d39bf557d9d6256da1d57ae78ed5d79cfabd25968a0abacf0a447"
+   ],
+   "data/processed/trade/images/tr_1fcd4934879b.png": [
+    91634,
+    "7b9732603d41b8c3b285074a4e382ea1686f04b00b054c7064b2c2bbf8c7942a"
+   ],
+   "data/processed/trade/images/tr_20d0e80993a4.png": [
+    68677,
+    "cf80c356fd9c97b840acdae5f34517528e68452ea281d78f2eb826e80434d097"
+   ],
+   "data/processed/trade/images/tr_20d5c62bb029.png": [
+    100171,
+    "08d71f4461cb965dbb4032e157f107f84b6627e5c0a5163cea8b9edb1ee6c2ed"
+   ],
+   "data/processed/trade/images/tr_22bc871e01ab.png": [
+    92101,
+    "7126b378a0f8168f1f3eb8c96b2edd776f1d481c52019fd52406fc2e35cb344b"
+   ],
+   "data/processed/trade/images/tr_23ae14b19700.png": [
+    76303,
+    "b7a7754917d9eb3449eba810d4f4aafe40343e11606cc3cd6bce37c5357031a1"
+   ],
+   "data/processed/trade/images/tr_23cabcdfd725.png": [
+    86524,
+    "18e9b43c98230e63b2a05314472782851e725889b8a2d9b6ea3df4280d029c0c"
+   ],
+   "data/processed/trade/images/tr_24ee16eb748a.png": [
+    55935,
+    "48b535fe4ad77d92a3dfcb68357420e6b1c1a76cf1211523d19284cc88cacd87"
+   ],
+   "data/processed/trade/images/tr_25c00d939e64.png": [
+    75887,
+    "32ae9169a91a291488f6d5a102aca456b6b32888b158e53aa1210072a9bd85a2"
+   ],
+   "data/processed/trade/images/tr_2665ee8ccfd1.png": [
+    92236,
+    "559c04189bfea801a5ed680c7c507df10371e2c015175d363ffe080660424988"
+   ],
+   "data/processed/trade/images/tr_267c7e343ad5.png": [
+    79875,
+    "616f768f9e48c9086e509b42241ad21fc054203292acf8ddd081fd2789b03f90"
+   ],
+   "data/processed/trade/images/tr_27612b774631.png": [
+    88268,
+    "995b69db0d90b37ca0b43cd76059e61e06e5b8a2a232b81dce24d5ce671c0ad6"
+   ],
+   "data/processed/trade/images/tr_27ab52579448.png": [
+    96686,
+    "15c87aea76f0ad7263329d43296a2d14f9361d319088b6728b079411235b6aa3"
+   ],
+   "data/processed/trade/images/tr_2963dce4e0ed.png": [
+    72628,
+    "fb5acf0c1dce3281d0ca27add8c36122a3f9dbd6c4df64c0aa8ebfb9075c0bd5"
+   ],
+   "data/processed/trade/images/tr_29f3c4e354c9.png": [
+    64475,
+    "b010e079edf8271478c3e3959a8d02fbb0b96fbbe25d577ba3cbf566a0d9872e"
+   ],
+   "data/processed/trade/images/tr_2bef915eb05c.png": [
+    78680,
+    "f51e20af7d9c6c4656ffb87e3e0607be8b17c78a25593652d2008716eeca048a"
+   ],
+   "data/processed/trade/images/tr_2bfd27e31de5.png": [
+    89347,
+    "0147c36735cbf8a2f659366b1259f32af33392b3248c3a68f2a41f9a2f066fc2"
+   ],
+   "data/processed/trade/images/tr_2c53da1a3ec3.png": [
+    116586,
+    "cc8da369c68fbdce9ead4f3c3539c560045c2ca72e0c0d02c63e4c35ab15e982"
+   ],
+   "data/processed/trade/images/tr_2d4a856141fc.png": [
+    85434,
+    "3948fda4d65aeefcffd1623ae46b5688e66ddaee7a85795642e9e222ede03980"
+   ],
+   "data/processed/trade/images/tr_2f777202ad89.png": [
+    65904,
+    "49ffb605eb157c6f96cc4de5a3039001961b3fd4342a42c4329395330d07e876"
+   ],
+   "data/processed/trade/images/tr_30a288f74a8f.png": [
+    84556,
+    "d8a2028791fa24b168ee93cdb35dfa3b198a36321de2bd2a371bf09627f29502"
+   ],
+   "data/processed/trade/images/tr_35cc701ffe68.png": [
+    118222,
+    "fa2f3493ab9df478489250ff9de5e17c2008c3dd421c52358ab696290e748df1"
+   ],
+   "data/processed/trade/images/tr_3668c21e12ee.png": [
+    78658,
+    "7a7b3e50f17cb9874970e722a35134da90c3a5dee5473e0f2036ce70b30efcb3"
+   ],
+   "data/processed/trade/images/tr_3681f6c4b904.png": [
+    95375,
+    "b2732e4aab4eacfd870a577b45a83b74b2be5544e3bdfc528bd552073d4dc33f"
+   ],
+   "data/processed/trade/images/tr_37c009e5f978.png": [
+    66909,
+    "91f4368649973f905345a6beccc63e5298aed25d862a76792a962709d6f407fb"
+   ],
+   "data/processed/trade/images/tr_37c21fa6307c.png": [
+    94232,
+    "a87cd8342567f4739baec2c04d42e2ec3fbed2b9cc2f328e7c45b47588955496"
+   ],
+   "data/processed/trade/images/tr_37e17b3631ed.png": [
+    113038,
+    "6c20f11909d5d4c95c74d8c5e0b9ce13dc63638e1b652c19818f8f815395548f"
+   ],
+   "data/processed/trade/images/tr_381d80972097.png": [
+    65160,
+    "3a80f2d84635f46b5a82d0c3c600da9366f7ee7927fc81f724a260b5365a9724"
+   ],
+   "data/processed/trade/images/tr_38a48a5d8851.png": [
+    88760,
+    "b15c44e08d0c0d46328a8053c43bf351b1beae12943aea65615b3185b10f0187"
+   ],
+   "data/processed/trade/images/tr_39d0d52c84bc.png": [
+    71446,
+    "5a7cd7929bc548c6e697f6e98b35e6587cb02f89ca04db44aeb1e86304b7b0c3"
+   ],
+   "data/processed/trade/images/tr_3c3eca10e790.png": [
+    73580,
+    "e0243561e5b7664585804a7141d1da2aec400405aeb3dfb49ea085b5658438e0"
+   ],
+   "data/processed/trade/images/tr_3cd64dc9128a.png": [
+    90683,
+    "93c1156df3662b68da1c503508c1448ee1072be388a4781699ccdb3580dfd96a"
+   ],
+   "data/processed/trade/images/tr_3d6c316a6402.png": [
+    88613,
+    "a9bc9e676e84520eb915716f3c88a3e541402b780c8e2c6fc5382f5645ff2211"
+   ],
+   "data/processed/trade/images/tr_3dcbc7f5db6d.png": [
+    96926,
+    "a7d41c7de9cc21e4db386f0d579dd598b0293bde15d537258bf06d261725e595"
+   ],
+   "data/processed/trade/images/tr_3e0824984486.png": [
+    118907,
+    "e503b1c2ff1534b8414cc200a571dd3dd0bfbc62a03fb155ab1502a470f8f643"
+   ],
+   "data/processed/trade/images/tr_3e4b9cd4e4a2.png": [
+    76268,
+    "b37c764a14945dc76cbaa3be8eb5a55a5d3a07389d6da74cfe87468ee2f0e915"
+   ],
+   "data/processed/trade/images/tr_3e4e977151a4.png": [
+    93054,
+    "0cd955f369956c99b4f669f8c23a344f6f6497f590325ea2e7e2b18c6e5aaf20"
+   ],
+   "data/processed/trade/images/tr_3e92ad254204.png": [
+    99283,
+    "a5e876dc1f6fae08008a14ad79ae5c360bc5997ad8715de4bd69dc498899b70e"
+   ],
+   "data/processed/trade/images/tr_3f17dd7a6ad1.png": [
+    84960,
+    "405c07802b41e246cfdc97e2bf2611b8c6ed4076173e392f6ee71ba531f87af7"
+   ],
+   "data/processed/trade/images/tr_40e79ae660cd.png": [
+    105271,
+    "375f9795cc47351d97f79b81ea70ac4579c75346104a9328de071b4b9f27e870"
+   ],
+   "data/processed/trade/images/tr_41104e4e2d39.png": [
+    81408,
+    "8e34b4bea8a504dde0690cd39f35988c1c1303c8801f92676aa13ac8eabae317"
+   ],
+   "data/processed/trade/images/tr_41c10b1c36ef.png": [
+    123070,
+    "0ae3cbf190f66dd0ff904fee5a229a4141c08c79c6208ad0789e60420768eed0"
+   ],
+   "data/processed/trade/images/tr_41ef819f4cf4.png": [
+    89363,
+    "a251b84defd87acb3ca6c580bdb3a68fcb8d937f5dfe90f447e70218e9ac71b0"
+   ],
+   "data/processed/trade/images/tr_41effcb56975.png": [
+    77850,
+    "f639d3f75fd16e554d744c933a578ba8388148fdce223e54cf971a6974c5d934"
+   ],
+   "data/processed/trade/images/tr_4268528d86e8.png": [
+    100612,
+    "810f5aee8ea8d879e7c851d3ac581f022210ec880962f74e41a0ff826bc146ec"
+   ],
+   "data/processed/trade/images/tr_427da668e937.png": [
+    106061,
+    "ad964d0031b710e14d8a8ca179ecde4ea684f0ad73392837c7e52278f3ac823c"
+   ],
+   "data/processed/trade/images/tr_443997982a64.png": [
+    79820,
+    "1e0ec10a0ab954b04bca58bad89e12128eec7eef043551eab62d1ccf8518327f"
+   ],
+   "data/processed/trade/images/tr_44e13fde0bbc.png": [
+    89676,
+    "2cbca245996d0da039787c6133028276120589a144db39422060b7c5204a9d4c"
+   ],
+   "data/processed/trade/images/tr_469db56781e0.png": [
+    105253,
+    "b48238eba3b90c76afabc9c70b126798c33f427bfa5a78fb21770f7368ec3897"
+   ],
+   "data/processed/trade/images/tr_480d4faa9e3c.png": [
+    87221,
+    "33e024740cac8ec65be3001eb7d26eded7c4cd28d614be73b0c5b63ce3a47528"
+   ],
+   "data/processed/trade/images/tr_489dcc965b4b.png": [
+    64895,
+    "fd78155ee0ce5e0a6ea620b1243b1965e69fef43e014804c973150675eb28bd7"
+   ],
+   "data/processed/trade/images/tr_495b025c3852.png": [
+    90838,
+    "fd0365e4e25373e0045d8f17235f9c6a987c98f87ef69fca3d04163bbcc69010"
+   ],
+   "data/processed/trade/images/tr_4b56d5db582d.png": [
+    119112,
+    "993609ca83515ec34ca26bdf73eeaf96c62cc14e6f19ab3cc103c3ae0edcc0d8"
+   ],
+   "data/processed/trade/images/tr_4b6293815ae2.png": [
+    112309,
+    "5c9124bbaec30c7b2a0ce7a55246bd046d7f2da224ccd9435061fe6ece26eaa3"
+   ],
+   "data/processed/trade/images/tr_4b809e9bf5e6.png": [
+    81163,
+    "d4289e9359435892399a10cbe34ac43c04b6ebc94a704ebb1c3151e23d5328cd"
+   ],
+   "data/processed/trade/images/tr_4bce6ab0ab89.png": [
+    74617,
+    "539c65d50c85279cd1129d03257837704c2cc844e45b3ca1c926a43c7858f391"
+   ],
+   "data/processed/trade/images/tr_4c9e33fa3067.png": [
+    88756,
+    "878e1c5863c78a76930f2d10781be35a3edae9f0ef03fce6799c983fc95ec92d"
+   ],
+   "data/processed/trade/images/tr_4d508d17bd36.png": [
+    82267,
+    "029d93d856ed9d5539e313b16faf9b5df846154e4889402e462e67564352f0b8"
+   ],
+   "data/processed/trade/images/tr_4e34b1add0ac.png": [
+    68858,
+    "cec9ec6d9033ad7e6e87bd3f32cc1112a375c666ae30d1118cd0da3e761050a1"
+   ],
+   "data/processed/trade/images/tr_4f25a2b05716.png": [
+    64808,
+    "f9455320488d7b26b0527308675fe5ba253fdfc745d1827c037efa00a139373f"
+   ],
+   "data/processed/trade/images/tr_4f4314e0ada1.png": [
+    97500,
+    "590e88a84dd96e744e45565e2f566116abb7ed2145d65b820773137ab8cf3e0c"
+   ],
+   "data/processed/trade/images/tr_4fcd6c486194.png": [
+    90903,
+    "d320cdc2d8452ccac1045aa8a986d74c77e347db2e167c25f7fa93e4e66982b2"
+   ],
+   "data/processed/trade/images/tr_51b610e1ce87.png": [
+    94778,
+    "24438efc17d0de92cf6e0cc0a030137216c59ab4cff5ab9873d9d56ede8db552"
+   ],
+   "data/processed/trade/images/tr_52290f15e580.png": [
+    114912,
+    "cdc1edf6c86869fa6eb1cec52d211281ac553d19c16f15adb91c7b1354af7827"
+   ],
+   "data/processed/trade/images/tr_525ae65a5add.png": [
+    61172,
+    "4b41521d04a5ebb1fb050f7fa44428f56806d580f702bb58b6dfd29cfa29c0c0"
+   ],
+   "data/processed/trade/images/tr_560e7132feb5.png": [
+    60819,
+    "64b3230683aeba4c7a1768766aec3e0d4dcdb01e2d99098926271d9b4bad8b81"
+   ],
+   "data/processed/trade/images/tr_56596cc7169a.png": [
+    63480,
+    "d1b7610a9e06022ed31daa66a58f52bfae98075d70ab8ce54235054cc69d24f4"
+   ],
+   "data/processed/trade/images/tr_58535d38fd80.png": [
+    69600,
+    "8accda6392a7b8376356506475f56202671f4391ca68e2abc5269db69c923d0c"
+   ],
+   "data/processed/trade/images/tr_5892edc1e68a.png": [
+    86852,
+    "49a6d218647f9cfaaecb278447f9f0c54c8835606cdf465977aeb1e0ed22f85d"
+   ],
+   "data/processed/trade/images/tr_59f0ff1f5546.png": [
+    67655,
+    "9e5fe54a07671fd1f05f976d5d5b831c90baba08d9fc9d4e63591e2f87735c24"
+   ],
+   "data/processed/trade/images/tr_5a59694f3418.png": [
+    80262,
+    "9a26db78594868803fb36a84efdb8c13df9cd1a829392ec3c50d8881843c5918"
+   ],
+   "data/processed/trade/images/tr_5a5a0968ac5e.png": [
+    92186,
+    "bce6f1ccd5ca081aa180f1ac2df1c79e339eb5807bd7034a5bc203ee34a3e9cf"
+   ],
+   "data/processed/trade/images/tr_5b4402ee0c3b.png": [
+    97343,
+    "bab871008acbd5234a6877bf079f7828ca215a9ca554ed8e5f93a5b4545878be"
+   ],
+   "data/processed/trade/images/tr_5cce5c11ab07.png": [
+    88628,
+    "35c7a6d98da228ab95a8678d0faa0a4976b8e225ddc14e3f6a9cb55d003fe2b2"
+   ],
+   "data/processed/trade/images/tr_5ed7bf6fba3c.png": [
+    76331,
+    "8609a8b2df7a025fdbf25d8d2712763721ea9b7d262dd0abd464c0ce658a5996"
+   ],
+   "data/processed/trade/images/tr_5f262dcee39d.png": [
+    104764,
+    "c5e78bd4f39f2453026e3b5dd5f6e48ba21e0ac4c97e92b7f22c0c406053fdb7"
+   ],
+   "data/processed/trade/images/tr_60f634d13745.png": [
+    120479,
+    "1e2854e3f1ab740df2e91e103a2147158309278b1d7d030d6514604b7bad54bc"
+   ],
+   "data/processed/trade/images/tr_661aa7afaabe.png": [
+    85235,
+    "1edbb625dc59c335a7993f899dd49de07dc579db40b7b71d92792862e6044ff8"
+   ],
+   "data/processed/trade/images/tr_68c2731f12b0.png": [
+    85893,
+    "14ec7a8ac8b738d8b5b88fc1cb6e14f5fff0f3876fb7e2f963c954e55e70a795"
+   ],
+   "data/processed/trade/images/tr_69cab78e7dcd.png": [
+    73515,
+    "ce4439be6b6910f5ef4764f442df17c5285ec5cf32bbd7a983a52811af4708e3"
+   ],
+   "data/processed/trade/images/tr_6b246f64d9eb.png": [
+    107888,
+    "f2717b321c437cd3fa9a802a42b2c22e4776e95e8e810bcaa3184b73453893a1"
+   ],
+   "data/processed/trade/images/tr_6c7c01e6c1a3.png": [
+    109016,
+    "b7f342b4b889368bea9c3aef393a81f40d3960130df23532e52bc47bd02ac3b2"
+   ],
+   "data/processed/trade/images/tr_6d125d3f2d00.png": [
+    86657,
+    "fa5ce9bc3c28658ed283850a833c7a6a622925fd6c99debfe239be2b88efed05"
+   ],
+   "data/processed/trade/images/tr_6f8041d9a5e5.png": [
+    96394,
+    "30b50b5983cc90e9df4ff605d2ba1335b841b46304d632e42b7be2fa80d5132a"
+   ],
+   "data/processed/trade/images/tr_6fe5d118c037.png": [
+    87438,
+    "e505fccf49179d090ab15526564e09a38e27057869cdc408886ed7bea57b03b3"
+   ],
+   "data/processed/trade/images/tr_7055b9b52cec.png": [
+    93129,
+    "dbdd5d3bc3dcb7705686adb641c285a8b0d5d874e1b6e0400da16740c89e2d92"
+   ],
+   "data/processed/trade/images/tr_70e4b24d0c46.png": [
+    100763,
+    "80ac920e4020d9f929a7e94f30b548d8455a51a9e9cbd5484c7cc52edbb238b0"
+   ],
+   "data/processed/trade/images/tr_71e07f0c25e4.png": [
+    83370,
+    "f29c9abb785ea80215b9330964bdbb7998a1657ff6cbcdf78aa59abc12ff0f9c"
+   ],
+   "data/processed/trade/images/tr_724bdd9fcfa5.png": [
+    59986,
+    "f06a19fc86e243319fcd23493ed6d9286e1a45e9b72d755b255230e96f27cbc8"
+   ],
+   "data/processed/trade/images/tr_73325709922f.png": [
+    73975,
+    "64121c1ef34df3d2225eac275f0f81bb460c8d2302b19b5fd2681936b51d1ef0"
+   ],
+   "data/processed/trade/images/tr_73b8bb2b8054.png": [
+    87548,
+    "f32d40f115799c6daee3fe09c07947ad1cdb39ab860fbb7ff5676e2ba5fe8d08"
+   ],
+   "data/processed/trade/images/tr_74c825b675e1.png": [
+    113743,
+    "05e9660e78ae37833b8f384886dc6dc1e2f81b2d1745553dc209539e773c5655"
+   ],
+   "data/processed/trade/images/tr_75f27f299e4f.png": [
+    71424,
+    "b28501d9a3931462b31776f6096c7fd50c8abcce8a8face572f09c5a7f155514"
+   ],
+   "data/processed/trade/images/tr_7ad53bcede1f.png": [
+    89812,
+    "afce13d54ad0777839f81a356a1cd2a79efda10d1d5e3d2521a86272117d3914"
+   ],
+   "data/processed/trade/images/tr_7bf987b7ba3a.png": [
+    65278,
+    "02380dbb17e6cc9adb2f789fa9134d59e165507723eb7a31f123e9c0384770bb"
+   ],
+   "data/processed/trade/images/tr_7d3690b30c40.png": [
+    75856,
+    "56d795e80cbb2d40a2d8bf4e73c7660e4cff8dc270b6a36e27de52255f46cb71"
+   ],
+   "data/processed/trade/images/tr_7ea9222963eb.png": [
+    114315,
+    "07dab68a9822fe4dd23bf56f18aa3f86466fdd43d7a36b4eb01c57064c10bec8"
+   ],
+   "data/processed/trade/images/tr_7f1c11b5efde.png": [
+    65549,
+    "d34da882b9437ef44003e989b6fcd29b2423f12e6a9d6f8fb377d6edc3faa3f2"
+   ],
+   "data/processed/trade/images/tr_7f7af611358f.png": [
+    122258,
+    "85669a5bd74286cf2e74852492cef8312e94e197734d53b1e3253e7c4b601493"
+   ],
+   "data/processed/trade/images/tr_81111107df38.png": [
+    134596,
+    "28868a87dd6e3056b26f950e969f4c7915878ec369cd946eddf45881c99ae81d"
+   ],
+   "data/processed/trade/images/tr_818878782c28.png": [
+    99247,
+    "cf43beeacc6fc13e0f0ea7500d3a118968bb01e7fdc0dc9c8d6132636a19046e"
+   ],
+   "data/processed/trade/images/tr_827938e7dc64.png": [
+    76925,
+    "12640efe082446286a09bb4267899008f9469630f2810e96efdec61abcb2ac9b"
+   ],
+   "data/processed/trade/images/tr_828aed49ad79.png": [
+    82405,
+    "2339d2e2ab342bdebfa35d035caf9897cc30159685cd3843c2fa07b12af2c74e"
+   ],
+   "data/processed/trade/images/tr_82c05c3a52c0.png": [
+    72147,
+    "ee1bbde8082630e7b709e2bd2ed7543031c2551083ac5810a835fa4fd86b17b2"
+   ],
+   "data/processed/trade/images/tr_83285b951c2a.png": [
+    88436,
+    "2967245d948ffcad8c888f743466d798d7fbbd03f6694aa2b44c0867bac0d390"
+   ],
+   "data/processed/trade/images/tr_8456de4d800a.png": [
+    66063,
+    "df1a3c4dea8a4a654e598affe2017f539109eeffb3e5ab2695428a89e3caff77"
+   ],
+   "data/processed/trade/images/tr_87ecd9b523e4.png": [
+    85205,
+    "c73558c8374d455fee714a028d0b4d97ba6a64acbe5788880bfcea73cc4d9f61"
+   ],
+   "data/processed/trade/images/tr_894e6ef5de7e.png": [
+    88783,
+    "97604805b8f5ee778a58197ece934b939bdc5f68011a17fbdea3955d7f8059bf"
+   ],
+   "data/processed/trade/images/tr_89790af05652.png": [
+    97953,
+    "8c7e8192bc970f7593bcaefd4e015a72ad69bc741fe6231e92a44bf17b0a3121"
+   ],
+   "data/processed/trade/images/tr_89f8fe5494ae.png": [
+    93731,
+    "1b966677e7bdd6180b91315d878ad3c71c88b0d272b3281e88d030c4a85df34b"
+   ],
+   "data/processed/trade/images/tr_8ae1315543b1.png": [
+    85224,
+    "a21bf31e7ff6dec3e89b8cfc4e1ebc383cc6a4300d216097cdd1afe9aeb2d430"
+   ],
+   "data/processed/trade/images/tr_8ba845fb091c.png": [
+    95124,
+    "51404d82142fc671f1a18b8659a939175f0f6bd3dab9092b02baa40ea74da367"
+   ],
+   "data/processed/trade/images/tr_8d30508593fd.png": [
+    92584,
+    "3a1c012189c79c4c923946b5c61c916daf14c1fea9a22ae15811b89fb3db4b2f"
+   ],
+   "data/processed/trade/images/tr_8e42facc7027.png": [
+    86717,
+    "8de9b82f046db669b17157fbf9a5d5bc07c72dd887869403803c9c99b34b5f0a"
+   ],
+   "data/processed/trade/images/tr_8e892ea4c6d3.png": [
+    87054,
+    "740e64438bdbe436c097119f82b4df9a86804c332991c97d74ea5a976920fb7d"
+   ],
+   "data/processed/trade/images/tr_8eea43e369f2.png": [
+    77069,
+    "42dbecf462a1813c0e9d041fb16bca5d75a4b9131a30b4e023988a22592662c4"
+   ],
+   "data/processed/trade/images/tr_90ac55f5f000.png": [
+    127030,
+    "2559f417ee7ecd6db31e04ace579d40ef98e2842bbe7fe1a2cede9094da39d9e"
+   ],
+   "data/processed/trade/images/tr_91915656f863.png": [
+    61093,
+    "adcce8ada0f6dc61b5619b12d8f3d24a13e59e3505ec70611c6fb05707610542"
+   ],
+   "data/processed/trade/images/tr_92c351f81910.png": [
+    112834,
+    "d452e739f6e7536e614301896b6440cf134dc2e50a7ded0f25fba192c00fbabc"
+   ],
+   "data/processed/trade/images/tr_943ead4253cd.png": [
+    72446,
+    "868210e621570c84804f864085b545eb91086b9a38c5056e393cefb526fe415d"
+   ],
+   "data/processed/trade/images/tr_952ff41956a6.png": [
+    98377,
+    "f4eefb86c7939e21df7d0bc488899e17b6eb15d8651b7f5dc0ac75ea71d9ba67"
+   ],
+   "data/processed/trade/images/tr_96d5e1d0382d.png": [
+    97261,
+    "7f1983a812fa89e2d858b92a10326595c39a317758dea5d880c6ec3b7bbb12da"
+   ],
+   "data/processed/trade/images/tr_970dc6f84318.png": [
+    81436,
+    "91cdb0f877931ea6c4e07abda03b246ae2b328aa50efb814c784bc7c3e4b05e3"
+   ],
+   "data/processed/trade/images/tr_973df87f69c9.png": [
+    80355,
+    "3c3e9011db3745a94fa1290e880c9996f279ddc3e334a09784b0e95d06414ac3"
+   ],
+   "data/processed/trade/images/tr_97f74dbcb165.png": [
+    64068,
+    "4d41dfc3f89ee577606cce62da1deb0ec665d559975ef8a2b0c60248c4c8801d"
+   ],
+   "data/processed/trade/images/tr_985123ec7075.png": [
+    92643,
+    "c5241914e8b766af1529375c1466c12184ff2eafb7d84a37544e4ca7ffc010f1"
+   ],
+   "data/processed/trade/images/tr_99561448caab.png": [
+    78156,
+    "a5b54d0396c40432db1335be0125d15c2222ed228552b37a70a5eefb84b2f404"
+   ],
+   "data/processed/trade/images/tr_9b9e2e52fa57.png": [
+    87129,
+    "e45c70df56db7b9b7a53ac1f668f8913ee265d7beae70602fec48f46aa5bbc79"
+   ],
+   "data/processed/trade/images/tr_9bee29f898fb.png": [
+    74689,
+    "2a4fbbfdd60143f18964610b752935b51e1e803853b46e8ce7bede9dc2e4f877"
+   ],
+   "data/processed/trade/images/tr_9cc3a8fe31ef.png": [
+    84722,
+    "6498cb3d2fa0116a4a307e243c7f5cd0de7c0c19b32e385b70963dccf04b1580"
+   ],
+   "data/processed/trade/images/tr_9dad4f2c6f82.png": [
+    74328,
+    "c1b4e3ef55a988b79da5296b0f4375e7cc7426efc50141976cb3bc7d6238d9ab"
+   ],
+   "data/processed/trade/images/tr_a23d7bec5b6b.png": [
+    68790,
+    "fd876ba846322e4f894bdfaa7c40fd9e63a8560a07ec56422efd8e675b4a8169"
+   ],
+   "data/processed/trade/images/tr_a27af3ee297a.png": [
+    80711,
+    "5a05806499147957fa6ebbdb2c864cc8f34c720bb43fee62df4fe83b4f0bf6b8"
+   ],
+   "data/processed/trade/images/tr_a427e90693e5.png": [
+    68312,
+    "e1dfa5277e2a137cc5b67acf70d9e3f16b6c1ffcaf11d50e524a6cd7525da2f8"
+   ],
+   "data/processed/trade/images/tr_a59543989a7d.png": [
+    93030,
+    "29da593cbd4ece1bad9bddd2137d99602b6411d585d0c6c369a32f35d816272e"
+   ],
+   "data/processed/trade/images/tr_a6040b083e9c.png": [
+    76005,
+    "9baa26a98fc67ce2b8caa2060f39e2dd2a21a53e21e009a9bd47d7b4d743da53"
+   ],
+   "data/processed/trade/images/tr_a755c2c17d85.png": [
+    77992,
+    "8053d36e53f40ee9eec57f7b23db5509544c4359177eeb1df35cf42c27ae3f9a"
+   ],
+   "data/processed/trade/images/tr_a7975f39c838.png": [
+    100845,
+    "99fe9fb7848eceb06af4071e2742e3b121ae9782145e2537897ad93e874aa04b"
+   ],
+   "data/processed/trade/images/tr_a79d3b02fb8d.png": [
+    92774,
+    "c5da142a54f03c54fe3ab5e09179997c999a952f07d2382cf5f76f37ecc49a36"
+   ],
+   "data/processed/trade/images/tr_a80b63288759.png": [
+    96316,
+    "3579e0e9f727ff888ae7beeab476afb6883fff2b114309af6a0fdc1d16cb6edf"
+   ],
+   "data/processed/trade/images/tr_a8785e37b37b.png": [
+    85065,
+    "fca7cc09efefbe5de77d4b7ba822fa254af0cd60ffab65efe1356e15218c2fb6"
+   ],
+   "data/processed/trade/images/tr_aa0d68ca5bef.png": [
+    77101,
+    "69949703bf9f3371d41f8cbe754f01bd6b92fe2923bb0a2836aa077ef17677de"
+   ],
+   "data/processed/trade/images/tr_aa5c2b32d179.png": [
+    84258,
+    "26a554ad9865885072b90b06e630d5c0203f70fb7ecf4e122415e6e74678b3ee"
+   ],
+   "data/processed/trade/images/tr_aaf126b80e1f.png": [
+    84186,
+    "9e058901d5f8c724eefe7c0f3cd7c43c98d911692bf11562b83069a58c04125a"
+   ],
+   "data/processed/trade/images/tr_ab9ffe091094.png": [
+    95162,
+    "cc1c2373a19542c30299867578d1a66f3631bc23aa7ffeccd57ce8b64e111f0d"
+   ],
+   "data/processed/trade/images/tr_abe92f1ff405.png": [
+    99798,
+    "8b94d76a9261a85cd5afb93830a4ee92ffe9e1e36d0fe74ba7b4e0ce135bac02"
+   ],
+   "data/processed/trade/images/tr_adc08a909448.png": [
+    73390,
+    "72b16c157a8baac7ddbf66c12c64562a0dddc285b1020adf6c082a5253994cc0"
+   ],
+   "data/processed/trade/images/tr_adefa94d24d3.png": [
+    89243,
+    "2da0c9bb4d81ae9e499896384c60e1e5c3e939595889a034072aad7f7adfa015"
+   ],
+   "data/processed/trade/images/tr_af692354b97f.png": [
+    92681,
+    "e80f016c333fc1107ea299abe45257cce6049e245856042c5522540a89fd346e"
+   ],
+   "data/processed/trade/images/tr_b0575273788d.png": [
+    96371,
+    "2b9ee611441cff300782b6b993116ef07b590bf3026a15eaef921a7bfe2e36f7"
+   ],
+   "data/processed/trade/images/tr_b08aa1e030dd.png": [
+    87296,
+    "55dbc67d35fb4061e42953d266d41e6b90cb27ad65e4c6bc33d58c81220c01b1"
+   ],
+   "data/processed/trade/images/tr_b21b9d775a60.png": [
+    83899,
+    "e67997aae7210a35dfaab61068572f2fb892a887a27861e64714679cc4c3eb87"
+   ],
+   "data/processed/trade/images/tr_b373fb6ce71b.png": [
+    67479,
+    "dee01ba4e8dcf07cea9d5947a650cd657c8507cf9e18e997419cbf7b1ff74f9b"
+   ],
+   "data/processed/trade/images/tr_b5d7d2e6dcdc.png": [
+    74844,
+    "10ce4467c44fb7da7a552b55544835b7546869670afbe7ddab6f5bce057551e5"
+   ],
+   "data/processed/trade/images/tr_b68206257725.png": [
+    95908,
+    "f172c470bbdb0ef3d1157abef9790a366275eea7556c9078c488f2291e00adf0"
+   ],
+   "data/processed/trade/images/tr_b6c1677706b7.png": [
+    82479,
+    "e0ac0849cf2f349a4c0dc88d8e8446d627b86a786b81af2ca73ee87fc43db084"
+   ],
+   "data/processed/trade/images/tr_b90c608da19f.png": [
+    96504,
+    "f239ffa3e7edaca65551f16e4db193e04d8003e66261e892dda144817e5d4a5e"
+   ],
+   "data/processed/trade/images/tr_ba46af0520b4.png": [
+    94736,
+    "e9a5229470122a7dec3ed42fe03c239a376aa948f2e7d9ce0a0685697ef92a3f"
+   ],
+   "data/processed/trade/images/tr_ba8aaf34ea7c.png": [
+    106929,
+    "caff056012c3b102f35f8ac3ab3756835f8b7e0cd6a2c7c54babce1f16909af0"
+   ],
+   "data/processed/trade/images/tr_bc3013fe34ed.png": [
+    140496,
+    "96b5daeaf6e22380f455c5d218fafb96d1bfb82794d3f8bd84de891a1c4da102"
+   ],
+   "data/processed/trade/images/tr_bd8ebdc82466.png": [
+    111159,
+    "d01bc7989109f4dce48f0360539c869e1dbe0233490513572214c6b9a213099f"
+   ],
+   "data/processed/trade/images/tr_c367b756eabe.png": [
+    116834,
+    "a7e55c4509bd98aec828dd67ba13839789de241996a02b55d6d0de8a9f88c6ea"
+   ],
+   "data/processed/trade/images/tr_c4de5f487462.png": [
+    79119,
+    "caeaf8f1c63675a99f39582de9c785b834caa178da2d893618d79889b7dc6e4c"
+   ],
+   "data/processed/trade/images/tr_c74a74926cfb.png": [
+    63491,
+    "0bd330913e842cfe55199822b6ccba5d1c257e017cbd80d48a570bbf10f5da0e"
+   ],
+   "data/processed/trade/images/tr_c8050675efdd.png": [
+    72850,
+    "da7fba5638b24529759aeba6a868ee4bb68eac8f88ce47aeafb898a95d615dfa"
+   ],
+   "data/processed/trade/images/tr_c82a4bf28ae6.png": [
+    81657,
+    "7cdadf04582ba8ccac9b4be685e3cc0b38b01fbd88540ab91347bb1506f91fde"
+   ],
+   "data/processed/trade/images/tr_c87be4c539f8.png": [
+    86023,
+    "a35d8cfde3a21a1634befb82cfb262113db80ac65a57317703a7947f06d3d8a9"
+   ],
+   "data/processed/trade/images/tr_cb8b309e070f.png": [
+    71081,
+    "61d1ba736137486f829e443e286de8588bf98a0edf5cbd9c26001de134974ae4"
+   ],
+   "data/processed/trade/images/tr_cc4f70380b88.png": [
+    74116,
+    "29be4b6c5ff71ef2902b33007b2f9968e36ce60ddc0834504c498280e8d54126"
+   ],
+   "data/processed/trade/images/tr_cd264cb99356.png": [
+    94513,
+    "a85322700bcbd812f1252f351250709e55b3fc0fe9a607a988cfe2c26c75c240"
+   ],
+   "data/processed/trade/images/tr_d0174e67701e.png": [
+    115309,
+    "6c34fa6384687778b17e80763987cadc5903da39be27208ebe8cbeb14407aae9"
+   ],
+   "data/processed/trade/images/tr_d07ecbc8bf4a.png": [
+    97088,
+    "f677cb4467a8986e604976fd9bfed1df7d147dd8b35b95d3873b99c17e5ae6da"
+   ],
+   "data/processed/trade/images/tr_d165e7c2cd8c.png": [
+    73371,
+    "d8ac4a273393dd66bdb68743735c568899b836b7f929dedfa705e4cf03c14624"
+   ],
+   "data/processed/trade/images/tr_d30077b049ec.png": [
+    74178,
+    "d7d597059a1975dadf82151b4db72b086cf4fbe42820c44b2127f7a71a6463b8"
+   ],
+   "data/processed/trade/images/tr_d309b30df861.png": [
+    88530,
+    "d0d32d9498f3e9cba36b3ec6c5b39aa9eb0208184d85798ecb657980b1b87dd3"
+   ],
+   "data/processed/trade/images/tr_d528e97dcce9.png": [
+    122065,
+    "f9f13377176d4ac46f7ed1a79fb3a9542cbda79daa8c677e2edf08ef81e21705"
+   ],
+   "data/processed/trade/images/tr_d6726bd339a6.png": [
+    84270,
+    "470e975aebe2adc761febdadfcd368c52086ac1730af6aa6ae453e4c97c34fd8"
+   ],
+   "data/processed/trade/images/tr_d75eb601469a.png": [
+    94035,
+    "f90c7f6c1c6dfd3a8a3662ddb7cd656a14760a9a0fed1f5e12382a0c6104c7cc"
+   ],
+   "data/processed/trade/images/tr_d8f545783561.png": [
+    87618,
+    "e6efab57b0287ab393ebcb320753951b6bb93c5e0bab59bc215042ed32d73741"
+   ],
+   "data/processed/trade/images/tr_d9469a2957cf.png": [
+    84304,
+    "96b911b965210c56f8c1a2add68549ce156c063d0cf0cb8fb65e279541aa5212"
+   ],
+   "data/processed/trade/images/tr_d9c5561a5bab.png": [
+    72996,
+    "85e8f5369cee768ce2da2f32983e84e14406c3b25d08c4e77cc97c9ed4cff902"
+   ],
+   "data/processed/trade/images/tr_db8a6ce9bfed.png": [
+    93535,
+    "01a223085183e4b56804a72f9219131def8b5b19b37d4198b7529d763f62447a"
+   ],
+   "data/processed/trade/images/tr_dbe175031c8d.png": [
+    67259,
+    "ab48d475d6dc3b231d45ad89842515a094ff47772e6a9c432e61f245e999c4ca"
+   ],
+   "data/processed/trade/images/tr_dd65a424b7d9.png": [
+    107377,
+    "de3eeddfc1fdc131af51660fa917c720d293313dc052797b45d759fc93506e97"
+   ],
+   "data/processed/trade/images/tr_de0d6fb09c90.png": [
+    63111,
+    "8878b05b7d8ea3829bfe1ebbb116413edc07e8c710914226b9024174d6eb576a"
+   ],
+   "data/processed/trade/images/tr_de52060a8784.png": [
+    98945,
+    "a3a00b92207b6e4416c5606004f49705d34cf0e9e2a365763b9b7c632c495f16"
+   ],
+   "data/processed/trade/images/tr_df40bf7521e2.png": [
+    83092,
+    "ef0a1eab4ec00750e9e3137ea9e4d393b827ba5508538eb413648cf82c929d43"
+   ],
+   "data/processed/trade/images/tr_dfc010b9c9af.png": [
+    77584,
+    "fd03b66ea584245c1b997697e7c6084208d026defbb52ff0ee557fb90ad39143"
+   ],
+   "data/processed/trade/images/tr_e048a16bd644.png": [
+    88519,
+    "6738697927d565f92177a2fdfcb2356c4326fd0a70c585ad1f358fb001c1fc4e"
+   ],
+   "data/processed/trade/images/tr_e082855b966a.png": [
+    63608,
+    "a240d1b08039d223cb3dbbb2307a9ed4180a9bad698814c30193eb46f0786fb3"
+   ],
+   "data/processed/trade/images/tr_e0aa44b02c9e.png": [
+    120636,
+    "e9d42b5e0442ff5f86f05f079751d28563ee4bb292acce9cb4808dccd2dca7f7"
+   ],
+   "data/processed/trade/images/tr_e10a90bd369b.png": [
+    73855,
+    "486d73cba24fb7ab5b40afe5cd499f3ed8d97c8df95e94e1b222024b56b6e3e3"
+   ],
+   "data/processed/trade/images/tr_e21f6a02f20d.png": [
+    70421,
+    "f1f684577cb77cd27b1fc44fdc1a84677492b27ced0ae6df3af5ba8a1664cf91"
+   ],
+   "data/processed/trade/images/tr_e308592901b8.png": [
+    63594,
+    "876ac0daf706b0466f548dd944f1fc7cf46b57884a72066f08a02fc0cd7f2899"
+   ],
+   "data/processed/trade/images/tr_e30feeab0b29.png": [
+    65966,
+    "a0b6cc00de88fde9bc7f6842b80d6deea083a780e1c3e46bdb3f3a11618f82e5"
+   ],
+   "data/processed/trade/images/tr_e5057c8e80ad.png": [
+    68106,
+    "7f95ca3b93c7b1616da074064ec18f3fe469ee1ee67d557487b35f0aa74a0ade"
+   ],
+   "data/processed/trade/images/tr_e5d34dc46bdc.png": [
+    69749,
+    "1320c3861501fc181608a3e2e0b9addd91346773c5e98ebf8cb4b757572bf89e"
+   ],
+   "data/processed/trade/images/tr_e710ab5f353d.png": [
+    96900,
+    "c7c9fb3c0235862d9ad96a55017dd33f1dd8d5f851f2ae50e9d2617e1f62ea1f"
+   ],
+   "data/processed/trade/images/tr_e86c8bfe1376.png": [
+    64992,
+    "07a97f66f5d769ce668ef85a185510b8db45a348fb6f6d969bf900fb4a8a4c55"
+   ],
+   "data/processed/trade/images/tr_e9e2e65ddfe3.png": [
+    73371,
+    "41001aea6897b912e2a7a6ba4dac7d2a79145343692d075af1456fc8fcafedbb"
+   ],
+   "data/processed/trade/images/tr_ebe0999de7a8.png": [
+    70262,
+    "16cae6409e262d1e559e0407494d08d36d639a2602b1b721bf5e1bb5c3a970b3"
+   ],
+   "data/processed/trade/images/tr_ec45bc3d8591.png": [
+    79912,
+    "632afb896b655a300bc9d8a037847c26c3cccc3d094da760a513f99b2df7151f"
+   ],
+   "data/processed/trade/images/tr_edc078ad33fd.png": [
+    91161,
+    "a7a4ac3fa2578344fa96f7889ae7e843ca82c73f0c322d8022092545805ff11a"
+   ],
+   "data/processed/trade/images/tr_ee057468ff1f.png": [
+    86886,
+    "98663d71a67094b898b87a8b4200cd8443120c5abd570826ef3415db71cefaf7"
+   ],
+   "data/processed/trade/images/tr_efe028ef7253.png": [
+    87704,
+    "87440cb156bdf529673d1c44abf5bf86051544f9366c074d093a1948d38b98bc"
+   ],
+   "data/processed/trade/images/tr_f0747673fac6.png": [
+    56450,
+    "c5c5a0242d8e1a68a84b76fff3f99556133af0a5ad24d53da0b0aab25c9346c6"
+   ],
+   "data/processed/trade/images/tr_f1fb084e0e95.png": [
+    92431,
+    "e3a60fdbeeb76759ccd5d48ab2272d0274ee83a4ae0311b77a4923a590785dff"
+   ],
+   "data/processed/trade/images/tr_f2882769a6fc.png": [
+    98215,
+    "fe4511689fb3cbe82a1fd20e65099ebab27258ff378411419febc68905a7adb2"
+   ],
+   "data/processed/trade/images/tr_f2a0f1f8974e.png": [
+    72367,
+    "97778a308eb28faff476927176994ac51b01501894087d09b33c99bc600e5a04"
+   ],
+   "data/processed/trade/images/tr_f3443976caf3.png": [
+    75372,
+    "624826119e9d0f341f55f368fc266c06604ab57c598dbce6855c51c7a82382fe"
+   ],
+   "data/processed/trade/images/tr_f460f4caa3f3.png": [
+    105873,
+    "c38a329a41257fd8ac19a5859fc64af17f8fb5474a2d7f92dfc4e55a8a94efd4"
+   ],
+   "data/processed/trade/images/tr_f7a3bd9f8c6f.png": [
+    98668,
+    "999b40ad707d0629c77e761065fd9eb070651a3d72591ac4d0d04083d6734a9f"
+   ],
+   "data/processed/trade/images/tr_f807b3ed2d13.png": [
+    104783,
+    "3407b41cdeda216f841464753858df0d72d55f04694c414ffc78554ac40f6591"
+   ],
+   "data/processed/trade/images/tr_f9752edbcd0c.png": [
+    74083,
+    "58d7d4f848001289da8dd613b1959e3304d0934d457d779167b6e483e7a8560a"
+   ],
+   "data/processed/trade/images/tr_f9d4a551e379.png": [
+    85829,
+    "d4629639bba199aa3c6a14b246f1e20d6f2d6e56f2fdbe39ecf9504b72b9f4b0"
+   ],
+   "data/processed/trade/images/tr_fb3896b5845a.png": [
+    86198,
+    "3832d8dc1ccd90c570df20e24a8476601fe6610a7cbdd82e89c3bfecb3673000"
+   ],
+   "data/processed/trade/images/tr_fbcfacdef70c.png": [
+    78738,
+    "b816b5f47b9f5519a53967089aa96d17c388009a261d115196d638a166a522e4"
+   ],
+   "data/processed/trade/images/tr_fca54b6926bb.png": [
+    75431,
+    "8ad62d5cfffe473e9b822e4a98667f9d3fe119c71e6f01190b8211f762165c03"
+   ],
+   "data/processed/trade/images/tr_fe1893fcfbd0.png": [
+    81806,
+    "54293420947ec80e9baf5e3f3d3591e76288777ea40809c5a1c27634a8898fca"
+   ]
+  },
+  "trade_gold": {
+   "data/processed/trade/gold/tr_002414b0a798.json": [
+    642,
+    "2841ff7854f97683a81d65fac1cae0a31b4bce6d41f5df76a149cd944236b5e1"
+   ],
+   "data/processed/trade/gold/tr_0093094e697e.json": [
+    1466,
+    "ec6d4803c40806635d359c2e927b29eae0462c757cae4cfda589e04320887b51"
+   ],
+   "data/processed/trade/gold/tr_01ed9dbd532f.json": [
+    637,
+    "ee4c731751a30f875b0e89b982f0d096b266c7bdefbaca3a0e4dea5d2403bf81"
+   ],
+   "data/processed/trade/gold/tr_02421e2a7512.json": [
+    1050,
+    "3d29a7a733c7df4969b6c46db222c395a9cb2eda603cc9d13b6ab839812e8385"
+   ],
+   "data/processed/trade/gold/tr_03980862d34e.json": [
+    1055,
+    "0e6ed098b820d0ffdb0d36a94fae4749da5a5c8ed8f1e12417fdb47897b6505d"
+   ],
+   "data/processed/trade/gold/tr_03a99c835018.json": [
+    662,
+    "aad3331840066f40ceb62f292302ab8e585a95e3123a0c86b6695dc18a344121"
+   ],
+   "data/processed/trade/gold/tr_03b4c31e5759.json": [
+    1272,
+    "af1d3ce12032b4594271762aacf042ffff07ca90958af5a79c8b3a164a720db2"
+   ],
+   "data/processed/trade/gold/tr_05503289ad66.json": [
+    850,
+    "dcbf3be4bfdaa89b9535a01d6d19afd79a8895168a8a405d6325c9252718737d"
+   ],
+   "data/processed/trade/gold/tr_05504c13d093.json": [
+    829,
+    "3bdadea8eb9bc96b52e6598ab5f9c2f27b70dd9ac02709dcd56eb7e20556ff5f"
+   ],
+   "data/processed/trade/gold/tr_0658d6ae1bfc.json": [
+    1262,
+    "914cbce02eb1da5ee31997843dc0f1281ae858258b11b548370ae4da30952496"
+   ],
+   "data/processed/trade/gold/tr_08b5bc6e0127.json": [
+    1250,
+    "90aaf96285406ec1a00d164362f790f8743588f3d97d94069679a2031c3ef869"
+   ],
+   "data/processed/trade/gold/tr_091f6b8c0b9d.json": [
+    1471,
+    "e45569aa16f6a926d26751f383599193e8de654c07bf4024376165ecaae5c179"
+   ],
+   "data/processed/trade/gold/tr_094c507908ef.json": [
+    854,
+    "2a80d51638ca4c52b9cfef446234b73a1e88500ebb1d16c53414f12b8da05625"
+   ],
+   "data/processed/trade/gold/tr_09b9e8bcd654.json": [
+    855,
+    "6d5d80737e7e687138fe9a8fdc34c6186b57593038fc9db09e37d504422c0463"
+   ],
+   "data/processed/trade/gold/tr_09e43eb1f12a.json": [
+    867,
+    "f531dd7a4d1ec4f257ab1b8f1d600efb0c33994a18680ae307466a0de75324f0"
+   ],
+   "data/processed/trade/gold/tr_0a715972eb33.json": [
+    1055,
+    "c8b2ac3c4c7abd5a52e2615843dfe870cf14d6504e09bd2f587e7413106442c5"
+   ],
+   "data/processed/trade/gold/tr_0af26980b10c.json": [
+    1453,
+    "0083c1c60ec58e3b5ab048d9073db68042e305ce4b6a20777ee2591879a0005b"
+   ],
+   "data/processed/trade/gold/tr_0b3019e33ef2.json": [
+    634,
+    "b1c9ba419950e937990d29548aa5abd49f6ddec76c1ce0435a098b13710877c6"
+   ],
+   "data/processed/trade/gold/tr_0c8e4b5983f5.json": [
+    1050,
+    "e8e9d3685013321bfa9efdf7f1b9ef74a852ab60ab4ebed695ab15eb02b90bd4"
+   ],
+   "data/processed/trade/gold/tr_0dc291e8cb69.json": [
+    860,
+    "9a3110ed09650b3e1a3c18b0f595e0daef10b855158b76ac937fe73309f59e3c"
+   ],
+   "data/processed/trade/gold/tr_0e6795ece3a5.json": [
+    1258,
+    "4904fc4ab676af6af47b046e428522d9d2bf7f195580b51d52126a35c39cd9dd"
+   ],
+   "data/processed/trade/gold/tr_0ff9cc9281be.json": [
+    1662,
+    "f8ac202e9b4f74762e9f6f77eb896137cff3ac9ff0b1f474c83d692a183afe7c"
+   ],
+   "data/processed/trade/gold/tr_1194d7d09e63.json": [
+    1052,
+    "150632dc80a672bfb7cfa0dd1562353e4c34a1305da5e70ed9f44c918de2d519"
+   ],
+   "data/processed/trade/gold/tr_11e68662d795.json": [
+    646,
+    "6b4ee0ff9888f4bfcf04d5a929203e78a9e944ddcb8662799522f7f1b1d7ab6a"
+   ],
+   "data/processed/trade/gold/tr_120df3f523cb.json": [
+    1459,
+    "523ff2b91ee06eb00eef7f340e35c62652cb2f225fd667d150a507b555776f78"
+   ],
+   "data/processed/trade/gold/tr_13901deb7272.json": [
+    1460,
+    "7abed0928fae63f5e879eb985e1368c10089aaf1d3dc9844de3255bc9860f782"
+   ],
+   "data/processed/trade/gold/tr_13df2537f2b7.json": [
+    1474,
+    "42e63cf720740ecdd109b5169a74eb1263effc6890a2e5a2016222e42685387f"
+   ],
+   "data/processed/trade/gold/tr_14243b34f0db.json": [
+    1252,
+    "d1aa6465dfb16a4ce531d8d56491bd41a9de46c3bff3567ad8a1f6bacf0b1676"
+   ],
+   "data/processed/trade/gold/tr_14389a58f408.json": [
+    836,
+    "5b7a3628a89adc003e6ae96321c224feaa2f326c784d73848f38feb6e8391716"
+   ],
+   "data/processed/trade/gold/tr_1482786b6cb0.json": [
+    1066,
+    "51bff116628f458835dc0682dbd1972295e2ef9638b6b4e4abdc9ae519a0132b"
+   ],
+   "data/processed/trade/gold/tr_14f8336bb5d9.json": [
+    640,
+    "da92b6e931d2bbf9e454616335c2d793cc39fc27689cb9074292f602183cf844"
+   ],
+   "data/processed/trade/gold/tr_181c688047a4.json": [
+    1256,
+    "54ef7e9f17ad97344df8bcfc41e426c4cba8a19f895d8d043fa6687382234a6f"
+   ],
+   "data/processed/trade/gold/tr_18f1852e27a8.json": [
+    852,
+    "c5dd40bae2d7b42bc7ceb5ac62f827ea532e56a659ac837460e6fcf6a4646932"
+   ],
+   "data/processed/trade/gold/tr_1a121bfc5d60.json": [
+    1249,
+    "534927ea27f66b85e296587ca367f05c6278b1e70a7fc1caf61fa97f05d282fc"
+   ],
+   "data/processed/trade/gold/tr_1a2081cc25da.json": [
+    849,
+    "b9194a6fa257effa816596d41c66281163477f83688f42bc6902bc5875c30646"
+   ],
+   "data/processed/trade/gold/tr_1b8bec7f7de8.json": [
+    1460,
+    "26a532e287fa7497d0c9c4dbaa8dfc479013b351fecb64ec703fb43c117060c2"
+   ],
+   "data/processed/trade/gold/tr_1f50ee56d02f.json": [
+    1449,
+    "971452f7f84fab5be94f0e7e397f723903c285674ed550717f8726d8d0ca1643"
+   ],
+   "data/processed/trade/gold/tr_1f7e72d2e56e.json": [
+    1446,
+    "5eada6f6f84edaa64a26bc9e410a9372c72a94ba2178fa226ed2ea7dbeb9d3d2"
+   ],
+   "data/processed/trade/gold/tr_1fcd4934879b.json": [
+    1074,
+    "1034f8846f8f92dfe4e1ba7d53dca7141b93ddd1197255b739214e28f952c4c6"
+   ],
+   "data/processed/trade/gold/tr_20d0e80993a4.json": [
+    647,
+    "a0b0ab2486103b3d1af24228c8e4aee68d83e94ba871b3f57f4f9bff569558f0"
+   ],
+   "data/processed/trade/gold/tr_20d5c62bb029.json": [
+    1045,
+    "bbba57746aeebd4e0c9d6b4f7dd73643adec4d31679de238622c790fc54dfb9b"
+   ],
+   "data/processed/trade/gold/tr_22bc871e01ab.json": [
+    1464,
+    "c238f47384aa5d68ca0a7fcd1d73ed7135913b60ac2d73f41ccf372533078f61"
+   ],
+   "data/processed/trade/gold/tr_23ae14b19700.json": [
+    645,
+    "8618d577b787d662c23a86a0a58a75ceb79b710a83d6335d9bf86a469893c0cb"
+   ],
+   "data/processed/trade/gold/tr_23cabcdfd725.json": [
+    1052,
+    "0f3fa1cdbf4d1a2bc2573efc12d56987b530678961d5df47d2b85d77a80271a2"
+   ],
+   "data/processed/trade/gold/tr_24ee16eb748a.json": [
+    633,
+    "abd5fc02d3f986d746db154b264a4d80c38a3150e7df6139217e7a6436bbc7c8"
+   ],
+   "data/processed/trade/gold/tr_25c00d939e64.json": [
+    643,
+    "e3c3e6bfb8c386a655a0df8eb3f0e3725f03bcad4d0898a2125c059b2b8ceb91"
+   ],
+   "data/processed/trade/gold/tr_2665ee8ccfd1.json": [
+    1262,
+    "076ebb077efab3be874d54e368cdf1f96b988a24d2491d899ce04afd7358a04f"
+   ],
+   "data/processed/trade/gold/tr_267c7e343ad5.json": [
+    1029,
+    "e127b5016e7409eccaef6801240107a847e6c832c40d0130412913e66e60ad04"
+   ],
+   "data/processed/trade/gold/tr_27612b774631.json": [
+    1452,
+    "714686bb3dee2847e0cbb7a2905e1574d4d01544e0d64d5ddb1bec58e3d7c2fe"
+   ],
+   "data/processed/trade/gold/tr_27ab52579448.json": [
+    1046,
+    "a27fbd99195572d234ddcdeec4408b4bc9e3d3c96193ae1fba22fb8d6271bc71"
+   ],
+   "data/processed/trade/gold/tr_2963dce4e0ed.json": [
+    638,
+    "28f3b7bd195a7144ec8a1d3a343587ac842cc0fd727c3a89e4450a9f50e787a5"
+   ],
+   "data/processed/trade/gold/tr_29f3c4e354c9.json": [
+    640,
+    "1e10c2a6ca696e3a213df31059f3ab380f8cc2241c87f396e99fff0acbe5285a"
+   ],
+   "data/processed/trade/gold/tr_2bef915eb05c.json": [
+    870,
+    "d027a5e7096525c34155937a1262391bf2ac32fc97aee65369d9f2fe2830bc3e"
+   ],
+   "data/processed/trade/gold/tr_2bfd27e31de5.json": [
+    1445,
+    "663c9a8dd69d45bee9932bab90d5a4df808bb7dde99c26e27d0dc3ec21b3a870"
+   ],
+   "data/processed/trade/gold/tr_2c53da1a3ec3.json": [
+    1246,
+    "0bd84d0d33f69655ba47af08298baadf3ad903ba2f4be25946ffac1610ff6053"
+   ],
+   "data/processed/trade/gold/tr_2d4a856141fc.json": [
+    839,
+    "e595e955065c8d89abeb8df0b62785485410740e2272caee3621eb5bf8cecede"
+   ],
+   "data/processed/trade/gold/tr_2f777202ad89.json": [
+    854,
+    "31533cb9ad3582e08129a0db90003201f90c41b4baa5084af09d5a4c31f5f92d"
+   ],
+   "data/processed/trade/gold/tr_30a288f74a8f.json": [
+    1061,
+    "253509f4e076911e1f6091e1828e63e1a7f289d9d8035618f4f72de0dc8a7434"
+   ],
+   "data/processed/trade/gold/tr_35cc701ffe68.json": [
+    1467,
+    "65307e610ecd97228689b429e5dba60570b75dbd1b019d43b8347b699dc23577"
+   ],
+   "data/processed/trade/gold/tr_3668c21e12ee.json": [
+    858,
+    "aa65f0fddc4bdb693fe681e3738dae58ff08e333a94100dbad7800c21aafd9cc"
+   ],
+   "data/processed/trade/gold/tr_3681f6c4b904.json": [
+    1458,
+    "b127302f65532534865715ba98fd0199de8a83a6ee6af6c06f46be049882e3b1"
+   ],
+   "data/processed/trade/gold/tr_37c009e5f978.json": [
+    835,
+    "4f6fdf3f2b252aa3dbf69b61fda249175d96fef5ed2ef037b5f746f30d61d57c"
+   ],
+   "data/processed/trade/gold/tr_37c21fa6307c.json": [
+    1478,
+    "d3abac31c10f5da5d215ab7095597ca1ab7043967317359c051c4891ca97d8f0"
+   ],
+   "data/processed/trade/gold/tr_37e17b3631ed.json": [
+    1261,
+    "2daaec97f8433540a297c48bea86f9fbaf9541eab93ae5fcfec9cf4c10923a51"
+   ],
+   "data/processed/trade/gold/tr_381d80972097.json": [
+    849,
+    "d5759beb98c71d1248f923c409df17a5326143e17a122c1870bda2c7c1281942"
+   ],
+   "data/processed/trade/gold/tr_38a48a5d8851.json": [
+    862,
+    "521023e960ed5a49ac12d3cc7c4e05139c780b5b168e4da8fd5507b356bfb462"
+   ],
+   "data/processed/trade/gold/tr_39d0d52c84bc.json": [
+    650,
+    "3c5091f2ad04e562dfb464054948521630fa65c0c73b75e898955190662851eb"
+   ],
+   "data/processed/trade/gold/tr_3c3eca10e790.json": [
+    844,
+    "3f46cd8fa213c6a0ba0cd714299f799086f66d6fd7c0a174945eefc9d40bf9d7"
+   ],
+   "data/processed/trade/gold/tr_3cd64dc9128a.json": [
+    1474,
+    "44a2da45c1db7c41b9c7d951bd27adfb04ee30c8bb6d35c65e36d71a41f70707"
+   ],
+   "data/processed/trade/gold/tr_3d6c316a6402.json": [
+    1251,
+    "ac4a6c97b318eea4e15a8e212ae088bffea67493b026d14c8aee9c30b8e3ea54"
+   ],
+   "data/processed/trade/gold/tr_3dcbc7f5db6d.json": [
+    1677,
+    "382c6382e1e6566fce6a5c63811d4f3aa5ae1189d6da9ee42fdc479a42bd35dd"
+   ],
+   "data/processed/trade/gold/tr_3e0824984486.json": [
+    1463,
+    "464cc5606819d89891e28883cf3d666c117cc71413e396bdbf3150b746a76047"
+   ],
+   "data/processed/trade/gold/tr_3e4b9cd4e4a2.json": [
+    849,
+    "4d9bee4249cf4d3826a099d0a48399458035ca70dc8ff85cd3c376f589b6df7b"
+   ],
+   "data/processed/trade/gold/tr_3e4e977151a4.json": [
+    1261,
+    "7972697bb881ae09634efcc121308cb404250f6762dc00f4fb45ed10ef0b35f6"
+   ],
+   "data/processed/trade/gold/tr_3e92ad254204.json": [
+    1486,
+    "070f59db383bf0b8c66ac0b8e29e886dd06a5649f3e45b2c9a5ff18c337082e2"
+   ],
+   "data/processed/trade/gold/tr_3f17dd7a6ad1.json": [
+    1252,
+    "a851dcf214b37e8b446feeca82347f2ee4854655b71b68b2c53e227b78145a1f"
+   ],
+   "data/processed/trade/gold/tr_40e79ae660cd.json": [
+    1271,
+    "20056e5c3c1cf99118065eda1f5592b95737705e36b5d3d4593ace79876d4020"
+   ],
+   "data/processed/trade/gold/tr_41104e4e2d39.json": [
+    649,
+    "da1dbfd5467568617a2b0a0b656186853f194c34421cb43d7d6875d7a846037d"
+   ],
+   "data/processed/trade/gold/tr_41c10b1c36ef.json": [
+    1452,
+    "608841b793fba43840d3b03f243cb188260f307e05fc06dedb94a47b0e1f4c39"
+   ],
+   "data/processed/trade/gold/tr_41ef819f4cf4.json": [
+    1248,
+    "33c006ff57c9b927503cc6a8fd4398a08f02b5610f1b4cbd59cba2bacc13effd"
+   ],
+   "data/processed/trade/gold/tr_41effcb56975.json": [
+    626,
+    "8042238ee5680cccc978e7a46e073f904db9b482df83adc53d7e8a57d64d29d3"
+   ],
+   "data/processed/trade/gold/tr_4268528d86e8.json": [
+    1466,
+    "cb296cedfb08623cdf0c2073f41de3379dfddf2aab0fa16014d53d29b7caed84"
+   ],
+   "data/processed/trade/gold/tr_427da668e937.json": [
+    1466,
+    "62218c138ec1b8fc59f82137c455061bab9fe3b8ecc18c2e7bc7987499d79526"
+   ],
+   "data/processed/trade/gold/tr_443997982a64.json": [
+    1042,
+    "8713c93d6045e209acd56552f64a60fe9652f598ec6a3d524596b24d70e325ef"
+   ],
+   "data/processed/trade/gold/tr_44e13fde0bbc.json": [
+    1458,
+    "0e086091f00f298cd64f66a7ddb411e4b0671f651a35d2ef12b71450cd588d97"
+   ],
+   "data/processed/trade/gold/tr_469db56781e0.json": [
+    1268,
+    "ee1459d79eaef9c2267914818f88f7b85e70d493e54cea26cb588985e38359a1"
+   ],
+   "data/processed/trade/gold/tr_480d4faa9e3c.json": [
+    1051,
+    "cbe9aae97b88cb64f97605effa882f52b6ac273192afa281aee61e4f1ea66411"
+   ],
+   "data/processed/trade/gold/tr_489dcc965b4b.json": [
+    640,
+    "c54e68f5529812bd3d112269b58897a3ff306f8b90608d0671cf9fd0ee136000"
+   ],
+   "data/processed/trade/gold/tr_495b025c3852.json": [
+    1269,
+    "d1fc88da2341cc136665118ce8e0d187b2f19b012b958697693ac0bc6abe3717"
+   ],
+   "data/processed/trade/gold/tr_4b56d5db582d.json": [
+    1454,
+    "1d4a487b94117860f130beb2c5f8d6fda5321ac52eedaf3bb281d3c883e9466d"
+   ],
+   "data/processed/trade/gold/tr_4b6293815ae2.json": [
+    1247,
+    "bafbd724374c3a08f8d56de411a616db92ee95b8c8d9205bb93534ccab8aa1e6"
+   ],
+   "data/processed/trade/gold/tr_4b809e9bf5e6.json": [
+    850,
+    "f60170f9024bd7949d3513e3012381371f088279cfcff3a2076f4efa128b445e"
+   ],
+   "data/processed/trade/gold/tr_4bce6ab0ab89.json": [
+    652,
+    "d1321d7237979d2245853c09a17ead9343cbc788f431a2044920b84f60b25c0e"
+   ],
+   "data/processed/trade/gold/tr_4c9e33fa3067.json": [
+    1043,
+    "1767a06960427723afb6f38ec53e01249955fc198e0a4c7143f7e8fb8f2a5347"
+   ],
+   "data/processed/trade/gold/tr_4d508d17bd36.json": [
+    1256,
+    "1d0bd45304058f22f59948b5dc1d273b8ef84df34f63f8c5ee8d05dba9cecc4e"
+   ],
+   "data/processed/trade/gold/tr_4e34b1add0ac.json": [
+    837,
+    "4675926b200e23a1c3319a212f7db41c1b34a754fc5956114e8d449897a564a2"
+   ],
+   "data/processed/trade/gold/tr_4f25a2b05716.json": [
+    860,
+    "ccad1a2891816c2fbbfcad0158826ebd0dd7f106d6a3533312c428e1005b1955"
+   ],
+   "data/processed/trade/gold/tr_4f4314e0ada1.json": [
+    1052,
+    "11dabcdea423f9a5ff384bba6edd86b218cc3d916a9b2193583bb356c2d41b10"
+   ],
+   "data/processed/trade/gold/tr_4fcd6c486194.json": [
+    1441,
+    "04535af4e5184d7683484c390f8570d0329609ad546283c42016293a9ed1999d"
+   ],
+   "data/processed/trade/gold/tr_51b610e1ce87.json": [
+    1465,
+    "22d72020cbf3b1bad6fb90d507a0d581921f8d29669a3ed9c59a3f6e5231dc45"
+   ],
+   "data/processed/trade/gold/tr_52290f15e580.json": [
+    1248,
+    "be4a83d81aee7489f82a471c2b6d6f4784045903166494e42184e5c2d6821995"
+   ],
+   "data/processed/trade/gold/tr_525ae65a5add.json": [
+    663,
+    "5ecebc136e31b1e01e225eac3f85ca3ec70497da6879f716ae74ad2984e44d0d"
+   ],
+   "data/processed/trade/gold/tr_560e7132feb5.json": [
+    855,
+    "a8633d218fffeba0580bdc8e484308f40b5ea6de8965097a703dc915dbfb7e6d"
+   ],
+   "data/processed/trade/gold/tr_56596cc7169a.json": [
+    642,
+    "40ff5cba59d587140b9c40f62c67e984debc7df41151de3bc679809be6bc78ef"
+   ],
+   "data/processed/trade/gold/tr_58535d38fd80.json": [
+    658,
+    "2e55f98194e6f1c4742201dd76212e81d8d657b21f276b0100313f5cae85140b"
+   ],
+   "data/processed/trade/gold/tr_5892edc1e68a.json": [
+    1252,
+    "e29b23c1fd52afc12c4ff1fedae297a065573b4a10e12d7ef6cbc8ce7f5a0464"
+   ],
+   "data/processed/trade/gold/tr_59f0ff1f5546.json": [
+    627,
+    "4a2b38206589de1c6546d89028f1ef7d0ab28d42592a136a19ba80aad378c6e5"
+   ],
+   "data/processed/trade/gold/tr_5a59694f3418.json": [
+    837,
+    "06e474a8d5c0d75bfbbec39809597a02534c808867d913131ef4df11b6b5575b"
+   ],
+   "data/processed/trade/gold/tr_5a5a0968ac5e.json": [
+    841,
+    "f0e50f20fd82184983f95f4d333f316fbc5d1a3a3430e575a540659bbb9b4b92"
+   ],
+   "data/processed/trade/gold/tr_5b4402ee0c3b.json": [
+    1251,
+    "4464a33aaf38310cdf0e10b03bf2f65d9eda64830366c0eec151665555fede38"
+   ],
+   "data/processed/trade/gold/tr_5cce5c11ab07.json": [
+    1264,
+    "82aac677c2eb6cbead9d00a4c95f1b872205e089bedd825c4c8673eb795e44e2"
+   ],
+   "data/processed/trade/gold/tr_5ed7bf6fba3c.json": [
+    1244,
+    "3cb806b4758d33b4c7e0c666d3761cca8d24a239a352897703bb881839bf4db8"
+   ],
+   "data/processed/trade/gold/tr_5f262dcee39d.json": [
+    1670,
+    "d71f32c8cd92a60aeadd27162c2459a4427b6e22ce27b38302497b0e211f4bbf"
+   ],
+   "data/processed/trade/gold/tr_60f634d13745.json": [
+    1465,
+    "055da5ccff52ba701a82a5e69b315fcb5100f6a1b0177a088f83999a5410fd8b"
+   ],
+   "data/processed/trade/gold/tr_661aa7afaabe.json": [
+    1270,
+    "1a0114be4787fae7a33a06025986f221347dd562f5244a09e3ab0ff952e139ce"
+   ],
+   "data/processed/trade/gold/tr_68c2731f12b0.json": [
+    857,
+    "3f45bb4f217fe675b739400e84959cd64859a020e2775768903e380220dcf259"
+   ],
+   "data/processed/trade/gold/tr_69cab78e7dcd.json": [
+    1048,
+    "e951bc75ef7b354592edf851cd92743b3c35d7df287bc42b021a78f2f0d31aa1"
+   ],
+   "data/processed/trade/gold/tr_6b246f64d9eb.json": [
+    1273,
+    "06508863a88efdcc28fd75d9089824485cd8333e94bad5c4116d04a679c99de8"
+   ],
+   "data/processed/trade/gold/tr_6c7c01e6c1a3.json": [
+    1680,
+    "0f4ce27a0a8c995881912ac69fffca3f376507a24b521928a5b93ec267e0c6c8"
+   ],
+   "data/processed/trade/gold/tr_6d125d3f2d00.json": [
+    1056,
+    "9af673f1e87767d388d965693e7172ea16e78b446ca840ab5b313e0058bdcb5a"
+   ],
+   "data/processed/trade/gold/tr_6f8041d9a5e5.json": [
+    1479,
+    "a01c3c04773aa5b48a536c383a6b94fdb929a61a5fa902182a321ff3667147eb"
+   ],
+   "data/processed/trade/gold/tr_6fe5d118c037.json": [
+    1267,
+    "c5329e8bea21a7aa1c38876f90bb0beeee01d439116edadddb5ca6ef52126ccc"
+   ],
+   "data/processed/trade/gold/tr_7055b9b52cec.json": [
+    1481,
+    "4415b120a9f8f65784250b9b70cda6f0b8ff0ffc9a346eb3b871bdbed26a4e47"
+   ],
+   "data/processed/trade/gold/tr_70e4b24d0c46.json": [
+    1278,
+    "d0821221241dca22a014205195ad714562601bcb41ddc419669666d5c8616366"
+   ],
+   "data/processed/trade/gold/tr_71e07f0c25e4.json": [
+    1270,
+    "4b0f5e19425a26649f74199e21f27e177bfa629ef8e3e3f2223a1ccdffa95663"
+   ],
+   "data/processed/trade/gold/tr_724bdd9fcfa5.json": [
+    852,
+    "af2fcdc19a3fc7031b3d9e6369777f0d8e495df045c7755d1e5f1d4f29a5b4c3"
+   ],
+   "data/processed/trade/gold/tr_73325709922f.json": [
+    653,
+    "4874bd846adafe4aef07effcdd13e3d34e4a21257093b60ff13d6c370772ddb0"
+   ],
+   "data/processed/trade/gold/tr_73b8bb2b8054.json": [
+    1072,
+    "ef43d371950cae874cfe24671bbbc54fde93db6398328a54d2170bb5513d7d66"
+   ],
+   "data/processed/trade/gold/tr_74c825b675e1.json": [
+    1257,
+    "84a86d24f41665ea3b3591de3b5077a31034e81ed78e0259a3c4050032b7946c"
+   ],
+   "data/processed/trade/gold/tr_75f27f299e4f.json": [
+    1062,
+    "accf89bd38fef51b818f46cc4bf05d87e788e21c7efa6e4518f155a30ac2b289"
+   ],
+   "data/processed/trade/gold/tr_7ad53bcede1f.json": [
+    1250,
+    "af07d829da95c7221c7bdb5f9a1943f6a0f93592e6ac919358db8e69f81c7daf"
+   ],
+   "data/processed/trade/gold/tr_7bf987b7ba3a.json": [
+    644,
+    "4e2592e22f018d4d613daee311fd964c3793bdde9bf52b32e4d10c6b7a582ebc"
+   ],
+   "data/processed/trade/gold/tr_7d3690b30c40.json": [
+    1474,
+    "ebc16222ab493fbc18477f7e7f2a7866dfe6bb46f2e0cac800194ab8cf107a66"
+   ],
+   "data/processed/trade/gold/tr_7ea9222963eb.json": [
+    1258,
+    "783eb2e098be4c01d251aa025fff37fb497dc90b113f92c9bb1a57dbf89b359d"
+   ],
+   "data/processed/trade/gold/tr_7f1c11b5efde.json": [
+    637,
+    "70994030abfd0a882b02afbb234a810635423624ff21c9b7ea9367474278a924"
+   ],
+   "data/processed/trade/gold/tr_7f7af611358f.json": [
+    1448,
+    "1c2c120b95e9d0a631e08865d31f14d80191777a64f0ef88433b77fe441a9b3a"
+   ],
+   "data/processed/trade/gold/tr_81111107df38.json": [
+    1670,
+    "7135b9be3a01b78e6246f957a482c4181bd461c93feaebbe68aa885def56c605"
+   ],
+   "data/processed/trade/gold/tr_818878782c28.json": [
+    1446,
+    "a78e14f117afc2d910fa749cfa0f43f47d325a613610d80b764a88e49bd241ee"
+   ],
+   "data/processed/trade/gold/tr_827938e7dc64.json": [
+    1048,
+    "f379d962383abd8bb3987c7b932225944a53d9fc2231e374d3b45a2182de733c"
+   ],
+   "data/processed/trade/gold/tr_828aed49ad79.json": [
+    1270,
+    "cc98ab17eec976e60d63ff4c5388aee7d5f55c1cea3404af117ae514394f428a"
+   ],
+   "data/processed/trade/gold/tr_82c05c3a52c0.json": [
+    649,
+    "5faea8738f9700f5ead3484ffc2937a60dcb05ae9d50bd41438231508f303023"
+   ],
+   "data/processed/trade/gold/tr_83285b951c2a.json": [
+    1064,
+    "bd579be9d4d7b8c464c48d48ba3c502a09ce337e8dcd86c4bb5aa492490c6e66"
+   ],
+   "data/processed/trade/gold/tr_8456de4d800a.json": [
+    643,
+    "e1f5f3350f5db3f605bce797db542ea9d81d498cf0406fc253f158dd43b2b1ea"
+   ],
+   "data/processed/trade/gold/tr_87ecd9b523e4.json": [
+    1469,
+    "1bd6842f48daf17d7a2d9f873d3804116b38b19bc268790833d2fa988bddf6ce"
+   ],
+   "data/processed/trade/gold/tr_894e6ef5de7e.json": [
+    1269,
+    "030e510319dce7390dc868fba65d3f57cca13518ae12e16306e77327b1737968"
+   ],
+   "data/processed/trade/gold/tr_89790af05652.json": [
+    1449,
+    "99a8d21e7d99625074c7661f03dc6a814e67c8c71630b51fd1d6ca3833a3e3ea"
+   ],
+   "data/processed/trade/gold/tr_89f8fe5494ae.json": [
+    1452,
+    "cfc5eac6b6039ff37538da089ffbc6643380acbf37738b9da453e91249006ba7"
+   ],
+   "data/processed/trade/gold/tr_8ae1315543b1.json": [
+    1477,
+    "1c2cb7375c57140614e544011a7458b02991bb90c7657eb600cb64f3376d19dd"
+   ],
+   "data/processed/trade/gold/tr_8ba845fb091c.json": [
+    1049,
+    "032056431840576f39f6f3739665f3694a2c40624772d8bb0f95265fbdc8b67d"
+   ],
+   "data/processed/trade/gold/tr_8d30508593fd.json": [
+    1449,
+    "6bada2d4a08c13275e49611d71e9435b0b269f7b1561550ca4dce3d25f7af44c"
+   ],
+   "data/processed/trade/gold/tr_8e42facc7027.json": [
+    1048,
+    "b3309effdb90353258d0ff535a662de59f460f99a0773449a590ee8b9cb8d9d5"
+   ],
+   "data/processed/trade/gold/tr_8e892ea4c6d3.json": [
+    1055,
+    "4033d585b0be3a03fc065e62c76c20e50870d3109febab344b528cf4613bce75"
+   ],
+   "data/processed/trade/gold/tr_8eea43e369f2.json": [
+    633,
+    "ff93ff361de92d90ecb2554174fdedce9ce26c06b832b5842004197329fe4c70"
+   ],
+   "data/processed/trade/gold/tr_90ac55f5f000.json": [
+    1459,
+    "4aa2299d4b0a671f2a3b234f9085f7ec3ff7de52331997e2e8cb734551565028"
+   ],
+   "data/processed/trade/gold/tr_91915656f863.json": [
+    1056,
+    "35a83e29cc64798d81b4e14835b6468cf096bd1fe9555a44033b59c332dc69c5"
+   ],
+   "data/processed/trade/gold/tr_92c351f81910.json": [
+    1254,
+    "46256b110dd1bb4f125f86821cea4353172b4a9222cd4c9438fbe74ece369a8c"
+   ],
+   "data/processed/trade/gold/tr_943ead4253cd.json": [
+    862,
+    "6fc2c46d91fbdbbcced785a2e0ac03f9461258faeb36a31b06d029413cf1bdd3"
+   ],
+   "data/processed/trade/gold/tr_952ff41956a6.json": [
+    870,
+    "96d79d61c4b943305d196ad210378beafbd460b5416e9a5a15070c4bfcd20337"
+   ],
+   "data/processed/trade/gold/tr_96d5e1d0382d.json": [
+    846,
+    "38f89c70bdb46d1634c1a77330aef55fa65f1218cdbc9d741c1e3cb334d947da"
+   ],
+   "data/processed/trade/gold/tr_970dc6f84318.json": [
+    850,
+    "4b1c3a1e7635132acd8b143f85788797240a90f14f2bdfd102a9db75badaa0d5"
+   ],
+   "data/processed/trade/gold/tr_973df87f69c9.json": [
+    661,
+    "734381b04633862ede0485bbfdb1554a7bec1d09f89559e058550e4563a17858"
+   ],
+   "data/processed/trade/gold/tr_97f74dbcb165.json": [
+    643,
+    "fdf69f5c003bd38bfbcdf063c713564f8205d8ed3eb2b15bf1d9944d6748e09d"
+   ],
+   "data/processed/trade/gold/tr_985123ec7075.json": [
+    1464,
+    "55456082943899c9f68508986d4d0cdf67786349f2ea6f43c3a2b0831279dd84"
+   ],
+   "data/processed/trade/gold/tr_99561448caab.json": [
+    657,
+    "d75b23cfefefc19526770e64ecd7ed99e53893bbc9b4b0e678aa377c42c836fe"
+   ],
+   "data/processed/trade/gold/tr_9b9e2e52fa57.json": [
+    1057,
+    "ceb60c7e347b82c3c5e1dd5be41de536fb628c2e8adcd6eb5edf41c9074ea200"
+   ],
+   "data/processed/trade/gold/tr_9bee29f898fb.json": [
+    640,
+    "649a9298b36dc0c35d99c10c9573b95eba45531076b39f4e497bf12890fdb4b4"
+   ],
+   "data/processed/trade/gold/tr_9cc3a8fe31ef.json": [
+    1260,
+    "9af0836784d58a5141532a44fed69cda2e2452e4cc2fcdd95325d0fc99d86d20"
+   ],
+   "data/processed/trade/gold/tr_9dad4f2c6f82.json": [
+    641,
+    "6b50387442abf67ebd593d1013cc075d3ef2614c83a9196f14ef08c038b2ae58"
+   ],
+   "data/processed/trade/gold/tr_a23d7bec5b6b.json": [
+    631,
+    "47544dd779b7852f2cea2a71585c1428631debadb4bdc43a20fd15c45e76dfbd"
+   ],
+   "data/processed/trade/gold/tr_a27af3ee297a.json": [
+    1252,
+    "4d92098cf15f567b003b228b2f3768cb9bb8879fe8324484d58a73a52b828bc5"
+   ],
+   "data/processed/trade/gold/tr_a427e90693e5.json": [
+    646,
+    "32757fdbc2ba73beb70c846ef223c9b57a8a834976b034848ed86f49f9dd65ec"
+   ],
+   "data/processed/trade/gold/tr_a59543989a7d.json": [
+    1254,
+    "f79f72a55a2cf8dd58466fd6b72e0bd31b762ebe84c3586d470ef1bbc7b54e22"
+   ],
+   "data/processed/trade/gold/tr_a6040b083e9c.json": [
+    838,
+    "6d93e0ed078274a5af04e602bc60297f78770ef784b277d296533fe60c5a033a"
+   ],
+   "data/processed/trade/gold/tr_a755c2c17d85.json": [
+    829,
+    "f8bb640c51354f9210343caebfd87a8f5750856613b132f05600d8396bba18b0"
+   ],
+   "data/processed/trade/gold/tr_a7975f39c838.json": [
+    1453,
+    "5da3968782b88eed13eacd080341b81a5fbf321a4341b2adf51736586245b484"
+   ],
+   "data/processed/trade/gold/tr_a79d3b02fb8d.json": [
+    1438,
+    "e2e2a7bf7a6fe30517d2b9e1ff38b3b374444e4632dcbf7759e20e82222e9c49"
+   ],
+   "data/processed/trade/gold/tr_a80b63288759.json": [
+    1662,
+    "d0b635e23c8228f304482c59777cdbc8c8ea40bd6bafd5104dd0878b3c79ab24"
+   ],
+   "data/processed/trade/gold/tr_a8785e37b37b.json": [
+    1270,
+    "5c51f50ceee004705d01fac964bf8524b18fb5593e5555204fe835f09b88f3ff"
+   ],
+   "data/processed/trade/gold/tr_aa0d68ca5bef.json": [
+    834,
+    "1890d201ee06b69814b0e3fe17c12165ffd68fcc26596b007513247c6f18dc15"
+   ],
+   "data/processed/trade/gold/tr_aa5c2b32d179.json": [
+    1055,
+    "238530a4d660388712e958fb9e1aaf6d71b32fd48e10f13964c702a62dc5af3f"
+   ],
+   "data/processed/trade/gold/tr_aaf126b80e1f.json": [
+    1255,
+    "c12c9731754d1f06f071e567633c6ebffd9f961c8393e97970d5ea87a97c636b"
+   ],
+   "data/processed/trade/gold/tr_ab9ffe091094.json": [
+    1058,
+    "e81d63b34bdccbfcdb4262ba0becade23eb5751b9a2ea5633317a966b0c701b0"
+   ],
+   "data/processed/trade/gold/tr_abe92f1ff405.json": [
+    1655,
+    "977c428da571af41d32a59fd33d5e0e8a24fec2139c142e9f18ae8eb03453950"
+   ],
+   "data/processed/trade/gold/tr_adc08a909448.json": [
+    849,
+    "c8a9d4a9e1d67a25335a21ebbc3753ddcc1548305e8df2e0ed21e98814eabbd4"
+   ],
+   "data/processed/trade/gold/tr_adefa94d24d3.json": [
+    841,
+    "b1c19aa354cef34123a6188fd59102c29dd18445b54cb4f16a87b1f81a0aea48"
+   ],
+   "data/processed/trade/gold/tr_af692354b97f.json": [
+    1455,
+    "4c0431bf98888ba8ad242f3cc38124ac08b9f8d5364c33bfbf7747b4738220ba"
+   ],
+   "data/processed/trade/gold/tr_b0575273788d.json": [
+    1444,
+    "af593180caa42dc9fb3ad5f85289a77a937a2c56811f111899400add0e39eb64"
+   ],
+   "data/processed/trade/gold/tr_b08aa1e030dd.json": [
+    858,
+    "410b058f24fde7c546622b7f2905d9c930e17963adf122209da5dac1d9ebbed4"
+   ],
+   "data/processed/trade/gold/tr_b21b9d775a60.json": [
+    1056,
+    "253b1329f62624a353cca74ec7fa5f9027c3dfef2ed694b8d5aae0c3d9fd06de"
+   ],
+   "data/processed/trade/gold/tr_b373fb6ce71b.json": [
+    639,
+    "acb08cbc1751fe22bd1605549896bafaa185b3c93b1bf6bace9a174d3c2d1343"
+   ],
+   "data/processed/trade/gold/tr_b5d7d2e6dcdc.json": [
+    649,
+    "cf4e50900d6ca9d820e003fd18a638ad536f8fda45c3b466af05c5c4cf5b614e"
+   ],
+   "data/processed/trade/gold/tr_b68206257725.json": [
+    1070,
+    "f786dc165321085bd2ed1d59af1ce2e9fc0e65f6ca8ac542226c4e061a041e46"
+   ],
+   "data/processed/trade/gold/tr_b6c1677706b7.json": [
+    1051,
+    "f05d9c10b740a1358995056f4222f4cf2211719cffb3761649bd4cdab26626bb"
+   ],
+   "data/processed/trade/gold/tr_b90c608da19f.json": [
+    1670,
+    "973aff1ad4e1e4fa4b0868b3e5c3d7df6fdaa8937a970906ab3acec76233e8ae"
+   ],
+   "data/processed/trade/gold/tr_ba46af0520b4.json": [
+    1258,
+    "5640bab022ab355e362365b9c826d76b16da2209dd8ed10967e6e29b50b9de62"
+   ],
+   "data/processed/trade/gold/tr_ba8aaf34ea7c.json": [
+    1464,
+    "bb3da9744f12731ec627598ea1d3f7a7851aa87bcb90ea8f18ba5dded27bf0d3"
+   ],
+   "data/processed/trade/gold/tr_bc3013fe34ed.json": [
+    1666,
+    "8fe51a62d7c53743c4147511e85c4d58973473204175e77eafffdbb9ccdd6fa9"
+   ],
+   "data/processed/trade/gold/tr_bd8ebdc82466.json": [
+    1459,
+    "16b0e11d44464a3185bce5f21436991ff7762fe32d4be2388097fe14476ae90b"
+   ],
+   "data/processed/trade/gold/tr_c367b756eabe.json": [
+    1266,
+    "01ec3189d44459285cd64c654146ec66356098985c989f15153379d9b0d4631c"
+   ],
+   "data/processed/trade/gold/tr_c4de5f487462.json": [
+    1043,
+    "1393599cce9cbea4236d54bd77393a345d30d2d99e8f928787f9aa0d624a8682"
+   ],
+   "data/processed/trade/gold/tr_c74a74926cfb.json": [
+    636,
+    "972be20fddee6d9307e40ec6319ce47c1cf1f9695175b64a32cc0e747a211aa0"
+   ],
+   "data/processed/trade/gold/tr_c8050675efdd.json": [
+    633,
+    "9ca1bafb081175c3b42ebe886471673ec6dab581c03b72e2bf74e88df9ddd71c"
+   ],
+   "data/processed/trade/gold/tr_c82a4bf28ae6.json": [
+    1246,
+    "353339a2c93f2e2b696a1e538aa4a380a28b81fd5bce889de8ba4c5b40ff9e62"
+   ],
+   "data/processed/trade/gold/tr_c87be4c539f8.json": [
+    651,
+    "c3091420e7e98e09fd77c2d320c260d6d1a5a5bb46bfe92e2fa43279841cf648"
+   ],
+   "data/processed/trade/gold/tr_cb8b309e070f.json": [
+    631,
+    "510eda5bd4c94c02dee5b3a37b8f0dfa250f2896d2ed5e45694ffe11ab15ca71"
+   ],
+   "data/processed/trade/gold/tr_cc4f70380b88.json": [
+    853,
+    "55e9a58b9416c0cdc4c3afe2190e954ba39e1f6a47755ecb2510908800c4298d"
+   ],
+   "data/processed/trade/gold/tr_cd264cb99356.json": [
+    1471,
+    "fd323c15519a7a735306824885526e5c4ce0bcf66f0733ea4ccdb458c4107b89"
+   ],
+   "data/processed/trade/gold/tr_d0174e67701e.json": [
+    1462,
+    "658217aff5407d1bc19d09ea2deb1bff1c12d697fe7fb9bf6737afa940319e1b"
+   ],
+   "data/processed/trade/gold/tr_d07ecbc8bf4a.json": [
+    1646,
+    "36c8e3bcda87b62072ebf365a8d424c154116840ffd584d62f354cd8ef019cd2"
+   ],
+   "data/processed/trade/gold/tr_d165e7c2cd8c.json": [
+    1031,
+    "b6c1e464d6087cecd008cb30c4dc6c2c6b28f461f872da90c2ca22fc872284d0"
+   ],
+   "data/processed/trade/gold/tr_d30077b049ec.json": [
+    856,
+    "4d4a2e1057ecee1f21e35ba5fda839410d471eb8b2cb417ee46067b05c1bffad"
+   ],
+   "data/processed/trade/gold/tr_d309b30df861.json": [
+    1267,
+    "6b18f6bcc5269e58b5a850b6258494085b4f1d9150322cfbd95b2f94cacb4cb9"
+   ],
+   "data/processed/trade/gold/tr_d528e97dcce9.json": [
+    1472,
+    "899f549e887c513f4d7ad2426632080160a9c9f20c4ae95027362fd110211b9c"
+   ],
+   "data/processed/trade/gold/tr_d6726bd339a6.json": [
+    1445,
+    "5911b0539fde93d13f626a90cfe7d9a8674f29e99269f612a76adce184bb5545"
+   ],
+   "data/processed/trade/gold/tr_d75eb601469a.json": [
+    1261,
+    "53511463e492444f932865a8d0da72a436f5453127fda185a3a8cf4708c9c2a2"
+   ],
+   "data/processed/trade/gold/tr_d8f545783561.json": [
+    1246,
+    "0e68efdd62506db052f4283cb02dc9ed8a68470abb97f7c9e916d95136c5c7bf"
+   ],
+   "data/processed/trade/gold/tr_d9469a2957cf.json": [
+    1276,
+    "64cdad6c965daf38ba5d47864b4b0167c94b49012cfb87e14669c3a8a93e33d4"
+   ],
+   "data/processed/trade/gold/tr_d9c5561a5bab.json": [
+    853,
+    "1bdcfd9b18f6339080642bc3fdc593b22391cf25b3fe20637bc5a1950525d5ab"
+   ],
+   "data/processed/trade/gold/tr_db8a6ce9bfed.json": [
+    1244,
+    "f6232fa69634b0eb62008cdee2f17630b10b1c301370566a240e9dae229f8772"
+   ],
+   "data/processed/trade/gold/tr_dbe175031c8d.json": [
+    632,
+    "b446302df6f032024e30bb2f12ab2d6fe2e229196982c1dc75f7b70ade79371d"
+   ],
+   "data/processed/trade/gold/tr_dd65a424b7d9.json": [
+    1254,
+    "4c414cbb6c7d16c30bc1afa687bcb5df7b4203c16b46cc58fb6b63bf5b0219f6"
+   ],
+   "data/processed/trade/gold/tr_de0d6fb09c90.json": [
+    638,
+    "6ce3ad09275e26c70e23557a6add2b279f5f847175f694f2d24ea3acfa4b05f6"
+   ],
+   "data/processed/trade/gold/tr_de52060a8784.json": [
+    1472,
+    "857b0361f5c0ebfb4a06daec9744d55cb9ad45bf82f64ad24975866bfb07a579"
+   ],
+   "data/processed/trade/gold/tr_df40bf7521e2.json": [
+    1067,
+    "2a8ca9e412f394c3c23ee31645fac929a09ab6000602457c26a3e100d32244c6"
+   ],
+   "data/processed/trade/gold/tr_dfc010b9c9af.json": [
+    1254,
+    "92a859240962864884118f86234c99455e2887a4379e2edfcb30f79b2d67ba76"
+   ],
+   "data/processed/trade/gold/tr_e048a16bd644.json": [
+    1244,
+    "21fb8225aaa14d3054077ff36552e91b8b45f98a10752a6e450f44f1d7b6484e"
+   ],
+   "data/processed/trade/gold/tr_e082855b966a.json": [
+    837,
+    "f7d95bcabf3322a132703785019473d3235a05d813ef93d21107fe7fd03f2cd9"
+   ],
+   "data/processed/trade/gold/tr_e0aa44b02c9e.json": [
+    1470,
+    "5ab0d3ab191346cc9b9f18817d3fdc8075deb2fb7453766c1267ab9e3bdc18c4"
+   ],
+   "data/processed/trade/gold/tr_e10a90bd369b.json": [
+    842,
+    "e7f098ee8d316165e8ddd64000f589f893a38c35b0db101f4f29f02d50f7dde9"
+   ],
+   "data/processed/trade/gold/tr_e21f6a02f20d.json": [
+    849,
+    "ee4051451cce5aa358eb49ab51592d2e9f15fd7f45afde249f1e40648dd7de3c"
+   ],
+   "data/processed/trade/gold/tr_e308592901b8.json": [
+    629,
+    "afd037ab2435321958bea9e4671473ed74193ee8cfe8c953bccdbeb6909f8ad3"
+   ],
+   "data/processed/trade/gold/tr_e30feeab0b29.json": [
+    643,
+    "b87a54a9bc8c266cedfaed506fa750f73fc0feb58504909070b751b76c73ef3c"
+   ],
+   "data/processed/trade/gold/tr_e5057c8e80ad.json": [
+    649,
+    "f2edb64f9bfe5b96f0fa8db2a333b8033a8659c4494f8e66bc57aa238d3b6a72"
+   ],
+   "data/processed/trade/gold/tr_e5d34dc46bdc.json": [
+    651,
+    "d73ecf7a744bd819f3849f7ac32ee6642619850176aa052fd61d901e0b3def8e"
+   ],
+   "data/processed/trade/gold/tr_e710ab5f353d.json": [
+    1241,
+    "2e49e630082b84bb9e151491772de0e9810f4473d4b777869148deb7a616d10d"
+   ],
+   "data/processed/trade/gold/tr_e86c8bfe1376.json": [
+    635,
+    "7843be1ac80bbaa1569c8ad27fb492c95f6f659851ed6f380ff5c8a77f200a46"
+   ],
+   "data/processed/trade/gold/tr_e9e2e65ddfe3.json": [
+    858,
+    "0ecd1a8b950e199f84f4ba3eaf370cfa6fa98ae104b3ff17caf883740b36774a"
+   ],
+   "data/processed/trade/gold/tr_ebe0999de7a8.json": [
+    628,
+    "4c68c502c3435aa245994e07beded12cd00852ecb1ccd3bce2541d94d6be1e78"
+   ],
+   "data/processed/trade/gold/tr_ec45bc3d8591.json": [
+    1052,
+    "cfe415f5e67146520930fee38a17d805ec5eed8166c3b3f0d6845256c977c127"
+   ],
+   "data/processed/trade/gold/tr_edc078ad33fd.json": [
+    1050,
+    "4b75f26ec90adeccb948f2c75b5bed5a27fe551f6760660634b9715a6550063a"
+   ],
+   "data/processed/trade/gold/tr_ee057468ff1f.json": [
+    1033,
+    "44496e71a301dcd7c51ea2fbc3edd0c8f1713bd298489b1624cb6d85939d9916"
+   ],
+   "data/processed/trade/gold/tr_efe028ef7253.json": [
+    1060,
+    "75ba1777fc6e2685a7b6ba6847c7fcefc1226b80f7f0a123b41e69e54306e07f"
+   ],
+   "data/processed/trade/gold/tr_f0747673fac6.json": [
+    627,
+    "f3fe90ffb67de1bcbdf86888f2e437f4535877f0025da803bac7f31360beb7c8"
+   ],
+   "data/processed/trade/gold/tr_f1fb084e0e95.json": [
+    1454,
+    "48415d3da52af93a00b9f3b032732b2952fed129a3ee7ce0f5a6816f69e4d968"
+   ],
+   "data/processed/trade/gold/tr_f2882769a6fc.json": [
+    1686,
+    "cd3f165a3b50274b632dbe97fcc1a0c1854a438cefd08eec9b89228307ce4dd1"
+   ],
+   "data/processed/trade/gold/tr_f2a0f1f8974e.json": [
+    660,
+    "cda6bb4e1d32f54c0e773020c3414e0b5f8e0f57e3603ba33d6a0acdef33af72"
+   ],
+   "data/processed/trade/gold/tr_f3443976caf3.json": [
+    850,
+    "30b8074a5debf7333f175eb8e6b3e0658511c25b322a1c9bb71a99726ac8b481"
+   ],
+   "data/processed/trade/gold/tr_f460f4caa3f3.json": [
+    1054,
+    "1863610fa9c32e45a5ec2d250d0d083712387c4755c12cf278201517ebfcb6ca"
+   ],
+   "data/processed/trade/gold/tr_f7a3bd9f8c6f.json": [
+    1253,
+    "1622ad092ed70e42de3712835be1b5bf450e664a845eb2694b514062b12c1838"
+   ],
+   "data/processed/trade/gold/tr_f807b3ed2d13.json": [
+    1252,
+    "f11435a87321397bc431c5c4b731787235488bcd5b3d21514ea3eea26500e591"
+   ],
+   "data/processed/trade/gold/tr_f9752edbcd0c.json": [
+    844,
+    "e403bdb5ec418178e9bab8dc92d29dbe13429a6ad972b2cf188bb2221450ec18"
+   ],
+   "data/processed/trade/gold/tr_f9d4a551e379.json": [
+    845,
+    "c4a5a2cb220b8a9ab1e0a58c67f836f1e62f7d65448bbcd206b31bff67c11d2d"
+   ],
+   "data/processed/trade/gold/tr_fb3896b5845a.json": [
+    1058,
+    "63371a30654580eb2d5654b558e9eca9dce8b184ec7925b5a7728866bfa5d980"
+   ],
+   "data/processed/trade/gold/tr_fbcfacdef70c.json": [
+    1052,
+    "06e39f2942b1e0ade478d82283c647245f7e6678769621ce8de9715e86e4ca93"
+   ],
+   "data/processed/trade/gold/tr_fca54b6926bb.json": [
+    640,
+    "8289f35aeaf69fbcbe288aeb0f473adcf9140a038b4b9b26219d92b3e86d130d"
+   ],
+   "data/processed/trade/gold/tr_fe1893fcfbd0.json": [
+    1052,
+    "bc71f4a106540bdb6751dbde10f6cc6524b6c43a42615474a37ca26977cf606b"
+   ]
+  },
+  "public_shards": {
+   "data/raw/invoice-ocr-synthetic/673ff85be462eb7f3715ec188a295dd17ca11115/data/train-00000-of-00002.parquet": [
+    594209287,
+    "62b0432e30bc41baff495f0dfdfc64ffbccaaa39f1814e9528b7ed0d9f2085b3"
+   ],
+   "data/raw/invoice-ocr-synthetic/673ff85be462eb7f3715ec188a295dd17ca11115/data/train-00001-of-00002.parquet": [
+    2635217711,
+    "7e48694c5acb676a7d9853c07cba82affb652463ccf14b1f97e678302a7d968b"
+   ]
+  },
+  "adapter_m1_standard_v1": {
+   "artifacts/adapters/m1_standard_v1/README.md": [
+    5348,
+    "21d1ca83514603f1023479043d311ef97545ebf87430cc6b90192fb24af9a9e0"
+   ],
+   "artifacts/adapters/m1_standard_v1/adapter_config.json": [
+    1001,
+    "bd34dea4018228dd0b508faad36ed3ae30476059b337aef349764127635579b3"
+   ],
+   "artifacts/adapters/m1_standard_v1/adapter_model.safetensors": [
+    6438952,
+    "eb08674120d6489fb9f2ae4cf72038588794e09b3d337a5239d8a6078aff2868"
+   ]
+  },
+  "public_train_images": {
+   "data/processed/public/train_images/synth_0002_f405a802__clean.png": [
+    123765,
+    "da4c8d85c1dec7e923fce87d1391101d77a863c28f7e1b59b8d88e98f66bffe8"
+   ],
+   "data/processed/public/train_images/synth_0007_7292e354__clean.png": [
+    113960,
+    "9396b4c149d0aef078ff56d70befcdd8f79d3d205091f0e19e898f3fffc1ebe0"
+   ],
+   "data/processed/public/train_images/synth_0010_73bd8d75__clean.png": [
+    176298,
+    "c7df2ccfdb254d014f2ae768804c1eb8efa90bf5c055343c9f43662596649026"
+   ],
+   "data/processed/public/train_images/synth_0010_cc969914__clean.png": [
+    126258,
+    "c4c423a8c24cff20dc2c00e7753f243067bbadc009750b256a5d1ec166f79912"
+   ],
+   "data/processed/public/train_images/synth_0015_d222cd4b__clean.png": [
+    119368,
+    "192e42f2b03fd56fd436ca047468ee0d7a4468d1e8f1e8f6034f3d997a1eba92"
+   ],
+   "data/processed/public/train_images/synth_0017_d6df741b__clean.png": [
+    138536,
+    "a162262594c7d7e11020cb6b5c1ecc4dd7d3398342b4c6e1634508d5db193e57"
+   ],
+   "data/processed/public/train_images/synth_0018_21107440__clean.png": [
+    160217,
+    "329ad85cd9bc995707803b5d4ab978e38780464591e8c0c454f9742ba98c4f19"
+   ],
+   "data/processed/public/train_images/synth_0019_a60e4f43__clean.png": [
+    168411,
+    "a66bc42e6a71eceb186501018a56d0883af2f2f2bf0ddd3fa001d9dacb613369"
+   ],
+   "data/processed/public/train_images/synth_0027_8a4fb63e__clean.png": [
+    130403,
+    "dc2da7773fd32e4f0dd637b88693eb945945f1cc4872244b05848542caf44fbf"
+   ],
+   "data/processed/public/train_images/synth_0028_7d6b643f__clean.png": [
+    135629,
+    "e8b8b86f0f7a2c64c0e794edad3202502fb320f38c54f25e4fa611bd6cdacd5d"
+   ],
+   "data/processed/public/train_images/synth_0029_9328d197__clean.png": [
+    119381,
+    "615b1730dae7ce2e6ff70c8351f9a6e120b6934856733b4f1bc5a1d3714a7802"
+   ],
+   "data/processed/public/train_images/synth_0030_151e6410__clean.png": [
+    219165,
+    "2dac1250fd4855d33d50fd275cfc490e1b80ba9159bd156aef494a8b77b70d25"
+   ],
+   "data/processed/public/train_images/synth_0030_68985be6__clean.png": [
+    111406,
+    "4a0f9d1d0522384ae9c89823ad2c8e3852dcd2a117e717c5652cf30e39d8b123"
+   ],
+   "data/processed/public/train_images/synth_0032_4988ebd9__clean.png": [
+    176155,
+    "060deb3c50bd36ad263bd09850b9b1497f0b3038e44b3a7a27c90302374344d5"
+   ],
+   "data/processed/public/train_images/synth_0035_c3020fc5__clean.png": [
+    148986,
+    "d61cd40b91c1124676829692a3c4e8c50da5ef86b906052927e2c91c1096af70"
+   ],
+   "data/processed/public/train_images/synth_0038_d3816c5d__clean.png": [
+    164508,
+    "344f60c9af241f0afd25377387c58e9b7a542ed567911da167f26168a095640e"
+   ],
+   "data/processed/public/train_images/synth_0039_b4284c7f__clean.png": [
+    212208,
+    "e06556d7e2a699c6ca7ed756ff34c1601ae80e78bf55b1044fd1436a2c030b64"
+   ],
+   "data/processed/public/train_images/synth_0042_76a17777__clean.png": [
+    192485,
+    "862e4d528b72b7478a7ff5db566697a992a9c51ee81b92a9bdefce0b9eb79818"
+   ],
+   "data/processed/public/train_images/synth_0043_b421cabd__clean.png": [
+    157620,
+    "861aa53f9833f44d31c63ad1033168ec96f2e0eb399e925de70fd80b27370846"
+   ],
+   "data/processed/public/train_images/synth_0046_d0ceb44b__clean.png": [
+    155501,
+    "0660e8337c751a716d243d5e7f41d339fba158dbc93def41afb4ea3939445709"
+   ],
+   "data/processed/public/train_images/synth_0054_5b3df113__clean.png": [
+    153835,
+    "aebbb2a6f1495168f0f83135440f66e7a64d3d615291b85202febb7b7424f412"
+   ],
+   "data/processed/public/train_images/synth_0055_c70bbf8c__clean.png": [
+    171329,
+    "1fc6b1d6ad9ce67147103e2d09731407f4c4ecdc6f30b81d8c2108896d5be8e9"
+   ],
+   "data/processed/public/train_images/synth_0057_5072a4b2__clean.png": [
+    187086,
+    "b91e2dadc30038e7c5e2a3b993d8740bba747f10523413bf2a0d8c4d088cdde7"
+   ],
+   "data/processed/public/train_images/synth_0057_f5e1a920__clean.png": [
+    124575,
+    "2c3eb8d3d9872e63327deb7de9fbc8281b5430e3b053ff8908353f0b66cf1d69"
+   ],
+   "data/processed/public/train_images/synth_0058_6312c8e6__clean.png": [
+    119095,
+    "61ddcf25caf2faf8ff5b9583b8af338d57bf4d2fd3a816134ba1626297983a20"
+   ],
+   "data/processed/public/train_images/synth_0058_916ff5f4__clean.png": [
+    83168,
+    "0659acc9f3ed297fdf0fc27fe78fbdf802595ba20835653f79c3d446daa88150"
+   ],
+   "data/processed/public/train_images/synth_0060_97bd65fb__clean.png": [
+    129491,
+    "2d8b8cb7e87bb3c4fcfb7e8cf3dd1514d810dd28b9b4f846428354cff9626b99"
+   ],
+   "data/processed/public/train_images/synth_0068_7e796715__clean.png": [
+    108362,
+    "0d31be87e4dc9beb086a6318622602035c2c5975f6909330a0aa7f6a19092b3a"
+   ],
+   "data/processed/public/train_images/synth_0069_3f9b6323__clean.png": [
+    123266,
+    "c4dbdfc7e1c0c86303cd5261eaa2fbd06fb0957c1aba6c6e311c543f3a967f4b"
+   ],
+   "data/processed/public/train_images/synth_0071_2b3aec0a__clean.png": [
+    91086,
+    "43925fcde8ffd65bafe15709bd0c8827322a38fb084f78280c9f06611c023534"
+   ],
+   "data/processed/public/train_images/synth_0071_5325dbed__clean.png": [
+    144448,
+    "d5917b629157c89b115570c297f686802e2ae5a826ddd013ee0f003a61ae3e8a"
+   ],
+   "data/processed/public/train_images/synth_0075_02d82e76__clean.png": [
+    126111,
+    "a591fb24c1ecc4131725dfbec6f55d0b55592bc443f48b21a0b4b20f2dc98946"
+   ],
+   "data/processed/public/train_images/synth_0086_808637e5__clean.png": [
+    190619,
+    "e504e1b7c93549c0498303ab877882013dbe8e92787db851ab226416dcc0db4a"
+   ],
+   "data/processed/public/train_images/synth_0087_099d766e__clean.png": [
+    213692,
+    "846c7aa43c53631c1554f3de918a2a7e9ae45f776679bf533e2071cdac05bae9"
+   ],
+   "data/processed/public/train_images/synth_0089_31e5808a__clean.png": [
+    133048,
+    "361cac14ef1f955ede4f74015a8bcf8cef008fa10173a85144187e168d403555"
+   ],
+   "data/processed/public/train_images/synth_0089_5343ad29__clean.png": [
+    150338,
+    "6d985b60371d882a0932a252827c854c2eb781957a4508a8e34bdd7442a3efa0"
+   ],
+   "data/processed/public/train_images/synth_0090_1a84bb97__clean.png": [
+    144415,
+    "4216f89739fdbe17075a3de195a43d752ea97fb9c64d5626d83a2111ebd19074"
+   ],
+   "data/processed/public/train_images/synth_0095_27a226eb__clean.png": [
+    141947,
+    "cca8a422dc836146e7efb306a887df66f453f9627aba316ff33ad586ea6a521e"
+   ],
+   "data/processed/public/train_images/synth_0096_2b8b7dfc__clean.png": [
+    155574,
+    "a8210fc98f88224fd5c4b9f9551c4af1ae4ebea21dbe51804b034234dede3490"
+   ],
+   "data/processed/public/train_images/synth_0101_38ddef3f__clean.png": [
+    158913,
+    "447e01d96051fa6bc442ea150a739069a537cf725f2bf2cb92bb8374b3de942c"
+   ],
+   "data/processed/public/train_images/synth_0104_3e058c57__clean.png": [
+    118769,
+    "bf6661a73656e30538423c40679a07df690608435a3aebb198bbb4d3a8058a4b"
+   ],
+   "data/processed/public/train_images/synth_0104_8547906e__clean.png": [
+    92080,
+    "8b7fa08b6e69d4081a8f313624fac761597b089748ff215ded2609d868bb61c3"
+   ],
+   "data/processed/public/train_images/synth_0110_9398db5b__clean.png": [
+    127739,
+    "136c4691afa3312fff5736e769be743a81a453c00c7f0e868e1118e8a3ccc036"
+   ],
+   "data/processed/public/train_images/synth_0116_b1b160d8__clean.png": [
+    120680,
+    "b0f1699d021c38969dfe5a0dc253ebd2fdcd43c63254eef96b9a1dc108d3606f"
+   ],
+   "data/processed/public/train_images/synth_0120_02531908__clean.png": [
+    131158,
+    "3558f6f22bb9bfdf526177b87537503a0c542670adcdcafc6914ad5b90d3b4b7"
+   ],
+   "data/processed/public/train_images/synth_0123_7027c7a9__clean.png": [
+    132039,
+    "5c504e7bc684d83039ab174986672ec137cd4634e51b4104bf273a90a2b46937"
+   ],
+   "data/processed/public/train_images/synth_0129_b4fabf6e__clean.png": [
+    108623,
+    "3408e5be8650dc675009a57367812557d2d0c64c856d2ba859042faf4f9e3bc0"
+   ],
+   "data/processed/public/train_images/synth_0135_51b27340__clean.png": [
+    99381,
+    "b7d2fde65b333da9b041139a3a4ad951abe8052bb8360c4252c1963cb8c6fa12"
+   ],
+   "data/processed/public/train_images/synth_0135_ed896bc0__clean.png": [
+    196090,
+    "de9f2ff616247d4d4595e988fd56eb17c32f21f0c903a14eb366810003586f15"
+   ],
+   "data/processed/public/train_images/synth_0141_4647845f__clean.png": [
+    134671,
+    "c9bb8b3a66f4b3eed3a3c93d0fe24f0de067dcc76b6761759a836fa2b9723f6e"
+   ],
+   "data/processed/public/train_images/synth_0142_5e895784__clean.png": [
+    125384,
+    "7c4773a37ce2173b09f8479e9d5eae5e1fc5cb6820ec8ecaf3a17c3d0b7ea873"
+   ],
+   "data/processed/public/train_images/synth_0145_cec75297__clean.png": [
+    162526,
+    "fb302379c37afd62298337b168d9c48a71f474cf08dafc4d135dba273e7ef1a9"
+   ],
+   "data/processed/public/train_images/synth_0148_78a3fe78__clean.png": [
+    124947,
+    "d1bd97fa65b200e22057e63a09da7d1cbfb5186d927f90900045fbd2c9f8970e"
+   ],
+   "data/processed/public/train_images/synth_0150_2ea55863__clean.png": [
+    114054,
+    "39829ceccbde1f89bf46516ba7de4493edc9d0742fe38a1efd1febc36c684d57"
+   ],
+   "data/processed/public/train_images/synth_0151_7f157ddf__clean.png": [
+    134135,
+    "8dc1691b8634e7c2048a59d9a1bf12381ca28b8b3726365f5392b150a49b207b"
+   ],
+   "data/processed/public/train_images/synth_0153_c66eea94__clean.png": [
+    219951,
+    "6b8a03c0399c5ef2b12990dfcb6d8db6fd1021432590f779da83129ba90aebe9"
+   ],
+   "data/processed/public/train_images/synth_0160_336ec259__clean.png": [
+    97630,
+    "bcc4bc0b88e0adb05825b04a5d88a64ac08b3109d10a1411a627c75a2f357908"
+   ],
+   "data/processed/public/train_images/synth_0164_5f1a76ae__clean.png": [
+    166701,
+    "ad95b5aa0e928c3f70118c77d3436ae1913b808814521d21acbe28103898e9cf"
+   ],
+   "data/processed/public/train_images/synth_0171_6091df40__clean.png": [
+    123245,
+    "b6f154f8a47df84ea19789b5c0118452a4a04925b126050b91c1a6a2af28d360"
+   ],
+   "data/processed/public/train_images/synth_0173_b7700fa6__clean.png": [
+    121399,
+    "db1a2f3d194ee3e9f1aa8f3efe066067458273ea797148e06f594a0f0f855ee9"
+   ],
+   "data/processed/public/train_images/synth_0173_d3e45316__clean.png": [
+    152591,
+    "a9cb735ca1e9062591cd156fc3a24c9de9c0286375d9efb247c254b5d9edda83"
+   ],
+   "data/processed/public/train_images/synth_0174_8e2d1dcc__clean.png": [
+    145730,
+    "efd95989ef418f81a2ae880107903522bce4008c802186b7171f63f88ebbd5aa"
+   ],
+   "data/processed/public/train_images/synth_0175_037f04b0__clean.png": [
+    107960,
+    "81e20ff5af17f18a34f0b1f93d46f077bc1598527f91c97af66fe02eb8aad2dd"
+   ],
+   "data/processed/public/train_images/synth_0177_67bca61b__clean.png": [
+    155631,
+    "45a46092b8b549129533d25429f6a07bd14955d05ad1c835b5766c325b4337d5"
+   ],
+   "data/processed/public/train_images/synth_0178_28267376__clean.png": [
+    204553,
+    "6dd4323f6502576863201bd9477146af9e8f23c4be933f2f792c178cd3a358f1"
+   ],
+   "data/processed/public/train_images/synth_0181_1560a242__clean.png": [
+    105103,
+    "877b4a73d0fc0a3bdf13c37338f6fdeb0af6f308ec9c22ac2f6f52ceab3b4828"
+   ],
+   "data/processed/public/train_images/synth_0181_fd85b6f5__clean.png": [
+    112509,
+    "442c6e36320c42a1b15bc9fc9a25aa169cced9d375ec9b46375fd41b97afea33"
+   ],
+   "data/processed/public/train_images/synth_0183_3982953b__clean.png": [
+    126731,
+    "1802f7c7e7e059091006a852e54007952dc2a3f6553d481979e633afda6600eb"
+   ],
+   "data/processed/public/train_images/synth_0184_4ad1629b__clean.png": [
+    191575,
+    "d834c48b846937e4433d8cfd0c65d73a3984379974769efd8c4d512bd7842c8d"
+   ],
+   "data/processed/public/train_images/synth_0188_7b3ed0ef__clean.png": [
+    121499,
+    "61cfc8070e576a2ac94afd9d9d1b1a0aad0e75348b408909f8cae43d90537576"
+   ],
+   "data/processed/public/train_images/synth_0190_83ca54c6__clean.png": [
+    103306,
+    "e8fea4cabcbc00ea88b3a82a41903947b7934c897d0079fa4067391a31ee9a05"
+   ],
+   "data/processed/public/train_images/synth_0196_1a82571d__clean.png": [
+    137928,
+    "4e746eb8f125e0c3bc16b45621eb963b611589197fbecae4c81342f5ee7f4b36"
+   ],
+   "data/processed/public/train_images/synth_0201_26e525c6__clean.png": [
+    151771,
+    "01a704350a668f4e12008e505345767ea2ed286cebea414e9de89a8fe497ab0a"
+   ],
+   "data/processed/public/train_images/synth_0204_dc2aa9d3__clean.png": [
+    105576,
+    "6fd0213cf637d9043a3aac57450a4d85d1f4971f523dcbc61ba7829ac48e8945"
+   ],
+   "data/processed/public/train_images/synth_0210_ffcff80d__clean.png": [
+    162888,
+    "a4ec30d0dfc1b7e37cf60f4d85fcf634edd1007b83fc04f3fee5a31d7d9ab1cd"
+   ],
+   "data/processed/public/train_images/synth_0214_6db74fca__clean.png": [
+    156643,
+    "114d566ded09ab5f5b18dbcb83ac530dceb011e091a9cc2e8b105bee583e11e9"
+   ],
+   "data/processed/public/train_images/synth_0215_37df8a6c__clean.png": [
+    105770,
+    "c294ec380a211f7f6866dfdf5a226f53015f78268b3bd62b005e49bbc090c57a"
+   ],
+   "data/processed/public/train_images/synth_0227_639cb22d__clean.png": [
+    123012,
+    "d00ebea4685512f86c437c80812b37dbda4ac45dee2d414b30eb280fcd4688f7"
+   ],
+   "data/processed/public/train_images/synth_0231_9a5b585a__clean.png": [
+    127738,
+    "6e7e924fcce233f452e88e5a109142c9354139d1e4632507df0cdfcd634a24d1"
+   ],
+   "data/processed/public/train_images/synth_0237_a6e5227c__clean.png": [
+    120546,
+    "8c7373609179b8a622a5637d20b23dea42a71506eee9417fe0f922edb0808bad"
+   ],
+   "data/processed/public/train_images/synth_0251_b43f8a21__clean.png": [
+    77845,
+    "9b3cebb4ee42264c90c205f3ef3f0e36e149d10651603e45b465744dbea0198f"
+   ],
+   "data/processed/public/train_images/synth_0252_7cb2cb19__clean.png": [
+    98643,
+    "deeca1dc430336bba95f26b24ca0e7516081f20b0129459fdd2404468e067063"
+   ],
+   "data/processed/public/train_images/synth_0256_692ec9c8__clean.png": [
+    102152,
+    "341c21fd0070f8faf9e88096524b8739536a9a26e9f7d0282634f0bb613cc603"
+   ],
+   "data/processed/public/train_images/synth_0259_ad633fe9__clean.png": [
+    175925,
+    "b93a32d104e55a6769936bd3ca86a5182dcef77b3707497e2045dce90232b096"
+   ],
+   "data/processed/public/train_images/synth_0260_7e39bc75__clean.png": [
+    135554,
+    "00aef4002faad36c681fe0b204ae2788f81b9a13c364564ce3c27467cf238e3f"
+   ],
+   "data/processed/public/train_images/synth_0271_e5de6da0__clean.png": [
+    107127,
+    "ddae97bbf658f7e7e05b38efee35b607a8a09e2bc6e1b1e42d1fcfd6d2756915"
+   ],
+   "data/processed/public/train_images/synth_0272_1cabb0ce__clean.png": [
+    140429,
+    "7a07b17a42162b9d374f9f5999b60d1da1a2cde4779fdaa427328da974f98203"
+   ],
+   "data/processed/public/train_images/synth_0275_02a6d950__clean.png": [
+    111279,
+    "77b5002c1c7a77c471c052678c6abd2bc7d49e5fd3343c115e5168ddf7692786"
+   ],
+   "data/processed/public/train_images/synth_0278_52a5a602__clean.png": [
+    123321,
+    "a61720562a8bdce3465d0d53039dba60c526bbfc2b7f65d3e48ad69e6eddd790"
+   ],
+   "data/processed/public/train_images/synth_0290_dd25da9e__clean.png": [
+    112450,
+    "9e28a436525786757b1d88b28aa3e99d32daae2a566c6b1d495708db1f724645"
+   ],
+   "data/processed/public/train_images/synth_0297_7348610e__clean.png": [
+    94328,
+    "e3a43c67b4031c4d313b344deb2417c592b7f69cebacdc96dad19f730ed9c427"
+   ],
+   "data/processed/public/train_images/synth_0302_684a89d6__clean.png": [
+    155069,
+    "198383f44824077a21f6616ce12c06d3063e428ab8910050626a26fe6a53097a"
+   ],
+   "data/processed/public/train_images/synth_0303_1d794c23__clean.png": [
+    136614,
+    "0f78c6fe1fc3515af6600ca5c5aed46e30e9187b80797c15faf68dc7ab321fcd"
+   ],
+   "data/processed/public/train_images/synth_0304_2dc7d400__clean.png": [
+    141115,
+    "df3121c1ef9e3e612c4edc2befe74ff27447b7a340e916f5e789bd4e98ca7063"
+   ],
+   "data/processed/public/train_images/synth_0305_0c182dca__clean.png": [
+    99013,
+    "ec09cf2064a6577193fcbb44967399bfef6362ac193ff5ff9352fc86591d815a"
+   ],
+   "data/processed/public/train_images/synth_0310_d49bc9e3__clean.png": [
+    125112,
+    "2584eda4fae317054c41aaccb0360a0117357ea538fa44743164c841b087b308"
+   ],
+   "data/processed/public/train_images/synth_0311_df57d68c__clean.png": [
+    137986,
+    "18905d6f99790fa1783c8bc8ffb4edf2b00c8af8c01b5de0abd4f6c281332268"
+   ],
+   "data/processed/public/train_images/synth_0312_7f786278__clean.png": [
+    139502,
+    "c616b073feef05c10b77244d7ae9129bdb1b48dc302506575b2561d8c8da9652"
+   ],
+   "data/processed/public/train_images/synth_0318_868da466__clean.png": [
+    140885,
+    "a9715ef7edb9b8a40751158810a2b6fb8a2452fceae376f4d6e9541d234d507e"
+   ],
+   "data/processed/public/train_images/synth_0322_112b2497__clean.png": [
+    108419,
+    "e0d1f9e6ca48cff3b40afc9ef25e0e40f2aa816db4fc0a3025cdff71b71b058e"
+   ],
+   "data/processed/public/train_images/synth_0323_ba99ee08__clean.png": [
+    58275,
+    "c5a20e615991c5f56dbfe58d97951482bcc6fb743ac3316918df1f403d5b90f5"
+   ],
+   "data/processed/public/train_images/synth_0326_8902f345__clean.png": [
+    114376,
+    "cee20a762fe48d3f547b17324686ec95b551a316a50afe3bcf95605d61ace1be"
+   ],
+   "data/processed/public/train_images/synth_0328_1219ec4a__clean.png": [
+    134894,
+    "f77cbac419f02a8aaf3d42eeaf9799b0a04a5535c597db8a6cceb73775b24c85"
+   ],
+   "data/processed/public/train_images/synth_0329_83b54866__clean.png": [
+    94512,
+    "da60e9990968d58e9075855bd9952f8b959dae98ed754fe5763d76a1a8d790b2"
+   ],
+   "data/processed/public/train_images/synth_0330_bf1aeb30__clean.png": [
+    61910,
+    "a0e3544923e3d5f4734a088a60f0caa2b02e51b4392fdf2cef946922bb9b9e9b"
+   ],
+   "data/processed/public/train_images/synth_0338_d0b422f5__clean.png": [
+    87798,
+    "97988a7e7639c966585a603955ddf47e0dfd262b8e55cef0b21ac30a1c9ddf5e"
+   ],
+   "data/processed/public/train_images/synth_0356_c74542d5__clean.png": [
+    127633,
+    "d30bc16d96c46d987408d04c08d9b81bc2fbae0de79dd3c794a5d3b997d7ea06"
+   ],
+   "data/processed/public/train_images/synth_0358_a0ea4c5f__clean.png": [
+    160752,
+    "4bb9dc111ad79b7e6e9884acca03283bd665cbc01c10500e2393f87050d3bf2d"
+   ],
+   "data/processed/public/train_images/synth_0360_65d95bc0__clean.png": [
+    118917,
+    "df2e997bf98a3b6b3650e101920f34b39d957f36ca97f551149ff04b3b69d5f3"
+   ],
+   "data/processed/public/train_images/synth_0362_69c6d4ff__clean.png": [
+    176071,
+    "8c3a4e905b09a8a44e1dcb43bf9c0fac9f75d93d411cdbd578809e9bd5293fef"
+   ],
+   "data/processed/public/train_images/synth_0363_6267e9d0__clean.png": [
+    124534,
+    "4fe44b11347e84519e67c28cc2b10af8ba0f4d2833f451f9d448469437a21bfc"
+   ],
+   "data/processed/public/train_images/synth_0375_a9ca2fd9__clean.png": [
+    110988,
+    "399bc4b6a89998044d9da6d447d47919b3a1bb6a99525bff12777a03d99a4681"
+   ],
+   "data/processed/public/train_images/synth_0382_e35174b1__clean.png": [
+    101283,
+    "f3d291178fa101e317325fe1a94fe06ee489500e44a7ba38d550bd383d1df741"
+   ],
+   "data/processed/public/train_images/synth_0390_086acb6b__clean.png": [
+    115095,
+    "4288aa04209600e55b16bc1bdc7fd8ce1c8798535b73881f7427560becda5fc3"
+   ],
+   "data/processed/public/train_images/synth_0391_1ff9bd86__clean.png": [
+    104729,
+    "b6b2c1140ae9c5ec2169859c6aaf3616691ead103988be14032f6af55bf0a7d5"
+   ],
+   "data/processed/public/train_images/synth_0398_82b2e179__clean.png": [
+    91433,
+    "fdc0383d3d96158d1edc1063bd5f8da0ad0b2c79b0420ff6be4af9c04659a904"
+   ],
+   "data/processed/public/train_images/synth_0408_dd6c6e60__clean.png": [
+    125087,
+    "b978121ca419a2640dd18d4d69d3f07528ad4551053b66304d20210a49c69eff"
+   ],
+   "data/processed/public/train_images/synth_0412_ec2e3f76__clean.png": [
+    128534,
+    "00bd3034d17f479cf19410bf48c264dc078c3db0647bc9e73a7cfaef784f3357"
+   ],
+   "data/processed/public/train_images/synth_0429_da66d475__clean.png": [
+    107264,
+    "d3cb48aee0cd6045e009a2ab8e02f6d64512e273d535ff2492b075679adab33e"
+   ],
+   "data/processed/public/train_images/synth_0431_554260d5__clean.png": [
+    133068,
+    "27b8f57ee7000141995d9f057633c7a97c977c5009ce7cd8651156355b1f37ef"
+   ],
+   "data/processed/public/train_images/synth_0434_f661187d__clean.png": [
+    105920,
+    "46dca732466bd0572d0b23980e8b0a44b8612bf021dc4807465e9b5b9463f159"
+   ],
+   "data/processed/public/train_images/synth_0438_ab45696e__clean.png": [
+    169062,
+    "1d5c434ad4fee0522138c456169d2a5ad8cac6cfc2ad8f164a2f72d00554673b"
+   ],
+   "data/processed/public/train_images/synth_0439_f9f09ec9__clean.png": [
+    128747,
+    "d12ee1563080cc043ef764680947353c6db37b5138a11712e47d619e2418b71b"
+   ],
+   "data/processed/public/train_images/synth_0441_a50cb47e__clean.png": [
+    89941,
+    "7eb14cb83ed47b258c88ffde6b4705952d114fb60777f4408c8f8d777029facf"
+   ],
+   "data/processed/public/train_images/synth_0444_56288faa__clean.png": [
+    143138,
+    "5dea06e01376070d09308fa99f97ff4b7d8bd19fc41cc6cdb5a860d95bfa32fd"
+   ],
+   "data/processed/public/train_images/synth_0455_9acf1d85__clean.png": [
+    105454,
+    "dbca17698cfcf072d91e6c2f2d49ab51bb94117945fcae5bc2af5fdfaa2fbb4d"
+   ],
+   "data/processed/public/train_images/synth_0458_ee883b5e__clean.png": [
+    116438,
+    "57318656f35f79db98f8502f63764ad6bb2b1765961e6a8a4e0796d4a2783a10"
+   ],
+   "data/processed/public/train_images/synth_0460_3da9b399__clean.png": [
+    95466,
+    "9568b3272a30240cbbf5c9108225d9213170662c1c4abaa445b6def29cad0fd8"
+   ],
+   "data/processed/public/train_images/synth_0482_62c31cb7__clean.png": [
+    157284,
+    "3fa3d988560407ff247f30e08f50c7b8c533bc8489357921a9e5b3c3230ac1d9"
+   ],
+   "data/processed/public/train_images/synth_0489_d69b6ac6__clean.png": [
+    106065,
+    "6b987a5121a4e6e179da67b5e86455db6a091b488e2846567ba64899164d0f24"
+   ],
+   "data/processed/public/train_images/synth_0492_372ddd1d__clean.png": [
+    164975,
+    "6acb58a6926bccbed712ca0004d25eb1e97ca959cea9872f0c87b5804fbdeefa"
+   ],
+   "data/processed/public/train_images/synth_0498_b7b166a2__clean.png": [
+    73601,
+    "2ce2b82692c2a72eff3d92574fcf38f278d74dd064ab709a00ba470d4121fe1b"
+   ],
+   "data/processed/public/train_images/synth_0500_1e7f114a__clean.png": [
+    107825,
+    "3037588574cce2420935a5d9b3a747dd6610c6353506ddb39482557df6ed2557"
+   ],
+   "data/processed/public/train_images/synth_0501_ff90959a__clean.png": [
+    127813,
+    "bf50e61a8a0c31748a90df38cb77a6256655778097182c60f57b4e9651831e13"
+   ],
+   "data/processed/public/train_images/synth_0502_b6d0296f__clean.png": [
+    89677,
+    "0b2277d8dc4ee16150cdb75cf84e7be398e775f1e0562539eddfef6ef2ab7242"
+   ],
+   "data/processed/public/train_images/synth_0503_a877a3a3__clean.png": [
+    141466,
+    "f92cff94a7cf5797b32c40888c5e9a80fdac4fbfba361517a54f5ac4423b9388"
+   ],
+   "data/processed/public/train_images/synth_0505_6a882e72__clean.png": [
+    69228,
+    "e49f873f946016e22cff281f799d95ab7220561af5508466e99ca5aad85c75ea"
+   ],
+   "data/processed/public/train_images/synth_0515_277a56af__clean.png": [
+    125615,
+    "1f9c80e92f77599394ffc180bbd2f1aa4359305964c5666fb09c55e317f46f26"
+   ],
+   "data/processed/public/train_images/synth_0523_22e4c55a__clean.png": [
+    121411,
+    "d1f27b4aa5b7f420fd7bfc09d911fd1946636cf02cf4b63745a9020d52db57f9"
+   ],
+   "data/processed/public/train_images/synth_0535_619ebcac__clean.png": [
+    139358,
+    "50168a09bf91fa916b8cf2498d683f3668b79d62eccf423032c6c289752b0ecf"
+   ],
+   "data/processed/public/train_images/synth_0538_94ddd7f2__clean.png": [
+    152570,
+    "a917ec3b64a6f0b60a73c2db8db4d749433cea5efe6243b2f181f918f0755d5f"
+   ],
+   "data/processed/public/train_images/synth_0539_9e026d5a__clean.png": [
+    142625,
+    "c7ef7b7326c7bfb81b8ddaa71bbc91d886d85bbcab638ec69d4d4c05c9064408"
+   ],
+   "data/processed/public/train_images/synth_0541_b5bdf384__clean.png": [
+    162230,
+    "ba5206c1f8c6dd46778553d0ba9b01a213b7ac1c76fd1e2c494cc4e11fbdc10f"
+   ],
+   "data/processed/public/train_images/synth_0546_64064bc6__clean.png": [
+    81796,
+    "73e57d4330186cec01ec7657435c96e21dd1319d923883d849691c4af56d8ecb"
+   ],
+   "data/processed/public/train_images/synth_0548_c0f3e504__clean.png": [
+    141945,
+    "95eb9eff350bac7af6fb21db2efb739db10a9ccfce86083bcb91cb6bef7a42af"
+   ],
+   "data/processed/public/train_images/synth_0550_3b695f8a__clean.png": [
+    147375,
+    "444ffa0be56fb9c71a89e49e35a4fe9f71d17ac7ab87bdf0f96b5e50c1e6c281"
+   ],
+   "data/processed/public/train_images/synth_0552_ad419ead__clean.png": [
+    135185,
+    "ea472839c3b560954368c418d15deae28ea168a3edd8de8396a2ab91eacf5303"
+   ],
+   "data/processed/public/train_images/synth_0561_fc29035d__clean.png": [
+    115296,
+    "084c7e82ae95dadf3906807ebdb9428725b44a8bf039eb991d6417a282c762d5"
+   ],
+   "data/processed/public/train_images/synth_0568_1622de10__clean.png": [
+    123833,
+    "b28abc99d05aaf19c96cba67abedf6bb1868d854c75162edc8c66927a4a0b77b"
+   ],
+   "data/processed/public/train_images/synth_0570_007a00a9__clean.png": [
+    125596,
+    "8b98cc02cf62dfd7cfa96f032b7244d6545d6bede5b0ec30e9f2c0b2132198da"
+   ],
+   "data/processed/public/train_images/synth_0584_37aa48d8__clean.png": [
+    146912,
+    "0287163fecca4c693425418bcabcd35df44ef2b8b27092eac801002bb0683534"
+   ],
+   "data/processed/public/train_images/synth_0589_09510e7c__clean.png": [
+    101071,
+    "7c52b5664776ff98d753db4ec55d1b06243c74679a076661e2459497ec3d36db"
+   ],
+   "data/processed/public/train_images/synth_0590_25621592__clean.png": [
+    125843,
+    "a61c4653b9bc0cb8d3384a79f0486940dbfd1899d8b31ad03c1e27fb4fc49443"
+   ],
+   "data/processed/public/train_images/synth_0591_bf3e0f91__clean.png": [
+    158626,
+    "4119333068f6dda08ab140e8519461cc8d6bbdb17d19b533a8e924e3b6c1f3da"
+   ],
+   "data/processed/public/train_images/synth_0593_19a6a508__clean.png": [
+    105431,
+    "a3765ebee02c10b9a2a0efbfd1ff255f4f13844c953caa3f727c832646cbd931"
+   ],
+   "data/processed/public/train_images/synth_0596_70e73e03__clean.png": [
+    115857,
+    "43af10a9a7d3f963844b9b193e85d968a8ce09c824a876c621af56a881208186"
+   ],
+   "data/processed/public/train_images/synth_0606_3954a0f5__clean.png": [
+    113823,
+    "a70fa4f7836f43311da06153d57471961f96b852d4457f926559b870f46ba77c"
+   ],
+   "data/processed/public/train_images/synth_0607_97d3ec9f__clean.png": [
+    133346,
+    "797da218b49f0e58f40b3ac40230f5b934b0f9bd9aac1a2780b98d8256409e7c"
+   ],
+   "data/processed/public/train_images/synth_0609_08c88333__clean.png": [
+    118953,
+    "ef7acb3ed1a0999fcb993dacc09677bc4b0fba65628da2598585fb51270a9278"
+   ],
+   "data/processed/public/train_images/synth_0613_bdfcbfb8__clean.png": [
+    90099,
+    "6d9e2ea27d3e045fa43c4aba0cea81fa4255150d8050b837f4452cca06a8f4c6"
+   ],
+   "data/processed/public/train_images/synth_0617_e3476bab__clean.png": [
+    91987,
+    "aea9f02d1b58004b1fd8ee61aa1b37d9477ec0119eabdfd3f5811f03b43f3e52"
+   ],
+   "data/processed/public/train_images/synth_0618_1511275f__clean.png": [
+    167290,
+    "b5ee575b2eb23206877f8fdd4dd94e38fd0609fa3382f3307e950b34591b25d9"
+   ],
+   "data/processed/public/train_images/synth_0632_580dc208__clean.png": [
+    119114,
+    "fa352329c027e4990519bc83c9dd4eee7b77cfb8ce5c7a4c712c40a517402e62"
+   ],
+   "data/processed/public/train_images/synth_0635_b9ae06fc__clean.png": [
+    112638,
+    "8f5370cfba7093f3d776e6621c58b5940e3ad9b8bed256161cf11df3eddb849e"
+   ],
+   "data/processed/public/train_images/synth_0638_92645480__clean.png": [
+    162957,
+    "c554bae3025e3eadfebb07d724c7137de159c19c1d32383a8d1649050d7019e7"
+   ],
+   "data/processed/public/train_images/synth_0654_9626edaa__clean.png": [
+    109637,
+    "77236b7c6fb43b5146c4c1c52543d907d6eed5277d8aab516e4bc4f11c540594"
+   ],
+   "data/processed/public/train_images/synth_0656_2bf0f04f__clean.png": [
+    162414,
+    "5ebd0e91197ba51fd8f6e94f73a4b5f16c7d613ae32e1a899b33e81390cb13f0"
+   ],
+   "data/processed/public/train_images/synth_0657_2cdf46c2__clean.png": [
+    107459,
+    "493de4737d7187ba027c5a696f5876222e58199835647962f740916fabdc2ac1"
+   ],
+   "data/processed/public/train_images/synth_0661_ce3be13b__clean.png": [
+    146526,
+    "4e655fbc5abf4248348fe34e9afbef244b4aa79b7bc7e2cb6cacc946575dba00"
+   ],
+   "data/processed/public/train_images/synth_0669_bd5d41f5__clean.png": [
+    130085,
+    "05fbe781c3c9df05df97101c6fc8d652752ee780b062276c2286bdb390e33e78"
+   ],
+   "data/processed/public/train_images/synth_0673_038102a1__clean.png": [
+    64691,
+    "ea8d9f8d566cb612808ef12b09fc8e96d89430727a8e730169e22a2036d8e32f"
+   ],
+   "data/processed/public/train_images/synth_0680_9eb08a92__clean.png": [
+    112915,
+    "57aa8d3a8dc8d97a778e71344a253a0f03a4aec5b79f25bbe034b90bbea924bd"
+   ],
+   "data/processed/public/train_images/synth_0681_ca656729__clean.png": [
+    130054,
+    "655abbe374895ae2430c44a8636fabb0e4eec01fb88cec87cc9af6c70ef68e67"
+   ],
+   "data/processed/public/train_images/synth_0683_7c47afb3__clean.png": [
+    139485,
+    "38d41e543bb43207df707f6e9a97136abc26f124552d2a5d95a5cfe1f4a2b27d"
+   ],
+   "data/processed/public/train_images/synth_0685_4b263019__clean.png": [
+    110732,
+    "8783ab5ae6e3a53b17dcc1d8059353c63c60743fe3f03032ef1bf83d0c63343b"
+   ],
+   "data/processed/public/train_images/synth_0688_36331fab__clean.png": [
+    139531,
+    "75cc52a05d0e351e6b12625ef71000038332aee7301e08c5d10c5567a830fd0b"
+   ],
+   "data/processed/public/train_images/synth_0692_6e7e3830__clean.png": [
+    143591,
+    "1694a5097bdf031e26b0695b6ef8a8bf4705917606bcec723ad5b23805e7decf"
+   ],
+   "data/processed/public/train_images/synth_0702_6805a5ee__clean.png": [
+    157262,
+    "2123b058a3158c78b8782596472bd67fb59e1cc0ae1d4340b5838ba2c37d0a61"
+   ],
+   "data/processed/public/train_images/synth_0712_147f4ed4__clean.png": [
+    127076,
+    "f7ab35386506b89e961198c36beaa77baa4255918b12dedeed1e392cd73a9a2f"
+   ],
+   "data/processed/public/train_images/synth_0713_1d152f06__clean.png": [
+    106733,
+    "435c543b4995878f54403b4e20af1ede6124001b9800d3004301ab675f962138"
+   ],
+   "data/processed/public/train_images/synth_0724_7af5086b__clean.png": [
+    120548,
+    "b293871ca2ad9c4755f6f9abc7fb5c37afb80c7abfabefc64a0e22aba5804ce1"
+   ],
+   "data/processed/public/train_images/synth_0731_ee24d33e__clean.png": [
+    105924,
+    "562af060b5624a4af0ff9056e53f15ce25997272047703ce0f01e410bfb31b19"
+   ],
+   "data/processed/public/train_images/synth_0733_73fa85c1__clean.png": [
+    120940,
+    "6f084d7947cf402cceea780014e699b17cf36f9a516232d08985a81120fd4a8b"
+   ],
+   "data/processed/public/train_images/synth_0734_b6228507__clean.png": [
+    124783,
+    "31198a3b945dff429094ee0ab493dadf6bc8891856602468712ddcfcb0317a45"
+   ],
+   "data/processed/public/train_images/synth_0736_dd1e4cb6__clean.png": [
+    121851,
+    "c7e4517490204a4fb0a47eb0b877c14dfe380cdaaabb016b7c107d5217efba76"
+   ],
+   "data/processed/public/train_images/synth_0737_4e79148b__clean.png": [
+    66457,
+    "9e9ebd8a8763f36c596456909e06077712a858824a8952f1b00e6203900a4cdc"
+   ],
+   "data/processed/public/train_images/synth_0739_70fc277a__clean.png": [
+    132882,
+    "6cce1d4eccd054f0c3ce89c4c83d5d1a19553bb54a00077aa6e37f63b6058dd5"
+   ],
+   "data/processed/public/train_images/synth_0741_31b3413f__clean.png": [
+    136690,
+    "dbbc3fb7006d150334f7b2d51a998d9f327b3c375f88553aab99f895b7a09e60"
+   ],
+   "data/processed/public/train_images/synth_0742_6f8cc516__clean.png": [
+    113365,
+    "fb70632bce391b9f9a3c426000e15500e44e72f62266c5546a3df4d727657d30"
+   ],
+   "data/processed/public/train_images/synth_0746_abee4901__clean.png": [
+    150319,
+    "e5364d10683346cfd538a4dd6613497c9c941b32d051a624e225d894e048c0db"
+   ],
+   "data/processed/public/train_images/synth_0751_83ef1465__clean.png": [
+    103994,
+    "93894d17c972c37dbc41a60bc1d028b7cabcd4efb87a831354523f8bca222784"
+   ],
+   "data/processed/public/train_images/synth_0757_77facdc7__clean.png": [
+    109614,
+    "8b84ace16cbd33f4fd18ab888ac494fe1fb56bd22b3b22fc0a288378ba56b7d0"
+   ],
+   "data/processed/public/train_images/synth_0763_6b2f3ec5__clean.png": [
+    116519,
+    "c2d26ead8bfb4c42cdca57e74a68dd5ece4418251458f3f142387a8e81488c46"
+   ],
+   "data/processed/public/train_images/synth_0767_ccc46a30__clean.png": [
+    98268,
+    "a82693316a936ae6690cc28d5a06b3fd83b6a2f03da36eecff211513cca9417f"
+   ],
+   "data/processed/public/train_images/synth_0768_7f5baf31__clean.png": [
+    163974,
+    "bf9b04f82aef3fc14679f8f8cef3c312199d6ffd2b487d48e6ec59918ae2732b"
+   ],
+   "data/processed/public/train_images/synth_0777_d91bbaa6__clean.png": [
+    101448,
+    "08819bb0f085f5addb1674968b07f859b77e3269aaa9b64204c439877706db3b"
+   ],
+   "data/processed/public/train_images/synth_0778_ab943728__clean.png": [
+    156782,
+    "72bb8bea5a81e0e01ce02793ae795f9aad70cd3038d34750de76ab73ef015b22"
+   ],
+   "data/processed/public/train_images/synth_0785_b0a6477b__clean.png": [
+    69791,
+    "828ea2c8d2df00f7c76d4684ee62ebb1f110ca0ff4c2c6a22f4d3ef003b88c02"
+   ],
+   "data/processed/public/train_images/synth_0793_40afd3d8__clean.png": [
+    129592,
+    "8d1dd3bf563198bb5ae22df4d241e76bb097241fd575b94e9ddff7eff55db5f7"
+   ],
+   "data/processed/public/train_images/synth_0795_c6addad8__clean.png": [
+    160595,
+    "b81502d4168db61d428c8d09b38a36c55ef44d6da205c434ae0005013eeb403f"
+   ]
+  }
+ },
+ "missing": [],
+ "counts": {
+  "model": 12,
+  "manifests": 4,
+  "trade_images": 256,
+  "trade_gold": 256,
+  "public_shards": 2,
+  "adapter_m1_standard_v1": 3,
+  "public_train_images": 200
+ },
+ "comparison": {
+  "model": {
+   "reference": 11,
+   "here": 12,
+   "mismatch": 0,
+   "examples": [],
+   "extra_here": [
+    "models/qwen3-vl-2b-instruct/89644892e4d85e24eaac8bacfd4f463576704203/.gitattributes"
+   ]
+  },
+  "manifests": {
+   "reference": 4,
+   "here": 4,
+   "mismatch": 0,
+   "examples": [],
+   "extra_here": []
+  },
+  "trade_images": {
+   "reference": 256,
+   "here": 256,
+   "mismatch": 0,
+   "examples": [],
+   "extra_here": []
+  },
+  "trade_gold": {
+   "reference": 256,
+   "here": 256,
+   "mismatch": 0,
+   "examples": [],
+   "extra_here": []
+  },
+  "public_shards": {
+   "reference": 2,
+   "here": 2,
+   "mismatch": 0,
+   "examples": [],
+   "extra_here": []
+  },
+  "adapter_m1_standard_v1": {
+   "reference": 3,
+   "here": 3,
+   "mismatch": 0,
+   "examples": [],
+   "extra_here": []
+  },
+  "public_train_images": {
+   "reference": 200,
+   "here": 200,
+   "mismatch": 0,
+   "examples": [],
+   "extra_here": []
+  },
+  "all_equal": true
+ }
+}

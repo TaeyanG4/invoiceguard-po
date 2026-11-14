@@ -106,6 +106,7 @@ def main() -> int:
     parser.add_argument("--batch-size", type=int, default=None)
     parser.add_argument("--run-id")
     parser.add_argument("--allow-final", action="store_true")
+    parser.add_argument("--limit", type=int, help="keep only the first N resolved records (parity spot checks)")
     args = parser.parse_args()
 
     if (args.arm == "m1") != bool(args.adapter):
@@ -130,6 +131,8 @@ def main() -> int:
         wanted = set(Path(args.ids_file).read_text(encoding="utf-8").split())
         pool = public_records("standard_role", "train") + trade_records("standard_role", "train")
         records += [r for r in pool if r.record_id in wanted]
+    if args.limit is not None:
+        records = records[: args.limit]
     run_id = args.run_id or f"{args.arm}_{time.strftime('%Y%m%d_%H%M%S')}"
     out_dir = REPO / "artifacts" / "predictions" / run_id
     out_dir.mkdir(parents=True, exist_ok=True)

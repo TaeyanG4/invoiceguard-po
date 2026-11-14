@@ -8,12 +8,6 @@
       "Read(./secrets/**)",
       "Read(~/.ssh/id_rsa)",
       "Read(~/.ssh/id_ed25519)"
-    ],
-    "ask": [
-      "Bash(ssh *)",
-      "Bash(scp *)",
-      "Bash(rsync *)",
-      "Bash(runpodctl *)"
     ]
   }
 }

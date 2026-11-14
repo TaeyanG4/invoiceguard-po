@@ -1,0 +1,20 @@
+1/8 done, elapsed 15s
+2/8 done, elapsed 27s
+3/8 done, elapsed 39s
+4/8 done, elapsed 53s
+5/8 done, elapsed 68s
+6/8 done, elapsed 77s
+7/8 done, elapsed 86s
+8/8 done, elapsed 102s
+{"run_id": "pod_m1v1_dev8", "items": 8, "new": 8, "wall_s": 102.1}
+1/8 done, elapsed 16s
+2/8 done, elapsed 28s
+3/8 done, elapsed 40s
+4/8 done, elapsed 54s
+5/8 done, elapsed 68s
+6/8 done, elapsed 78s
+7/8 done, elapsed 88s
+8/8 done, elapsed 105s
+{"run_id": "pod_m1pod_dev8", "items": 8, "new": 8, "wall_s": 104.9}
+PARITY_DONE
+EXIT=0

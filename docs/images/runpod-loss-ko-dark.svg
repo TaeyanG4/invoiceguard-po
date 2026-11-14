@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="330" viewBox="0 0 1000 330" font-family="'Segoe UI','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif" role="img" aria-label="같은 학습을 두 머신에서 — optimizer step별 loss">
+<title>같은 학습을 두 머신에서 — optimizer step별 loss</title>
+<rect x="0.5" y="0.5" width="999" height="329" rx="12" fill="#151b23" stroke="#3d444d"/>
+<g transform="translate(20,20)">
+<line x1="60" y1="220.0" x2="920" y2="220.0" stroke="#3d444d" stroke-width="1"/>
+<text x="52.0" y="224.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="end">0.00</text>
+<line x1="60" y1="175.0" x2="920" y2="175.0" stroke="#3d444d" stroke-width="1"/>
+<text x="52.0" y="179.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="end">0.16</text>
+<line x1="60" y1="130.0" x2="920" y2="130.0" stroke="#3d444d" stroke-width="1"/>
+<text x="52.0" y="134.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="end">0.32</text>
+<line x1="60" y1="85.0" x2="920" y2="85.0" stroke="#3d444d" stroke-width="1"/>
+<text x="52.0" y="89.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="end">0.49</text>
+<line x1="60" y1="40.0" x2="920" y2="40.0" stroke="#3d444d" stroke-width="1"/>
+<text x="52.0" y="44.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="end">0.65</text>
+<text x="60.0" y="238.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="middle">1</text>
+<text x="158.0" y="238.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="middle">10</text>
+<text x="266.8" y="238.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="middle">20</text>
+<text x="375.7" y="238.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="middle">30</text>
+<text x="484.6" y="238.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="middle">40</text>
+<text x="593.4" y="238.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="middle">50</text>
+<text x="702.3" y="238.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="middle">60</text>
+<text x="811.1" y="238.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="middle">70</text>
+<text x="920.0" y="238.0" fill="#9198a1" font-size="10.5" font-weight="400" text-anchor="middle">80</text>
+<polyline points="60.0,118.8 70.9,129.7 81.8,136.7 92.7,53.7 103.5,106.6 114.4,170.2 125.3,152.0 136.2,180.9 147.1,186.4 158.0,164.4 168.9,189.4 179.7,194.5 190.6,186.8 201.5,209.2 212.4,213.2 223.3,213.9 234.2,215.3 245.1,213.8 255.9,217.2 266.8,217.0 277.7,216.8 288.6,216.5 299.5,214.7 310.4,217.4 321.3,213.8 332.2,216.2 343.0,217.5 353.9,217.9 364.8,215.2 375.7,217.0 386.6,217.1 397.5,208.8 408.4,212.9 419.2,218.6 430.1,217.9 441.0,218.1 451.9,219.1 462.8,219.4 473.7,216.8 484.6,218.4 495.4,213.5 506.3,216.0 517.2,217.4 528.1,218.4 539.0,213.5 549.9,218.8 560.8,218.2 571.6,219.2 582.5,219.0 593.4,218.1 604.3,219.4 615.2,218.5 626.1,219.4 637.0,219.1 647.8,215.2 658.7,218.1 669.6,219.1 680.5,219.2 691.4,213.9 702.3,218.5 713.2,219.3 724.1,219.4 734.9,219.7 745.8,219.4 756.7,218.7 767.6,219.1 778.5,219.4 789.4,219.3 800.3,219.5 811.1,218.6 822.0,218.5 832.9,209.9 843.8,217.3 854.7,217.6 865.6,219.4 876.5,219.6 887.3,218.3 898.2,219.5 909.1,217.6 920.0,217.8" fill="none" stroke="#199e70" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="60.0,118.8 70.9,129.6 81.8,136.2 92.7,53.3 103.5,106.4 114.4,170.3 125.3,151.4 136.2,180.8 147.1,186.5 158.0,164.1 168.9,189.3 179.7,194.1 190.6,186.2 201.5,209.2 212.4,213.3 223.3,213.8 234.2,215.3 245.1,213.8 255.9,217.2 266.8,216.9 277.7,216.7 288.6,216.5 299.5,214.8 310.4,217.3 321.3,213.8 332.2,216.2 343.0,217.5 353.9,217.9 364.8,215.2 375.7,216.9 386.6,217.1 397.5,208.8 408.4,212.9 419.2,218.6 430.1,217.9 441.0,218.0 451.9,219.1 462.8,219.4 473.7,216.8 484.6,218.4 495.4,213.6 506.3,216.0 517.2,217.3 528.1,218.3 539.0,213.5 549.9,218.8 560.8,218.1 571.6,219.2 582.5,219.0 593.4,218.1 604.3,219.4 615.2,218.5 626.1,219.3 637.0,219.2 647.8,215.2 658.7,218.0 669.6,219.1 680.5,219.2 691.4,213.9 702.3,218.5 713.2,219.3 724.1,219.4 734.9,219.6 745.8,219.4 756.7,218.7 767.6,219.1 778.5,219.4 789.4,219.3 800.3,219.5 811.1,218.6 822.0,218.6 832.9,209.8 843.8,217.4 854.7,217.6 865.6,219.4 876.5,219.6 887.3,218.2 898.2,219.5 909.1,217.6 920.0,217.7" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4"/>
+<line x1="450" y1="22" x2="472" y2="22" stroke="#3987e5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<text x="478.0" y="26.0" fill="#e6edf3" font-size="11.5" font-weight="400" text-anchor="start">로컬 · RTX 4070 Ti SUPER · Windows</text>
+<line x1="710" y1="22" x2="732" y2="22" stroke="#199e70" stroke-width="2.5"/>
+<text x="738.0" y="26.0" fill="#e6edf3" font-size="11.5" font-weight="400" text-anchor="start">RunPod · A40 · Linux</text>
+<text x="60.0" y="26.0" fill="#e6edf3" font-size="12" font-weight="600" text-anchor="start">같은 학습을 두 머신에서 — optimizer step별 loss</text>
+<text x="60.0" y="264.0" fill="#e6edf3" font-size="11.5" font-weight="600" text-anchor="start">step별 최대 |Δ| 0.0020 · step 1 0.3643 vs 0.3641 · 80 step 평균 0.0487 vs 0.0486 · 마지막 10 0.0088 vs 0.0088</text>
+<text x="60.0" y="282.0" fill="#9198a1" font-size="11" font-weight="400" text-anchor="start">같은 설정·seed·데이터 순서·버전 · 원본: reports/runpod/train_compare.json</text>
+</g>
+</svg>

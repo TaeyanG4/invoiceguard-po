@@ -1,6 +1,6 @@
 # 구현 상태 — InvoiceGuard-PO (package v4 기반 구현 진행 기록)
 
-마지막 갱신: 2026-11-14 / 세션 1 (Claude Code desktop, Opus 5.5)
+마지막 갱신: 2026-11-14 / 세션 2 — RunPod 재현 (Claude Code desktop, Opus 5.5)
 
 ## 요약 표
 | 구분 | 상태 | 근거 또는 다음 조치 |
@@ -14,12 +14,12 @@
 | 자체 Invoice–PO 합성·렌더러·대사 규칙·평가기 (T02/G2) | passed_with_evidence (application_cpu_test) | T02-b 로그 |
 | 관리자 대시보드(사이드바·데이터 직접 보기·평가/서빙 차트, 읽기 전용, 기본 다크) | implemented_local | `.venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765` (127.0.0.1) |
 | Git / GitHub | **public** repo `TaeyanG4/invoiceguard-po` (사용자 요청으로 생성 → 공개 전 작성자 이메일 noreply 재작성 후 재생성) | 데이터·venv 제외, `reports/HISTORY_REWRITE.md` |
-| 실제 RunPod 잔액·견적·Pod 접속 | not_run — 승인 요청 초안만 | reports/RUNPOD_APPROVAL.md |
+| 실제 RunPod 잔액·견적·Pod 접속 | passed_with_evidence (2026-11-14, MCP 조회 + 콘솔, 사용자 승인 "A40로 승인") | reports/RUNPOD_APPROVAL.md |
 | 로컬 GPU smoke (RTX 4070 Ti SUPER, 사용자 승인) | M01 mask pass / 파일럿 8장 실행 / 10-step 학습 — 아래 로그 | reports/model/local_smoke_*.json |
-| RunPod(클라우드) 실행·비용 | not_run — 사용자 로그인·견적 승인 없음, 비용 $0 | reports/RUNPOD_APPROVAL.md (초안만) |
+| RunPod(클라우드) 실행·비용 | passed_with_evidence — A40 1대 43분, 동결 M1 재학습이 사전 고정 기준 5개 통과, vLLM 측정, 백업·복원 확인 후 삭제, 약 $0.43 | reports/runpod/RUNPOD_RUN.md |
 | 검수 API·버전·승인·동시성 / 검수 화면 UI | API implemented + tested (12) · LIVE 종단 시연 / **UI not_implemented** (읽기 전용 관리자 대시보드만) | src/invoiceguard/app/, reports/serving/live_e2e_demo.json |
 | 로컬 GPU 본학습·dev·final 평가 | passed_with_evidence (HF NF4, final 1회) | reports/model/, reports/eval/dev_summary.md, reports/eval/final_summary.md |
-| 서빙 | HF+PEFT 서버 실측 passed_with_evidence · **vLLM blocked**(이미지 CUDA≥12.9, 드라이버 561.17=12.6) | reports/serving/ |
+| 서빙 | HF+PEFT 서버 실측 passed_with_evidence · vLLM: 로컬 blocked(드라이버), **RunPod A40에서 측정**(속도). vLLM에서 M1 정확도 저하는 원인 미확정 | reports/serving/vllm_bf16_a40.json |
 
 ## 환경 (T00, 2026-11-14 확인)
 - OS: Windows 10 Pro 10.0.19045, PowerShell 5.1 + Git Bash (MINGW). WSL 사용 안 함.
@@ -208,6 +208,19 @@
 - (추가) README 6장 '평가 세트 구성'을 7개 세트별 표로 확장: 세트마다 문서 구성 · 템플릿/레이아웃 · 품목 수 · 채점 필드 수(1,260 / 208 / 328) · 마스크 내역과 그 세트의 실제 문서 샘플(`eval-*.jpg` 6장 추가).
 
 - (정정, Fable 완성도 검토) 위 'M0가 자체 test만 맞추는 이유'를 프롬프트 문구 누락으로 설명한 것은 자체 기록과 맞지 않아 README를 고침: 동결 전 프롬프트 A/B(`reports/model/s2_prompt_ab_train.json`)에서 'without Markdown code fences'를 넣어도 strict 0/4 그대로였고, 'without Markdown'이 있는 자체 프롬프트로도 dev stress에서 M0 strict 유효율 0.00–0.17(`reports/eval/dev_summary.md`). 원인은 미확정으로 기술. 함께 재현성 문구(고정 revision·seed 1개 조건)와 서빙 역량 표기(자체 서버, 프레임워크 아님)를 정정.
+
+### RunPod 재현 (사용자 요청: "나머지는 runpod로 … 제대로 학습이 되었는지가 더 중요", 2026-11-14 세션 2)
+- 연결: Runpod 공식 플러그인 + 호스팅 MCP(OAuth, 사용자가 로그인). API 키 생성·입력 없음. `runpodctl` 3.0.1 로컬 설치(키 미설정, 미사용).
+- 조회(읽기 전용): Pod·volume·endpoint 0, 30일 지출 $0, 잔액 $9.81, 등록 SSH 공개키 = 로컬 키. GPU 요금·재고(SECURE·COMMUNITY, CUDA ≥ 12.8)와 콘솔 Deploy 견적 대조.
+- 승인: 4090($0.89) → 사용자 질문으로 저가안 비교(A40 $0.59 · 3090 Community $0.22 · 4000번대 재고 없음 · Blackwell은 cu126 torch 미지원) → 사용자 "A40로 승인"(상한 5h · $3.50).
+- 학습 비교 기준은 Pod 결과 전에 수정·고정: 처음 적은 "마지막 10 step 상대 10 %"는 값이 0.002–0.009라 잡음 수준이어서 절대 0.01로 바꿈(사유 기록).
+- 실행(17:59:55–18:43:19 KST, Pod `jwvf173fyus06x`, CA-MTL-1): 호스트키 대조 → scp 왕복 SHA256 → 터널(이미지 nginx가 8001 점유 → 18001) → lockfile 설치 → 모델·샤드 SHA256 → mask 360/360 → 입력 해시 전부 일치 → smoke pass → 80 step 620 s → 기준 5개 통과(step별 최대 |Δ| 0.0020) → dev parity(Pod 어댑터 원문 8/8 동일) → vLLM 0.11.2 벤치 → 백업 32파일 SHA256 → 로컬 복원(2/2 동일) → 삭제·list-pods 0·지출률 $0/hr.
+- vLLM: M1 동시성 1/8에서 분당 24.3/149.3문서, 실패 0. **단 M1 정확도 0.849 vs HF 0.960** — 문서마다 정확히 4필드 손실, 출력이 합계 블록 길이(약 40토큰)만큼 짧음. 원인 미확정(NF4 학습 기본 모델 vs bf16 서빙 기본 모델 불일치가 유력). 벤치가 원문을 저장하지 않아 확정 못 함 → `vllm_bench.py`가 원문을 저장하도록 수정.
+- 문제와 처리: Pod 안 `runpodctl`이 Pod 키로 Unauthorized → 자동 정지 불가, 세션 알림 + 감시로 대체. 프로젝트 `.claude/settings.json`의 ssh/scp ask 규칙이 실행 중 확인창을 띄움 → 사용자 지시로 삭제, `verify_claude_pack.py` 검사를 `no_prompting_ask_rules`로 변경.
+- 변경 파일: `scripts/runpod/*`(setup·train·parity·vllm·inventory·compare 2종), `src/invoiceguard/vlm/{smoke,infer}.py`(IG_HOST, --limit), `serving/vllm_bench.py`(원문 저장), `readme_figures.py`(runpod-loss 차트 4개), README 영·한 12장 신설, `reports/runpod/`, `docs/images/runpod/`, 승인 기록.
+- 해시: Pod 어댑터 `adapter_model.safetensors` d8103a220c4c30984d99ead47d1858656ee1d9701b05c3b62acafd4d66337d4d, 백업 tgz 1afa8544d600e124c2dc059e0d786f79d3831a7a9285a64656a9d09170df1b0c.
+- 검사: pytest 164 passed · 1 skipped. 깨끗한 복사본 기준 verify_pack 190 · verify_contracts 63 · verify_claude_pack 293 pass(로컬 작업 폴더 전체는 `.venv-ml` 등 로컬 전용 파일 때문에 원래부터 실패).
+- 비용: 43분 24초 × $0.60/hr ≈ $0.43(계산값), 콘솔 잔액 $9.81 → $9.56(18:44, 반영 지연 가능). 남은 유료 리소스 없음.
 
 ## 기록 방식
 각 단계마다: 시각 / T단계 / 실행 환경 / 실행 명령 / 변경 파일 / 실제 exit code와 결과 / 증거 경로 / 데이터·모델 revision / manifest·adapter hash / 과금 승인 범위·실제 비용 / 미완료·실패·원인 / 다음 행동. 사용자 비밀값은 제외한다. 패키지 검사 결과를 앱이나 모델의 결과로 복사하지 않는다.

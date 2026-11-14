@@ -1,0 +1,14 @@
+{
+ "check": "Pod-trained adapter m1_pod_a40 loaded on the local RTX 4070 Ti SUPER (HF NF4 path) vs the same adapter on the Pod",
+ "docs": {
+  "tr_69cab78e7dcd": {
+   "identical_raw": true,
+   "finish": "stop"
+  },
+  "tr_381d80972097": {
+   "identical_raw": true,
+   "finish": "stop"
+  }
+ },
+ "identical_rate": 1.0
+}

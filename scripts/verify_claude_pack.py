@@ -49,10 +49,14 @@ record('no_automatic_hooks', not settings.get('hooks'))
 record('no_forced_agent_model', 'model' not in settings)
 record('no_provider_or_key_config', 'env' not in settings and 'mcpServers' not in settings)
 record('secret_read_rules', all(x in permissions['deny'] for x in ['Read(./.env)', 'Read(./secrets/**)']))
-record('remote_asks', all(x in permissions['ask'] for x in ['Bash(ssh *)','Bash(scp *)','Bash(runpodctl *)']))
+# 2026-11-14 user decision: no permission prompts at all ("실행권한 전부 허용할테니 제발 나한테 묻지마");
+# remote safety comes from the written RunPod approval + budget, not from per-command ask rules.
+record('no_prompting_ask_rules', not permissions.get('ask'))
 record('local_settings_gitignored', '.claude/settings.local.json' in read('.gitignore'))
 record('secrets_gitignored', 'secrets/' in read('.gitignore'))
-record('not_preapproved', 'approved: false' in read('reports/RUNPOD_APPROVAL.md'))
+_approval = read('reports/RUNPOD_APPROVAL.md')
+record('approval_explicit', 'approved: false' in _approval
+       or ('approved: true' in _approval and 'user_approved_at: 2026' in _approval and '사용자 채팅' in _approval))
 record('runtime_unrun', cfg['audit']['gpu_status'] == 'not_run')
 record('result_metrics_unrun', all(v is None for v in json.loads(read('reports/RESULTS_TEMPLATE.json'))['metrics'].values()))
 for task in range(10):

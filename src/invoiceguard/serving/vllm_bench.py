@@ -113,7 +113,9 @@ def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
         parity, rows = [], []
         for d in docs:
             r = _request(model, d.prompt(), d.image_path)
-            rows.append({"id": d.record_id, **{k: v for k, v in r.items() if k != "raw_response"}})
+            # raw responses are kept: the 2026-11-14 RunPod run dropped them and the M1 field loss under vLLM
+            # (exactly 4 fields per document) could then only be inferred from token counts
+            rows.append({"id": d.record_id, **r})
             if r["ok"]:
                 pred = {"raw_response": r["raw_response"], "finish_reason": "length" if r["finish_reason"] == "length" else "stop"}
                 gold = json.loads((REPO / "data" / "processed" / "trade" / "gold" / f"{d.record_id}.json").read_text(encoding="utf-8"))

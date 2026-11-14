@@ -250,11 +250,65 @@ def training_svg(report: dict, mode: str, lang: str = "en") -> str:
     return _svg(width, height, body, "M1 QLoRA training loss per optimizer step", th)
 
 
+RUNPOD_TEXT = {
+    "en": {"title": "Same training run on two machines — loss per optimizer step",
+           "local": "local · RTX 4070 Ti SUPER · Windows", "pod": "RunPod · A40 · Linux",
+           "sum": "max |Δ| per step {mx} · step 1 {l1} vs {p1} · mean of 80 {lm} vs {pm} · last 10 {lt} vs {pt}",
+           "src": "same config, seed, data order, versions · source: reports/runpod/train_compare.json"},
+    "ko": {"title": "같은 학습을 두 머신에서 — optimizer step별 loss",
+           "local": "로컬 · RTX 4070 Ti SUPER · Windows", "pod": "RunPod · A40 · Linux",
+           "sum": "step별 최대 |Δ| {mx} · step 1 {l1} vs {p1} · 80 step 평균 {lm} vs {pm} · 마지막 10 {lt} vs {pt}",
+           "src": "같은 설정·seed·데이터 순서·버전 · 원본: reports/runpod/train_compare.json"},
+}
+
+
+def runpod_loss_svg(compare: dict, mode: str, lang: str = "en") -> str:
+    """Local vs RunPod loss curves of the frozen M1 recipe (scripts/runpod/compare_train.py output)."""
+    th, tx = THEMES[mode], RUNPOD_TEXT[lang]
+    rows = compare["per_step"]
+    width, height = 960, 290
+    x0, y0, w, h = 60, 40, 860, 180
+    steps = [r["step"] for r in rows]
+    hi = max(max(r["local"], r["pod"]) for r in rows) * 1.08
+    X = lambda s: x0 + (s - min(steps)) / max(1, max(steps) - min(steps)) * w  # noqa: E731
+    Y = lambda l: y0 + h - l / hi * h  # noqa: E731
+    body: list[str] = []
+    for t in [hi * k / 4 for k in range(5)]:
+        body.append(f'<line x1="{x0}" y1="{Y(t):.1f}" x2="{x0 + w}" y2="{Y(t):.1f}" stroke="{th["grid"]}" stroke-width="1"/>')
+        body.append(_t(x0 - 8, Y(t) + 4, f"{t:.2f}", th["mute"], 10.5, "end"))
+    for s in [1] + [k for k in range(10, max(steps) + 1, 10)]:
+        body.append(_t(X(s), y0 + h + 18, str(s), th["mute"], 10.5, "middle"))
+    series = (("local", th["series"]["b0"], "5 4"), ("pod", th["series"]["m1"], None))
+    # the curves coincide, so the wide solid Pod line goes underneath and the dashed local line on top
+    for key, color, dash in (series[1], series[0]):
+        pts = " ".join(f"{X(r['step']):.1f},{Y(r[key]):.1f}" for r in rows)
+        extra = f' stroke-dasharray="{dash}"' if dash else ""
+        width_px = 2 if dash else 4.5
+        body.append(f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="{width_px}" stroke-linejoin="round" '
+                    f'stroke-linecap="round"{extra}/>')
+    for i, (key, color, dash) in enumerate(series):  # legend, right-aligned on the title row
+        x = x0 + w - 470 + i * 260
+        extra = f' stroke-dasharray="{dash}"' if dash else ""
+        body.append(f'<line x1="{x}" y1="{y0 - 18}" x2="{x + 22}" y2="{y0 - 18}" stroke="{color}" stroke-width="2.5"{extra}/>')
+        body.append(_t(x + 28, y0 - 14, tx[key], th["ink"], 11.5))
+    body.append(_t(x0, y0 - 14, tx["title"], th["ink"], 12, weight=600))
+    c = compare["criteria"]
+    body.append(_t(x0, height - 26, tx["sum"].format(
+        mx=f"{compare['max_abs_step_diff']:.4f}", l1=f"{c['a_step1_rel_diff_le_2pct']['local']:.4f}",
+        p1=f"{c['a_step1_rel_diff_le_2pct']['pod']:.4f}", lm=f"{c['b_mean80_rel_diff_le_10pct']['local']:.4f}",
+        pm=f"{c['b_mean80_rel_diff_le_10pct']['pod']:.4f}", lt=f"{c['c_last10_abs_diff_le_0.01']['local']:.4f}",
+        pt=f"{c['c_last10_abs_diff_le_0.01']['pod']:.4f}"), th["ink"], 11.5, weight=600))
+    body.append(_t(x0, height - 8, tx["src"], th["mute"], 11))
+    return _svg(width, height, body, tx["title"], th)
+
+
 def build(out: Path = OUT) -> list[Path]:
     finals = load_finals()
     comps = [(f"M1 − M0", load_compare("m1", "m0")), (f"M1 − B0", load_compare("m1", "b0"))]
     comps = [(t, c) for t, c in comps if c]
     train = _json(REPO / "reports" / "model" / "train_m1_standard_v1.json")
+    runpod_path = REPO / "reports" / "runpod" / "train_compare.json"
+    runpod = _json(runpod_path) if runpod_path.exists() else None
     out.mkdir(parents=True, exist_ok=True)
     written = []
     for lang, infix in LANGS.items():
@@ -263,6 +317,10 @@ def build(out: Path = OUT) -> list[Path]:
                               ("training-loss", training_svg(train, mode, lang))):
                 path = out / f"{name}{infix}-{mode}.svg"
                 path.write_text(svg, encoding="utf-8", newline="\n")
+                written.append(path)
+            if runpod is not None:
+                path = out / f"runpod-loss{infix}-{mode}.svg"
+                path.write_text(runpod_loss_svg(runpod, mode, lang), encoding="utf-8", newline="\n")
                 written.append(path)
     return written
 

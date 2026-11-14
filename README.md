@@ -7,9 +7,9 @@
 [![ci](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml/badge.svg)](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml)
 ![data](https://img.shields.io/badge/data-synthetic%20only-lightgrey)
 ![gpu](https://img.shields.io/badge/GPU-local%20RTX%204070%20Ti%20SUPER-informational)
-![cloud](https://img.shields.io/badge/cloud%20spend-%240-success)
+![runpod](https://img.shields.io/badge/RunPod-A40%20%C2%B7%2043%20min%20%C2%B7%20~%240.43-673ab7)
 
-- **Model:** Qwen3-VL-2B-Instruct (NF4) + a QLoRA adapter — trained, evaluated and served on one local GPU
+- **Model:** Qwen3-VL-2B-Instruct (NF4) + a QLoRA adapter — trained, evaluated and served on one local GPU; the training was reproduced and vLLM measured on a rented RunPod A40 ([section 12](#12-cloud-reproduction-on-runpod))
 - **Data:** synthetic only. Public InvoiceOCR-Synth plus self-generated Invoice–PO documents; no claim is made about real company or customs documents.
 - **Reproducibility:** every evaluation number (training · dev · final · paired CI) is produced by the scripts in this repository, given the pinned dataset revision, base-model revision and seed. Data and weights are downloaded, not stored here, and training ran with a single seed.
 - **Honesty:** anything that was not run is recorded as `not_run` / `blocked`.
@@ -17,17 +17,17 @@
 ![Admin dashboard — overview](docs/images/dashboard-overview.png)
 
 <sub>Overview page of the local admin dashboard (read-only, 127.0.0.1; the UI is in Korean). Every value is read as recorded from `reports/` and `manifests/`.<br>
-"10/10" counts stages with evidence; T03 and T07 passed only their local parts (RunPod and vLLM are blocked).</sub>
+"10/10" counts stages with evidence. When this screenshot was taken, T03 and T07 had passed only their local parts; the RunPod reproduction and vLLM were run later ([section 12](#12-cloud-reproduction-on-runpod)).</sub>
 
 ## Contents
 
 | | | |
 |---|---|---|
 | 1. [At a glance](#1-at-a-glance) | 6. [Results](#6-results) | 11. [Cost and limitations](#11-cost-and-limitations) |
-| 2. [System](#2-system) | 7. [Serving](#7-serving) | 12. [Reproduce](#12-reproduce) |
-| 3. [Data](#3-data) | 8. [Review API](#8-review-api) | 13. [Sources](#13-sources) |
+| 2. [System](#2-system) | 7. [Serving](#7-serving) | 12. [Cloud reproduction on RunPod](#12-cloud-reproduction-on-runpod) |
+| 3. [Data](#3-data) | 8. [Review API](#8-review-api) | 13. [Reproduce](#13-reproduce) |
 | 4. [Model and training](#4-model-and-training) | 9. [Admin dashboard](#9-admin-dashboard) | |
-| 5. [Evaluation design](#5-evaluation-design) | 10. [Skills ↔ evidence](#10-skills--evidence) | |
+| 5. [Evaluation design](#5-evaluation-design) | 10. [Skills ↔ evidence](#10-skills--evidence) | 14. [Sources](#14-sources) |
 
 ---
 
@@ -430,11 +430,10 @@ dev results and failure taxonomy: [`dev_summary.md`](reports/eval/dev_summary.md
 | GPU memory | about 3.1GB<br><sub>nvidia-smi, other processes included</sub> |
 | LIVE demo | review API (LIVE_MODEL) → extraction 15.2 s → `UNIT_PRICE_DIFF` detected → approval → snapshot export<br><sub>the extraction matched the gold rows</sub> |
 
-**vLLM: blocked**
-- `vllm/vllm-openai:v0.11.2` (the version that supports Qwen3-VL) needs CUDA ≥ 12.9; the local driver 561.17 supports CUDA 12.6.
-- With the requirement check disabled, PyTorch inside the container still failed with "No CUDA GPUs are available".
-- Since the decision was not to update the driver or use a cloud GPU, no vLLM speed or quantisation-accuracy claims are made.
-- The bench script is ready: [`serving/vllm_bench.py`](src/invoiceguard/serving/vllm_bench.py)
+**vLLM: blocked locally, measured on RunPod**
+- Locally, `vllm/vllm-openai:v0.11.2` (the version that supports Qwen3-VL) needs CUDA ≥ 12.9, but the local driver 561.17 supports CUDA 12.6. With the requirement check disabled, PyTorch inside the container still failed with "No CUDA GPUs are available".
+- On a rented A40 the same bench ([`serving/vllm_bench.py`](src/invoiceguard/serving/vllm_bench.py)) ran: M1 reached 24 docs/min at concurrency 1 and 149 at concurrency 8, with no failed requests.
+- Under vLLM, however, M1's accuracy dropped (0.849 against 0.960), so only the speed is used — details in [section 12](#12-cloud-reproduction-on-runpod).
 
 ![Serving page](docs/images/dashboard-serving.png)
 
@@ -509,9 +508,11 @@ A local, read-only dashboard (the UI is in Korean).
 |---|---|
 | LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` + verified collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
 | Training correctness checks | loss-mask audit 360/360, 10-step smoke, reload parity<br><sub>[`reports/model/`](reports/model)</sub> |
+| Reproducibility on another machine | the frozen training re-run on a RunPod A40: loss curve within 0.002 per step, identical outputs on dev<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
+| Cloud GPU operation | Runpod via MCP: real quote → approval → Pod → SSH and tunnel checks → training → SHA256 backup → delete, $0.43<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | Extraction accuracy · failure analysis · improvement | per-set evaluator · paired bootstrap, failure taxonomy, one improvement and its **negative result**<br><sub>[`reports/eval/`](reports/eval)</sub> |
 | Automated scoring · regression tests | 160+ pytest tests (rules B01–B12, evaluation E01–E05, API A01–A08, dashboard)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · freeze and hash guards</sub> |
-| Serving · performance measurement | own Transformers + PEFT GPU server (not a serving framework) — real timeout cancellation and bounded queue, measured<br><sub>[`reports/serving/`](reports/serving) · vLLM blocked</sub> |
+| Serving · performance measurement | own Transformers + PEFT GPU server (not a serving framework) — real timeout cancellation and bounded queue, measured<br><sub>[`reports/serving/`](reports/serving)</sub><br>vLLM 0.11.2 on RunPod: continuous batching measured at concurrency 1–8 |
 | OCR / document AI | Tesseract baseline B0<br><sub>general rules built from train/dev only, isolated in Docker</sub> |
 | Table-structured documents · domain rules | renderer for 6 structurally different invoice layouts, PO reconciliation rules |
 | Service integration | review API: extraction CAS, protection against late responses, approved-snapshot export |
@@ -521,7 +522,7 @@ A local, read-only dashboard (the UI is in Korean).
 ## 11. Cost and limitations
 
 **Cost**
-- Cloud spend **$0** — RunPod was not used (the owner's decision).
+- Cloud spend **about $0.43** — one RunPod A40 Pod for 43 minutes at $0.60/h ([section 12](#12-cloud-reproduction-on-runpod)).
 - One training run about 22 min; final M0 · M1 inference about 49 min (B0 OCR time not recorded); all on the local GPU.
 
 **Limitations**
@@ -531,10 +532,10 @@ A local, read-only dashboard (the UI is in Korean).
 - M0's low strict score is largely a format effect (code fences). A pre-freeze prompt A/B did not remove it, and a fence-stripping step is not part of the frozen contract.
 - The ambiguous-quantity failure is not solved.
 - Serving
-  - The serving framework (vLLM) could not be measured (blocked).
+  - vLLM was measured only on RunPod. Its speed is measured, but M1's accuracy under vLLM dropped and the cause is not established.
   - No quantisation comparison (NF4 only) and no batching (batch 1, serial worker).
   - The bench uses 10 documents and one repetition; the serving server has no automated tests of its own, only manual probes.
-- Cloud GPU operation and cost evidence: not_run.
+- The RunPod reproduction is one seed and one run; its dev parity covers 8 documents. An automatic stop inside the Pod could not be set (permission), so the run was watched until the Pod was deleted.
 - FSDP / DeepSpeed were not used: they are unnecessary for a 2B model on a single GPU ([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
 - The review **UI is not implemented** (only the review API and the read-only admin dashboard exist).
 
@@ -544,7 +545,93 @@ A local, read-only dashboard (the UI is in Korean).
 
 ---
 
-## 12. Reproduce
+## 12. Cloud reproduction on RunPod
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/runpod/runpod-wordmark-on-dark.svg">
+  <img alt="Runpod" src="docs/images/runpod/runpod-wordmark-on-light.svg" height="34">
+</picture>
+
+The frozen M1 training was run a second time on a rented cloud GPU.
+The goal was not a better model but evidence that the training **runs correctly and reproduces** on another machine, plus a measurement of a real serving framework (vLLM).
+
+**The rented server**
+
+| Item | Detail |
+|---|---|
+| GPU | NVIDIA A40 48 GB × 1 · Secure Cloud, CA-MTL-1<br><sub>driver 595.91 · CUDA 13.2 · Ampere (the local GPU is Ada)</sub> |
+| Machine | 9 vCPU Xeon Gold 6342 · 50 GB RAM<br><sub>container disk 80 GB + volume 20 GB</sub> |
+| Image | `runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404`<br><sub>official template; its torch is not used — the run installs the repository's own lockfile</sub> |
+| Access | SSH on `22/tcp` only<br><sub>the model API listens on 127.0.0.1 inside the Pod and is reached through an SSH tunnel</sub> |
+| Price · time · cost | $0.60/h (GPU 0.59 + disks 0.014) · 43 min · **about $0.43** |
+
+| Pod details and price | Telemetry during the vLLM benchmark |
+|---|---|
+| <img src="docs/images/runpod/console-pod-details.png" alt="Runpod console — Pod details: A40, CA-MTL-1, $0.60/hr" width="400"> | <img src="docs/images/runpod/console-pod-telemetry.png" alt="Runpod console — Pod telemetry: A40 VRAM and utilisation" width="400"> |
+
+<sub>Runpod console while the Pod was running (account balance and avatar masked). Pod `jwvf173fyus06x` was deleted after the run.</sub>
+
+**How it was run**
+
+```mermaid
+flowchart TB
+  subgraph P["1 · Prepare"]
+    direction LR
+    A["Account read<br/>MCP · read-only"] --> B["Real quote → approval"] --> C["create-pod → read-back"] --> D["Host key · scp SHA256<br/>· SSH tunnel"]
+  end
+  subgraph T["2 · Verify training"]
+    direction LR
+    E["Same lockfile<br/>· pinned downloads"] --> F["Mask audit<br/>· input hashes"] --> G["Smoke · 10 steps"] --> H["Training · 80 steps<br/>→ compare with local"]
+  end
+  subgraph S["3 · Serve and clean up"]
+    direction LR
+    I["Dev parity"] --> J["vLLM bench"] --> K["Backup SHA256<br/>· local restore"] --> L["Delete Pod<br/>→ $0/h checked"]
+  end
+  P --> T
+  T --> S
+```
+
+- Infrastructure was driven through the Runpod MCP server (OAuth sign-in), so no API key was created or typed. Every create and delete was read back.
+- Nothing billable started before an explicit approval of the real quote: GPU, disks, maximum time and spend, shutdown plan ([`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md)).
+- Each stage is a gate: a failed check stops everything after it ([`scripts/runpod/`](scripts/runpod)).
+
+**Training reproduces**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/runpod-loss-dark.svg">
+  <img alt="Loss per optimizer step — local RTX 4070 Ti SUPER and RunPod A40 curves overlap" src="docs/images/runpod-loss-light.svg">
+</picture>
+
+| Criterion<br><sub>fixed before the Pod produced any output</sub> | Local<br><sub>RTX 4070 Ti SUPER · Windows</sub> | RunPod<br><sub>A40 · Linux</sub> | |
+|---|---:|---:|:---:|
+| step-1 loss<br><sub>relative difference ≤ 2 %</sub> | 0.3643 | 0.3641 | ✅ |
+| mean loss of 80 steps<br><sub>relative difference ≤ 10 %</sub> | 0.04872 | 0.04857 | ✅ |
+| mean loss of the last 10 steps<br><sub>absolute difference ≤ 0.01</sub> | 0.00884 | 0.00882 | ✅ |
+| structure<br><sub>641 mask-checked micro-steps · 1,605,632 trainable params (language q/v LoRA only) · reload equal</sub> | same | same | ✅ |
+| training time · peak VRAM | 1,308 s · 6.52 GB | 620 s · 6.52 GB | |
+
+- Before training, every input was checked against the local run: same package versions (Linux only adds CUDA runtime wheels), and SHA256 equal for the model (11 files), manifests (4), own images and gold (512), parquet shards (2) and the 200 public training images re-extracted on the Pod. Mask audit 360/360.
+- Same 8 own-dev documents through the reference HF NF4 path: the Pod-trained adapter gives **raw outputs identical** to the local adapter 8/8, field accuracy 200/204 for both.
+- Restore check: the Pod adapter, loaded on the local GPU, reproduces the Pod's outputs exactly (2/2).
+
+**vLLM 0.11.2 serving** — A40, bf16, 20 own-dev documents, max_tokens 1536, 0 failed requests
+
+| Model | concurrency 1 | 2 | 4 | 8 |
+|---|---:|---:|---:|---:|
+| M0 base | 18.2 docs/min<br><sub>p50 3.1 s</sub> | 34.0<br><sub>3.3 s</sub> | 62.7<br><sub>3.5 s</sub> | 104.8<br><sub>3.9 s</sub> |
+| M1 LoRA | 24.3 docs/min<br><sub>p50 2.2 s</sub> | 47.1<br><sub>2.3 s</sub> | 87.7<br><sub>2.4 s</sub> | 149.3<br><sub>2.6 s</sub> |
+
+- Continuous batching: throughput grows almost linearly with concurrency while p50 rises by only about 20 %.
+- **Accuracy caveat:** M1 under vLLM scored 0.849 against 0.960 on the HF NF4 path (M0: 0.969 against 0.941).
+  - Every M1 document lost exactly 4 fields, and its outputs were about 40 tokens shorter — the length of the four document-total fields.
+  - The adapter was trained on the NF4-quantised base, but vLLM applied it to the bf16 base. That mismatch is the leading suspect; it is not confirmed, because this bench did not store raw responses (it does now).
+  - So these vLLM numbers are speed measurements; LoRA serving quality under vLLM is an open issue.
+
+Full record (Korean): [`reports/runpod/RUNPOD_RUN.md`](reports/runpod/RUNPOD_RUN.md)
+
+---
+
+## 13. Reproduce
 
 **0) Product / evaluation environment (CPU)**
 ```bash
@@ -595,7 +682,15 @@ docker build -t invoiceguard-ocr:tesseract docker/ocr
 .venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765
 ```
 
-**7) Redraw the README charts and data samples** — charts come from the records in `reports/` (English and Korean sets); samples need the local data
+**7) RunPod reproduction** — needs an approved Pod with direct SSH (see [`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md)); on the Pod, from the unpacked repository:
+```bash
+bash scripts/runpod/pod_setup.sh    # Python 3.11.9 + lockfile, pinned model/data with SHA256 checks
+bash scripts/runpod/pod_train.sh    # mask audit → input hashes → smoke → 80-step training (each a gate)
+bash scripts/runpod/pod_parity.sh   # dev parity on the HF NF4 path
+python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --smoke reports/runpod/pod_smoke_train.json
+```
+
+**8) Redraw the README charts and data samples** — charts come from the records in `reports/` (English and Korean sets); samples need the local data
 ```bash
 .venv/Scripts/python.exe -m invoiceguard.readme_figures
 .venv/Scripts/python.exe -m invoiceguard.readme_samples
@@ -605,10 +700,11 @@ The original package guide (how to start with Claude Code · design document ind
 
 ---
 
-## 13. Sources
+## 14. Sources
 
 - **Public data:** [alamgirqazi/invoice-ocr-synthetic](https://huggingface.co/datasets/alamgirqazi/invoice-ocr-synthetic), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
   - Downscaled synthetic images from this dataset appear in the README samples (`docs/images/data/public-*.jpg`, 6 templates and 3 quality crops) and in the public-data screenshot (`docs/images/dashboard-public-doc.png`).
   - The dataset itself is not included in this repository.
 - **Base model:** [Qwen/Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct) — weights are not included in this repository.
 - **OCR:** [Tesseract](https://github.com/tesseract-ocr/tesseract) 4.1.1 (run inside a Docker image)
+- **Cloud GPU:** [Runpod](https://www.runpod.io) — the wordmark in section 12 is taken from the Runpod console and only names the provider; it is Runpod's trademark. The console screenshots are of this project's own Pod.

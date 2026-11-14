@@ -1,0 +1,173 @@
+{
+ "documents": [
+  "tr_69cab78e7dcd",
+  "tr_381d80972097",
+  "tr_e082855b966a",
+  "tr_827938e7dc64",
+  "tr_fbcfacdef70c",
+  "tr_b373fb6ce71b",
+  "tr_29f3c4e354c9",
+  "tr_75f27f299e4f"
+ ],
+ "set": "trade:dev (first 8 by manifest order)",
+ "path": "HF NF4 reference path, batch 1, greedy",
+ "field_accuracy": {
+  "local_v1": {
+   "correct": 200,
+   "scored": 204,
+   "acc": 0.9804
+  },
+  "pod_v1": {
+   "correct": 200,
+   "scored": 204,
+   "acc": 0.9804
+  },
+  "pod_trained": {
+   "correct": 200,
+   "scored": 204,
+   "acc": 0.9804
+  }
+ },
+ "raw_identical_rate": {
+  "pod_v1_vs_local_v1": 0.875,
+  "pod_trained_vs_local_v1": 1.0
+ },
+ "rows": [
+  {
+   "id": "tr_69cab78e7dcd",
+   "local_v1": [
+    29,
+    30
+   ],
+   "pod_v1": [
+    29,
+    30
+   ],
+   "pod_trained": [
+    29,
+    30
+   ],
+   "pod_v1_raw_identical_to_local_v1": true,
+   "pod_trained_raw_identical_to_local_v1": true
+  },
+  {
+   "id": "tr_381d80972097",
+   "local_v1": [
+    24,
+    24
+   ],
+   "pod_v1": [
+    24,
+    24
+   ],
+   "pod_trained": [
+    24,
+    24
+   ],
+   "pod_v1_raw_identical_to_local_v1": false,
+   "pod_trained_raw_identical_to_local_v1": true
+  },
+  {
+   "id": "tr_e082855b966a",
+   "local_v1": [
+    22,
+    24
+   ],
+   "pod_v1": [
+    22,
+    24
+   ],
+   "pod_trained": [
+    22,
+    24
+   ],
+   "pod_v1_raw_identical_to_local_v1": true,
+   "pod_trained_raw_identical_to_local_v1": true
+  },
+  {
+   "id": "tr_827938e7dc64",
+   "local_v1": [
+    30,
+    30
+   ],
+   "pod_v1": [
+    30,
+    30
+   ],
+   "pod_trained": [
+    30,
+    30
+   ],
+   "pod_v1_raw_identical_to_local_v1": true,
+   "pod_trained_raw_identical_to_local_v1": true
+  },
+  {
+   "id": "tr_fbcfacdef70c",
+   "local_v1": [
+    29,
+    30
+   ],
+   "pod_v1": [
+    29,
+    30
+   ],
+   "pod_trained": [
+    29,
+    30
+   ],
+   "pod_v1_raw_identical_to_local_v1": true,
+   "pod_trained_raw_identical_to_local_v1": true
+  },
+  {
+   "id": "tr_b373fb6ce71b",
+   "local_v1": [
+    18,
+    18
+   ],
+   "pod_v1": [
+    18,
+    18
+   ],
+   "pod_trained": [
+    18,
+    18
+   ],
+   "pod_v1_raw_identical_to_local_v1": true,
+   "pod_trained_raw_identical_to_local_v1": true
+  },
+  {
+   "id": "tr_29f3c4e354c9",
+   "local_v1": [
+    18,
+    18
+   ],
+   "pod_v1": [
+    18,
+    18
+   ],
+   "pod_trained": [
+    18,
+    18
+   ],
+   "pod_v1_raw_identical_to_local_v1": true,
+   "pod_trained_raw_identical_to_local_v1": true
+  },
+  {
+   "id": "tr_75f27f299e4f",
+   "local_v1": [
+    30,
+    30
+   ],
+   "pod_v1": [
+    30,
+    30
+   ],
+   "pod_trained": [
+    30,
+    30
+   ],
+   "pod_v1_raw_identical_to_local_v1": true,
+   "pod_trained_raw_identical_to_local_v1": true
+  }
+ ]
+}

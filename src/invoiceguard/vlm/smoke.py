@@ -14,6 +14,7 @@ import argparse
 import gc
 import hashlib
 import json
+import os
 import platform
 import random
 import statistics
@@ -37,7 +38,7 @@ def _env() -> dict:
     import peft
     import transformers
 
-    return {"host": "local_workstation", "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
+    return {"host": os.environ.get("IG_HOST", "local_workstation"), "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
             "torch": torch.__version__, "cuda": torch.version.cuda, "transformers": transformers.__version__,
             "peft": peft.__version__, "bitsandbytes": bitsandbytes.__version__, "python": platform.python_version(),
             "model_id": MODEL_ID, "model_revision": MODEL_REVISION, "max_pixels": MAX_PIXELS,
