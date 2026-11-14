@@ -1134,7 +1134,7 @@
         : card("벤치마크", h("p", null, pill("not_run"), " reports/serving/hf_peft_nf4_local.json 없음")),
       bench ? h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "동시성별 지연·처리량"), h("span", { class: "hint" }, "최대 토큰 " + bench.max_tokens + " · warmup " + bench.warmups)),
         table(["arm", ["동시 요청", "num"], ["요청", "num"], ["실패", "num"], ["문서/분", "num"], ["p50", "num"], ["p95", "num"], ["GPU 메모리 최대", "num"]], rows, "small"),
-        h("p", { class: "note" }, "서버는 GPU 작업을 한 번에 하나만 실행하고 대기열을 2개로 제한해 넘치는 요청을 429로 거절하도록 만들어져 있습니다. 동시 4의 실패 7건은 이 거절로 추정되지만, 이 벤치는 상태 코드를 기록하지 않아 미확인입니다. 문서/분·p50·p95는 성공한 요청만으로 계산했으므로 동시 4 행은 성공 3건 기준입니다. ", clean(bench.note))) : null,
+        h("p", { class: "note" }, "서버는 GPU 작업을 한 번에 하나만 실행하고 대기열을 2개로 제한해 넘치는 요청을 429로 거절하도록 만들어져 있습니다. 이 벤치는 상태 코드를 기록하지 않았고, 상태 코드를 기록한 재측정(reports/serving/hf_peft_nf4_local_v2.json)에서 동시 4의 실패 7건은 모두 429로 확인됐습니다. 같은 재측정의 5분 지속 부하(동시 2)는 25건 모두 200, 정확도 0.943입니다. 문서/분·p50·p95는 성공한 요청만으로 계산했으므로 동시 4 행은 성공 3건 기준입니다. ", clean(bench.note))) : null,
       h("div", { class: "cols" },
         probe ? cardH("취소·대기열 프로브", probe.measured_at, kv([
           ["요청 타임아웃", probe.timeout_cancel_test.request_timeout_s + "s → HTTP " + probe.timeout_cancel_test.http_status + " (경과 " + probe.timeout_cancel_test.wall_s + "s)"],

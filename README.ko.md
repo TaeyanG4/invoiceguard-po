@@ -592,7 +592,8 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 |---|---|
 | 출력 동일성<br><sub>서버 vs 오프라인</sub> | M0 · M1 모두 원문 100% 동일<br><sub>같은 프롬프트 토큰 1045개</sub> |
 | 처리량 · 지연<br><sub>M1</sub> | 동시 1: 4.0 문서/분, p50 16.1s / p95 18.4s<br>동시 2: 4.2 문서/분, p50 26.6s / p95 36.3s<br><sub>직렬 작업자라 대기 시간이 늘어난 것이며, 배치 효과가 아님</sub> |
-| 동시 4 | 10건 중 7건 실패 기록<br><sub>대기열 초과 429로 추정되지만 벤치가 상태 코드를 저장하지 않아 미확인. 별도 probe에서 동시 4건 → 200 · 200 · 200 · 429 확인</sub> |
+| 동시 4 | 10건 중 7건 실패 기록<br><sub>첫 벤치는 상태 코드를 저장하지 않았습니다. 상태 코드를 기록하는 재측정(아래)에서 7건 모두 **429(대기열 초과)**로 확인</sub> |
+| **모든 답 채점 · 지속 부하** (11-15 재측정)<br><sub>M1, 자체 dev 10장</sub> | 동시 1 · 2 · 4의 정확도 0.936 · 0.936 · 0.962(성공 3건), 원문이 동시 1과 모두 같음, 잘림 0<br>**5분 지속 부하(동시 2):** 25건 모두 200, 정확도 0.943, 분당 4.56문서, p50 24.9s / p95 32.8s, GPU 메모리 3.36GB로 일정<br><sub>[`hf_peft_nf4_local_v2.json`](reports/serving/hf_peft_nf4_local_v2.json) · [`hf_peft_nf4_local_sustained.json`](reports/serving/hf_peft_nf4_local_sustained.json)</sub> |
 | 타임아웃 취소 | 3초 제한 요청 → 3.1초에 504, 직후 작업자 `busy:false`<br><sub>StoppingCriteria로 생성을 중단해 남는 추론이 없음</sub> |
 | GPU 메모리 | 약 3.1GB<br><sub>nvidia-smi, 다른 프로세스 포함</sub> |
 | LIVE 시연 | 검수 API(LIVE_MODEL) → 추출 15.2s → `UNIT_PRICE_DIFF` 검출 → 승인 → 스냅샷 export<br><sub>추출 결과가 정답 행과 일치</sub> |
@@ -706,7 +707,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 - 서빙
   - vLLM은 RunPod에서만 측정했습니다. 실행 1의 정확도 저하는 원인(어댑터·기본 모델 정밀도 불일치)을 찾아 실행 2에서 역양자화 병합으로 회복했지만, 병합본은 GPU마다 비트가 조금 다르므로 한 곳에서 만들어 해시로 옮겨야 합니다.
   - 직접 만든 HF 서버는 배칭이 없습니다(batch 1, 직렬 작업자). 배칭은 RunPod의 vLLM에서만 측정했습니다(12장).
-  - 벤치는 문서 10장 · 반복 1회입니다. 서버의 대기열 · 데드라인 · 오류 처리는 자동 회귀 테스트 6개가 있고([`test_serving_core.py`](tests/test_serving_core.py)), 리팩터링한 GPU 서버는 실제 요청 6건에서 원문이 오프라인 평가와 6/6 같았습니다([`hf_server_refactor_smoke.json`](reports/serving/hf_server_refactor_smoke.json)). 장시간 부하 테스트는 하지 않았습니다.
+  - 벤치는 문서 10장 · 반복 1회이고, 지속 부하는 로컬 HF 서버에서 5분 한 번입니다. 서버의 대기열 · 데드라인 · 오류 처리는 자동 회귀 테스트 6개가 있고([`test_serving_core.py`](tests/test_serving_core.py)), 리팩터링한 GPU 서버는 실제 요청 6건에서 원문이 오프라인 평가와 6/6 같았습니다([`hf_server_refactor_smoke.json`](reports/serving/hf_server_refactor_smoke.json)). vLLM에서의 지속 부하와 CORD 모델 서빙은 측정하지 않았습니다(RunPod 필요).
 - 같은 정밀도에서도 GPU마다 출력이 문서 1건 정도 갈릴 수 있습니다(소수점 끝자리 차이 → greedy 토큰 하나). 그래서 비교는 한 GPU 안에서만 했습니다([12장](#12-runpod-클라우드-재현)).
 - RunPod 재현은 seed 1개 · 1회이고, dev parity는 8건입니다. Pod 안 자동 정지는 권한 문제로 걸지 못해, Pod를 삭제할 때까지 지켜보며 진행했습니다.
 - FSDP / DeepSpeed는 2B 모델 · 단일 GPU에서 필요가 없어 쓰지 않았습니다([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
