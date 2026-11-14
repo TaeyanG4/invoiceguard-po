@@ -1,0 +1,45 @@
+{
+ "frozen_at": "2026-11-15T00:32:23+0900",
+ "contract": "docs/20_DECISIONS_V6.md",
+ "git_commit": "92892c5543e79c8084195e698e81ab684f03545d",
+ "code_dirty_at_freeze": false,
+ "generation": {
+  "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+  "max_pixels": 786432,
+  "max_new_tokens": 1536,
+  "do_sample": false,
+  "precision": "nf4_double_quant_bf16_compute_vision_unquantised_patch_embed_fp32",
+  "batch_size": 1,
+  "padding_side": "left"
+ },
+ "cord_prompt_sha256": "8b62103ca165e3f6ad1e8f47cb3a79f5dd05de82f532b914af58eaabbd9dbb63",
+ "cord_manifest_sha256": "42a8371d142009df4ee95fc34d48cd32290eabed1f7ce62d00dbd0ed3cfac97c",
+ "evaluator_sha256": {
+  "src/invoiceguard/cord_eval.py": "389da745ccf9d4bf88e5f5e36858a86cbdfc9c4041a505074fa7d4a6d950d392",
+  "src/invoiceguard/cord.py": "8bf6a82ae0aebb80ec9ef70bc4fe5b340d04c31fe6529c409abe926931db5c19",
+  "src/invoiceguard/model_output.py": "59db138912e147d4d878540c9926b1cb6b7749f37e23f98d1354f2949ef8711e"
+ },
+ "arms": {
+  "M0": {
+   "arm": "m0",
+   "adapter": null,
+   "adapter_sha256": null
+  },
+  "M1_v1": {
+   "arm": "m1",
+   "adapter": "artifacts/adapters/m1_standard_v1",
+   "adapter_sha256": "eb08674120d6489fb9f2ae4cf72038588794e09b3d337a5239d8a6078aff2868"
+  },
+  "M1_cord": {
+   "arm": "m1",
+   "adapter": "artifacts/adapters/m1_cord_v1",
+   "adapter_sha256": "630d3dd1251f4badf931cc88326483ce3eb0ebcc5cc4ac33ca2330630e58e965"
+  }
+ },
+ "dev_runs": [
+  "cord_dev_m0_nf4",
+  "cord_dev_m1v1_nf4",
+  "cord_dev_m1cord_nf4"
+ ],
+ "rule": "cord:test runs once per arm with --allow-final; primary metric and criteria as in docs/20"
+}
