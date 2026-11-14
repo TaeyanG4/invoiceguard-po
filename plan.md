@@ -29,7 +29,7 @@ sources:
 | P2 | README·기록 불일치 수정 (Fable 5곳 + astra 3곳) | 완료 | 없음 | |
 | P3 | vLLM 정확도 저하 원인 — 로컬 정밀도 실험 | **완료** | 로컬 | 원인 확정: 학습 기본 모델(NF4) 불일치. dtype·A40·vLLM 아님 (`reports/quant/`) |
 | P4 | astra 평가 1 | 완료 (76) | | |
-| P5 | 양자화 비교표 (M0·M1 × NF4·int8·bf16·fp16·fp32: 정확도·지연·VRAM) | 데이터 완료, README 반영 대기(실행 2 vLLM·FP8 표는 반영함) | 없음 | README 표 + 해석(작은 n 명시) |
+| P5 | 양자화 비교표 (M0·M1 × NF4·int8·bf16·fp16·fp32: 정확도·지연·VRAM) | **완료**: README 12장 "GPU마다 결과가 다른가"에 정밀도 표·GPU 비교·GPU 선택 표 반영(11-15) | 없음 | README 표 + 해석(작은 n 명시) |
 | P7 | README 필드별 정확도 표 | 완료 | | |
 | P8a | 서빙 해결 — NF4 역양자화 bf16 (+병합 / +비병합 LoRA) | **완료**: 로컬 HF 0.960, L40S vLLM 0.960 | 로컬 + 실행 2 | |
 | P14 | bf16 위 일반 LoRA 학습 1회 + dev 44 평가 | **완료**(L40S): 학습 253초, trade dev 0.986 / 공개 0.931, QLoRA 대비 차이 유의하지 않음 | 실행 2 | |

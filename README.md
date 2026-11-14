@@ -671,6 +671,7 @@ A local, read-only dashboard (the UI is in Korean).
   - vLLM was measured only on RunPod. Run 1's accuracy drop was traced (adapter/base precision mismatch) and recovered in run 2 by merging into the dequantised weights; merged files differ slightly between GPUs, so they must be built once and moved by hash.
   - The own HF server has no batching (batch 1, serial worker); batching was measured only with vLLM on RunPod (section 12).
   - The bench uses 10 documents and one repetition; the serving server has no automated tests of its own, only manual probes.
+- Even at the same precision, outputs can diverge on about one document per GPU (last-bit rounding → one greedy token), so comparisons were kept within one GPU ([section 12](#12-cloud-reproduction-on-runpod)).
 - The RunPod reproduction is one seed and one run; its dev parity covers 8 documents. An automatic stop inside the Pod could not be set (permission), so the run was watched until the Pod was deleted.
 - FSDP / DeepSpeed were not used: they are unnecessary for a 2B model on a single GPU ([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
 - The review **UI is not implemented** (only the review API and the read-only admin dashboard exist).
@@ -808,6 +809,59 @@ Rented once more to answer what run 1 left open: why M1's accuracy dropped under
 <sub>bf16 LoRA − QLoRA: public −0.033 [−0.087, 0.017], own +0.017 [−0.016, 0.057] — neither significant. The easy synthetic data cannot separate training methods, which is why CORD v2 was added.</sub>
 
 **Not used:** 8B and 32B teacher models drafted labels for 169 unlabelled real tax-invoice photos, but only 40 of 185 rows passed the arithmetic check (quantity × unit price = amount), so the drafts were not used as gold. Those photos and drafts contain real shop names and addresses, so they stay out of the repository; only a count/time summary is kept ([`teacher_drafts_summary.json`](reports/runpod2/teacher_drafts_summary.json)).
+
+### Do results differ by GPU? — local 4070 · A40 · L40S
+
+**Conclusion:** accuracy was decided by **precision**, not by the GPU — how the weights were loaded, and whether the adapter sat on the same base it was trained on. With matching precision the three GPUs reached the same accuracy; they differed only in speed, available features (FP8, memory) and cost.
+
+**1) Effect of precision** — same GPU (local 4070), the same 20 own dev documents (522 fields), HF reference path
+
+| Base precision | M0<br><sub>base model</sub> | M1<br><sub>adapter trained on NF4</sub> | M1 time per document | Peak VRAM |
+|---|---:|---:|---:|---:|
+| NF4 (as in training) | 0.941 | **0.960** | 13.5 s | 2.4 GB |
+| int8 | 0.992 | 0.847 | 42.9 s | 3.0 GB |
+| bf16 | **0.994** | 0.847 | 13.6 s | 4.3 GB |
+| fp16 | 0.966 | 0.849 | 13.0 s | 4.3 GB |
+| fp32 | 0.969 | 0.849 | 12.4 s | 8.4 GB |
+| dequantised NF4 as bf16 + merged LoRA | — | **0.960** | 11.3 s | 4.3 GB |
+
+- **Higher precision does not help M1.** On any base other than NF4 it drops to about 0.85, and only 1 of 20 documents keeps its four document totals: the adapter learned corrections relative to the NF4-quantised weights.
+- **Fix:** merging the adapter into the dequantised NF4 weights (served as bf16) keeps 0.960 and is faster (11.3 s per document). The same merge, built on the Pod, is what vLLM served.
+- For M0, unquantised bf16 beats NF4 (0.994 vs 0.941). fp16/fp32 below bf16 look like greedy outputs diverging on a few documents; with 20 documents small differences cannot be told apart.
+- Source: [`precision_dev20.md`](reports/quant/precision_dev20.md)
+
+**2) Effect of the GPU** — comparisons at matching precision
+
+| Comparison | local RTX 4070 Ti SUPER | A40 | L40S |
+|---|---:|---:|---:|
+| QLoRA training reproduction — mean loss over 80 steps | 0.04872 | 0.04857 | — |
+| training reproduction — raw outputs on 8 dev documents | reference | 8/8 identical | — |
+| M1 dequantised merge (own dev 20) | 0.960 <sub>HF</sub> | — | 0.960 <sub>vLLM</sub> |
+| M1 adapter on a bf16 base | 0.847 <sub>HF</sub> | 0.849 <sub>vLLM</sub> | — |
+| M0 bf16 (own dev 20) | 0.994 <sub>HF</sub> | 0.969 <sub>vLLM</sub> | 0.998 <sub>vLLM</sub> |
+
+- The 0.960 → 0.849 drop appeared **identically** on the 4070 and the A40: the cause is the precision mismatch, not the GPU.
+- M0 bf16 on the A40 (0.969) and the L40S (0.998) match in correct-field counts on 19 of 20 documents; one document (`tr_7d3690b30c40`) scored 27/42 on the A40 and 42/42 on the L40S. With 20 documents one document moves the score by 0.03, so this is not a GPU quality difference. The A40 run did not store raw outputs, so the diverging token cannot be shown (raw outputs are stored now).
+
+**Why small differences appear at all**
+- GPUs differ in core (SM) count, the kernels they pick (cuBLAS, bitsandbytes) and CUDA/OS versions, so the order of additions changes and floating-point rounding differs in the last bit.
+- The same merge script produced files on the L40S and the 4070 in which 59 of 625 tensors differ by one bf16 step ([`merge_tensor_diff.json`](reports/runpod2/merge_tensor_diff.json)). Both GPUs are Ada, so this is the whole runtime environment, not only the generation; the exact kernel was not traced.
+- Greedy decoding picks the single most likely token at every step. When two candidates are nearly tied, such a tiny difference can flip one token and send the rest of the output down a different path.
+- Hence **comparisons stay within one GPU**, and model files are built once in one place and moved by hash.
+
+**3) Which GPU was best**
+
+| Criterion | local RTX 4070 Ti SUPER 16 GB | A40 48 GB | L40S 48 GB |
+|---|---|---|---|
+| accuracy (matching precision) | same level | same level | same level |
+| QLoRA training, 80 steps | 1,308 s | **620 s** | same training not run |
+| vLLM M0 bf16 docs/min (concurrency 1 / 8) | not possible <sub>driver CUDA 12.6</sub> | 18.2 / 104.8 | **22.8 / 118.9** |
+| FP8 serving | not possible | not possible <sub>Ampere</sub> | **possible** <sub>M1: 42.3 at 1, 295.6 at 16</sub> |
+| plain bf16 LoRA, 80 steps | not possible <sub>out of VRAM, 358 s/step</sub> | not run | **253 s** |
+| cost per hour | free | $0.60 | $1.09 |
+
+- **Fastest: the L40S.** Without FP8, the **A40 gives the best value**, and for repeated development and evaluation the **free local GPU** is best.
+- In this project the GPU choice is about speed, available features and cost — not accuracy.
 
 ---
 

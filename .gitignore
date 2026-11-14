@@ -35,3 +35,6 @@ dist/
 # Real-document model drafts can contain real business names/invoice numbers (Kaggle GST): never commit
 reports/runpod2/teacher*_raw*.jsonl
 reports/realdocs/*_raw*.jsonl
+# Codex CLI stderr tails and session ids from review runs: local tool noise, kept out of the public repo
+reports/reviews/*.log
+reports/reviews/*.session
