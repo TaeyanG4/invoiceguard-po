@@ -18,8 +18,14 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
-## 2026-11-14 23:50 — CORD v2 준비 완료, 로컬 M0 기준선 실행 중
-- **승인:** 사용자 "내려받기 승인"(22:40경). `scripts/realdocs/fetch_cord.py` → 6개 parquet 2,307,284,272 bytes, 51.9초, Hub LFS 해시 6/6 일치(`reports/realdocs/cord_fetch.json`). 원본은 `data/raw/cord-v2/<rev>/`(git 제외).
+## 2026-11-14 22:58 — CORD dev M0 기준선 결과
+- **실행:** `infer --arm m0 --set cord:dev` 로컬 4070 NF4, batch 1, 22:36:24–22:57:05 (1,240.6초, 문서당 12.4초, 최대 VRAM 2.35GB). 체인(`run_cord_local.sh`)은 22:57:13에 이어서 시작.
+- **결과** (`reports/eval/cord_dev_m0_nf4.json`, 펜스 벗긴 출력 기준): 필드 정확도 **0.712**(717/1,007), 형식 무시 0.777, 순서 무관 F1 0.654(정밀도 0.559 · 재현율 0.788), 내용 미중복 80건 0.706. strict JSON 0/100(전부 펜스). 문서 완전 일치 1/100, 행 수 일치 0.67.
+- **약한 곳:** 하위 품목(count 0.03, name 0.20, price 0.29), tax 0.49, 정답에 없는 값 채움 269개(예: 인쇄되지 않은 unit_price를 price로 채움, 거스름돈을 tax로).
+- **판단:** 합성 데이터와 달리 0.55–0.80 난이도 범위 안 → 학습 효과를 볼 여지가 있음.
+
+## 2026-11-14 22:43 — CORD v2 준비 완료, 로컬 M0 기준선 실행 중
+- **승인:** 사용자 "내려받기 승인"(22:27경). `scripts/realdocs/fetch_cord.py` → 6개 parquet 2,307,284,272 bytes, 51.9초, Hub LFS 해시 6/6 일치(`reports/realdocs/cord_fetch.json`). 원본은 `data/raw/cord-v2/<rev>/`(git 제외).
 - **변환:** `python -I -m invoiceguard.cord build` → `manifests/cord_v2.jsonl`(sha256 42a8371d…), gold 1,000건 모두 `schemas/cord_extraction.schema.json` 통과. 리스트 라벨 masked: train 18 / dev 1 / test 2 문서.
 - **발견 — 내용 중복:** 공식 분할에서 사진은 다르지만 정답이 같은 문서가 test 15건, dev 20건(train과 동일). 정답 암기를 막기 위해 dev·test와 같은 정답인 train 40건을 학습 제외 → 학습 가능 742건. test는 100건 그대로 + 미중복 85건 따로 보고.
 - **판정 기준 사전 고정:** `docs/20_DECISIONS_V6.md`(OKF). 주 지표 필드 정확도, 보조 형식 무시 정확도·순서 무관 F1, 통과 기준 M1-cord − M0 ≥ +0.05이고 CI 하한 > 0.

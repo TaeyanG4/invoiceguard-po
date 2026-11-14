@@ -4,7 +4,7 @@ title: 계약 개정 v6 — 실사진 영수증 CORD v2 추가와 사전 고정 
 description: 합성 데이터만으로는 난이도가 낮아(M0·M1 차이가 유의하지 않음) 라벨이 있는 실사진 영수증 CORD v2를 별도 태스크 CORD_RAW로 추가한다. 학습·평가 전에 지표와 통과 기준을 고정한다.
 tags: [decision, cord-v2, real-documents, metric, pre-registration]
 status: active
-generated: {by: claude-opus-5.5, at: 2026-11-14T23:00+09:00}
+generated: {by: claude-opus-5.5, at: 2026-11-14T22:33+09:00}
 sources:
   - {id: cord-v2, resource: "https://huggingface.co/datasets/naver-clova-ix/cord-v2", note: "revision 7f0115a4b758a71d6473b8d085751692da2fef98, CC BY 4.0"}
   - {id: fetch, resource: reports/realdocs/cord_fetch.json}
@@ -54,7 +54,7 @@ sources:
 - M1-cord: 기존 학습 데이터(public 200 + trade 160) + CORD train 742 = 1,102건, QLoRA NF4, LoRA r8/α16 q_proj·v_proj, lr 1e-4 cosine, 유효 배치 8, **240 step**(약 1.74 epoch — 기존 M1 레시피의 1.78 epoch에 맞춤), seed 20261113, 로컬 RTX 4070 Ti SUPER.
 - 실행 순서와 시각 기록: `scripts/realdocs/run_cord_local.sh`.
 
-## 수정 1 — 코드 펜스 (2026-11-14 23:40, CORD 학습·test 실행 전, dev 관찰 근거)
+## 수정 1 — 코드 펜스 (2026-11-14 22:40, CORD 학습·test 실행 전, dev 관찰 근거)
 - **관찰:** M0 dev 실행 첫 18건이 전부 답을 ```json 펜스로 감쌌다. strict JSON 파싱으로는 M0의 모든 필드가 0점이 되어, 비교가 읽기 능력이 아니라 펜스 유무를 재게 된다(합성 데이터 P14에서도 M0 strict 0.000 / lenient 0.736으로 같은 현상).
 - **변경:** 위 지표 1–3과 통과 기준의 필드 점수는 **펜스 하나만 벗긴 출력**으로 계산한다. 이 경로는 기존 lenient와 같다: 맨 앞뒤의 ```json 펜스 한 쌍만 제거하고, 잘림·문법 오류·키 누락은 고치지 않는다.
 - **형식 지표는 따로:** 펜스 없이 바로 파싱되는 JSON 비율(strict JSON 비율)과 그 기준의 필드 정확도를 별도 줄로 보고한다. "M1이 형식을 배웠다"는 이 줄로만 말한다.

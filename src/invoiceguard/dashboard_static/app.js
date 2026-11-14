@@ -342,7 +342,7 @@
       h("section", { class: "card hero" },
         h("div", { class: "eyebrow" }, "INVOICEGUARD-PO"),
         h("h1", null, "영어 인보이스 이미지 → VLM 추출 → 발주서 대사 → 사람 검수"),
-        h("p", null, "합성 영어 인보이스에서 SKU·수량·단가를 VLM(Qwen3-VL-2B + QLoRA)으로 추출하고, 독립 발주서와 규칙 기반으로 대사한 뒤 사람이 승인한 버전만 내보냅니다. 이 화면은 저장소의 기록(reports/, manifests/, configs/)만 읽어서 보여주며 수치를 추정하지 않습니다."),
+        h("p", null, "합성 영어 인보이스에서 SKU·수량·단가를 VLM(Qwen3-VL-2B + QLoRA)으로 추출하고, 독립 발주서와 규칙 기반으로 대사한 뒤 사람이 승인한 버전만 내보냅니다. 학습 효과는 사람이 라벨을 단 실사진 영수증(CORD v2)으로 따로 검증합니다. 이 화면은 저장소의 기록(reports/, manifests/, configs/)만 읽어서 보여주며 수치를 추정하지 않습니다."),
         flow),
       statusErrors(s),
       h("div", { class: "kpis" },
@@ -357,6 +357,7 @@
           armLegend(), armChart(finals, finalSets),
           h("p", { class: "note" }, "합성 데이터·작은 표본(세트당 20~40문서)이므로 사례 증거로 읽어야 합니다. 막대에 마우스를 올리면 문서 exact·JSON 유효율·CI가 보입니다."))
         : card("FINAL 결과", h("p", null, pill("not_run"), " final 채점 파일이 없습니다.")),
+      cordOverviewCard(s.cord),
       h("div", { class: "cols" },
         cardH("차단·미실행 항목", "기록 그대로", blockers.length ? h("ul", { class: "timeline" }, blockers.map(([k, v]) => h("li", { class: "is-warn" }, h("div", { class: "tt" }, k), h("div", { class: "td" }, v)))) : h("p", { class: "sub" }, "기록된 차단 항목 없음")),
         cardH("현재 상태", "reports/SESSION_HANDOFF.md", kv([
@@ -665,6 +666,7 @@
           h("div", null, h("h3", null, "글꼴"), bars(tm.fonts_used))),
         tm.note ? h("p", { class: "note" }, tm.note) : null));
     } else parts.push(card("자체 manifest", h("p", null, "manifests/trade_raw_v1.summary.json 없음")));
+    if (s.cord) parts.push(cordDataCard(s.cord));
     add(view, parts);
   }
 
@@ -739,6 +741,368 @@
       (s.local_smoke || []).length ? details("로컬 스모크 기록 (원문 키/값)",
         h("p", { class: "sub" }, "마스크 감사·파일럿·10-step 학습 스모크 파일을 해석하지 않고 그대로 보여줍니다. final 평가 결과가 아닙니다."),
         s.local_smoke.map((f) => [h("h3", { class: "mono" }, f.path), kv(f.pairs.map(([k, v]) => [h("span", { class: "mono" }, k), h("span", { class: "raw" }, v)]))])) : null,
+    ]);
+  }
+
+  // ---- CORD v2 real receipt photos (docs/20_DECISIONS_V6.md) — data browser + pre-registered evaluation
+  const CORD_ARMS = {
+    "M0": { cls: "s-m0", desc: "기본 모델 · NF4" },
+    "M1 v1": { cls: "s-m1", desc: "기존 M1 (CORD 없이 학습)" },
+    "M1-cord": { cls: "s-m1c", desc: "CORD train 742건을 더해 학습" },
+  };
+  const CORD_ARM_ORDER = ["M0", "M1 v1", "M1-cord"];
+  const CORD_STAGES = [["cord:dev", "dev", "공식 validation 100장 · 개발·비교용"], ["cord:test", "test", "공식 test 100장 · 동결 후 1회"]];
+  const CORD_GROUPS = [["item.name", "품목 이름"], ["item.count", "품목 수량"], ["item.unit_price", "품목 단가"], ["item.price", "품목 금액"],
+    ["sub.name", "하위 품목 이름"], ["sub.count", "하위 품목 수량"], ["sub.unit_price", "하위 품목 단가"], ["sub.price", "하위 품목 금액"],
+    ["doc.subtotal", "소계 (subtotal)"], ["doc.tax", "세금 (tax)"], ["doc.total", "합계 (total)"]];
+  const CORD_STATE = { ok: ["✓", "일치"], format: ["≈", "형식만 다름 (숫자·글자는 같음)"], wrong: ["✗", "틀림"], missing: ["∅", "빠뜨림"],
+    filled: ["+", "정답에 없는 값을 채움"], empty: ["", "정답·예측 모두 없음"], masked: ["", "채점 제외 (원 라벨이 여러 상자)"] };
+  const CORD_OVERLAP = { none: "겹침 없음", seen_in_train: "train과 같은 정답", dup_excluded: "dev/test와 같은 정답 → 학습 제외" };
+  const CORD_FILTERS = ["split", "eligible", "overlap", "has_sub", "masked", "q"];
+  const CORD_ID_RE = /^cord_(train|dev|test)_\d{4}$/;
+  let lastCordList = "#/cord";
+  const blankCell = (title) => h("td", { class: "blank", title: title || "아직 실행하지 않음" }, "—");
+
+  function cordEvals(c) { // {set: {arm label: evaluation}} — latest file per arm wins (files are sorted by name)
+    const out = {};
+    for (const e of (c && c.evaluations) || []) (out[e.set] = out[e.set] || {})[e.label || e.run_id] = e;
+    return out;
+  }
+  function cordComp(c, a, b) {
+    return ((c && c.comparisons) || []).find((x) => x.a_label === a && x.b_label === b) || null;
+  }
+  function cordLegend() {
+    return h("div", { class: "legend" },
+      CORD_ARM_ORDER.map((k) => h("span", { class: "key" }, h("span", { class: "sw " + CORD_ARMS[k].cls }), h("b", null, k), " " + CORD_ARMS[k].desc)),
+      h("span", { class: "key" }, h("span", { class: "lenkey" }), "형식 무시 정확도 (보조 A)"),
+      h("span", { class: "key" }, h("span", { class: "blankkey" }), "미실행 (빈칸)"));
+  }
+  function cordBars(byStage, subset) {
+    const grid = h("div", { class: "armchart" },
+      h("div", { class: "axis", "aria-hidden": "true" }, [0, 0.25, 0.5, 0.75, 1].map((t) => h("span", { css: { left: pct(t) } }, t === 0 ? "0" : t.toFixed(2)))));
+    for (const [set, name, desc] of CORD_STAGES) {
+      const arms = byStage[set] || {};
+      const first = CORD_ARM_ORDER.map((a) => arms[a]).find(Boolean);
+      const n = first ? (first[subset] || {}).documents : null;
+      grid.append(h("div", { class: "setlabel" }, "CORD " + name + (subset === "unseen" ? " · 내용 미중복" : ""),
+        h("small", null, [desc, n ? "n " + n : null].filter(Boolean).join(" · "))));
+      const rows = h("div", { class: "setbars" });
+      for (const a of CORD_ARM_ORDER) {
+        const e = arms[a], v = e ? e[subset] : null;
+        if (!v) { rows.append(h("div", { class: "armbar blankbar" }, h("span", { class: "val", css: { left: "0%" } }, a + " — 미실행"))); continue; }
+        const acc = Number(v.strict_field_accuracy.accuracy) || 0, loose = Number(v.format_insensitive_accuracy.accuracy);
+        const label = a + " · CORD " + name + " · strict " + fmt(acc) + " · 형식 무시 " + fmt(loose);
+        const bar = h("div", { class: "armbar", tabindex: "0", role: "img", "aria-label": label },
+          h("i", { class: "fill " + CORD_ARMS[a].cls + (acc === 0 ? " zero" : ""), css: { width: pct(acc) } }),
+          Number.isNaN(loose) ? null : h("em", { class: "len", css: { left: pct(loose) } }),
+          h("span", { class: "val", css: { left: pct(Math.max(acc, Number.isNaN(loose) ? 0 : loose)) } }, fmt(acc), h("small", null, " · ◇ " + fmt(loose))));
+        attachTip(bar, () => [h("b", null, a + " · CORD " + name),
+          tipLine("strict 필드 정확도", fmt(acc) + " (" + v.strict_field_accuracy.correct + "/" + v.strict_field_accuracy.scored + ")"),
+          tipLine("형식 무시 정확도", fmt(loose)), tipLine("순서 무관 F1", fmt(v.order_free_f1.f1)),
+          tipLine("정답에 없는 값 채움", String(v.absent_fields_filled)), tipLine("문서 exact", fmt(v.doc_exact, 2)),
+          h("div", { class: "tl" }, e.run_id)]);
+        rows.append(bar);
+      }
+      grid.append(rows);
+    }
+    return grid;
+  }
+  const CORD_DIFFS = [["strict_field_accuracy", "strict 필드 정확도 (주 지표)"], ["format_insensitive_accuracy", "형식 무시 정확도 (보조 A)"],
+    ["order_free_f1", "순서 무관 F1 (보조 B)"], ["doc_exact", "문서 전체 일치"]];
+  function cordForest(cmp, set, subset) {
+    const R = 0.6;
+    const pos = (d) => (((Math.max(-R, Math.min(R, Number(d))) + R) / (2 * R)) * 100).toFixed(2) + "%";
+    const v = cmp && cmp.sets[set] ? cmp.sets[set][subset] : null;
+    if (!v) return h("p", { class: "blanknote" }, pill("not_run"), " ", set === "cord:test" ? "CORD test는 설정 동결 뒤 한 번만 실행합니다 — 아직 결과가 없습니다." : "이 비교의 결과 파일이 없습니다.");
+    const grid = h("div", { class: "forest" },
+      h("div", { class: "faxis", "aria-hidden": "true" }, [-R, -R / 2, 0, R / 2, R].map((t) => h("span", { css: { left: pos(t) } }, t > 0 ? "+" + t.toFixed(1) : t < 0 ? "−" + Math.abs(t).toFixed(1) : "0"))));
+    for (const [key, label] of CORD_DIFFS) {
+      const x = v[key];
+      if (!x) continue;
+      const d = Number(x.diff), ci = (x.ci95 || []).map(Number);
+      const sig = ci.length === 2 ? ci[0] > 0 || ci[1] < 0 : null;
+      grid.append(h("div", { class: "fl" }, label, h("small", null, "같은 문서 " + v.n_docs + "건 · 클러스터 " + v.n_clusters)));
+      const track = h("div", { class: "ft", tabindex: "0", role: "img", "aria-label": cmp.a_label + " − " + cmp.b_label + " " + label + " " + signed(d) },
+        h("i", { class: "zero" }),
+        ci.length === 2 ? h("b", { class: "ci", css: { left: pos(ci[0]), width: (Math.max(0, Math.min(R, ci[1]) - Math.max(-R, ci[0])) / (2 * R) * 100).toFixed(2) + "%" } }) : null,
+        h("em", { class: "pt" + (sig ? "" : " ns"), css: { left: pos(d) } }));
+      attachTip(track, () => [h("b", null, cmp.a_label + " − " + cmp.b_label), tipLine(label, signed(d) + (ci.length === 2 ? "  [" + signed(ci[0]) + ", " + signed(ci[1]) + "]" : ""))]);
+      grid.append(track, h("div", { class: "fv" }, signed(d) + (ci.length === 2 ? "  [" + signed(ci[0]) + ", " + signed(ci[1]) + "]" : "")),
+        h("div", { class: "fs" }, sig === null ? pillCls("idle", "CI 없음") : sig ? pillCls(d > 0 ? "ok" : "warn", (d > 0 ? cmp.a_label : cmp.b_label) + " 우세") : pillCls("idle", "유의하지 않음")));
+    }
+    return grid;
+  }
+  function cordForestCard(c) {
+    const pairs = [["M1-cord", "M0", "주 비교"], ["M1-cord", "M1 v1", "CORD를 더한 효과"], ["M1 v1", "M0", "기존 어댑터의 전이"]];
+    const state = { pair: 0, set: "cord:dev", subset: "all" };
+    const body = h("div");
+    const seg = (items, key) => {
+      const buttons = items.map(([value, label]) => h("button", { type: "button", "aria-pressed": state[key] === value ? "true" : "false",
+        onclick: () => { state[key] = value; buttons.forEach((b, i) => b.setAttribute("aria-pressed", items[i][0] === value ? "true" : "false")); draw(); } }, label));
+      return h("div", { class: "segtabs", role: "group" }, buttons);
+    };
+    function draw() {
+      const [a, b] = pairs[state.pair];
+      body.replaceChildren(cordForest(cordComp(c, a, b), state.set, state.subset));
+    }
+    draw();
+    return h("section", { class: "card" },
+      h("div", { class: "cardhead" }, h("h2", null, "paired 차이 (A − B) · 95% CI"),
+        h("span", { class: "hint" }, "같은 문서 쌍 bootstrap 2,000회 · 정답이 같은 문서는 한 묶음으로 재표집")),
+      h("div", { class: "toolrow" }, seg(pairs.map(([a, b, note], i) => [i, a + " − " + b + " (" + note + ")"]), "pair"),
+        seg([["cord:dev", "dev"], ["cord:test", "test"]], "set"), seg([["all", "전체 100"], ["unseen", "내용 미중복"]], "subset")),
+      h("div", { class: "legend" }, h("span", { class: "key" }, h("span", { class: "dot run" }), "CI가 0을 포함하지 않음 (유의)"),
+        h("span", { class: "key" }, h("span", { class: "dot idle" }), "CI가 0을 포함 (유의하지 않음)")),
+      body);
+  }
+  function verdictCell(ok, text) {
+    return h("td", null, ok === null ? pillCls("idle", "미실행") : ok ? pillCls("ok", "충족") : pillCls("warn", "미충족"), text ? h("div", { class: "sub" }, text) : null);
+  }
+  // four decimals: the effect threshold is +0.05, and a three-decimal "+0.050" would hide a +0.0497 miss
+  function ciText(x) { return x ? signed(x.diff, 4) + " [" + signed(x.ci95[0], 4) + ", " + signed(x.ci95[1], 4) + "]" : null; }
+  function cordCriteriaCard(c) {
+    const main = cordComp(c, "M1-cord", "M0");
+    const at = (set) => (main && main.sets[set] ? main.sets[set].all : null);
+    const dev = at("cord:dev"), test = at("cord:test");
+    const effect = (v) => (v ? v.strict_field_accuracy.diff >= 0.05 && v.strict_field_accuracy.ci95[0] > 0 : null);
+    const reading = (v) => (v ? effect(v) && v.format_insensitive_accuracy.ci95[0] > 0 : null);
+    const reg = c.regression;
+    const regRows = reg ? Object.entries(reg.sets || {}).filter(([k]) => k === "trade:dev" || k === "public:dev|clean") : [];
+    const regOk = regRows.length ? regRows.every(([, v]) => Number(v.field_acc_diff) >= -0.03) : null;
+    const regText = regRows.length ? regRows.map(([k, v]) => setInfo(k)[0] + " " + signed(v.field_acc_diff)).join(" · ") : null;
+    return h("section", { class: "card" },
+      h("div", { class: "cardhead" }, h("h2", null, "사전 고정 판정 기준"), h("span", { class: "hint" }, "docs/20_DECISIONS_V6.md · 학습 전에 고정")),
+      table(["기준", "dev (참고 · 판정 아님)", "test (판정)"], [
+        h("tr", null, h("td", null, h("b", null, "파인튜닝 효과"), h("div", { class: "sub" }, "M1-cord − M0 strict ≥ +0.05 이고 95% CI 하한 > 0")),
+          verdictCell(effect(dev), dev ? ciText(dev.strict_field_accuracy) : null), verdictCell(effect(test), test ? ciText(test.strict_field_accuracy) : null)),
+        h("tr", null, h("td", null, h("b", null, "읽기도 좋아짐"), h("div", { class: "sub" }, "위 기준 + 형식 무시 차이의 CI 하한 > 0. 아니면 \"주로 형식을 맞춘 효과\"")),
+          verdictCell(reading(dev), dev ? ciText(dev.format_insensitive_accuracy) : null), verdictCell(reading(test), test ? ciText(test.format_insensitive_accuracy) : null)),
+        h("tr", null, h("td", null, h("b", null, "기존 성능 유지"), h("div", { class: "sub" }, "기존 dev(trade dev · public dev clean)에서 M1-cord가 M1 v1보다 0.03 넘게 떨어지지 않음")),
+          verdictCell(regOk, regText || (reg ? null : "회귀 비교 파일 없음 (진행 중이거나 미실행)")), h("td", { class: "sub" }, "test 기준 아님 — 기존 dev로 판정")),
+      ], "small"),
+      h("p", { class: "note" }, "test 칸은 configs/frozen_cord_v1.json으로 설정을 동결한 뒤 arm마다 한 번만 실행해 채웁니다. dev 값은 개발 중 비교용 참고값이며 판정에 쓰지 않습니다. 결과가 기준에 못 미쳐도 그대로 보고합니다."));
+  }
+  function cordMetricTable(byStage) {
+    const cols = [];
+    for (const [set, name] of CORD_STAGES) for (const a of CORD_ARM_ORDER) cols.push([set, name, a]);
+    const get = (set, a) => (byStage[set] || {})[a];
+    const row = (label, fn, hint) => h("tr", null, h("td", null, label, hint ? h("div", { class: "sub" }, hint) : null),
+      cols.map(([set, , a]) => { const e = get(set, a); return e ? h("td", { class: "num" }, fn(e)) : blankCell(); }));
+    const acc = (x) => [fmt(x.accuracy), h("div", { class: "sub" }, x.correct + "/" + x.scored)];
+    return table(["지표"].concat(cols.map(([, name, a]) => [h("span", null, h("span", { class: "sw " + CORD_ARMS[a].cls }), " ", a, h("div", { class: "sub" }, "CORD " + name)), "num"])), [
+      row("strict 필드 정확도", (e) => acc(e.all.strict_field_accuracy), "주 지표 · 펜스 하나만 벗긴 출력"),
+      row("형식 무시 정확도", (e) => acc(e.all.format_insensitive_accuracy), "숫자는 숫자만, 이름은 대소문자·공백 무시"),
+      row("순서 무관 F1", (e) => [fmt(e.all.order_free_f1.f1), h("div", { class: "sub" }, "P " + fmt(e.all.order_free_f1.precision, 2) + " · R " + fmt(e.all.order_free_f1.recall, 2))]),
+      row("내용 미중복 strict", (e) => [fmt(e.unseen.strict_field_accuracy.accuracy), h("div", { class: "sub" }, "n " + e.unseen.documents)], "train과 정답이 겹치지 않는 문서"),
+      row("펜스 없는 JSON 비율", (e) => fmt(e.strict_json.json_valid_rate, 2), "형식 지표 (출력을 그대로 파싱)"),
+      row("정답에 없는 값 채움", (e) => String(e.all.absent_fields_filled), "인쇄되지 않은 값을 지어낸 필드 수"),
+      row("행 수 일치", (e) => fmt(e.all.row_count_match_rate, 2)),
+      row("문서 전체 일치", (e) => fmt(e.all.doc_exact, 2)),
+      row("실행 시간", (e) => [fmt(e.wall_seconds / 60, 1) + "분", h("div", { class: "sub" }, fmt(e.wall_seconds / Math.max(1, e.all.documents), 1) + "초/문서")], "로컬 RTX 4070 Ti SUPER · 배치 1"),
+      row("최대 VRAM", (e) => fmt(e.peak_vram_gb, 2) + " GB"),
+    ], "small");
+  }
+  function cordFieldTable(byStage) {
+    const cols = [];
+    for (const [set, name] of CORD_STAGES) for (const a of CORD_ARM_ORDER) cols.push([set, name, a]);
+    return table(["필드", ["채점 수", "num"]].concat(cols.map(([, name, a]) => [h("span", null, a, h("div", { class: "sub" }, name)), "num"])),
+      CORD_GROUPS.map(([g, label]) => {
+        const vals = cols.map(([set, , a]) => { const e = (byStage[set] || {})[a]; return e ? ((e.all.by_field_strict || {})[g] || null) : undefined; });
+        const best = {};
+        cols.forEach(([set], i) => { if (vals[i]) best[set] = Math.max(best[set] ?? -1, Number(vals[i].accuracy)); });
+        return h("tr", null, h("td", null, label, h("div", { class: "sub mono" }, g)),
+          h("td", { class: "num" }, [...new Set(cols.map(([set]) => set))].map((set) => {
+            const e = Object.values(byStage[set] || {})[0];
+            const x = e && (e.all.by_field_strict || {})[g];
+            return x ? h("div", null, x.scored, h("small", { class: "sub" }, " " + set.split(":")[1])) : null;
+          })),
+          vals.map((x, i) => x === undefined ? blankCell() : x === null ? h("td", { class: "num" }, "—")
+            : h("td", { class: "num" + (Number(x.accuracy) === best[cols[i][0]] ? " best" : "") }, fmt(x.accuracy, 2))));
+      }), "small");
+  }
+  function cordTrainCard(reports) {
+    const t = (reports || {})["train_m1_cord_v1.json"];
+    if (!t) return card("M1-cord 학습", h("p", null, pill("not_run"), " reports/model/train_m1_cord_v1.json 없음"));
+    const losses = (t.loss_log || []).map((x) => Number(x.loss)).filter((x) => !Number.isNaN(x));
+    const cfg = t.config || {}, env = t.env || {}, tr = t.trainable || {};
+    return h("section", { class: "card" },
+      h("div", { class: "cardhead" }, h("h2", null, "M1-cord QLoRA 학습"), h("span", { class: "hint" }, "reports/model/train_m1_cord_v1.json")),
+      h("div", { class: "cols" },
+        kv([
+          ["학습 기록", t.records + "건 (" + Object.entries(t.records_by_task || {}).map(([k, v]) => k + " " + v).join(" · ") + ")"],
+          ["optimizer step", t.optimizer_steps + " (micro " + cfg.micro_batch + " × accum " + cfg.grad_accum + ", ≈" + fmt(t.epochs_equivalent, 2) + " epoch)"],
+          ["학습률 / 스케줄", cfg.lr + " · " + cfg.scheduler + " · warmup " + cfg.warmup_ratio + " · seed " + cfg.seed],
+          ["기본 모델 정밀도", txt(cfg.base_precision) + " (평가도 NF4에서 — 어댑터·정밀도 짝 검사)"],
+          ["학습 파라미터", (tr.trainable_params || 0).toLocaleString() + " (LoRA q/v, vision 학습 " + (tr.visual_trainable ? "예" : "아니오") + ")"],
+          ["시간 / 최대 VRAM", fmt(t.train_seconds / 60, 1) + "분 · " + t.peak_vram_gb + " GB"],
+          ["GPU", env.gpu + " · torch " + env.torch + " · transformers " + env.transformers + " · peft " + env.peft],
+          ["어댑터 sha256", mono(short((t.adapter_files_sha256 || {})["adapter_model.safetensors"], 20))],
+        ]),
+        h("div", null, h("div", { class: "cap" }, "학습 loss (step별)"),
+          losses.length > 1 ? h("div", { class: "sparkbox" }, sparkline(losses),
+            h("div", { class: "sparkmeta" }, h("span", null, "step 1 · " + fmt(losses[0], 3)), h("span", null, "평균 " + fmt(t.train_loss, 4)), h("span", null, "step " + losses.length + " · " + fmt(losses[losses.length - 1], 3))))
+            : h("p", { class: "sub" }, "loss 기록 없음"))));
+  }
+  function cordTimeCard(c, reports) {
+    const t = (reports || {})["train_m1_cord_v1.json"];
+    const rows = (c.runs || []).map((r) => ({ when: r.started, what: r.label + " 추론 · " + r.sets.join(", "), id: r.run_id, start: r.started, end: r.finished, sec: r.wall_seconds }));
+    if (t) rows.push({ when: null, what: "M1-cord 학습 (240 step)", id: t.run_id, start: null, end: null, sec: t.train_seconds });
+    const pending = [["CORD test · M0", "동결 후"], ["CORD test · M1 v1", "동결 후"], ["CORD test · M1-cord", "동결 후"]]
+      .filter(([what]) => !(c.runs || []).some((r) => r.sets.includes("cord:test") && what.endsWith(r.label)));
+    const total = rows.reduce((s, r) => s + (Number(r.sec) || 0), 0);
+    return cardH("걸린 시간", "로컬 RTX 4070 Ti SUPER · GPU 작업은 한 번에 하나",
+      table(["단계", "run", "시작", "종료", ["소요", "num"]], rows.sort((a, b) => (a.when ? 0 : 1) - (b.when ? 0 : 1) || String(a.when).localeCompare(String(b.when)))
+        .map((r) => h("tr", null, h("td", null, r.what), h("td", { class: "mono" }, r.id), h("td", { class: "mono" }, txt(r.start && r.start.replace("T", " "))),
+          h("td", { class: "mono" }, txt(r.end && r.end.replace("T", " "))), h("td", { class: "num" }, fmt(Number(r.sec) / 60, 1) + "분")))
+        .concat(pending.map(([what, note]) => h("tr", { class: "pending" }, h("td", null, what), blankCell(note), blankCell(), blankCell(), blankCell())))
+        .concat([h("tr", { class: "total" }, h("td", null, h("b", null, "합계 (기록된 것)")), h("td"), h("td"), h("td"), h("td", { class: "num" }, h("b", null, fmt(total / 60, 1) + "분")))]), "small"),
+      h("p", { class: "note" }, "추론 시각은 run_metadata.json(로컬 시각), 학습은 train 기록의 train_seconds입니다(학습 기록에는 시각이 없어 맨 아래에 둡니다). 학습의 시작·종료 시각(UTC)은 artifacts/logs/cord_local_chain.log에 있습니다."));
+  }
+  function cordDataCard(c) {
+    const b = (c.build || {}).summary || {}, f = c.fetch || {};
+    const splits = ["train", "dev", "test"];
+    return cardH("데이터 — CORD v2", f.repo ? f.repo + " @ " + short(f.revision, 8) : "reports/realdocs/",
+      kv([
+        ["출처 · 라이선스", h("span", null, txt(f.source), " · ", txt(f.license))],
+        ["내려받기", f.all_ok === undefined ? "기록 없음" : h("span", null, yesNo(f.all_ok, "해시 " + f.files + "/" + f.files + " 일치", "해시 불일치"), " · " + fmt((f.total_bytes || 0) / 1e9, 2) + " GB · " + fmt(f.total_seconds, 0) + "초 · 사용자 승인 " + txt(f.approved_by_user))],
+        ["로컬 이미지·정답", c.local_data ? pillCls("ok", "있음 (data/processed/cord, Git 제외)") : pillCls("warn", "없음 — 이미지·정답 표시 불가")],
+        ["manifest", h("span", { class: "mono" }, "manifests/cord_v2.jsonl · " + short((c.build || {}).manifest_sha256, 16))],
+        ["동결", c.frozen ? h("span", null, pillCls("ok", "동결됨"), " " + txt(c.frozen.frozen_at)) : pillCls("idle", "아직 동결 전 — test 미실행")],
+      ]),
+      table(["split", ["문서", "num"], ["학습 사용", "num"], ["품목", "num"], ["하위 품목", "num"], ["채점 제외 필드 있는 문서", "num"], ["정답 내용이 겹치는 문서", "num"]],
+        splits.map((k) => { const x = b[k] || {}; return h("tr", null, h("td", null, k), h("td", { class: "num" }, txt(x.docs)), h("td", { class: "num" }, txt(x.train_eligible)),
+          h("td", { class: "num" }, txt(x.items)), h("td", { class: "num" }, txt(x.sub_items)), h("td", { class: "num" }, txt(x.with_masked)),
+          h("td", { class: "num" }, k === "train" ? txt(x.content_dup_excluded) + " (학습 제외)" : txt(x.content_seen_in_train) + " (train과 같은 정답)")); }), "small"),
+      h("p", { class: "note" }, "인도네시아 실사진 영수증입니다(영어 전용 아님). 품목 이름·수량·단가·금액, 하위 품목, 소계·세금·합계를 인쇄된 그대로 옮기는 별도 태스크 CORD_RAW로 다룹니다. 기존 합성 데이터 계약과 FINAL 결과는 바꾸지 않습니다."));
+  }
+  function cordOverviewCard(c) {
+    if (!c) return null;
+    return h("section", { class: "card" },
+      h("div", { class: "cardhead" }, h("h2", null, "실사진 영수증 CORD v2 — strict 필드 정확도"), h("a", { href: "#/cordeval" }, "CORD 평가에서 자세히 →")),
+      cordLegend(), cordBars(cordEvals(c), "all"),
+      h("p", { class: "note" }, "합성 데이터만으로는 학습 효과를 가를 수 없어(M0도 거의 다 맞힘) 추가한 실문서 평가입니다. 사람 라벨·공식 분할·로컬 NF4. 빈칸은 아직 실행하지 않은 결과입니다."));
+  }
+  async function pageCordEval(view) {
+    const s = await status();
+    const c = s.cord || {};
+    const byStage = cordEvals(c);
+    const dev = byStage["cord:dev"] || {}, test = byStage["cord:test"] || {};
+    const main = cordComp(c, "M1-cord", "M0");
+    const devDiff = main && main.sets["cord:dev"] ? main.sets["cord:dev"].all.strict_field_accuracy : null;
+    const testDiff = main && main.sets["cord:test"] ? main.sets["cord:test"].all.strict_field_accuracy : null;
+    const subsetBox = h("div");
+    let subset = "all";
+    const drawBars = () => subsetBox.replaceChildren(cordBars(byStage, subset));
+    drawBars();
+    const subsetButtons = [["all", "전체 100장"], ["unseen", "train과 정답이 겹치지 않는 문서"]].map(([v, label]) => h("button", { type: "button", "aria-pressed": v === subset ? "true" : "false",
+      onclick: (ev) => { subset = v; ev.currentTarget.parentNode.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b === ev.currentTarget ? "true" : "false")); drawBars(); } }, label));
+    const kAcc = (e) => (e ? fmt(e.all.strict_field_accuracy.accuracy) : "—");
+    add(view, [
+      pageHead("CORD 평가", "실사진 영수증 CORD v2 · M0 vs M1-cord · 로컬 RTX 4070 Ti SUPER · 모두 NF4 · 같은 프롬프트·전처리·생성 설정", "reports/eval/cord_*.json"),
+      banner("합성 데이터에서는 M0와 M1의 차이가 유의하지 않아(데이터가 너무 쉬움) 사람이 라벨을 단 실사진 영수증을 추가했습니다. 판정 기준은 학습 전에 docs/20에 고정했습니다. 빈칸(—)은 아직 실행하지 않은 결과입니다.", "info"),
+      statusErrors(s),
+      h("div", { class: "kpis" },
+        kpi("dev · M0", kAcc(dev["M0"]), "", "strict 필드 정확도 (기준선)", dev["M0"] ? "idle" : "idle"),
+        kpi("dev · M1-cord", kAcc(dev["M1-cord"]), "", devDiff ? "M0 대비 " + ciText(devDiff) : "미실행", dev["M1-cord"] ? "run" : "idle"),
+        kpi("test · M0", kAcc(test["M0"]), "", test["M0"] ? "strict 필드 정확도" : "동결 후 1회 실행 예정", test["M0"] ? "ok" : "idle"),
+        kpi("test · M1-cord", kAcc(test["M1-cord"]), "", testDiff ? "M0 대비 " + ciText(testDiff) : "동결 후 1회 실행 예정", test["M1-cord"] ? "ok" : "idle")),
+      cordCriteriaCard(c),
+      h("section", { class: "card" },
+        h("div", { class: "cardhead" }, h("h2", null, "strict 필드 정확도 — arm별"), h("div", { class: "segtabs", role: "group", "aria-label": "문서 범위" }, subsetButtons)),
+        cordLegend(), subsetBox,
+        h("p", { class: "note" }, "막대 = strict 필드 정확도(정답에 값이 있는 필드만, 위치 기준, NFKC·공백 정리 후 완전 일치). ◇ = 형식 무시 정확도(\"@16.500\" = \"16500\"). 막대에 마우스를 올리면 F1·채움 수가 보입니다.")),
+      cordForestCard(c),
+      cardH("세부 지표", "arm × split · 빈칸은 미실행", cordMetricTable(byStage),
+        h("p", { class: "note" }, "M0는 dev 100건 모두 답을 ```json 펜스로 감쌌습니다. 주 지표는 펜스 하나만 벗긴 출력으로 계산하고(docs/20 수정 1), 펜스 없는 JSON 비율은 형식 지표로 따로 둡니다.")),
+      cardH("필드별 strict 정확도", "굵게 = 같은 split에서 가장 높음", cordFieldTable(byStage)),
+      h("div", { class: "cols" }, cordTrainCard(s.model_reports), cordTimeCard(c, s.model_reports)),
+      cordDataCard(c),
+    ]);
+  }
+  async function pageCord(view, segs, query) {
+    if (segs.length) return pageCordDoc(view, segs);
+    lastCordList = location.hash || "#/cord";
+    const { params, page } = listQuery(query, CORD_FILTERS);
+    const [s, res] = await Promise.all([status(), api("/api/cord/rows?" + params.toString())]);
+    const c = s.cord || {};
+    add(view, [
+      pageHead("CORD 영수증", "CORD v2 · 실사진 영수증 1,000장 · 사람이 단 라벨 · CC BY 4.0", "manifests/cord_v2.jsonl"),
+      banner("정답(gold)은 평가·학습 라벨이며 모델 입력이 아닙니다. 모델 입력은 사진과 고정 프롬프트뿐입니다. dev·test 문서를 열면 기록된 실행(M0·M1 v1·M1-cord)의 예측을 정답과 칸마다 비교해 보여줍니다.", "info"),
+      c.local_data === false ? banner("로컬 CORD 이미지·정답이 없습니다(scripts/realdocs/fetch_cord.py → invoiceguard.cord build).", "bad") : null,
+      h("section", { class: "card" }, filterBar("#/cord", query, res.facets, [
+        ["split", "split"], ["eligible", "학습 사용", (v) => (v === "true" ? "사용" : "미사용")],
+        ["overlap", "정답 겹침", (v) => CORD_OVERLAP[v] || v], ["has_sub", "하위 품목", (v) => (v === "true" ? "있음" : "없음")],
+        ["masked", "채점 제외 필드", (v) => (v === "true" ? "있음" : "없음")],
+      ], "ID 검색", res.total),
+      table(["id", "split", ["CORD image_id", "num"], ["품목", "num"], ["하위 품목", "num"], "정답 겹침", "채점 제외", "학습", ["크기", "num"]],
+        res.page.map((r) => rowLink("#/cord/" + r.id, [
+          h("td", null, h("a", { class: "mono", href: "#/cord/" + r.id }, r.id)), h("td", null, r.split), h("td", { class: "num" }, String(r.cord_image_id)),
+          h("td", { class: "num" }, String(r.n_items)), h("td", { class: "num" }, String(r.n_sub_items)),
+          h("td", null, r.content_overlap === "none" ? "" : pillCls(r.content_overlap === "dup_excluded" ? "warn" : "idle", CORD_OVERLAP[r.content_overlap])),
+          h("td", { class: "num" }, r.n_masked ? String(r.n_masked) : ""), h("td", null, r.train_eligible ? pillCls("ok", "사용") : ""),
+          h("td", { class: "num" }, r.width + "×" + r.height),
+        ])), "small", "tall"),
+      pager("#/cord", query, res, page),
+      h("p", { class: "note" }, "행을 누르면 사진·정답·모델별 예측 비교. 평가 결과 요약은 ", h("a", { href: "#/cordeval" }, "CORD 평가"), " 페이지에 있습니다.")),
+    ]);
+  }
+  function cordCell(cell) {
+    const [icon, meaning] = CORD_STATE[cell.state] || ["", cell.state];
+    const v = cell.value;
+    return h("td", { class: "cc st-" + cell.state, title: meaning },
+      icon ? h("span", { class: "si", "aria-label": meaning }, icon) : null,
+      h("span", { class: "raw" }, v === null || v === undefined ? (cell.state === "missing" ? "(없음)" : "") : v === "" ? '""' : typeof v === "string" ? v : JSON.stringify(v)));
+  }
+  async function pageCordDoc(view, segs) {
+    const rid = segs[0];
+    if (!CORD_ID_RE.test(rid)) {
+      add(view, [pageHead("CORD 영수증"), card("잘못된 주소", h("p", null, "ID 형식이 맞지 않습니다."), h("a", { href: lastCordList }, "목록으로"))]);
+      return;
+    }
+    await status();
+    const d = await api("/api/cord/doc/" + rid);
+    const m = d.meta, integ = d.integrity || {};
+    const imgUrl = "/api/cord/image/" + rid;
+    const figure = imageFigure(imgUrl, rid + " 영수증 사진", integ.image !== null, integ.image !== null ? "이미지 불러오는 중…" : "로컬 이미지 없음");
+    const runs = d.runs || [];
+    const overlap = m.content_dup_of_heldout ? "dup_excluded" : m.content_seen_in_train ? "seen_in_train" : "none";
+    const summaryRows = runs.map((r) => {
+      const sc = r.score;
+      return h("tr", null, h("td", null, h("span", { class: "sw " + ((CORD_ARMS[r.label] || {}).cls || "") }), " ", h("b", null, r.label), h("div", { class: "sub mono" }, r.run_id)),
+        h("td", null, r.status === "ok" ? (r.strict_json ? pillCls("ok", "JSON") : pillCls("idle", "펜스 제거 후")) : pillCls("bad", r.status)),
+        h("td", { class: "num" }, sc ? sc.strict[0] + "/" + sc.strict[1] : "—"), h("td", { class: "num" }, sc ? sc.loose[0] + "/" + sc.loose[1] : "—"),
+        h("td", { class: "num" }, sc ? String(sc.absent_filled) : "—"), h("td", { class: "num" }, sc ? sc.pred_items + " / " + sc.gold_items : "—"),
+        h("td", { class: "num" }, txt(r.generated_tokens)), h("td", { class: "num" }, r.latency_s ? fmt(r.latency_s, 1) + "s" : "—"));
+    });
+    const slotTable = d.slots.length ? table(["#", "필드", "정답"].concat(runs.map((r) => h("span", null, h("span", { class: "sw " + ((CORD_ARMS[r.label] || {}).cls || "") }), " ", r.label))),
+      d.slots.map((row) => h("tr", { class: row.in_gold ? (row.kind === "doc" ? "docrow" : null) : "extra" },
+        h("td", { class: "mono" }, row.kind === "doc" ? "문서" : row.index), h("td", { class: "mono" }, (row.kind === "sub" ? "└ " : "") + row.field),
+        h("td", { class: "raw" + (row.masked ? " masked" : "") }, row.masked ? "채점 제외" : row.gold === null ? h("span", { class: "sub" }, row.in_gold ? "(미인쇄)" : "(정답에 없는 행)") : row.gold),
+        row.cells.map(cordCell))), "small cordslots") : h("p", { class: "err" }, "정답을 표시할 수 없습니다.");
+    add(view, [
+      h("a", { class: "back", href: lastCordList }, "← CORD 영수증 목록"),
+      pageHead(rid, m.split + " · CORD " + m.cord_split + " #" + m.cord_image_id + " · 품목 " + m.n_items + " · 하위 품목 " + m.n_sub_items),
+      h("div", { class: "cols detail" },
+        h("section", { class: "card sticky" }, h("div", { class: "cardhead" }, h("h2", null, "영수증 사진"), h("span", { class: "hint" }, "모델 입력")), figure,
+          h("p", { class: "note" }, "클릭하면 원본 크기 토글 · ", h("a", { href: imgUrl, target: "_blank", rel: "noopener noreferrer" }, "새 탭에서 열기"),
+            " · ", m.width + "×" + m.height, " · sha256 ", mono(short(m.image_sha256, 16)), " · CC BY 4.0")),
+        h("div", { class: "stackv" },
+          runs.length ? cardH("모델별 결과 (이 문서)", "펜스 하나만 벗긴 출력 · 사전 고정 채점기",
+            table(["arm", "출력", ["strict", "num"], ["형식 무시", "num"], ["채움", "num"], ["행 (예측/정답)", "num"], ["토큰", "num"], ["지연", "num"]], summaryRows, "small"))
+            : card("모델별 결과", h("p", null, pill("not_run"), m.split === "test" ? " CORD test는 설정 동결 뒤 한 번만 실행합니다 — 아직 예측이 없습니다." : m.split === "train" ? " train 문서는 평가하지 않습니다." : " 이 split의 실행 기록이 없습니다.")),
+          h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "정답 대 예측 — 칸별"), h("span", { class: "tag gold" }, "정답은 평가 데이터 · 모델 입력 아님")),
+            h("div", { class: "keyrow" }, Object.entries(CORD_STATE).filter(([k]) => CORD_STATE[k][0]).map(([k, [icon, meaning]]) => h("span", { class: "cc st-" + k }, h("span", { class: "si" }, icon), " " + meaning))),
+            slotTable,
+            h("p", { class: "note" }, "위치 기준 채점입니다: 행 하나를 빠뜨리거나 더하면 그 뒤 행이 모두 밀립니다(순서 무관 F1이 이를 보완). 회색 행은 정답에 없는 행을 모델이 만든 경우입니다.")),
+          runs.length ? details("모델 원문 출력", runs.map((r) => [h("h3", null, r.label + " · " + r.run_id + (r.finish_reason ? " · " + r.finish_reason : "")), h("pre", { class: "rawout" }, txt(r.raw_response))])) : null,
+          cardH("manifest 메타데이터·무결성", null, kv([
+            ["정답 / 이미지 sha256", h("span", null, yesNo(integ.gold, "정답 일치", "정답 불일치"), " ", yesNo(integ.image, "이미지 일치", "이미지 불일치"))],
+            ["split (CORD split)", m.split + " (" + m.cord_split + ")"],
+            ["학습 사용", m.train_eligible ? pillCls("ok", "사용") : "아니오"],
+            ["정답 겹침", CORD_OVERLAP[overlap]],
+            ["채점 제외 필드", (m.masked || []).length ? h("span", { class: "mono" }, m.masked.join(", ")) : "없음"],
+            ["gold_sha256", mono(short(m.gold_sha256, 24))],
+          ])))),
     ]);
   }
 
@@ -870,9 +1234,9 @@
 
   // ------------------------------------------------------------------ router
   const PAGES = { overview: pageOverview, progress: pageProgress, public: pagePublic, trade: pageTrade, splits: pageSplits,
-    model: pageModel, serving: pageServing, runpod: pageRunpod, tests: pageTests, review: pageReview };
+    model: pageModel, serving: pageServing, runpod: pageRunpod, tests: pageTests, review: pageReview, cord: pageCord, cordeval: pageCordEval };
   const PAGE_META = { overview: ["요약", "개요"], progress: ["요약", "진행 단계·게이트"], public: ["데이터", "공개 데이터"], trade: ["데이터", "자체 Invoice–PO"],
-    splits: ["데이터", "분할·manifest"], model: ["모델·서빙", "모델·평가"], serving: ["모델·서빙", "서빙"], review: ["운영", "검수 API"],
+    splits: ["데이터", "분할·manifest"], cord: ["데이터", "CORD 영수증"], cordeval: ["모델·서빙", "CORD 평가"], model: ["모델·서빙", "모델·평가"], serving: ["모델·서빙", "서빙"], review: ["운영", "검수 API"],
     tests: ["운영", "테스트"], runpod: ["운영", "클라우드·비용"] };
   function parseHash() {
     const raw = (location.hash || "").replace(/^#/, "") || "/overview";

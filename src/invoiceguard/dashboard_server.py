@@ -14,6 +14,10 @@ Usage: python -m invoiceguard.dashboard_server [--port 8765] [--run-tests]
     /api/trade/rows?split=&template=&scenario_type=&mini_role=&injection=&q=&offset=&limit=
     /api/trade/doc/<doc_id>                   TRADE_RAW gold, PO, oracle findings, manifest, hash checks
     /api/trade/image/<doc_id>                 PNG
+    /api/cord/rows?split=&eligible=&overlap=&has_sub=&masked=&q=&offset=&limit=
+    /api/cord/doc/<id>                        CORD_RAW gold + every recorded run's prediction for that document,
+                                              scored slot by slot with the pre-registered evaluator (docs/20)
+    /api/cord/image/<id>                      PNG (CORD v2 photo, CC BY 4.0)
     /static/favicon.svg (also /favicon.ico)   the dashboard icon
 
 * Every ID is matched with a strict full-match regex AND must exist in the committed manifest; the
@@ -41,6 +45,8 @@ import pyarrow.parquet as pq
 import yaml
 
 from . import dashboard as snap
+from .cord_eval import TASK as CORD_TASK, _masked_keys, loose_norm, score_document, slots, strict_norm
+from .evaluation import parse_for_eval
 from .public_data import QUALITIES, canonical_items, shard_paths
 from .reconciliation import reconcile
 
@@ -52,8 +58,11 @@ DEFAULT_PORT = 8765
 PUBLIC_ID = r"synth_\d{4}_[0-9a-f]{8}\.png"
 TRADE_ID = r"tr_[0-9a-f]{12}"
 QUALITY = "|".join(QUALITIES)
+CORD_ID = r"cord_(?:train|dev|test)_\d{4}"
 PUBLIC_ID_RE = re.compile(PUBLIC_ID)
 TRADE_ID_RE = re.compile(TRADE_ID)
+CORD_ID_RE = re.compile(CORD_ID)
+MAX_RAW_CHARS = 20_000  # a model answer is at most 1,536 tokens; anything longer is cut with a marker
 
 STATIC_ROUTES = {
     "/": ("index.html", "text/html; charset=utf-8"),
@@ -102,6 +111,8 @@ class DataStore:
         self.repo = repo
         self.trade_dir = repo / "data" / "processed" / "trade"
         self.cache_dir = repo / "data" / "processed" / "public" / "cache"
+        self.cord_dir = repo / "data" / "processed" / "cord"
+        self.pred_dir = repo / "artifacts" / "predictions"
         self._lock = threading.Lock()
         self._index_lock = threading.Lock()
         self._extract_lock = threading.Lock()  # one parquet row group in memory at a time
@@ -136,6 +147,38 @@ class DataStore:
 
     def trade_row(self, doc_id: str) -> dict | None:
         return next((r for r in self.trade_manifest() if r["doc_id"] == doc_id), None)
+
+    def cord_manifest(self) -> list[dict]:
+        return self._load_jsonl(self.repo / "manifests" / "cord_v2.jsonl")
+
+    def cord_row(self, rid: str) -> dict | None:
+        return next((r for r in self.cord_manifest() if r["id"] == rid), None)
+
+    def cord_available(self) -> bool:
+        return (self.cord_dir / "images").is_dir() and (self.cord_dir / "gold").is_dir()
+
+    def cord_runs(self) -> list[dict]:
+        """Every recorded inference run that covered a cord:* set, in arm order (M0, M1 v1, M1-cord, others)."""
+        runs = []
+        for meta_path in sorted(self.pred_dir.glob("*/run_metadata.json")):
+            try:
+                meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            sets = [x for x in meta.get("sets") or [] if str(x).startswith("cord:")]
+            if not sets:
+                continue
+            adapter = meta.get("adapter")
+            runs.append({"run_id": meta.get("run_id") or meta_path.parent.name, "dir": meta_path.parent.name,
+                         "label": cord_arm_label(adapter), "adapter": adapter, "sets": sets,
+                         "adapter_sha256": (meta.get("fingerprint") or {}).get("adapter_sha256"),
+                         "started": meta.get("started"), "finished": meta.get("finished"),
+                         "wall_seconds": meta.get("wall_seconds"), "peak_vram_gb": meta.get("peak_vram_gb")})
+        order = {label: i for i, label in enumerate(CORD_ARM_ORDER)}
+        return sorted(runs, key=lambda r: (order.get(r["label"], 99), r["run_id"]))
+
+    def cord_predictions(self, run_dir: str) -> dict[str, dict]:
+        return {p["id"]: p for p in self._load_jsonl(self.pred_dir / run_dir / "predictions.jsonl") if "id" in p}
 
     # ------------------------------------------------------------------ availability
     def shards(self) -> list[Path]:
@@ -273,6 +316,27 @@ PUBLIC_LIST_KEYS = ("base_id", "quality", "template", "pool", "standard_role", "
                     "train_ineligible_reason", "n_items", "n_scored_fields", "n_masked_fields")
 TRADE_LIST_KEYS = ("doc_id", "split", "template", "scenario_type", "expected_codes", "n_rows", "mini_role",
                    "standard_role", "has_injection_text", "render_check", "quality")
+CORD_FACETS = {"split": "split", "eligible": "train_eligible", "overlap": "content_overlap", "has_sub": "has_sub",
+               "masked": "has_masked"}
+# arm labels by adapter folder (docs/20): base model, the adapter trained without CORD, the adapter trained with it
+CORD_ARMS = {None: "M0", "m1_standard_v1": "M1 v1", "m1_cord_v1": "M1-cord"}
+CORD_ARM_ORDER = ("M0", "M1 v1", "M1-cord")
+CORD_FIELD_ORDER = ("name", "count", "unit_price", "price")
+CORD_DOC_ORDER = ("subtotal", "tax", "total")
+
+
+def cord_arm_label(adapter: str | None) -> str:
+    name = Path(adapter).name if adapter else None
+    return CORD_ARMS.get(name, name or "M0")
+
+
+def _cord_list_row(r: dict) -> dict:
+    overlap = ("dup_excluded" if r.get("content_dup_of_heldout")
+               else "seen_in_train" if r.get("content_seen_in_train") else "none")
+    return {"id": r["id"], "split": r["split"], "cord_image_id": r.get("cord_image_id"), "n_items": r.get("n_items"),
+            "n_sub_items": r.get("n_sub_items"), "train_eligible": bool(r.get("train_eligible")),
+            "content_overlap": overlap, "has_sub": bool(r.get("n_sub_items")), "has_masked": bool(r.get("masked")),
+            "n_masked": len(r.get("masked") or []), "width": r.get("width"), "height": r.get("height")}
 
 
 # ---------------------------------------------------------------------- endpoint bodies
@@ -336,7 +400,7 @@ def status_body(store: DataStore) -> dict[str, Any]:
                                 "adapter_sha256": (meta.get("fingerprint") or {}).get("adapter_sha256"),
                                 "wall_seconds": meta.get("wall_seconds"),
                                 "headline": content["headline"]})
-        elif path.name.startswith("compare_") and "sets" in content:
+        elif path.name.startswith("compare_") and not path.name.startswith("compare_cord_") and "sets" in content:
             comparisons.append({"file": f"reports/eval/{path.name}", "a": content.get("a"), "b": content.get("b"),
                                 "sets": content["sets"]})
     return {
@@ -352,6 +416,7 @@ def status_body(store: DataStore) -> dict[str, Any]:
         "results": _safe(errors, "results", lambda: _read_json(repo / "reports" / "RESULTS_TEMPLATE.json")),
         "junit": _safe(errors, "junit", lambda: snap.parse_junit(repo / "artifacts" / "dashboard" / "pytest_junit.xml")),
         "local_smoke": smoke,
+        "cord": _safe(errors, "cord", lambda: cord_status(store, errors)),
         "model_reports": _records(errors, repo / "reports" / "model", "reports/model"),
         "serving": _records(errors, repo / "reports" / "serving", "reports/serving"),
         "local_data": {"public_parquet": store.public_available(), "trade_files": store.trade_available(),
@@ -432,6 +497,137 @@ def trade_doc_body(store: DataStore, doc_id: str, params: dict[str, list[str]]) 
     }
 
 
+def cord_rows_body(store: DataStore, params: dict[str, list[str]]) -> dict[str, Any]:
+    return _filter_rows([_cord_list_row(r) for r in store.cord_manifest()], params, CORD_FACETS, "id")
+
+
+def _slot_label(key: tuple) -> tuple[str, str]:
+    if key[0] == "item":
+        return f"{key[1] + 1}", "item"
+    if key[0] == "sub":
+        return f"{key[1] + 1}.{key[2] + 1}", "sub"
+    return "", "doc"
+
+
+def _slot_order(key: tuple) -> tuple:
+    if key[0] == "doc":
+        return (10_000, 0, CORD_DOC_ORDER.index(key[1]) if key[1] in CORD_DOC_ORDER else 9)
+    sub = key[2] + 1 if key[0] == "sub" else 0
+    field = key[-1]
+    return (key[1], sub, CORD_FIELD_ORDER.index(field) if field in CORD_FIELD_ORDER else 9)
+
+
+def _cell_state(field: str, gold_value: Any, pred_value: Any, masked: bool) -> str:
+    if masked:
+        return "masked"
+    if gold_value is None:
+        return "filled" if pred_value is not None else "empty"
+    if strict_norm(pred_value) == strict_norm(gold_value):
+        return "ok"
+    lp = loose_norm(field, pred_value)
+    if lp is not None and lp == loose_norm(field, gold_value):
+        return "format"
+    return "wrong" if pred_value is not None else "missing"
+
+
+def cord_doc_body(store: DataStore, rid: str, params: dict[str, list[str]]) -> dict[str, Any]:
+    """Gold, and for every recorded run on this split: the fence-stripped answer scored slot by slot with the
+    pre-registered evaluator (cord_eval.score_document). Nothing is re-generated; a missing answer stays missing."""
+    row = store.cord_row(rid)
+    if row is None:
+        raise ApiError(HTTPStatus.NOT_FOUND, "unknown_id")
+    if params:
+        raise ApiError(HTTPStatus.BAD_REQUEST, "unknown_param")
+    image_path = store.cord_dir / "images" / f"{rid}.png"
+    gold = _read_json(store.cord_dir / "gold" / f"{rid}.json")
+    # gold_sha256 is the canonical dump the manifest builder hashed (cord.build), not the file bytes
+    gold_hash = None if gold is None else hashlib.sha256(
+        json.dumps(gold, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
+    integrity = {"gold": None if gold is None else gold_hash == row.get("gold_sha256"),
+                 "image": _sha256(image_path) == row.get("image_sha256") if image_path.exists() else None}
+    masked = row.get("masked") or []
+    skip = _masked_keys(masked)
+    gold_slots = {key: (field, value) for key, field, value in slots(gold)} if gold else {}
+    runs, run_values = [], []
+    for run in store.cord_runs():
+        if f"cord:{row['split']}" not in run["sets"]:
+            continue
+        rec = store.cord_predictions(run["dir"]).get(rid)
+        info = {k: run[k] for k in ("run_id", "label", "adapter", "sets")}
+        if rec is None:
+            runs.append(info | {"status": "missing", "score": None})
+            run_values.append({})
+            continue
+        parsed = parse_for_eval(rec, CORD_TASK, lenient=True)
+        strict_ok = parse_for_eval(rec, CORD_TASK, lenient=False).status == "ok"
+        doc = score_document(gold, masked, parsed) if gold else None
+        raw = rec.get("raw_response")
+        if isinstance(raw, str) and len(raw) > MAX_RAW_CHARS:
+            raw = raw[:MAX_RAW_CHARS] + f"\n[... {len(raw) - MAX_RAW_CHARS} chars not shown]"
+        runs.append(info | {
+            "status": parsed.status, "strict_json": strict_ok, "fence_stripped": parsed.status == "ok" and not strict_ok,
+            "finish_reason": rec.get("finish_reason"), "generated_tokens": rec.get("generated_tokens"),
+            "latency_s": rec.get("batch_latency_s"), "raw_response": raw,
+            "score": None if doc is None else {k: doc[k] for k in ("strict", "loose", "absent_filled", "rows_match",
+                                                                   "doc_exact", "gold_items", "pred_items")}})
+        run_values.append({key: value for key, _, value in slots(parsed.obj if parsed.status == "ok" else None)})
+    keys = set(gold_slots) | {k for values in run_values for k, v in values.items() if v is not None}
+    table = []
+    for key in sorted(keys, key=_slot_order):
+        field, gval = gold_slots.get(key, (key[-1], None))
+        idx, kind = _slot_label(key)
+        table.append({"index": idx, "kind": kind, "field": field, "gold": gval, "in_gold": key in gold_slots,
+                      "masked": key in skip,
+                      "cells": [{"value": values.get(key), "state": _cell_state(field, gval, values.get(key), key in skip)}
+                                for values in run_values]})
+    return {"meta": row, "gold": gold, "integrity": integrity, "runs": runs, "slots": table,
+            "local_data": store.cord_available()}
+
+
+def cord_status(store: DataStore, errors: dict[str, str]) -> dict[str, Any]:
+    """Everything the CORD pages show, read from the records the CORD scripts wrote (nothing is recomputed)."""
+    repo = store.repo
+    evals, comps = [], []
+    for path in sorted((repo / "reports" / "eval").glob("cord_*.json")):
+        content = _safe(errors, f"reports/eval/{path.name}", lambda path=path: _read_json(path))
+        if not isinstance(content, dict):
+            continue
+        fp = content.get("fingerprint") or {}
+        for spec, v in (content.get("sets") or {}).items():
+            evals.append({"file": f"reports/eval/{path.name}", "run_id": content.get("run_id"), "set": spec,
+                          "arm": fp.get("arm"), "adapter_sha256": fp.get("adapter_sha256"),
+                          "wall_seconds": content.get("wall_seconds"), "peak_vram_gb": content.get("peak_vram_gb"),
+                          "all": v.get("all"), "unseen": v.get("content_unseen"),
+                          "strict_json": v.get("strict_json_no_repair_all"),
+                          "fence_stripped_documents": v.get("fence_stripped_documents")})
+    for path in sorted((repo / "reports" / "eval").glob("compare_cord_*.json")):
+        content = _safe(errors, f"reports/eval/{path.name}", lambda path=path: _read_json(path))
+        if isinstance(content, dict) and "sets" in content:
+            comps.append({"file": f"reports/eval/{path.name}", "a": content.get("a"), "b": content.get("b"),
+                          "sets": content["sets"]})
+    runs = store.cord_runs()
+    labels = {r["run_id"]: r["label"] for r in runs}
+    for e in evals:
+        e["label"] = labels.get(e["run_id"])
+    for c in comps:
+        c["a_label"], c["b_label"] = labels.get(c["a"]), labels.get(c["b"])
+    fetch = _safe(errors, "cord_fetch", lambda: _read_json(repo / "reports" / "realdocs" / "cord_fetch.json"))
+    build = _safe(errors, "cord_build", lambda: _read_json(repo / "reports" / "realdocs" / "cord_build.json"))
+    return {
+        "evaluations": evals, "comparisons": comps,
+        "runs": [{k: v for k, v in r.items() if k != "dir"} for r in runs],
+        "regression": _safe(errors, "cord_regression", lambda: _read_json(
+            repo / "reports" / "eval" / "compare_m1cord_dev_v1__vs__m1_dev_v1.json")),
+        "frozen": _safe(errors, "cord_frozen", lambda: _read_json(repo / "configs" / "frozen_cord_v1.json")),
+        "build": build,
+        "fetch": None if not fetch else {k: fetch.get(k) for k in (
+            "repo", "revision", "license", "source", "approved_by_user", "fetched_at", "total_bytes", "total_seconds",
+            "all_ok")} | {"files": len(fetch.get("files") or [])},
+        "budget": _safe(errors, "cord_budget", lambda: _read_json(repo / "reports" / "realdocs" / "cord_budget.json")),
+        "local_data": store.cord_available(),
+    }
+
+
 # ---------------------------------------------------------------------- HTTP layer
 ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"/api/status"), "status"),
@@ -441,6 +637,9 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"/api/trade/rows"), "trade_rows"),
     (re.compile(rf"/api/trade/doc/({TRADE_ID})"), "trade_doc"),
     (re.compile(rf"/api/trade/image/({TRADE_ID})"), "trade_image"),
+    (re.compile(r"/api/cord/rows"), "cord_rows"),
+    (re.compile(rf"/api/cord/doc/({CORD_ID})"), "cord_doc"),
+    (re.compile(rf"/api/cord/image/({CORD_ID})"), "cord_image"),
 ]
 
 
@@ -530,6 +729,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
             return self._json(HTTPStatus.OK, trade_rows_body(store, params))
         if name == "trade_doc":
             return self._json(HTTPStatus.OK, trade_doc_body(store, groups[0], params))
+        if name == "cord_rows":
+            return self._json(HTTPStatus.OK, cord_rows_body(store, params))
+        if name == "cord_doc":
+            return self._json(HTTPStatus.OK, cord_doc_body(store, groups[0], params))
         if params:
             raise ApiError(HTTPStatus.BAD_REQUEST, "unknown_param")
         if name == "public_image":
@@ -546,6 +749,17 @@ class DashboardHandler(BaseHTTPRequestHandler):
             if not path.exists():
                 raise ApiError(HTTPStatus.NOT_FOUND, "local_trade_data_missing")
             return self._send(HTTPStatus.OK, path.read_bytes(), "image/png", "private, max-age=86400")
+        if name == "cord_image":
+            row = store.cord_row(groups[0])
+            if row is None:
+                raise ApiError(HTTPStatus.NOT_FOUND, "unknown_id")
+            path = store.cord_dir / "images" / f"{groups[0]}.png"
+            if not path.exists():
+                raise ApiError(HTTPStatus.NOT_FOUND, "local_cord_data_missing")
+            data = path.read_bytes()
+            if hashlib.sha256(data).hexdigest() != row.get("image_sha256"):
+                raise ApiError(HTTPStatus.CONFLICT, "image_hash_mismatch")
+            return self._send(HTTPStatus.OK, data, "image/png", "private, max-age=86400")
         raise ApiError(HTTPStatus.NOT_FOUND, "not_found")
 
 

@@ -1,11 +1,13 @@
 """README data samples: small thumbnails and crops of each data type (needs the local data).
 
   python -m invoiceguard.readme_samples          # writes docs/images/data/*.jpg
+  python -m invoiceguard.readme_samples cord     # only the CORD v2 sample (needs data/processed/cord)
 
 Picks documents deterministically from the committed manifests (first match in sorted order), so a rerun
 on the same data writes the same selection. Images come from:
   * public InvoiceOCR-Synth (CC BY 4.0) — extracted from the pinned parquet with SHA-256 verification,
-  * this repository's renderer (fictional companies) and its dev-only stress variants.
+  * this repository's renderer (fictional companies) and its dev-only stress variants,
+  * CORD v2 (CC BY 4.0, real receipt photos whose shop details the dataset already blurred) — one dev photo.
 Only a few downscaled samples are written; the datasets themselves stay out of the repository.
 """
 from __future__ import annotations
@@ -23,6 +25,7 @@ TEMPLATES = ["formal_corporate", "modern_minimal", "utility_bill", "pos_thermal"
 LAYOUTS = ["T01", "T02", "T03", "T04", "T05", "T06"]
 QUALITY_BASE = "synth_0433_668d20e1.png"  # utility_bill, dev pool — also used in the dashboard screenshot
 STRESS_DOC = "tr_69cab78e7dcd"
+CORD_DOC = "cord_dev_0084"  # dev, content not in train, one item with a printed sub-item; shop details blurred by CORD
 CARD = (300, 400)  # uniform thumbnail canvas so gallery rows line up
 BORDER = (208, 215, 222)
 
@@ -88,8 +91,17 @@ def build() -> list[Path]:
     return written
 
 
-def main() -> int:
-    for path in build():
+def build_cord() -> list[Path]:
+    path = REPO / "data" / "processed" / "cord" / "images" / f"{CORD_DOC}.png"
+    if not path.exists():
+        raise SystemExit("local CORD data is required (python -I -m invoiceguard.cord build)")
+    return [_save(_crop(Image.open(path), (0.06, 0.40, 0.97, 0.76), 420), "cord-dev-sample.jpg")]
+
+
+def main(argv: list[str] | None = None) -> int:
+    import sys
+    args = sys.argv[1:] if argv is None else argv
+    for path in (build_cord() if args == ["cord"] else build()):
         print(path.relative_to(REPO).as_posix(), path.stat().st_size)
     return 0
 

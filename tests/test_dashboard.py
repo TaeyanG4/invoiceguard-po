@@ -274,3 +274,83 @@ def test_status_carries_recorded_serving_and_training_runs(server):
     assert finals["m1_final_v1"]["adapter_sha256"] == train["adapter_files_sha256"]["adapter_model.safetensors"]
     assert all(g["status"] in data["labels"]["status_ko"] for g in data["gates"])
     assert data["handoff_decision"] and not data["errors"]
+
+
+# ---------------------------------------------------------------------- CORD v2 pages (docs/20)
+CORD_MANIFEST = REPO / "manifests" / "cord_v2.jsonl"
+CORD_DATA = REPO / "data" / "processed" / "cord"
+
+
+def test_cord_rows_follow_the_manifest_and_carry_no_labels(server):
+    rows = _jsonl(CORD_MANIFEST)
+    status, _, body = _get(server, "/api/cord/rows?split=train&eligible=true&limit=3")
+    data = json.loads(body)
+    assert status == 200 and data["total"] == sum(r["split"] == "train" and r["train_eligible"] for r in rows) == 742
+    assert not {"gold", "items", "masked"} & set(data["page"][0])  # ids and counts only, no label values
+    status, _, body = _get(server, "/api/cord/rows?overlap=dup_excluded")
+    data = json.loads(body)
+    assert data["total"] == 40 and all(r["split"] == "train" and not r["train_eligible"] for r in data["page"])
+
+
+@pytest.mark.parametrize("path", [
+    "/api/cord/doc/cord_dev_9999",               # well-formed but not in the manifest
+    "/api/cord/image/cord_val_0001",
+    "/api/cord/image/..%2f..%2fpyproject.toml",
+    "/api/cord/doc/cord_dev_0004/../../CLAUDE.md",
+])
+def test_cord_unknown_ids_and_traversal_rejected(server, path):
+    status, _, body = _get(server, path)
+    assert status == 404 and json.loads(body)["error"] in {"not_found", "unknown_id"}
+
+
+@pytest.mark.parametrize("path", ["/api/cord/rows?split=../x", "/api/cord/rows?file=x", "/api/cord/doc/cord_dev_0004?run=x"])
+def test_cord_bad_params_rejected(server, path):
+    status, _, body = _get(server, path)
+    assert status == 400 and json.loads(body)["error"] in {"bad_param", "unknown_param"}
+
+
+def test_cord_slot_states_follow_the_pre_registered_scorer():
+    assert ds._cell_state("price", "45,500", "45,500", False) == "ok"
+    assert ds._cell_state("price", "45,500", "45500", False) == "format"   # digits equal, print form differs
+    assert ds._cell_state("count", "1", 1, False) == "format"               # a JSON number is not the printed string
+    assert ds._cell_state("name", "Sedang", "- Sedang", False) == "wrong"
+    assert ds._cell_state("name", "Sedang", None, False) == "missing"
+    assert ds._cell_state("unit_price", None, "41,000", False) == "filled"  # value invented where nothing is printed
+    assert ds._cell_state("name", None, None, True) == "masked"
+    assert [ds.cord_arm_label(a) for a in (None, "artifacts/adapters/m1_standard_v1", "artifacts/adapters/m1_cord_v1")] \
+        == ["M0", "M1 v1", "M1-cord"]
+
+
+@pytest.mark.skipif(not (CORD_DATA / "gold").is_dir(), reason="local CORD data not built")
+def test_cord_doc_scores_every_recorded_run_like_the_evaluator(server):
+    from invoiceguard import cord_eval
+    rid = "cord_dev_0004"
+    status, _, body = _get(server, f"/api/cord/doc/{rid}")
+    data = json.loads(body)
+    assert status == 200 and data["integrity"] == {"gold": True, "image": True}
+    gold_keys = {k for k, _, _ in cord_eval.slots(data["gold"])}
+    assert sum(r["in_gold"] for r in data["slots"]) == len(gold_keys)
+    for i, run in enumerate(data["runs"]):
+        assert "cord:dev" in run["sets"]
+        if run["status"] == "missing":
+            continue
+        report = REPO / "reports" / "eval" / f"{run['run_id']}.json"
+        if report.exists():  # per-document strict count agrees with the scorer the report came from
+            docs = dict((r["id"], d) for r, d in cord_eval.run_documents(run["run_id"], lenient=True)["cord:dev"])
+            assert run["score"]["strict"] == docs[rid]["strict"]
+        ok = sum(row["cells"][i]["state"] == "ok" for row in data["slots"] if not row["masked"])
+        assert ok == run["score"]["strict"][0]
+    status, headers, png = _get(server, f"/api/cord/image/{rid}")
+    assert status == 200 and headers["Content-Type"] == "image/png" and png.startswith(b"\x89PNG")
+
+
+def test_cord_status_reads_records_without_recomputing(server):
+    data = json.loads(_get(server, "/api/status")[2])
+    cord = data["cord"]
+    assert not data["errors"] and cord["build"]["manifest_sha256"] == hashlib.sha256(CORD_MANIFEST.read_bytes()).hexdigest()
+    assert not any(c["file"].startswith("reports/eval/compare_cord_") for c in data["comparisons"])  # own section only
+    for e in cord["evaluations"]:
+        report = json.loads((REPO / e["file"]).read_text(encoding="utf-8"))
+        assert e["all"] == report["sets"][e["set"]]["all"]
+    if cord["frozen"] is None:  # until the freeze no test run may exist
+        assert not any(e["set"] == "cord:test" for e in cord["evaluations"])
