@@ -5,7 +5,7 @@ description: Fable·astra 독립 평가에서 각각 90점 이상을 받기 위�
 tags: [portfolio, plan, vlm, lora, serving, hard-data]
 status: draft
 generated: {by: claude-opus-5.5, at: 2026-11-14T19:10+09:00}
-updated: {by: claude-opus-5.5, at: 2026-11-14T20:50+09:00, why: "두 자문(Fable·astra) 반영해 단계 2(어려운 데이터) 추가, 쉬운 데이터 P6 중단"}
+updated: {by: claude-opus-5.5, at: 2026-11-15T00:45+09:00, why: "CORD C4·C5 완료, 동결, test 1회 실행 중. 대시보드·README에 CORD 반영(미실행 칸은 빈칸)"}
 sources:
   - {id: fable-direction-1, resource: reports/reviews/fable-direction-1.md}
   - {id: astra-direction-1, resource: reports/reviews/astra-direction-1.md}
@@ -29,7 +29,7 @@ sources:
 | P2 | README·기록 불일치 수정 (Fable 5곳 + astra 3곳) | 완료 | 없음 | |
 | P3 | vLLM 정확도 저하 원인 — 로컬 정밀도 실험 | **완료** | 로컬 | 원인 확정: 학습 기본 모델(NF4) 불일치. dtype·A40·vLLM 아님 (`reports/quant/`) |
 | P4 | astra 평가 1 | 완료 (76) | | |
-| P5 | 양자화 비교표 (M0·M1 × NF4·int8·bf16·fp16·fp32: 정확도·지연·VRAM) | 데이터 완료, README 반영 대기 | 없음 | README 표 + 해석(작은 n 명시) |
+| P5 | 양자화 비교표 (M0·M1 × NF4·int8·bf16·fp16·fp32: 정확도·지연·VRAM) | 데이터 완료, README 반영 대기(실행 2 vLLM·FP8 표는 반영함) | 없음 | README 표 + 해석(작은 n 명시) |
 | P7 | README 필드별 정확도 표 | 완료 | | |
 | P8a | 서빙 해결 — NF4 역양자화 bf16 (+병합 / +비병합 LoRA) | **완료**: 로컬 HF 0.960, L40S vLLM 0.960 | 로컬 + 실행 2 | |
 | P14 | bf16 위 일반 LoRA 학습 1회 + dev 44 평가 | **완료**(L40S): 학습 253초, trade dev 0.986 / 공개 0.931, QLoRA 대비 차이 유의하지 않음 | 실행 2 | |
@@ -56,9 +56,10 @@ sources:
 | C1 | 내려받기 + 해시 검증 (2.31GB, 52초) | **완료** | 로컬 | `reports/realdocs/cord_fetch.json` 6/6 일치 |
 | C2 | 변환: CORD_RAW 정답·manifest, 리스트 라벨 masked, 내용 중복 40건 학습 제외 | **완료** | 로컬 | gold 1,000건 스키마 통과, 테스트 8개 |
 | C3 | M0 기준선: CORD dev 100 (NF4, 로컬) | **완료**: 필드 0.712, 형식 무시 0.777, F1 0.654, strict JSON 0/100, 1,241초 | 로컬 | 난이도 게이트(0.55–0.80) 안 → 개선 여지 있음 |
-| C4 | M1-cord 학습: 기존 train 360 + CORD 742, QLoRA NF4, 로컬 | 실행 중(체인) | 로컬 (약 1시간 추정) | 손실 감소, 어댑터 저장·재로드 |
-| C5 | dev 평가(M0·M1 v1·M1-cord) → `configs/frozen_cord_v1.json` 동결 | 대기 | 로컬 | 동결 커밋 |
-| C6 | CORD test 100 1회 + 기존 dev 회귀 | 대기 | 로컬 | 사전 기준으로 판정 |
+| C4 | M1-cord 학습: 기존 train 360 + CORD 742, QLoRA NF4, 로컬 | **완료**: 240 step 22.6분, loss 0.370 → 0.030, VRAM 7.02GB | 로컬 | 손실 감소, 어댑터 저장 |
+| C5 | dev 평가(M0·M1 v1·M1-cord) → `configs/frozen_cord_v1.json` 동결 | **완료**: dev 0.712 / 0.304 / 0.762, M1-cord−M0 +0.0497 [0.005, 0.093]. 기존 dev 회귀 없음(자체 −0.003, 공개 clean +0.033). 동결 커밋 fa750bb(코드 clean) | 로컬 | 동결 커밋 |
+| C6 | CORD test 100 1회 (M0 → M1-cord → M1 v1) | **실행 중** 00:32 시작(`run_cord_test.sh`, 약 55분) | 로컬 | 사전 기준으로 판정 |
+| C8 | 대시보드(CORD 영수증·CORD 평가 페이지)·README(영·한) 반영, test 칸은 빈칸 | **완료**, test 결과 후 채움 | 로컬 | 테스트 통과 |
 | C7 | (선택, 승인 필요) RunPod A40: 같은 Pod에서 학습+평가 재현 또는 bf16 LoRA arm, vLLM 서빙 | 대기 | 유료 | 로컬 결과와 섞지 않고 별도 표 |
 
 **사전 고정 판정 기준 (Q3 동결 전에 확정, 이후 변경 금지)**

@@ -5,12 +5,12 @@
 **Extract line items from English invoice images with a VLM, reconcile them against an independent purchase order (PO), and export only versions a human has approved.**
 
 [![ci](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml/badge.svg)](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml)
-![data](https://img.shields.io/badge/data-synthetic%20only-lightgrey)
+![data](https://img.shields.io/badge/data-synthetic%20%2B%20CORD%20real%20receipts-lightgrey)
 ![gpu](https://img.shields.io/badge/GPU-local%20RTX%204070%20Ti%20SUPER-informational)
-![runpod](https://img.shields.io/badge/RunPod-A40%20%C2%B7%2043%20min%20%C2%B7%20est.%20%240.43-673ab7)
+![runpod](https://img.shields.io/badge/RunPod-A40%20%2B%20L40S%20%C2%B7%20est.%20%242.16-673ab7)
 
-- **Model:** Qwen3-VL-2B-Instruct (NF4) + a QLoRA adapter — trained, evaluated and served on one local GPU; the training was reproduced and vLLM measured on a rented RunPod A40 ([section 12](#12-cloud-reproduction-on-runpod))
-- **Data:** synthetic only. Public InvoiceOCR-Synth plus self-generated Invoice–PO documents; no claim is made about real company or customs documents.
+- **Model:** Qwen3-VL-2B-Instruct (NF4) + a QLoRA adapter — trained, evaluated and served on one local GPU; the training was reproduced, vLLM serving accuracy recovered and FP8 measured on rented RunPod A40 and L40S GPUs ([section 12](#12-cloud-reproduction-on-runpod))
+- **Data:** public InvoiceOCR-Synth and the self-generated Invoice–PO documents are synthetic. The base model already gets those almost right, so they cannot separate the fine-tuning effect; human-labelled **real receipt photos from CORD v2** (CC BY 4.0) were added ([CORD results](#cord-v2--real-receipt-photos)). No claim is made about real company or customs documents.
 - **Reproducibility:** every evaluation number (training · dev · final · paired CI) is produced by the scripts in this repository, given the pinned dataset revision, base-model revision and seed. Data and weights are downloaded, not stored here, and training ran with a single seed.
 - **Honesty:** anything that was not run is recorded as `not_run` / `blocked`.
 
@@ -78,6 +78,18 @@ What differs between the sets is summarised in [6. Results › Evaluation sets](
 - The product therefore routes every document to human review.
 - The dev-based improvement attempt (adding training data) had no effect, and that result is recorded as is.
 
+**5. The question is being re-tested on real receipt photos (CORD v2).**
+
+| CORD v2 · strict field accuracy | M0<br><sub>base model</sub> | M1 v1<br><sub>the M1 above (no CORD)</sub> | M1-cord<br><sub>trained with CORD train</sub> |
+|---|---:|---:|---:|
+| dev, 100 photos<br><sub>development · not the verdict</sub> | 0.712 | 0.304 | **0.762** |
+| test, 100 photos<br><sub>once, after the freeze · verdict</sub> | — | — | — |
+
+<sub>Local RTX 4070 Ti SUPER · all NF4 · same prompt, preprocessing and generation settings. — = not run yet. The pass criteria were fixed before training in [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) (Korean).</sub>
+- M1 v1, trained only on synthetic invoices, scores **0.41 below the base model** on receipt photos (dev −0.408 [−0.50, −0.31]): outside the format it learned, fine-tuning can hurt.
+- M1-cord, trained with 742 CORD train photos added, is +0.0497 [+0.005, +0.093] over M0 on dev. The point estimate is 0.0003 short of the pre-registered +0.05, and the format-insensitive difference's CI includes 0. The verdict comes from test.
+- On the existing synthetic dev sets M1-cord did not fall below M1 v1 (own dev −0.003, public dev clean +0.033).
+
 ---
 
 ## 2. System
@@ -115,13 +127,14 @@ flowchart LR
 
 ## 3. Data
 
-There are three kinds of data, all synthetic. Each is shown below with real samples.
+There are four kinds of data. The first three are synthetic; CORD v2 is real photos with human labels. Each is shown below with real samples.
 
 | Kind | What it is | Size | Labels | Used for |
 |---|---|---|---|---|
 | **Public**<br><sub>PUBLIC_CANONICAL</sub> | InvoiceOCR-Synth<br><sub>CC BY 4.0, synthetic English</sub> | 2,814 images<br><sub>938 documents × 3 qualities</sub> | description · qty · unit price · amount<br><sub>no SKU</sub> | train · dev · final |
 | **Own**<br><sub>TRADE_RAW</sub> | invoice + PO pairs<br><sub>made by this repository</sub> | 224 documents<br><sub>6 layouts · 7 scenarios</sub> | exact printed strings incl. SKU · unit<br><sub>+ an independent PO</sub> | train · dev · final |
 | **Stress**<br><sub>dev only</sub> | degraded copies of own dev | 72 images<br><sub>24 × 3 degradations</sub> | same as own | robustness check only |
+| **CORD v2**<br><sub>CORD_RAW · real photos</sub> | Indonesian receipt photos<br><sub>CC BY 4.0, human labels</sub> | 1,000 photos<br><sub>official 800 / 100 / 100</sub> | item name · count · unit price · price, sub-items, subtotal · tax · total<br><sub>exact printed strings, no SKU</sub> | train · dev · test<br><sub>[section 3.5](#35-real-receipt-photos--cord-v2-cord_raw)</sub> |
 
 ### 3.1 Public data — InvoiceOCR-Synth (PUBLIC_CANONICAL)
 
@@ -273,6 +286,27 @@ flowchart TB
 | ![Public document detail](docs/images/dashboard-public-doc.png) | ![Own Invoice–PO document detail](docs/images/dashboard-trade-doc.png) |
 | <sub>bad_scan document · the rounded-printed unit price is excluded from scoring (hatched)</sub> | <sub>price-change scenario → `UNIT_PRICE_DIFF` detected</sub> |
 
+### 3.5 Real receipt photos — CORD v2 (CORD_RAW)
+
+Added because synthetic data alone cannot separate the fine-tuning effect (M0 gets it almost right too). The synthetic data contract and the FINAL results are unchanged; CORD is a separate task, `CORD_RAW` ([`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md), Korean).
+
+<img src="docs/images/data/cord-dev-sample.jpg" alt="Part of a CORD v2 dev receipt — one item, a sub-item (PEARL), subtotal and total" width="420">
+
+<sub>Part of one CORD dev photo (`cord_dev_0084`; the shop details were blurred by the dataset). Gold: two item rows (`1 x` · `HAZELNUT CHOCO MT (R)` · `24,000`), under the first one the sub-item `PEARL (R)` `4,000`, subtotal `52,000`, total `52,000`, no tax.</sub>
+
+| split | photos | used for training | items · sub-items | handling |
+|---|---:|---:|---:|---|
+| train | 800 | **742** | 2,105 · 321 | 18 with list-valued labels and 40 whose gold equals a dev/test document are left out of training |
+| dev (official validation) | 100 | 0 | 221 · 50 | comparison and development; 20 share their gold with a train document |
+| test | 100 | 0 | 251 · 36 | once per arm after the freeze; 15 share their gold with a train document |
+
+- **Labels as printed:** values are the strings printed on the receipt (`@16.500`, `45,500`, `2x`), never converted or normalised.
+- **Split labels are not joined:** a field whose original label is a list (text in several boxes) is masked in scoring, and such documents are left out of training.
+- **Content duplicates:** the official split contains different photos with identical labels. To prevent answer memorisation, the 40 train documents whose gold equals a dev/test document are excluded from training, and results are also reported on the documents whose gold is not in train (dev 80 · test 85).
+- **Input boundary:** the model sees only the photo and a fixed prompt ([`EXTRACT_CORD_RAW.txt`](prompts/EXTRACT_CORD_RAW.txt)); output schema [`cord_extraction.schema.json`](schemas/cord_extraction.schema.json).
+- **Not English-only:** these are Indonesian receipts with mixed-language item names.
+- Download 2.31 GB, Hub hashes 6/6 ([`cord_fetch.json`](reports/realdocs/cord_fetch.json)) · conversion [`cord.py`](src/invoiceguard/cord.py) · manifest [`cord_v2.jsonl`](manifests/cord_v2.jsonl). Photos and gold files are not in the repository.
+
 <sub>The dashboard UI is in Korean.</sub>
 
 ---
@@ -288,6 +322,7 @@ flowchart TB
 | Optimisation | 80 optimizer steps<br><sub>micro batch 1 × grad accum 8 (≈1.78 epochs), lr 1e-4 cosine, warmup 0.05</sub> |
 | Resources | local RTX 4070 Ti SUPER 16GB<br><sub>21.8 min · peak VRAM 6.52GB</sub> |
 | Pre-training checks | loss-mask audit 360/360 (on expanded image tokens)<br><sub>10-step smoke: finite gradients · 112/112 tensors changed · save + reload identical</sub> |
+| **M1-cord** (CORD added) | same settings · 1,102 records (public 200 + own 160 + CORD 742) · 240 steps (≈1.74 epochs)<br><sub>local 4070, 22.6 min · peak VRAM 7.02 GB · loss 0.370 → 0.030 · masks re-checked on 1,919 micro-steps ([`train_m1_cord_v1.json`](reports/model/train_m1_cord_v1.json))</sub> |
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/training-loss-dark.svg">
@@ -449,6 +484,55 @@ On the 40 own test documents, the alerts produced from each approach's extractio
 
 dev results and failure taxonomy: [`dev_summary.md`](reports/eval/dev_summary.md) · [`failures_m1_dev_v1.md`](reports/eval/failures_m1_dev_v1.md)
 
+### CORD v2 — real receipt photos
+
+On the synthetic sets M1−M0 was not significant, so the same 2B model is trained and evaluated once more on human-labelled receipt photos. The metrics and pass criteria were fixed before training in [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md).
+
+- **Same conditions:** all three arms on the local RTX 4070 Ti SUPER · NF4 · same prompt · same preprocessing · greedy · batch 1. M1-cord was trained on the NF4 base, so it is evaluated on NF4 (adapter–precision pairing check).
+- **Primary metric:** only fields with a gold value, matched by position, exact after NFKC and whitespace collapsing. M0 wrapped every dev answer in a ```` ```json ```` fence, so field scores use the output with that one fence stripped (truncation and syntax errors are not repaired), and the fence-free JSON rate is reported separately as a format metric (amendment 1, made before any CORD training or test run).
+- **Test runs once:** after looking at dev, the settings were frozen in [`configs/frozen_cord_v1.json`](configs/frozen_cord_v1.json); each arm runs test once. **— marks a cell that has not been run yet.**
+
+| Metric | M0<br><sub>dev</sub> | M1 v1<br><sub>dev</sub> | M1-cord<br><sub>dev</sub> | M0<br><sub>test</sub> | M1 v1<br><sub>test</sub> | M1-cord<br><sub>test</sub> |
+|---|---:|---:|---:|---:|---:|---:|
+| **strict field accuracy** (primary) | 0.712<br><sub>717/1,007</sub> | 0.304<br><sub>306/1,007</sub> | **0.762**<br><sub>767/1,007</sub> | — | — | — |
+| format-insensitive accuracy<br><sub>digits only for numbers, names case/space-insensitive</sub> | 0.777 | 0.393 | **0.812** | — | — | — |
+| order-free field F1<br><sub>precision / recall</sub> | 0.654<br><sub>0.56 / 0.79</sub> | 0.425<br><sub>0.52 / 0.36</sub> | **0.845**<br><sub>0.85 / 0.84</sub> | — | — | — |
+| documents whose gold is not in train | 0.706<br><sub>80 docs</sub> | 0.272 | **0.744** | —<br><sub>85 docs</sub> | — | — |
+| fence-free JSON | 0/100 | 79/100 | **100/100** | — | — | — |
+| fields filled where the gold is empty | 269 | 163 | **24** | — | — | — |
+| row-count match · whole-document match | 0.67 · 0.01 | 0.32 · 0.00 | **0.83 · 0.33** | — | — | — |
+| inference time | 12.4 s/doc | 12.5 s/doc | 8.2 s/doc | — | — | — |
+
+<sub>Source: `reports/eval/cord_*.json` · scorer [`cord_eval.py`](src/invoiceguard/cord_eval.py). M1-cord is faster because it answers without a fence and without invented fields, so it generates fewer tokens.</sub>
+
+**Pre-registered criteria**
+
+| Criterion | dev (reference, not the verdict) | test (verdict) |
+|---|---|---|
+| Fine-tuning effect<br><sub>M1-cord − M0 strict ≥ +0.05 and 95 % CI lower bound > 0</sub> | +0.0497 [+0.005, +0.093]<br><sub>CI above 0, point estimate 0.0003 short</sub> | — |
+| Reads better, not just formats better<br><sub>the above, plus a format-insensitive difference with CI lower bound > 0</sub> | +0.036 [−0.001, +0.073]<br><sub>CI includes 0</sub> | — |
+| No regression<br><sub>on the existing dev sets M1-cord does not fall more than 0.03 below M1 v1</sub> | own dev −0.003 [−0.032, +0.021]<br>public dev clean +0.033 [+0.004, +0.077] → **met** | not a test criterion |
+
+<sub>Document-paired bootstrap, 2,000 resamples (seed 20261113); documents with identical gold are resampled together. The regression check covered all seven M1 v1 dev sets; the other five range from −0.067 to +0.162 (8–24 documents each, [`compare_m1cord_dev_v1__vs__m1_dev_v1.json`](reports/eval/compare_m1cord_dev_v1__vs__m1_dev_v1.json)).</sub>
+
+**What dev shows (before test, reference only)**
+- **M1-cord's gain is mostly format and structure:** fence-free JSON 0 → 100/100, invented fields 269 → 24, row-count match 0.67 → 0.83, whole-document match 0.01 → 0.33.
+- Per field, tax 0.49 → 0.72, total 0.74 → 0.90 and item count 0.80 → 0.90 went up; item unit price 0.82 → 0.68 and item price 0.86 → 0.80 went down. Sub-items are weak for every arm (names 0.20–0.43).
+- **The adapter trained only on synthetic invoices (M1 v1) does not transfer to receipts:** −0.408 [−0.503, −0.307] against M0, and it rarely outputs the document totals (total 0.11). Outside the format it learned, fine-tuning can hurt.
+
+**One example** — `cord_dev_0084` from [section 3.5](#35-real-receipt-photos--cord-v2-cord_raw)
+
+| Field | Gold | M0 | M1-cord |
+|---|---|---|---|
+| output format | | ```` ```json ```` fence | plain JSON |
+| item 1 · count / name | `1 x` · `HAZELNUT CHOCO MT (R)` | `1` ≈ · `HazelNut Choco MT (R)` ≈ | `1 x` ✓ · `HazelNut Choco MT (R)` ≈ |
+| item 1 · sub-item | `PEARL (R)` `4,000` | missed — emitted as item 2, shifting the rows after it | `PEARL (R)` `4,000` ✓ |
+| item 2 | `1 x` · `HAZELNUT CHOCO MT (R)` · `24,000` | `Pearl (R)` · `4,000` ✗ | missed ✗ |
+| unit price · tax | not printed | invents `24,000` · `52,000` | left empty ✓ |
+| strict correct / scored fields | | 3 / 10 | 6 / 10 |
+
+<sub>✓ match · ≈ same digits/letters, different print form (wrong under strict) · ✗ wrong. The dashboard's CORD receipt page shows this comparison for every document.</sub>
+
 ---
 
 ## 7. Serving
@@ -469,7 +553,8 @@ dev results and failure taxonomy: [`dev_summary.md`](reports/eval/dev_summary.md
 **vLLM: blocked locally, measured on RunPod**
 - Locally, `vllm/vllm-openai:v0.11.2` (the version that supports Qwen3-VL) needs CUDA ≥ 12.9, but the local driver 561.17 supports CUDA 12.6. With the requirement check disabled, PyTorch inside the container still failed with "No CUDA GPUs are available".
 - On a rented A40 the same bench ([`serving/vllm_bench.py`](src/invoiceguard/serving/vllm_bench.py)) ran: M1 reached 24 docs/min at concurrency 1 and 149 at concurrency 8, with no failed requests.
-- Under vLLM, however, M1's accuracy dropped (0.849 against 0.960), so only the speed is used — details in [section 12](#12-cloud-reproduction-on-runpod).
+- In run 1, M1's accuracy dropped under vLLM (0.849 against 0.960). The cause: the adapter was trained on the NF4 base but served on a bf16 base.
+- In run 2 (L40S), the adapter merged into the dequantised NF4 weights (served as bf16) **recovered 0.960**, the same as the HF path. Serving in FP8 raised throughput by 23–33 % and changed field accuracy by −0.2 pp (M0) · −1.0 pp (M1). Details in [section 12](#12-cloud-reproduction-on-runpod).
 
 ![Serving page](docs/images/dashboard-serving.png)
 
@@ -529,6 +614,7 @@ A local, read-only dashboard (the UI is in Korean).
 | Overview · stages & gates | pipeline stages, KPIs, FINAL bars, blocked items<br><sub>T00–T09 tasks, G0–G7 acceptance gates</sub> |
 | Public data · own Invoice–PO | filtered lists → document image + gold labels + visibility masks<br><sub>own data also shows the PO and reconciliation results</sub> |
 | Splits · manifests | split statistics, leakage checks, freeze status |
+| CORD receipts · CORD evaluation | receipt photo + gold + every recorded run's prediction (M0 · M1 v1 · M1-cord), compared cell by cell<br><sub>pre-registered criteria table, dev/test bars, paired differences (CI), per-field accuracy, training loss, elapsed time — test cells not run yet stay blank</sub> |
 | Model & evaluation · serving | B0 · M0 · M1 bars (95% CI · lenient), paired differences, training loss<br><sub>latency · throughput · cancellation · output parity</sub> |
 | Review API · tests · cloud & cost | T06 record and LIVE demo, pytest summary, budget plan and approval form |
 
@@ -547,6 +633,7 @@ A local, read-only dashboard (the UI is in Korean).
 | Reproducibility on another machine | the frozen training re-run on a RunPod A40: loss curve within 0.002 per step, identical outputs on dev<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
 | Cloud GPU operation | Runpod via MCP: real quote → approval → Pod → SSH and tunnel checks → training → SHA256 backup → delete, about $0.43 (estimate)<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | Extraction accuracy · failure analysis · improvement | per-set evaluator · paired bootstrap, failure taxonomy, one improvement and its **negative result**<br><sub>[`reports/eval/`](reports/eval)</sub> |
+| Real-document evaluation · pre-registration | human-labelled CORD v2 receipt photos added as a separate task; metrics and pass criteria fixed before training; content duplicates removed; test frozen and run once<br><sub>[`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) · [`cord_eval.py`](src/invoiceguard/cord_eval.py)</sub> |
 | Automated scoring · regression tests | 160+ pytest tests (rules B01–B12, evaluation E01–E05, API A01–A08, dashboard)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · freeze and hash guards</sub> |
 | Serving · performance measurement | own Transformers + PEFT GPU server (not a serving framework) — real timeout cancellation and bounded queue, measured<br><sub>[`reports/serving/`](reports/serving)</sub><br>vLLM 0.11.2 on RunPod: continuous batching measured at concurrency 1–8 |
 | OCR / document AI | Tesseract baseline B0<br><sub>general rules built from train/dev only, isolated in Docker</sub> |
@@ -558,17 +645,17 @@ A local, read-only dashboard (the UI is in Korean).
 ## 11. Cost and limitations
 
 **Cost**
-- Cloud spend **about $0.43** (estimate: 43 minutes × $0.60/h) — one RunPod A40 Pod ([section 12](#12-cloud-reproduction-on-runpod)). The billing records were still catching up when this was written.
-- One training run about 22 min; final M0 · M1 inference about 49 min (B0 OCR time not recorded); all on the local GPU.
+- Cloud spend **about $2.16** (estimate) — run 1 on an A40, 43 min, about $0.43, plus run 2 on an L40S, 1 h 33 min, about $1.73; one Pod each time ([section 12](#12-cloud-reproduction-on-runpod)). Computed as time × rate, not settled billing.
+- Local GPU: one training run about 22 min; final M0 · M1 inference about 49 min (B0 OCR time not recorded). CORD: M1-cord training 22.6 min, dev inference 20.7 · 20.9 · 13.6 min, regression on the existing dev sets 29.7 min.
 
 **Limitations**
-- Synthetic data only, and small samples.
+- The FINAL table is synthetic data with small samples. The only real photos are CORD v2 receipts — not invoices or customs documents, and not English-only. CORD training is also a single seed, single run.
   - 20 base documents per public set, 40 own test documents, 1–10 cases per alert code
   - The degradation stress set is dev-only.
 - M0's low strict score is largely a format effect (code fences). A pre-freeze prompt A/B did not remove it, and a fence-stripping step is not part of the frozen contract.
 - The ambiguous-quantity failure is not solved.
 - Serving
-  - vLLM was measured only on RunPod. Its speed is measured, but M1's accuracy under vLLM dropped and the cause is not established.
+  - vLLM was measured only on RunPod. Run 1's accuracy drop was traced (adapter/base precision mismatch) and recovered in run 2 by merging into the dequantised weights; merged files differ slightly between GPUs, so they must be built once and moved by hash.
   - The own HF server has no batching (batch 1, serial worker); batching was measured only with vLLM on RunPod (section 12).
   - The bench uses 10 documents and one repetition; the serving server has no automated tests of its own, only manual probes.
 - The RunPod reproduction is one seed and one run; its dev parity covers 8 documents. An automatic stop inside the Pod could not be set (permission), so the run was watched until the Pod was deleted.
@@ -664,9 +751,50 @@ flowchart TB
   - **Cause found locally, without another cloud run:** the same adapter on an unquantised bf16 base, run through the HF reference path on the local GPU, scores 0.847 on the same 20 documents, its token counts match vLLM's within ±1 on 20/20, and 19/20 raw outputs lack the document-total fields ([`reports/quant/`](reports/quant)).
   - So the drop comes from the base precision: the adapter was trained on the NF4-quantised base but applied to the bf16 base. It is not an A40, Linux or vLLM effect.
   - The vLLM bench did not store raw responses; it does now.
-  - So these vLLM numbers are speed measurements; LoRA serving quality under vLLM is an open issue.
+  - So these run 1 vLLM numbers are speed measurements only; LoRA serving quality under vLLM was resolved in run 2 (below).
 
 Full record (Korean): [`reports/runpod/RUNPOD_RUN.md`](reports/runpod/RUNPOD_RUN.md)
+
+### Run 2 — L40S: vLLM accuracy recovery · FP8 · bf16 LoRA
+
+Rented once more to answer what run 1 left open: why M1's accuracy dropped under vLLM, and how much faster FP8 serving is. FP8 needs hardware FP8 (Ada or newer), so an **L40S 48 GB** was chosen instead of the A40 (Ampere) — Secure EUR-IS-2, $1.09/h, after quote approval. In hindsight everything except FP8 would have run on an A40, so about $0.7 more was spent.
+
+| Phase | Time |
+|---|---:|
+| setup · hash checks | 5 min |
+| vLLM, 5 runs (M0 · merged M1 × bf16 · FP8, batch-limit comparison) | 18 min |
+| 32B FP8 teacher attempts (2 failures + 2 documents) | about 15 min |
+| plain LoRA on bf16 + three dev-44 evaluations | 35 min |
+| 8B teacher drafts, 169 photos | 17.5 min |
+| backup · deletion | 2.7 min |
+| **total · cost** | **1 h 33 min · about $1.73 (estimate)** |
+
+<sub>Built from the step timestamps in the Pod logs ([`timeline.md`](reports/runpod2/timeline.md)). The Pod was deleted after the backup was hash-verified, and a fresh listing showed 0 Pods.</sub>
+
+**vLLM serving** — the same 20 own dev documents, max_tokens 1536, raw responses stored
+
+| Model | Precision | Field accuracy | docs/min at concurrency 1 / 4 / 8 / 16 | p50 at 1 |
+|---|---|---:|---|---:|
+| M0 | bf16 | 0.998 | 22.8 / 76.8 / 118.9 / 168.3 | 2.43 s |
+| M0 | FP8 | 0.996 | 30.3 / 100.2 / 153.0 / 207.0 | 1.85 s |
+| M1 merged (dequantised NF4 + LoRA) | bf16 | **0.960** | 32.6 / 107.3 / 168.8 / 238.4 | 1.75 s |
+| M1 merged | FP8 | 0.950 | 42.3 / 140.7 / 219.0 / 295.6 | 1.33 s |
+
+- **Accuracy recovered:** run 1's 0.849 became 0.960 — the same as the HF NF4 path — because the adapter was merged into the weights it was trained on (the dequantised NF4 values).
+- **FP8:** throughput +23–33 %, field accuracy −0.2 pp for M0 and −1.0 pp for M1 (20 documents, so small differences are hard to tell apart).
+- **Merged files differ between GPUs:** the same script produced different SHA256s on the Pod (L40S) and locally (4070). 59 of 625 tensors differ, by at most one bf16 step, including layers LoRA does not touch — bitsandbytes NF4 quantisation already differs slightly per GPU. So model files are built once in one place and moved by hash ([`merge_tensor_diff.json`](reports/runpod2/merge_tensor_diff.json)).
+
+**Plain LoRA on the bf16 base (trained and evaluated on the same L40S)** — 80 steps in 253 s (3.2 s/step). On the local 16 GB 4070 it spilled out of VRAM at 358 s/step and was stopped.
+
+| Model | public dev clean (20) | own dev (24) |
+|---|---:|---:|
+| M0 bf16 | 0.000 <sub>(lenient 0.736)</sub> | 0.976 |
+| M1 QLoRA (NF4) | 0.963 | 0.970 |
+| M1 bf16 LoRA | 0.931 | 0.986 |
+
+<sub>bf16 LoRA − QLoRA: public −0.033 [−0.087, 0.017], own +0.017 [−0.016, 0.057] — neither significant. The easy synthetic data cannot separate training methods, which is why CORD v2 was added.</sub>
+
+**Not used:** 8B and 32B teacher models drafted labels for 169 unlabelled real tax-invoice photos, but only 40 of 185 rows passed the arithmetic check (quantity × unit price = amount), so the drafts were not used as gold. Those photos and drafts contain real shop names and addresses, so they stay out of the repository; only a count/time summary is kept ([`teacher_drafts_summary.json`](reports/runpod2/teacher_drafts_summary.json)).
 
 ---
 
@@ -729,7 +857,18 @@ bash scripts/runpod/pod_parity.sh   # dev parity on the HF NF4 path
 python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --smoke reports/runpod/pod_smoke_train.json
 ```
 
-**8) Redraw the README charts and data samples** — charts come from the records in `reports/` (English and Korean sets); samples need the local data
+**8) CORD v2 (real receipt photos)** — download (about 2.31 GB, hash-checked) → convert → dev → freeze → test once
+```bash
+.venv-ml/Scripts/python.exe -I scripts/realdocs/fetch_cord.py
+.venv-ml/Scripts/python.exe -I -m invoiceguard.cord build
+bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord training → M1-cord dev → regression on the existing dev sets
+.venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
+bash scripts/realdocs/run_cord_test.sh           # once per arm
+.venv-ml/Scripts/python.exe -m invoiceguard.cord_eval score artifacts/predictions/cord_test_m1cord_nf4
+.venv-ml/Scripts/python.exe -m invoiceguard.cord_eval compare cord_test_m1cord_nf4 cord_test_m0_nf4
+```
+
+**9) Redraw the README charts and data samples** — charts come from the records in `reports/` (English and Korean sets); samples need the local data
 ```bash
 .venv/Scripts/python.exe -m invoiceguard.readme_figures
 .venv/Scripts/python.exe -m invoiceguard.readme_samples
@@ -744,6 +883,8 @@ The original package guide (how to start with Claude Code · design document ind
 - **Public data:** [alamgirqazi/invoice-ocr-synthetic](https://huggingface.co/datasets/alamgirqazi/invoice-ocr-synthetic), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
   - Downscaled synthetic images from this dataset appear in the README samples (`docs/images/data/public-*.jpg`, 6 templates and 3 quality crops) and in the public-data screenshot (`docs/images/dashboard-public-doc.png`).
   - The dataset itself is not included in this repository.
+- **Real receipt photos:** [naver-clova-ix/cord-v2](https://huggingface.co/datasets/naver-clova-ix/cord-v2) @ `7f0115a4`, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — Park et al., "CORD: A Consolidated Receipt Dataset for Post-OCR Parsing" (2019)
+  - Part of one photo, downscaled, is the README sample `docs/images/data/cord-dev-sample.jpg`. The dataset itself is not in this repository.
 - **Base model:** [Qwen/Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct) — weights are not included in this repository.
 - **OCR:** [Tesseract](https://github.com/tesseract-ocr/tesseract) 4.1.1 (run inside a Docker image)
 - **Cloud GPU:** [Runpod](https://www.runpod.io) — the wordmark in section 12 is taken from the Runpod console and only names the provider; it is Runpod's trademark. The console screenshots are of this project's own Pod.

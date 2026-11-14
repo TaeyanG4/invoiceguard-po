@@ -5,12 +5,12 @@
 **영어 인보이스 이미지에서 품목을 VLM으로 추출하고, 독립 발주서(PO)와 대사한 뒤, 사람이 승인한 버전만 내보내는 시스템**
 
 [![ci](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml/badge.svg)](https://github.com/TaeyanG4/invoiceguard-po/actions/workflows/ci.yml)
-![data](https://img.shields.io/badge/data-synthetic%20only-lightgrey)
+![data](https://img.shields.io/badge/data-synthetic%20%2B%20CORD%20real%20receipts-lightgrey)
 ![gpu](https://img.shields.io/badge/GPU-local%20RTX%204070%20Ti%20SUPER-informational)
-![runpod](https://img.shields.io/badge/RunPod-A40%20%C2%B7%2043%20min%20%C2%B7%20est.%20%240.43-673ab7)
+![runpod](https://img.shields.io/badge/RunPod-A40%20%2B%20L40S%20%C2%B7%20est.%20%242.16-673ab7)
 
-- **모델:** Qwen3-VL-2B-Instruct(NF4) + QLoRA 어댑터 — 로컬 GPU 1장에서 학습·평가·서빙했고, RunPod A40을 빌려 학습 재현과 vLLM 측정을 했습니다([12장](#12-runpod-클라우드-재현))
-- **데이터:** 모두 합성입니다. 공개 InvoiceOCR-Synth와 자체 생성 Invoice–PO를 쓰며, 실제 기업·통관 문서 성능은 주장하지 않습니다.
+- **모델:** Qwen3-VL-2B-Instruct(NF4) + QLoRA 어댑터 — 로컬 GPU 1장에서 학습·평가·서빙했고, RunPod A40 · L40S를 빌려 학습 재현, vLLM 서빙 정확도 회복, FP8 측정을 했습니다([12장](#12-runpod-클라우드-재현))
+- **데이터:** 공개 InvoiceOCR-Synth와 자체 생성 Invoice–PO는 합성입니다. 합성 데이터에서는 기본 모델도 거의 다 맞혀 파인튜닝 효과를 가를 수 없어, 사람이 라벨을 단 **실사진 영수증 CORD v2**(CC BY 4.0)를 추가했습니다([CORD 결과](#cord-v2--실사진-영수증)). 실제 기업·통관 문서 성능은 주장하지 않습니다.
 - **재현성:** 평가 수치(학습 · dev · final · paired CI)는 고정한 데이터셋 revision · 기본 모델 revision · seed를 쓰면 이 저장소의 스크립트로 다시 만들어집니다. 데이터와 가중치는 내려받는 것이라 저장소에 없고, 학습은 seed 1개로 한 번 돌렸습니다.
 - **정직성:** 실행하지 않은 항목은 `not_run` / `blocked`로 남겼습니다.
 
@@ -78,6 +78,18 @@
 - 그래서 제품은 모든 문서를 사람 검수로 보냅니다.
 - dev 기반 개선 시도(학습 데이터 보강)는 효과가 없었고, 그 결과도 그대로 기록했습니다.
 
+**5. 실사진 영수증(CORD v2)에서 다시 확인하는 중입니다.**
+
+| CORD v2 · strict 필드 정확도 | M0<br><sub>기본 모델</sub> | M1 v1<br><sub>위 M1 (CORD 없이 학습)</sub> | M1-cord<br><sub>CORD train 추가 학습</sub> |
+|---|---:|---:|---:|
+| dev 100장<br><sub>개발용 · 판정 아님</sub> | 0.712 | 0.304 | **0.762** |
+| test 100장<br><sub>동결 후 1회 · 판정</sub> | — | — | — |
+
+<sub>로컬 RTX 4070 Ti SUPER · 모두 NF4 · 같은 프롬프트·전처리·생성 설정. — = 아직 실행하지 않은 칸입니다. 판정 기준은 학습 전에 [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)에 고정했습니다.</sub>
+- 합성 인보이스로만 학습한 M1 v1은 영수증 사진에서 기본 모델보다 **0.41 낮습니다**(dev −0.408 [−0.50, −0.31]). 학습한 형식 밖에서는 파인튜닝이 오히려 해가 될 수 있다는 사례입니다.
+- CORD train 742장을 더해 학습한 M1-cord는 dev에서 M0보다 +0.0497 [+0.005, +0.093]입니다. 사전 기준(+0.05)에 점추정이 0.0003 모자라고, 형식 무시 정확도 차이는 CI가 0을 포함합니다. 판정은 test로 합니다.
+- 기존 합성 dev 세트에서는 M1-cord가 M1 v1보다 떨어지지 않았습니다(자체 dev −0.003, 공개 dev clean +0.033).
+
 ---
 
 ## 2. 시스템 구성
@@ -115,13 +127,14 @@ flowchart LR
 
 ## 3. 데이터
 
-데이터는 세 종류이며, 모두 합성입니다. 종류별로 실제 샘플과 함께 정리했습니다.
+데이터는 네 종류입니다. 앞의 세 종류는 합성이고, CORD v2는 사람이 라벨을 단 실사진입니다. 종류별로 실제 샘플과 함께 정리했습니다.
 
 | 종류 | 무엇인가 | 규모 | 정답(라벨) | 용도 |
 |---|---|---|---|---|
 | **공개**<br><sub>PUBLIC_CANONICAL</sub> | InvoiceOCR-Synth<br><sub>CC BY 4.0, 합성 영어</sub> | 2,814장<br><sub>938문서 × 품질 3</sub> | 설명 · 수량 · 단가 · 금액<br><sub>SKU 없음</sub> | 학습 · dev · final |
 | **자체**<br><sub>TRADE_RAW</sub> | 인보이스 + 발주서 쌍<br><sub>이 저장소에서 생성</sub> | 224문서<br><sub>레이아웃 6 · 시나리오 7</sub> | 인쇄된 문자열 그대로(SKU · 단위 포함)<br><sub>+ 독립 발주서</sub> | 학습 · dev · final |
 | **stress**<br><sub>dev 전용</sub> | 자체 dev 문서의 열화본 | 72장<br><sub>24 × 열화 3</sub> | 자체와 같음 | 견고성 확인만 |
+| **CORD v2**<br><sub>CORD_RAW · 실사진</sub> | 인도네시아 영수증 사진<br><sub>CC BY 4.0, 사람 라벨</sub> | 1,000장<br><sub>공식 800 / 100 / 100</sub> | 품목 이름 · 수량 · 단가 · 금액, 하위 품목, 소계 · 세금 · 합계<br><sub>인쇄된 문자열 그대로, SKU 없음</sub> | 학습 · dev · test<br><sub>[3.5절](#35-실사진-영수증--cord-v2-cord_raw)</sub> |
 
 ### 3.1 공개 데이터 — InvoiceOCR-Synth (PUBLIC_CANONICAL)
 
@@ -273,6 +286,27 @@ flowchart TB
 | ![공개 데이터 문서 상세](docs/images/dashboard-public-doc.png) | ![자체 Invoice–PO 문서 상세](docs/images/dashboard-trade-doc.png) |
 | <sub>bad_scan 문서 · 반올림 인쇄된 단가는 채점에서 제외(빗금)</sub> | <sub>단가 변경 시나리오 → `UNIT_PRICE_DIFF` 검출</sub> |
 
+### 3.5 실사진 영수증 — CORD v2 (CORD_RAW)
+
+합성 데이터만으로는 파인튜닝 효과를 가를 수 없어(M0도 거의 다 맞힘) 추가했습니다. 기존 합성 데이터 계약과 FINAL 결과는 바꾸지 않고, 별도 태스크 `CORD_RAW`로 다룹니다([`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)).
+
+<img src="docs/images/data/cord-dev-sample.jpg" alt="CORD v2 dev 영수증 일부 — 품목 1개, 하위 품목(PEARL), 소계·합계" width="420">
+
+<sub>CORD dev 사진 한 장의 일부(`cord_dev_0084`, 상호·주소는 데이터셋이 이미 가림). 정답: 품목 2행(`1 x` · `HAZELNUT CHOCO MT (R)` · `24,000`), 첫 행 아래 하위 품목 `PEARL (R)` `4,000`, 소계 `52,000`, 합계 `52,000`, 세금 없음.</sub>
+
+| split | 문서 | 학습 사용 | 품목 · 하위 품목 | 처리 |
+|---|---:|---:|---:|---|
+| train | 800 | **742** | 2,105 · 321 | 리스트 라벨 18건, dev·test와 정답이 같은 40건은 학습 제외 |
+| dev (공식 validation) | 100 | 0 | 221 · 50 | 비교·개발용. train과 정답이 같은 문서 20건 |
+| test | 100 | 0 | 251 · 36 | 설정 동결 후 arm마다 1회. train과 정답이 같은 문서 15건 |
+
+- **원 라벨을 그대로:** 값은 영수증에 인쇄된 문자열입니다(`@16.500`, `45,500`, `2x`). 변환 · 정규화하지 않습니다.
+- **여러 상자로 나뉜 라벨은 이어 붙이지 않습니다:** 원 라벨이 리스트인 필드는 채점에서 빼고(masked) 그런 문서는 학습에서 뺐습니다.
+- **내용 중복:** 공식 분할에는 사진은 다르지만 정답이 완전히 같은 문서가 있습니다. 정답 암기를 막기 위해 dev·test와 같은 정답인 train 40건을 학습에서 뺐고, 결과는 train과 정답이 겹치지 않는 문서(dev 80 · test 85)로도 따로 보고합니다.
+- **입력 경계:** 모델 입력은 사진과 고정 프롬프트([`EXTRACT_CORD_RAW.txt`](prompts/EXTRACT_CORD_RAW.txt))뿐입니다. 출력 스키마 [`cord_extraction.schema.json`](schemas/cord_extraction.schema.json).
+- **영어 전용이 아닙니다:** 인도네시아 영수증이라 품목 이름이 섞여 있습니다.
+- 내려받기 2.31 GB, Hub 해시 6/6 일치([`cord_fetch.json`](reports/realdocs/cord_fetch.json)) · 변환 [`cord.py`](src/invoiceguard/cord.py) · manifest [`cord_v2.jsonl`](manifests/cord_v2.jsonl). 사진과 정답 파일은 저장소에 넣지 않습니다.
+
 ---
 
 ## 4. 모델과 학습
@@ -286,6 +320,7 @@ flowchart TB
 | 최적화 | 80 optimizer step<br><sub>micro batch 1 × grad accum 8 (≈1.78 epoch), lr 1e-4 cosine, warmup 0.05</sub> |
 | 자원 | 로컬 RTX 4070 Ti SUPER 16GB<br><sub>21.8분 · 최대 VRAM 6.52GB</sub> |
 | 학습 전 검증 | loss mask 감사 360/360 (확장 이미지 토큰 기준)<br><sub>10-step smoke: 유한 gradient · 112/112 텐서 변경 · 저장 후 재로드 일치</sub> |
+| **M1-cord** (CORD 추가) | 같은 설정 · 1,102건(공개 200 + 자체 160 + CORD 742) · 240 step(≈1.74 epoch)<br><sub>로컬 4070, 22.6분 · 최대 VRAM 7.02GB · loss 0.370 → 0.030 · 1,919 micro-step 마스크 재검사 ([`train_m1_cord_v1.json`](reports/model/train_m1_cord_v1.json))</sub> |
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/training-loss-ko-dark.svg">
@@ -447,6 +482,55 @@ M1이 OOD clean에서 IID clean보다 높은 것은 이 OOD가 같은 생성기�
 
 dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.md) · [`failures_m1_dev_v1.md`](reports/eval/failures_m1_dev_v1.md)
 
+### CORD v2 — 실사진 영수증
+
+합성 세트에서는 M1−M0가 유의하지 않았습니다. 그래서 사람이 라벨을 단 실사진 영수증으로 같은 2B 모델을 한 번 더 학습하고 평가합니다. 지표와 통과 기준은 학습 전에 [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)에 고정했습니다.
+
+- **같은 조건:** 세 arm 모두 로컬 RTX 4070 Ti SUPER · NF4 · 같은 프롬프트 · 같은 전처리 · greedy · batch 1입니다. M1-cord는 NF4 위에서 학습했으므로 NF4에서 평가합니다(어댑터·정밀도 짝 검사).
+- **주 지표:** 정답에 값이 있는 필드만 위치대로 맞춰 NFKC · 공백 정리 후 완전 일치. M0가 dev 답을 모두 ```` ```json ````로 감싸서, 필드 점수는 펜스 하나만 벗긴 출력으로 계산하고(잘림 · 문법 오류는 고치지 않음) 펜스 없는 JSON 비율은 형식 지표로 따로 둡니다(학습·test 전에 정한 수정 1).
+- **test는 한 번만:** dev를 본 뒤 [`configs/frozen_cord_v1.json`](configs/frozen_cord_v1.json)에 설정을 동결했고, arm마다 한 번 실행합니다. **— 는 아직 실행하지 않은 칸입니다.**
+
+| 지표 | M0<br><sub>dev</sub> | M1 v1<br><sub>dev</sub> | M1-cord<br><sub>dev</sub> | M0<br><sub>test</sub> | M1 v1<br><sub>test</sub> | M1-cord<br><sub>test</sub> |
+|---|---:|---:|---:|---:|---:|---:|
+| **strict 필드 정확도** (주 지표) | 0.712<br><sub>717/1,007</sub> | 0.304<br><sub>306/1,007</sub> | **0.762**<br><sub>767/1,007</sub> | — | — | — |
+| 형식 무시 정확도<br><sub>숫자는 숫자만, 이름은 대소문자·공백 무시</sub> | 0.777 | 0.393 | **0.812** | — | — | — |
+| 순서 무관 필드 F1<br><sub>정밀도 / 재현율</sub> | 0.654<br><sub>0.56 / 0.79</sub> | 0.425<br><sub>0.52 / 0.36</sub> | **0.845**<br><sub>0.85 / 0.84</sub> | — | — | — |
+| train과 정답이 겹치지 않는 문서만 | 0.706<br><sub>80문서</sub> | 0.272 | **0.744** | —<br><sub>85문서</sub> | — | — |
+| 펜스 없는 JSON | 0/100 | 79/100 | **100/100** | — | — | — |
+| 정답에 없는 값을 채운 필드 | 269 | 163 | **24** | — | — | — |
+| 행 수 일치 · 문서 전체 일치 | 0.67 · 0.01 | 0.32 · 0.00 | **0.83 · 0.33** | — | — | — |
+| 추론 시간 | 12.4초/문서 | 12.5초/문서 | 8.2초/문서 | — | — | — |
+
+<sub>원본: `reports/eval/cord_*.json` · 채점기 [`cord_eval.py`](src/invoiceguard/cord_eval.py). 추론이 짧은 것은 M1-cord가 펜스와 지어낸 필드 없이 답해 토큰이 적기 때문입니다.</sub>
+
+**사전 고정 판정 기준**
+
+| 기준 | dev (참고 · 판정 아님) | test (판정) |
+|---|---|---|
+| 파인튜닝 효과<br><sub>M1-cord − M0 strict ≥ +0.05 이고 95% CI 하한 > 0</sub> | +0.0497 [+0.005, +0.093]<br><sub>CI 하한은 0 위, 점추정은 기준보다 0.0003 낮음</sub> | — |
+| 읽기도 좋아짐<br><sub>위 기준 + 형식 무시 차이의 CI 하한 > 0</sub> | +0.036 [−0.001, +0.073]<br><sub>CI가 0을 포함</sub> | — |
+| 기존 성능 유지<br><sub>기존 dev에서 M1-cord가 M1 v1보다 0.03 넘게 떨어지지 않음</sub> | 자체 dev −0.003 [−0.032, +0.021]<br>공개 dev clean +0.033 [+0.004, +0.077] → **충족** | test 기준 아님 |
+
+<sub>같은 문서 쌍 bootstrap 2,000회(seed 20261113), 정답이 같은 문서는 한 묶음으로 재표집. 회귀 확인은 M1 v1의 dev 세트 7개 전부에서 했고 나머지 5개도 −0.067 ~ +0.162 범위입니다(각 8–24문서, [`compare_m1cord_dev_v1__vs__m1_dev_v1.json`](reports/eval/compare_m1cord_dev_v1__vs__m1_dev_v1.json)).</sub>
+
+**dev에서 보이는 것 (test 전, 참고)**
+- **M1-cord의 이득은 주로 형식과 구조입니다.** 펜스 없는 JSON 0 → 100/100, 지어낸 필드 269 → 24, 행 수 일치 0.67 → 0.83, 문서 전체 일치 0.01 → 0.33.
+- 필드별로는 세금 0.49 → 0.72, 합계 0.74 → 0.90, 품목 수량 0.80 → 0.90이 올랐고, 품목 단가 0.82 → 0.68, 품목 금액 0.86 → 0.80은 내려갔습니다. 하위 품목은 세 arm 모두 약합니다(이름 0.20–0.43).
+- **합성 인보이스로만 학습한 어댑터(M1 v1)는 영수증으로 옮겨 가지 못했습니다.** M0보다 −0.408 [−0.503, −0.307]이며, 문서 합계·소계를 거의 내지 못합니다(합계 0.11). 학습한 형식 밖에서는 파인튜닝이 해가 될 수 있습니다.
+
+**한 장의 예** — 위 [3.5절](#35-실사진-영수증--cord-v2-cord_raw)의 `cord_dev_0084`
+
+| 필드 | 정답 | M0 | M1-cord |
+|---|---|---|---|
+| 출력 형식 | | ```` ```json ```` 펜스 | 순수 JSON |
+| 품목 1 · 수량 / 이름 | `1 x` · `HAZELNUT CHOCO MT (R)` | `1` ≈ · `HazelNut Choco MT (R)` ≈ | `1 x` ✓ · `HazelNut Choco MT (R)` ≈ |
+| 품목 1 · 하위 품목 | `PEARL (R)` `4,000` | 빠뜨림 — 대신 품목 2로 넣어 뒤 행이 밀림 | `PEARL (R)` `4,000` ✓ |
+| 품목 2 | `1 x` · `HAZELNUT CHOCO MT (R)` · `24,000` | `Pearl (R)` · `4,000` ✗ | 빠뜨림 ✗ |
+| 단가 · 세금 | 인쇄 안 됨 | `24,000` · `52,000`을 지어냄 | 비움 ✓ |
+| strict 정답 / 채점 필드 | | 3 / 10 | 6 / 10 |
+
+<sub>✓ 일치 · ≈ 숫자·글자는 같고 인쇄 형식만 다름(strict에서는 오답) · ✗ 틀림. 대시보드의 CORD 영수증 페이지에서 문서마다 이 비교를 볼 수 있습니다.</sub>
+
 ---
 
 ## 7. 서빙
@@ -467,7 +551,8 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 **vLLM: 로컬은 blocked, RunPod에서 측정**
 - 로컬에서는 `vllm/vllm-openai:v0.11.2`(Qwen3-VL 지원 버전)가 CUDA ≥ 12.9를 요구하는데 로컬 드라이버 561.17은 CUDA 12.6까지라 실행하지 못했습니다. 요구 조건 검사를 꺼도 컨테이너 안 PyTorch가 "No CUDA GPUs are available"로 실패했습니다.
 - 빌린 A40에서는 같은 벤치([`serving/vllm_bench.py`](src/invoiceguard/serving/vllm_bench.py))가 돌았습니다. M1이 동시성 1에서 분당 24문서, 동시성 8에서 149문서를 처리했고 실패 요청은 없었습니다.
-- 다만 vLLM에서 M1 정확도가 떨어져(0.849 vs 0.960) 속도만 씁니다. 자세한 내용은 [12장](#12-runpod-클라우드-재현)에 있습니다.
+- 실행 1에서는 vLLM에서 M1 정확도가 떨어졌습니다(0.849 vs 0.960). 원인은 어댑터를 학습한 기본 모델 정밀도(NF4)와 서빙 기본 모델(bf16)이 달랐기 때문입니다.
+- 실행 2(L40S)에서 NF4를 역양자화한 bf16 가중치에 어댑터를 병합해 올리자 **0.960으로 회복**했습니다(HF 경로와 같음). FP8로 올리면 처리량이 23–33 % 늘고 정확도는 −0.2 %p(M0) · −1.0 %p(M1) 바뀌었습니다. 자세한 내용은 [12장](#12-runpod-클라우드-재현)에 있습니다.
 
 ![서빙 페이지](docs/images/dashboard-serving.png)
 
@@ -527,6 +612,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 | 개요 · 진행 단계·게이트 | 파이프라인 단계, KPI, FINAL 막대, 차단 항목<br><sub>T00–T09 작업, G0–G7 인수 게이트</sub> |
 | 공개 데이터 · 자체 Invoice–PO | 필터 목록 → 문서 이미지 + 정답 + 가시성 마스크<br><sub>자체 데이터는 발주서와 대사 결과까지</sub> |
 | 분할·manifest | 분할 통계, 누수 검사, 동결 상태 |
+| CORD 영수증 · CORD 평가 | 영수증 사진 + 정답 + 기록된 실행(M0 · M1 v1 · M1-cord)의 예측을 칸마다 비교<br><sub>사전 고정 기준 표, dev/test 막대, paired 차이(CI), 필드별 정확도, 학습 loss, 걸린 시간 — 아직 실행하지 않은 test 칸은 빈칸</sub> |
 | 모델·평가 · 서빙 | B0 · M0 · M1 막대(95% CI · lenient), paired 차이, 학습 loss<br><sub>지연 · 처리량 · 취소 · 출력 동일성</sub> |
 | 검수 API · 테스트 · 클라우드·비용 | T06 기록과 LIVE 시연, pytest 요약, 예산 계획과 승인 양식 |
 
@@ -545,6 +631,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 | 다른 머신에서의 재현 | 동결 학습을 RunPod A40에서 다시 돌림: step별 loss 차이 0.002 이내, dev 출력 동일<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
 | 클라우드 GPU 운영 | MCP로 Runpod 운영: 실제 견적 → 승인 → Pod → SSH · 터널 검사 → 학습 → SHA256 백업 → 삭제, 약 $0.43(추정)<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
 | 추출 정확도 · 실패 분석 · 개선 | 세트별 평가기 · paired bootstrap, 실패 분류, 개선 1건과 **음성 결과**<br><sub>[`reports/eval/`](reports/eval)</sub> |
+| 실문서 평가 · 사전 등록 | 사람 라벨 실사진 영수증 CORD v2를 별도 태스크로 추가, 지표·통과 기준을 학습 전에 고정, 내용 중복 제거, test 1회 동결<br><sub>[`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) · [`cord_eval.py`](src/invoiceguard/cord_eval.py)</sub> |
 | 자동 채점 · 회귀 테스트 | pytest 160개 이상(규칙 B01–B12, 평가 E01–E05, API A01–A08, 대시보드)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · 동결 · 해시 가드</sub> |
 | 서빙 · 성능 측정 | 직접 만든 Transformers + PEFT GPU 서버(서빙 프레임워크 아님) — 실제 타임아웃 취소 · bounded queue 실측<br><sub>[`reports/serving/`](reports/serving)</sub><br>RunPod에서 vLLM 0.11.2: 동시성 1–8의 연속 배칭 측정 |
 | OCR / 문서 AI | Tesseract 기준선 B0<br><sub>train/dev만 보고 만든 일반 규칙, Docker 격리</sub> |
@@ -556,17 +643,17 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 ## 11. 비용과 한계
 
 **비용**
-- 클라우드 지출 **약 $0.43**(추정: 43분 × 시간당 $0.60) — RunPod A40 Pod 1대([12장](#12-runpod-클라우드-재현)). 작성 시점에는 청구 기록이 아직 다 반영되지 않았습니다.
-- 학습 1회 약 22분, final M0 · M1 추론 약 49분(B0 OCR 시간은 기록 없음), 모두 로컬 GPU
+- 클라우드 지출 **약 $2.16**(추정) — 실행 1 A40 43분 약 $0.43 + 실행 2 L40S 1시간 33분 약 $1.73, 각각 Pod 1대([12장](#12-runpod-클라우드-재현)). 시간 × 단가로 계산한 값이며 청구 기록 확정값은 아닙니다.
+- 로컬 GPU: 학습 1회 약 22분, final M0 · M1 추론 약 49분(B0 OCR 시간은 기록 없음). CORD: M1-cord 학습 22.6분, dev 추론 20.7 · 20.9 · 13.6분, 기존 dev 회귀 29.7분.
 
 **한계**
-- 합성 데이터만 썼고 표본이 작습니다.
+- FINAL 표는 합성 데이터이고 표본이 작습니다. 실사진은 CORD v2 영수증뿐이며, 인보이스·통관 문서가 아니고 영어 전용도 아닙니다. CORD 학습도 seed 1개 · 1회입니다.
   - 공개 세트당 20 base, 자체 test 40문서, 경고 코드별 사례 1–10건
   - 열화 stress는 dev 전용입니다.
 - M0의 낮은 strict 점수는 형식 효과(코드펜스)가 큽니다. 동결 전 프롬프트 A/B로도 없어지지 않았고, 펜스 제거 후처리는 동결된 계약에 들어 있지 않습니다.
 - 모호수량 실패는 해결되지 않았습니다.
 - 서빙
-  - vLLM은 RunPod에서만 측정했습니다. 속도는 측정했지만 vLLM에서 M1 정확도가 떨어졌고 원인은 확정하지 못했습니다.
+  - vLLM은 RunPod에서만 측정했습니다. 실행 1의 정확도 저하는 원인(어댑터·기본 모델 정밀도 불일치)을 찾아 실행 2에서 역양자화 병합으로 회복했지만, 병합본은 GPU마다 비트가 조금 다르므로 한 곳에서 만들어 해시로 옮겨야 합니다.
   - 직접 만든 HF 서버는 배칭이 없습니다(batch 1, 직렬 작업자). 배칭은 RunPod의 vLLM에서만 측정했습니다(12장).
   - 벤치는 문서 10장 · 반복 1회이고, 서빙 서버 자체의 자동 테스트 없이 수동 probe만 있습니다.
 - RunPod 재현은 seed 1개 · 1회이고, dev parity는 8건입니다. Pod 안 자동 정지는 권한 문제로 걸지 못해, Pod를 삭제할 때까지 지켜보며 진행했습니다.
@@ -662,9 +749,50 @@ flowchart TB
   - **원인은 클라우드를 다시 쓰지 않고 로컬에서 찾았습니다.** 같은 어댑터를 양자화하지 않은 bf16 기본 모델에 붙여 로컬 GPU의 HF 기준 경로로 돌리면, 같은 20건에서 0.847이 나옵니다. 출력 토큰 수는 20건 모두 vLLM과 ±1 이내로 같고, 원문 20건 중 19건에 문서 합계 필드가 없습니다([`reports/quant/`](reports/quant)).
   - 즉 원인은 기본 모델 정밀도입니다. 어댑터는 NF4로 양자화한 기본 모델 위에서 학습했는데 bf16 기본 모델에 붙였기 때문이며, A40·리눅스·vLLM 문제가 아닙니다.
   - vLLM 벤치는 원문 응답을 저장하지 않았습니다. 지금은 저장하도록 고쳤습니다.
-  - 그래서 이 vLLM 수치는 속도 측정으로만 쓰고, vLLM에서의 LoRA 서빙 품질은 미해결로 둡니다.
+  - 그래서 실행 1의 vLLM 수치는 속도 측정으로만 씁니다. vLLM에서의 LoRA 서빙 품질은 실행 2에서 해결했습니다(아래).
 
 전체 기록: [`reports/runpod/RUNPOD_RUN.md`](reports/runpod/RUNPOD_RUN.md)
+
+### 실행 2 — L40S: vLLM 정확도 회복 · FP8 · bf16 LoRA
+
+실행 1에서 남은 질문(vLLM에서 M1 정확도가 떨어진 이유, FP8로 서빙하면 얼마나 빨라지는지)을 확인하려고 한 번 더 빌렸습니다. FP8 하드웨어 연산이 있는 Ada 세대가 필요해 A40(Ampere) 대신 **L40S 48 GB**를 골랐습니다(Secure EUR-IS-2, 시간당 $1.09, 견적 승인 후). 지나고 보니 FP8 외 작업은 A40으로도 충분해 약 $0.7을 더 썼습니다.
+
+| 구간 | 시간 |
+|---|---:|
+| 설치 · 해시 검사 | 5분 |
+| vLLM 5회 (M0 · M1 병합 × bf16 · FP8, 배치 제한 비교) | 18분 |
+| 32B FP8 교사 모델 시도 (실패 2회 + 2장) | 약 15분 |
+| bf16 위 일반 LoRA 학습 + dev 44건 평가 3종 | 35분 |
+| 8B 교사 초안 169장 | 17.5분 |
+| 백업 · 삭제 | 2.7분 |
+| **합계 · 비용** | **1시간 33분 · 약 $1.73 (추정)** |
+
+<sub>Pod 로그의 단계 시각으로 만든 표입니다([`timeline.md`](reports/runpod2/timeline.md)). Pod는 백업을 해시로 확인한 뒤 삭제했고, 다시 조회해 0개임을 확인했습니다.</sub>
+
+**vLLM 서빙** — 같은 자체 dev 20건, max_tokens 1536, 원문 저장
+
+| 모델 | 정밀도 | 필드 정확도 | 분당 문서 · 동시 1 / 4 / 8 / 16 | p50 · 동시 1 |
+|---|---|---:|---|---:|
+| M0 | bf16 | 0.998 | 22.8 / 76.8 / 118.9 / 168.3 | 2.43초 |
+| M0 | FP8 | 0.996 | 30.3 / 100.2 / 153.0 / 207.0 | 1.85초 |
+| M1 병합 (NF4 역양자화 + LoRA) | bf16 | **0.960** | 32.6 / 107.3 / 168.8 / 238.4 | 1.75초 |
+| M1 병합 | FP8 | 0.950 | 42.3 / 140.7 / 219.0 / 295.6 | 1.33초 |
+
+- **정확도 회복:** 실행 1의 0.849가 0.960이 되었습니다. HF NF4 경로와 같은 값입니다. 어댑터를 학습한 가중치(NF4를 역양자화한 값) 위에 병합했기 때문입니다.
+- **FP8:** 처리량이 23–33 % 늘고, 필드 정확도는 M0 −0.2 %p, M1 −1.0 %p 바뀌었습니다(20문서라 작은 차이는 구분하기 어려움).
+- **GPU마다 병합본이 다릅니다:** 같은 스크립트로 Pod(L40S)와 로컬(4070)에서 만든 병합본의 SHA256이 달랐습니다. 텐서 625개 중 59개가 bf16 1칸 이내로 달랐고, LoRA 대상이 아닌 층도 포함됩니다. bitsandbytes NF4 양자화 단계부터 GPU마다 결과가 조금 다르기 때문입니다. 그래서 모델 파일은 한 곳에서 한 번 만들고 해시로 옮깁니다([`merge_tensor_diff.json`](reports/runpod2/merge_tensor_diff.json)).
+
+**bf16 위 일반 LoRA (같은 L40S에서 학습 + 평가)** — 80 step 253초(3.2초/step). 로컬 4070 16 GB에서는 메모리가 넘쳐 step당 358초라 중단했습니다.
+
+| 모델 | 공개 dev clean (20) | 자체 dev (24) |
+|---|---:|---:|
+| M0 bf16 | 0.000 <sub>(lenient 0.736)</sub> | 0.976 |
+| M1 QLoRA (NF4) | 0.963 | 0.970 |
+| M1 bf16 LoRA | 0.931 | 0.986 |
+
+<sub>bf16 LoRA − QLoRA: 공개 −0.033 [−0.087, 0.017], 자체 +0.017 [−0.016, 0.057] — 둘 다 유의하지 않음. 쉬운 합성 데이터에서는 학습 방식 차이를 가를 수 없어 CORD v2를 추가하는 계기가 되었습니다.</sub>
+
+**쓰지 않은 것:** 라벨이 없는 실제 세금계산서 사진 169장에 8B · 32B 교사 모델로 정답 초안을 만들어 봤지만, 검산(수량 × 단가 = 금액)을 통과한 행이 185행 중 40행뿐이라 정답으로 쓰지 않았습니다. 그 사진과 초안에는 실제 상호 · 주소가 있어 저장소에 넣지 않고, 개수 · 시간 요약만 남겼습니다([`teacher_drafts_summary.json`](reports/runpod2/teacher_drafts_summary.json)).
 
 ---
 
@@ -727,7 +855,18 @@ bash scripts/runpod/pod_parity.sh   # 기준 경로(HF NF4)로 dev parity
 python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --smoke reports/runpod/pod_smoke_train.json
 ```
 
-**8) README 차트 · 데이터 샘플 다시 만들기** — 차트는 `reports/`의 기록에서, 샘플은 로컬 데이터에서 생성합니다.
+**8) CORD v2 (실사진 영수증)** — 내려받기(약 2.31 GB, 해시 검사) → 변환 → dev → 동결 → test 1회
+```bash
+.venv-ml/Scripts/python.exe -I scripts/realdocs/fetch_cord.py
+.venv-ml/Scripts/python.exe -I -m invoiceguard.cord build
+bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord 학습 → M1-cord dev → 기존 dev 회귀
+.venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
+bash scripts/realdocs/run_cord_test.sh           # arm마다 한 번
+.venv-ml/Scripts/python.exe -m invoiceguard.cord_eval score artifacts/predictions/cord_test_m1cord_nf4
+.venv-ml/Scripts/python.exe -m invoiceguard.cord_eval compare cord_test_m1cord_nf4 cord_test_m0_nf4
+```
+
+**9) README 차트 · 데이터 샘플 다시 만들기** — 차트는 `reports/`의 기록에서, 샘플은 로컬 데이터에서 생성합니다.
 ```bash
 .venv/Scripts/python.exe -m invoiceguard.readme_figures
 .venv/Scripts/python.exe -m invoiceguard.readme_samples
@@ -742,6 +881,8 @@ python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --sm
 - **공개 데이터:** [alamgirqazi/invoice-ocr-synthetic](https://huggingface.co/datasets/alamgirqazi/invoice-ocr-synthetic), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
   - 이 데이터셋의 합성 이미지를 축소해 README 샘플(`docs/images/data/public-*.jpg`, 템플릿 6종과 품질 비교 3장)과 공개 데이터 화면 캡처(`docs/images/dashboard-public-doc.png`)에 넣었습니다.
   - 데이터 자체는 저장소에 포함하지 않습니다.
+- **실사진 영수증:** [naver-clova-ix/cord-v2](https://huggingface.co/datasets/naver-clova-ix/cord-v2) @ `7f0115a4`, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — Park et al., "CORD: A Consolidated Receipt Dataset for Post-OCR Parsing" (2019)
+  - 사진 한 장의 일부를 축소해 README 샘플(`docs/images/data/cord-dev-sample.jpg`)로 넣었습니다. 데이터 자체는 저장소에 포함하지 않습니다.
 - **기본 모델:** [Qwen/Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct) — 가중치는 저장소에 포함하지 않습니다.
 - **OCR:** [Tesseract](https://github.com/tesseract-ocr/tesseract) 4.1.1 (Docker 이미지 안에서 실행)
 - **클라우드 GPU:** [Runpod](https://www.runpod.io) — 12장의 워드마크는 Runpod 콘솔에서 가져온 것으로 제공사를 나타내는 용도로만 썼으며 Runpod의 상표입니다. 콘솔 캡처는 이 프로젝트가 빌린 Pod 화면입니다.

@@ -18,6 +18,26 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
+## 2026-11-15 00:45 — CORD dev 3 arm·학습·회귀 완료, 동결, test 1회 실행 중, 대시보드·README 반영
+- **체인 시간** (`artifacts/logs/cord_local_chain.log`, UTC 스탬프 → KST): M1 v1 dev 22:57:13–23:18:55 · M1-cord 학습 23:18:55–23:42:26(train_seconds 1,354) · M1-cord dev 23:42:26–23:56:51 · 기존 dev 회귀 23:56:51–00:26:56(1,780.8초). 체인 전체 약 1시간 30분.
+- **M1-cord 학습** (`reports/model/train_m1_cord_v1.json`): 1,102건(공개 200 + 자체 160 + CORD 742), 240 step ≈1.74 epoch, 22.6분, loss 0.370 → 0.030(평균 0.063), VRAM 7.02GB, 1,919 micro-step 마스크 재검사, 어댑터 sha256 630d3dd1….
+- **CORD dev 결과** (`reports/eval/cord_dev_*.json`, 펜스 하나만 벗긴 출력):
+
+| arm | strict | 형식 무시 | F1 | 미중복 80 | 펜스 없는 JSON | 지어낸 필드 | 시간 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| M0 | 0.712 | 0.777 | 0.654 | 0.706 | 0/100 | 269 | 20.7분 |
+| M1 v1 (CORD 없음) | 0.304 | 0.393 | 0.425 | 0.272 | 79/100 | 163 | 20.9분 |
+| M1-cord | **0.762** | **0.812** | **0.845** | **0.744** | 100/100 | 24 | 13.6분 |
+
+- **짝지은 차이(dev, 참고):** M1-cord − M0 strict **+0.0497 [+0.005, +0.093]**(기준 +0.05에 점추정 0.0003 모자람), 형식 무시 +0.036 [−0.001, +0.073](CI 0 포함), F1 +0.191 [+0.152, +0.231], 문서 일치 +0.32. M1 v1 − M0 −0.408 [−0.503, −0.307] — 합성 인보이스 어댑터는 영수증으로 전이되지 않음(합계 0.11).
+- **필드별(dev):** M1-cord가 tax 0.49→0.72, total 0.74→0.90, item.count 0.80→0.90 상승, item.unit_price 0.82→0.68, item.price 0.86→0.80 하락. 하위 품목은 모든 arm 약함.
+- **회귀(기존 dev, m1_dev_v1과 같은 세트):** `compare_m1cord_dev_v1__vs__m1_dev_v1.json` — trade dev −0.003 [−0.032, +0.021], public dev clean +0.033 [+0.004, +0.077](M1-cord 1.000) → 기준(−0.03 이내) 충족. 나머지 5개 −0.067 ~ +0.162.
+- **동결:** 커밋 92892c5(결과·대시보드) 뒤 `freeze_cord.py` → `configs/frozen_cord_v1.json`(code_dirty false) 커밋 fa750bb. dev 결과를 보고 바꾼 설정 없음(학습 설정·프롬프트는 docs/20 그대로).
+- **test 실행 중:** `scripts/realdocs/run_cord_test.sh` 00:32:32 시작(M0 → M1-cord → M1 v1, 약 55분), 로그 `artifacts/logs/cord_test_chain.log`. 동결 검사 통과 확인. GPU 작업은 이것 하나, RunPod 리소스 없음.
+- **대시보드:** 새 페이지 2개 — "CORD 영수증"(필터 목록 → 사진 + 정답 + 기록된 실행별 예측을 칸마다 ✓/≈/✗/∅/+ 비교, 원문 출력) · "CORD 평가"(사전 기준 표, dev/test 막대, paired 차이 포레스트, 세부 지표·필드별 표, 학습 loss, 걸린 시간, 데이터 카드). test 칸은 결과 파일이 생기기 전까지 빈칸(—). 개요·분할 페이지에도 CORD 카드. API `/api/cord/rows|doc|image`(ID 정규식 + manifest, 이미지 해시 검사). 4번째 arm 색 #c98500/#eda100 팔레트 검사 통과. 테스트 9개 추가(대시보드 테스트 전체 통과).
+- **README(영·한):** 배지·머리말, 1장 요약에 CORD 표(test 빈칸), 3.5 CORD 데이터(샘플 `docs/images/data/cord-dev-sample.jpg`), 4장 M1-cord 학습, 6장 CORD 결과·사전 기준·한 장 예시, 7장 vLLM 회복, 9장 대시보드 페이지, 11장 비용 약 $2.16·한계, 12장 실행 2(L40S) 표, 13장 재현, 14장 출처.
+- **다음:** test 3 arm 채점 → compare(M1-cord−M0, M1-cord−M1 v1, M1 v1−M0) → 사전 기준 판정 → README·대시보드 test 칸 채움 → 커밋. 이후 Fable·astra 재평가.
+
 ## 2026-11-14 22:58 — CORD dev M0 기준선 결과
 - **실행:** `infer --arm m0 --set cord:dev` 로컬 4070 NF4, batch 1, 22:36:24–22:57:05 (1,240.6초, 문서당 12.4초, 최대 VRAM 2.35GB). 체인(`run_cord_local.sh`)은 22:57:13에 이어서 시작.
 - **결과** (`reports/eval/cord_dev_m0_nf4.json`, 펜스 벗긴 출력 기준): 필드 정확도 **0.712**(717/1,007), 형식 무시 0.777, 순서 무관 F1 0.654(정밀도 0.559 · 재현율 0.788), 내용 미중복 80건 0.706. strict JSON 0/100(전부 펜스). 문서 완전 일치 1/100, 행 수 일치 0.67.
