@@ -7,7 +7,7 @@
 ![gpu](https://img.shields.io/badge/GPU-local%20RTX%204070%20Ti%20SUPER-informational)
 ![cloud](https://img.shields.io/badge/cloud%20spend-%240-success)
 
-2일 MVP 포트폴리오입니다. 데이터는 **모두 합성**(공개 InvoiceOCR-Synth + 자체 생성 Invoice–PO)이며 실제 기업·통관 문서 성능을 주장하지 않습니다. 평가 수치(학습·dev·final·paired CI)는 이 저장소의 스크립트로 재현되고, 실행하지 않은 항목은 `not_run`/`blocked`로 남겼습니다.
+데이터는 **모두 합성**(공개 InvoiceOCR-Synth + 자체 생성 Invoice–PO)이며 실제 기업·통관 문서 성능을 주장하지 않습니다. 평가 수치(학습·dev·final·paired CI)는 이 저장소의 스크립트로 재현되고, 실행하지 않은 항목은 `not_run`/`blocked`로 남겼습니다.
 
 ![관리자 대시보드 — 개요](docs/images/dashboard-overview.png)
 

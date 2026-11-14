@@ -340,7 +340,7 @@
     const ld = s.local_data || {};
     add(view, [
       h("section", { class: "card hero" },
-        h("div", { class: "eyebrow" }, "INVOICEGUARD-PO · 로컬 MVP"),
+        h("div", { class: "eyebrow" }, "INVOICEGUARD-PO"),
         h("h1", null, "영어 인보이스 이미지 → VLM 추출 → 발주서 대사 → 사람 검수"),
         h("p", null, "합성 영어 인보이스에서 SKU·수량·단가를 VLM(Qwen3-VL-2B + QLoRA)으로 추출하고, 독립 발주서와 규칙 기반으로 대사한 뒤 사람이 승인한 버전만 내보냅니다. 이 화면은 저장소의 기록(reports/, manifests/, configs/)만 읽어서 보여주며 수치를 추정하지 않습니다."),
         flow),

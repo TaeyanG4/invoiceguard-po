@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "invoiceguard"
 version = "0.1.0"
-description = "InvoiceGuard-PO: English invoice VLM extraction vs independent PO, human-approved export (2-day MVP)"
+description = "English invoice VLM extraction (Qwen3-VL-2B + QLoRA), purchase-order reconciliation and human-approved export"
 requires-python = ">=3.11,<3.13"
 # Local (CPU) runtime: data preparation, evaluator, rules, API/UI.
 # GPU training/serving dependencies are locked separately after a real RunPod smoke test.
