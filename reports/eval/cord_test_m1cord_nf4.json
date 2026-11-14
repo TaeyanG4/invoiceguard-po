@@ -1,0 +1,285 @@
+{
+ "run_id": "cord_test_m1cord_nf4",
+ "contract": "docs/20_DECISIONS_V6.md (CORD_RAW, pre-registered)",
+ "fingerprint": {
+  "arm": "m1",
+  "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+  "adapter_sha256": "630d3dd1251f4badf931cc88326483ce3eb0ebcc5cc4ac33ca2330630e58e965",
+  "prompt_sha256": {
+   "PUBLIC_CANONICAL": "800bf7c960350fe25395637091bcbad02bcdb0b90b643c6c991305427593887d",
+   "TRADE_RAW": "766c5596d8ff18f6820617782970b1a4e4d424e2525d7cd7b87a64865b52de06"
+  },
+  "max_pixels": 786432,
+  "max_new_tokens": 1536,
+  "do_sample": false,
+  "precision": "nf4_double_quant_bf16_compute_vision_unquantised_patch_embed_fp32",
+  "batch_size": 1,
+  "padding_side": "left",
+  "cord_prompt_sha256": "8b62103ca165e3f6ad1e8f47cb3a79f5dd05de82f532b914af58eaabbd9dbb63",
+  "cord_manifest_sha256": "42a8371d142009df4ee95fc34d48cd32290eabed1f7ce62d00dbd0ed3cfac97c"
+ },
+ "wall_seconds": 669.2,
+ "peak_vram_gb": 2.353,
+ "env": {
+  "host": "local_workstation",
+  "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "torch": "2.9.1+cu126",
+  "cuda": "12.6",
+  "transformers": "4.57.6",
+  "peft": "0.17.1",
+  "bitsandbytes": "0.48.2",
+  "python": "3.11.9",
+  "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+  "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+  "max_pixels": 786432,
+  "precision": "nf4_double_quant_bf16_compute; vision+lm_head not quantised"
+ },
+ "sets": {
+  "cord:test": {
+   "all": {
+    "documents": 100,
+    "status_counts": {
+     "ok": 100
+    },
+    "json_valid_rate": 1.0,
+    "schema_valid_rate": 0.99,
+    "strict_field_accuracy": {
+     "correct": 798,
+     "scored": 1058,
+     "accuracy": 0.7543
+    },
+    "format_insensitive_accuracy": {
+     "correct": 838,
+     "scored": 1058,
+     "accuracy": 0.7921
+    },
+    "order_free_f1": {
+     "precision": 0.8208,
+     "recall": 0.8223,
+     "f1": 0.8215,
+     "tp": 870,
+     "predicted": 1060,
+     "gold": 1058
+    },
+    "by_field_strict": {
+     "doc.subtotal": {
+      "correct": 58,
+      "scored": 64,
+      "accuracy": 0.9062
+     },
+     "doc.tax": {
+      "correct": 28,
+      "scored": 42,
+      "accuracy": 0.6667
+     },
+     "doc.total": {
+      "correct": 86,
+      "scored": 95,
+      "accuracy": 0.9053
+     },
+     "item.count": {
+      "correct": 186,
+      "scored": 220,
+      "accuracy": 0.8455
+     },
+     "item.name": {
+      "correct": 176,
+      "scored": 251,
+      "accuracy": 0.7012
+     },
+     "item.price": {
+      "correct": 201,
+      "scored": 246,
+      "accuracy": 0.8171
+     },
+     "item.unit_price": {
+      "correct": 48,
+      "scored": 67,
+      "accuracy": 0.7164
+     },
+     "sub.count": {
+      "correct": 5,
+      "scored": 17,
+      "accuracy": 0.2941
+     },
+     "sub.name": {
+      "correct": 7,
+      "scored": 36,
+      "accuracy": 0.1944
+     },
+     "sub.price": {
+      "correct": 3,
+      "scored": 20,
+      "accuracy": 0.15
+     }
+    },
+    "absent_fields_filled": 42,
+    "row_count_match_rate": 0.77,
+    "doc_exact": 0.33
+   },
+   "content_unseen": {
+    "documents": 85,
+    "status_counts": {
+     "ok": 85
+    },
+    "json_valid_rate": 1.0,
+    "schema_valid_rate": 0.9882,
+    "strict_field_accuracy": {
+     "correct": 682,
+     "scored": 929,
+     "accuracy": 0.7341
+    },
+    "format_insensitive_accuracy": {
+     "correct": 720,
+     "scored": 929,
+     "accuracy": 0.775
+    },
+    "order_free_f1": {
+     "precision": 0.8049,
+     "recall": 0.8084,
+     "f1": 0.8067,
+     "tp": 751,
+     "predicted": 933,
+     "gold": 929
+    },
+    "by_field_strict": {
+     "doc.subtotal": {
+      "correct": 52,
+      "scored": 56,
+      "accuracy": 0.9286
+     },
+     "doc.tax": {
+      "correct": 24,
+      "scored": 37,
+      "accuracy": 0.6486
+     },
+     "doc.total": {
+      "correct": 71,
+      "scored": 80,
+      "accuracy": 0.8875
+     },
+     "item.count": {
+      "correct": 161,
+      "scored": 191,
+      "accuracy": 0.8429
+     },
+     "item.name": {
+      "correct": 150,
+      "scored": 221,
+      "accuracy": 0.6787
+     },
+     "item.price": {
+      "correct": 172,
+      "scored": 216,
+      "accuracy": 0.7963
+     },
+     "item.unit_price": {
+      "correct": 42,
+      "scored": 61,
+      "accuracy": 0.6885
+     },
+     "sub.count": {
+      "correct": 3,
+      "scored": 15,
+      "accuracy": 0.2
+     },
+     "sub.name": {
+      "correct": 6,
+      "scored": 34,
+      "accuracy": 0.1765
+     },
+     "sub.price": {
+      "correct": 1,
+      "scored": 18,
+      "accuracy": 0.0556
+     }
+    },
+    "absent_fields_filled": 39,
+    "row_count_match_rate": 0.7412,
+    "doc_exact": 0.2824
+   },
+   "strict_json_no_repair_all": {
+    "documents": 100,
+    "status_counts": {
+     "ok": 100
+    },
+    "json_valid_rate": 1.0,
+    "schema_valid_rate": 0.99,
+    "strict_field_accuracy": {
+     "correct": 798,
+     "scored": 1058,
+     "accuracy": 0.7543
+    },
+    "format_insensitive_accuracy": {
+     "correct": 838,
+     "scored": 1058,
+     "accuracy": 0.7921
+    },
+    "order_free_f1": {
+     "precision": 0.8208,
+     "recall": 0.8223,
+     "f1": 0.8215,
+     "tp": 870,
+     "predicted": 1060,
+     "gold": 1058
+    },
+    "by_field_strict": {
+     "doc.subtotal": {
+      "correct": 58,
+      "scored": 64,
+      "accuracy": 0.9062
+     },
+     "doc.tax": {
+      "correct": 28,
+      "scored": 42,
+      "accuracy": 0.6667
+     },
+     "doc.total": {
+      "correct": 86,
+      "scored": 95,
+      "accuracy": 0.9053
+     },
+     "item.count": {
+      "correct": 186,
+      "scored": 220,
+      "accuracy": 0.8455
+     },
+     "item.name": {
+      "correct": 176,
+      "scored": 251,
+      "accuracy": 0.7012
+     },
+     "item.price": {
+      "correct": 201,
+      "scored": 246,
+      "accuracy": 0.8171
+     },
+     "item.unit_price": {
+      "correct": 48,
+      "scored": 67,
+      "accuracy": 0.7164
+     },
+     "sub.count": {
+      "correct": 5,
+      "scored": 17,
+      "accuracy": 0.2941
+     },
+     "sub.name": {
+      "correct": 7,
+      "scored": 36,
+      "accuracy": 0.1944
+     },
+     "sub.price": {
+      "correct": 3,
+      "scored": 20,
+      "accuracy": 0.15
+     }
+    },
+    "absent_fields_filled": 42,
+    "row_count_match_rate": 0.77,
+    "doc_exact": 0.33
+   },
+   "fence_stripped_documents": 0
+  }
+ }
+}

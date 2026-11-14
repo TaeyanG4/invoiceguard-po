@@ -78,21 +78,22 @@ What differs between the sets is summarised in [6. Results › Evaluation sets](
 - The product therefore routes every document to human review.
 - The dev-based improvement attempt (adding training data) had no effect, and that result is recorded as is.
 
-**5. The question is being re-tested on real receipt photos (CORD v2).**
+**5. On real receipt photos (CORD v2) the fine-tuning effect passed the pre-registered criteria.**
 
 <!-- cord-summary:start -->
 
 | CORD v2 · strict field accuracy | M0<br><sub>base model</sub> | M1 v1<br><sub>the M1 above (no CORD)</sub> | M1-cord<br><sub>trained with CORD train</sub> |
 |---|---:|---:|---:|
 | dev, 100 photos<br><sub>development · not the verdict</sub> | 0.712 | 0.304 | **0.762** |
-| test, 100 photos<br><sub>once, after the freeze · verdict</sub> | — | — | — |
+| test, 100 photos<br><sub>once, after the freeze · verdict</sub> | 0.689 | 0.215 | **0.754** |
 
-<sub>Local RTX 4070 Ti SUPER · all NF4 · same prompt, preprocessing and generation settings. — = not run yet. The pass criteria were fixed before training in [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) (Korean). Generated from `reports/eval/cord_*.json` by `python -m invoiceguard.readme_cord`.</sub>
+<sub>Local RTX 4070 Ti SUPER · all NF4 · same prompt, preprocessing and generation settings. The pass criteria were fixed before training in [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) (Korean). Generated from `reports/eval/cord_*.json` by `python -m invoiceguard.readme_cord`.</sub>
 
 <!-- cord-summary:end -->
 
-- M1 v1, trained only on synthetic invoices, scores **0.41 below the base model** on receipt photos (dev −0.408 [−0.50, −0.31]): outside the format it learned, fine-tuning can hurt.
-- M1-cord, trained with 742 CORD train photos added, is +0.0497 [+0.005, +0.093] over M0 on dev. The point estimate is 0.0003 short of the pre-registered +0.05, and the format-insensitive difference's CI includes 0. The verdict comes from test.
+- M1-cord, trained with 742 CORD train photos added, is **+0.065 [+0.027, +0.107] over M0 on test**, and the format-insensitive accuracy (digits and letters only) is +0.055 [+0.019, +0.095]. Both criteria fixed before training (≥ +0.05 with CI lower bound > 0; format-insensitive CI lower bound > 0) are met. On the 85 documents whose gold is not in train it is +0.064 [+0.021, +0.109].
+- On dev it was +0.0497, 0.0003 short of the criterion; no setting was changed after looking at dev.
+- M1 v1, trained only on synthetic invoices, scores **0.47 below the base model** on receipt photos (test −0.474 [−0.543, −0.400]): outside the format it learned, fine-tuning can hurt.
 - On the existing synthetic dev sets M1-cord did not fall below M1 v1 (own dev −0.003, public dev clean +0.033).
 
 ---
@@ -495,20 +496,20 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 
 - **Same conditions:** all three arms on the local RTX 4070 Ti SUPER · NF4 · same prompt · same preprocessing · greedy · batch 1. M1-cord was trained on the NF4 base, so it is evaluated on NF4 (adapter–precision pairing check).
 - **Primary metric:** only fields with a gold value, matched by position, exact after NFKC and whitespace collapsing. M0 wrapped every dev answer in a ```` ```json ```` fence, so field scores use the output with that one fence stripped (truncation and syntax errors are not repaired), and the fence-free JSON rate is reported separately as a format metric (amendment 1, made before any CORD training or test run).
-- **Test runs once:** after looking at dev, the settings were frozen in [`configs/frozen_cord_v1.json`](configs/frozen_cord_v1.json); each arm runs test once. **— marks a cell that has not been run yet.**
+- **Test runs once:** after looking at dev, the settings were frozen in [`configs/frozen_cord_v1.json`](configs/frozen_cord_v1.json); each arm ran test once (2026-11-15 00:32–01:22 KST; M0 20.3 min · M1-cord 11.2 min · M1 v1 17.7 min).
 
 <!-- cord-metrics:start -->
 
 | Metric | M0<br><sub>dev</sub> | M1 v1<br><sub>dev</sub> | M1-cord<br><sub>dev</sub> | M0<br><sub>test</sub> | M1 v1<br><sub>test</sub> | M1-cord<br><sub>test</sub> |
 |---|---:|---:|---:|---:|---:|---:|
-| **strict field accuracy** (primary) | 0.712<br><sub>717/1,007</sub> | 0.304<br><sub>306/1,007</sub> | **0.762**<br><sub>767/1,007</sub> | — | — | — |
-| format-insensitive accuracy<br><sub>digits only for numbers, names case/space-insensitive</sub> | 0.777 | 0.393 | **0.812** | — | — | — |
-| order-free field F1<br><sub>precision / recall</sub> | 0.654<br><sub>0.56 / 0.79</sub> | 0.425<br><sub>0.52 / 0.36</sub> | **0.845**<br><sub>0.85 / 0.84</sub> | — | — | — |
-| documents whose gold is not in train | 0.706<br><sub>80 docs</sub> | 0.272 | **0.744** | — | — | — |
-| fence-free JSON | 0/100 | 79/100 | **100/100** | — | — | — |
-| fields filled where the gold is empty | 269 | 163 | **24** | — | — | — |
-| row-count match · whole-document match | 0.67 · 0.01 | 0.32 · 0.00 | **0.83 · 0.33** | — | — | — |
-| inference time | 12.4 s/doc | 12.5 s/doc | 8.2 s/doc | — | — | — |
+| **strict field accuracy** (primary) | 0.712<br><sub>717/1,007</sub> | 0.304<br><sub>306/1,007</sub> | **0.762**<br><sub>767/1,007</sub> | 0.689<br><sub>729/1,058</sub> | 0.215<br><sub>228/1,058</sub> | **0.754**<br><sub>798/1,058</sub> |
+| format-insensitive accuracy<br><sub>digits only for numbers, names case/space-insensitive</sub> | 0.777 | 0.393 | **0.812** | 0.737 | 0.278 | **0.792** |
+| order-free field F1<br><sub>precision / recall</sub> | 0.654<br><sub>0.56 / 0.79</sub> | 0.425<br><sub>0.52 / 0.36</sub> | **0.845**<br><sub>0.85 / 0.84</sub> | 0.640<br><sub>0.54 / 0.78</sub> | 0.363<br><sub>0.50 / 0.29</sub> | **0.822**<br><sub>0.82 / 0.82</sub> |
+| documents whose gold is not in train | 0.706<br><sub>80 docs</sub> | 0.272 | **0.744** | 0.671<br><sub>85 docs</sub> | 0.200 | **0.734** |
+| fence-free JSON | 0/100 | 79/100 | **100/100** | 0/100 | 75/100 | **100/100** |
+| fields filled where the gold is empty | 269 | 163 | **24** | 264 | 116 | **42** |
+| row-count match · whole-document match | 0.67 · 0.01 | 0.32 · 0.00 | **0.83 · 0.33** | 0.63 · 0.02 | 0.28 · 0.00 | **0.77 · 0.33** |
+| inference time | 12.4 s/doc | 12.5 s/doc | 8.2 s/doc | 12.2 s/doc | 10.6 s/doc | 6.7 s/doc |
 
 <sub>Source: `reports/eval/cord_*.json` · scorer [`cord_eval.py`](src/invoiceguard/cord_eval.py). Bold = best value within the same split. M1-cord is faster because it answers without a fence and without invented fields, so it generates fewer tokens.</sub>
 
@@ -520,18 +521,20 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 
 | Criterion | dev (reference, not the verdict) | test (verdict) |
 |---|---|---|
-| Fine-tuning effect<br><sub>M1-cord − M0 strict ≥ +0.05 and 95 % CI lower bound > 0</sub> | +0.0497 [+0.0050, +0.0926] → not met<br><sub>point estimate 0.0003 short · CI above 0</sub> | — |
-| Reads better, not just formats better<br><sub>the above, plus a format-insensitive difference with CI lower bound > 0</sub> | +0.036 [−0.001, +0.073] → not met<br><sub>CI includes 0 · the fine-tuning effect criterion is not met</sub> | — |
+| Fine-tuning effect<br><sub>M1-cord − M0 strict ≥ +0.05 and 95 % CI lower bound > 0</sub> | +0.0497 [+0.0050, +0.0926] → not met<br><sub>point estimate 0.0003 short · CI above 0</sub> | +0.0652 [+0.0272, +0.1073] → **met**<br><sub>CI above 0</sub> |
+| Reads better, not just formats better<br><sub>the above, plus a format-insensitive difference with CI lower bound > 0</sub> | +0.036 [−0.001, +0.073] → not met<br><sub>CI includes 0 · the fine-tuning effect criterion is not met</sub> | +0.055 [+0.019, +0.095] → **met**<br><sub>CI above 0</sub> |
 | No regression<br><sub>on the existing dev sets M1-cord does not fall more than 0.03 below M1 v1</sub> | own dev −0.003 [−0.032, +0.021]<br>public dev clean +0.033 [+0.004, +0.077] → **met** | not a test criterion |
 
 <sub>Document-paired bootstrap, 2,000 resamples (seed 20261113); documents with identical gold are resampled together. The regression check covered all seven M1 v1 dev sets; the other sets range from −0.067 to +0.162 (8–24 documents each) ([`compare_m1cord_dev_v1__vs__m1_dev_v1.json`](reports/eval/compare_m1cord_dev_v1__vs__m1_dev_v1.json)).</sub>
 
 <!-- cord-criteria:end -->
 
-**What dev shows (before test, reference only)**
-- **M1-cord's gain is mostly format and structure:** fence-free JSON 0 → 100/100, invented fields 269 → 24, row-count match 0.67 → 0.83, whole-document match 0.01 → 0.33.
-- Per field, tax 0.49 → 0.72, total 0.74 → 0.90 and item count 0.80 → 0.90 went up; item unit price 0.82 → 0.68 and item price 0.86 → 0.80 went down. Sub-items are weak for every arm (names 0.20–0.43).
-- **The adapter trained only on synthetic invoices (M1 v1) does not transfer to receipts:** −0.408 [−0.503, −0.307] against M0, and it rarely outputs the document totals (total 0.11). Outside the format it learned, fine-tuning can hurt.
+**Reading the result (test)**
+- **Verdict:** M1-cord − M0 = +0.065 [+0.027, +0.107], format-insensitive +0.055 [+0.019, +0.095] → both "fine-tuning effect" and "reads better, not just formats better" are met. This is one seed, one training run.
+- **Much of the gain is format and structure:** fence-free JSON 0 → 100/100, invented fields 264 → 42, row-count match 0.63 → 0.77, whole-document match 0.02 → 0.33. The format-insensitive accuracy rose as well, so it is not only the output format.
+- **Per field (test):** subtotal 0.64 → 0.91, total 0.59 → 0.91 and tax 0.43 → 0.67 rose sharply; item unit price 0.82 → 0.72 and item price 0.84 → 0.82 went down (same direction as dev). Sub-items are weak for every arm (0.00–0.30).
+- **The adapter trained only on synthetic invoices (M1 v1) does not transfer to receipts:** −0.474 [−0.543, −0.400] against M0 on test; 25 of 100 outputs are not readable JSON and total accuracy is 0.12. Outside the format it learned, fine-tuning can hurt.
+- dev and test point the same way (dev +0.0497 → test +0.065).
 
 **One example** — `cord_dev_0084` from [section 3.5](#35-real-receipt-photos--cord-v2-cord_raw)
 

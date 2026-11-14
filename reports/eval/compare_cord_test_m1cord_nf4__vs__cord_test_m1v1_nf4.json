@@ -1,0 +1,75 @@
+{
+ "a": "cord_test_m1cord_nf4",
+ "b": "cord_test_m1v1_nf4",
+ "parse": "fence-stripped (one ```json fence removed, no other repair)",
+ "method": "document-paired bootstrap 2000 (seed 20261113), clusters = identical gold, A minus B",
+ "criteria": "docs/20_DECISIONS_V6.md",
+ "sets": {
+  "cord:test": {
+   "all": {
+    "n_docs": 100,
+    "n_clusters": 99,
+    "strict_field_accuracy": {
+     "diff": 0.5388,
+     "ci95": [
+      0.4639,
+      0.6104
+     ]
+    },
+    "format_insensitive_accuracy": {
+     "diff": 0.5142,
+     "ci95": [
+      0.4382,
+      0.5916
+     ]
+    },
+    "order_free_f1": {
+     "diff": 0.4587,
+     "ci95": [
+      0.404,
+      0.5176
+     ]
+    },
+    "doc_exact": {
+     "diff": 0.33,
+     "ci95": [
+      0.24,
+      0.4257
+     ]
+    }
+   },
+   "content_unseen": {
+    "n_docs": 85,
+    "n_clusters": 85,
+    "strict_field_accuracy": {
+     "diff": 0.5339,
+     "ci95": [
+      0.4557,
+      0.6128
+     ]
+    },
+    "format_insensitive_accuracy": {
+     "diff": 0.5156,
+     "ci95": [
+      0.434,
+      0.5986
+     ]
+    },
+    "order_free_f1": {
+     "diff": 0.4548,
+     "ci95": [
+      0.3897,
+      0.5204
+     ]
+    },
+    "doc_exact": {
+     "diff": 0.2824,
+     "ci95": [
+      0.1882,
+      0.3882
+     ]
+    }
+   }
+  }
+ }
+}

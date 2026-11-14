@@ -60,7 +60,8 @@ TEXT = {
     "ko": {
         "sum_head": "| CORD v2 · strict 필드 정확도 | M0<br><sub>기본 모델</sub> | M1 v1<br><sub>위 M1 (CORD 없이 학습)</sub> | M1-cord<br><sub>CORD train 추가 학습</sub> |",
         "dev_row": "dev 100장<br><sub>개발용 · 판정 아님</sub>", "test_row": "test 100장<br><sub>동결 후 1회 · 판정</sub>",
-        "sum_note": "<sub>로컬 RTX 4070 Ti SUPER · 모두 NF4 · 같은 프롬프트·전처리·생성 설정. — = 아직 실행하지 않은 칸입니다. 판정 기준은 학습 전에 [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)에 고정했습니다. 표는 `python -m invoiceguard.readme_cord`가 `reports/eval/cord_*.json`에서 만듭니다.</sub>",
+        "blank": " — = 아직 실행하지 않은 칸입니다.",
+        "sum_note": "<sub>로컬 RTX 4070 Ti SUPER · 모두 NF4 · 같은 프롬프트·전처리·생성 설정.{blank} 판정 기준은 학습 전에 [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)에 고정했습니다. 표는 `python -m invoiceguard.readme_cord`가 `reports/eval/cord_*.json`에서 만듭니다.</sub>",
         "metric": "지표",
         "rows": {
             "strict": "**strict 필드 정확도** (주 지표)",
@@ -88,7 +89,8 @@ TEXT = {
     "en": {
         "sum_head": "| CORD v2 · strict field accuracy | M0<br><sub>base model</sub> | M1 v1<br><sub>the M1 above (no CORD)</sub> | M1-cord<br><sub>trained with CORD train</sub> |",
         "dev_row": "dev, 100 photos<br><sub>development · not the verdict</sub>", "test_row": "test, 100 photos<br><sub>once, after the freeze · verdict</sub>",
-        "sum_note": "<sub>Local RTX 4070 Ti SUPER · all NF4 · same prompt, preprocessing and generation settings. — = not run yet. The pass criteria were fixed before training in [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) (Korean). Generated from `reports/eval/cord_*.json` by `python -m invoiceguard.readme_cord`.</sub>",
+        "blank": " — = not run yet.",
+        "sum_note": "<sub>Local RTX 4070 Ti SUPER · all NF4 · same prompt, preprocessing and generation settings.{blank} The pass criteria were fixed before training in [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) (Korean). Generated from `reports/eval/cord_*.json` by `python -m invoiceguard.readme_cord`.</sub>",
         "metric": "Metric",
         "rows": {
             "strict": "**strict field accuracy** (primary)",
@@ -126,7 +128,8 @@ def summary_block(lang: str) -> str:
         best = max(present) if len(present) > 1 else None
         cells = [DASH if a is None else f"**{f3(a)}**" if a == best else f3(a) for a in accs]
         lines.append(f"| {label} | " + " | ".join(cells) + " |")
-    return "\n".join(lines) + "\n\n" + t["sum_note"]
+    blank = t["blank"] if any(DASH in line for line in lines[2:]) else ""
+    return "\n".join(lines) + "\n\n" + t["sum_note"].format(blank=blank)
 
 
 def metrics_block(lang: str) -> str:
