@@ -101,5 +101,6 @@ dev에서 학습 설정을 정한 뒤, test를 돌리기 전에 `configs/frozen_
 - **역할:** 학습에 쓰지 않고, 설정을 고르는 데도 쓰지 않는 dev 전용 stress set이다. 결과는 "학습에 없던 한영 혼합 레이아웃에서의 동작"으로만 보고한다.
 - **실행:** M0 · M1 v1(`m1_standard_v1`) · M1-cord(`m1_cord_v1`) 세 arm을 같은 TRADE_RAW 프롬프트 · NF4 · batch 1로 돌린다(`t07_m0_nf4`, `t07_m1v1_nf4`, `t07_m1cord_nf4`). 채점은 `scripts/eval/t07_stress.py`(같은 strict 채점기 `score_trade_document`, 문서 단위 paired bootstrap 2,000회).
 - **보고 (사전 고정):** 필드별 strict 정확도와 전체, M1 v1 − M0 · M1-cord − M0의 paired 95% CI, 품명(한국어가 섞인 필드)은 따로, 대사 결과 코드가 기대 코드와 같은 문서 비율. "M1이 한영 혼합에서도 낫다"는 M1 v1 − M0 CI가 0을 넘을 때만 쓴다.
+- **결과 (11-15 11:37 세 arm 끝, `reports/eval/t07_stress.md`):** strict M0 0.000 · M1 v1 0.924 · M1-cord 0.932, lenient 0.927 · 0.924 · 0.932. M1 v1 − M0 strict CI는 0을 넘지만(+0.924 [+0.905, +0.941]) **전부 형식 효과**다: M0는 30장 모두 코드 펜스로 감쌌고, 펜스를 벗기면 차이가 없다(−0.003 [−0.015, +0.009]). 그래서 "한영 혼합에서 M1이 더 잘 읽는다"고 쓰지 않는다. 품명(한·영)은 세 arm 모두 약 0.6이고, 실패 대부분은 비슷한 한글 음절을 잘못 읽은 것(콘덴서 → 콘센서, 정션 → 정선, 동 → 등)이며 영어 부분은 맞다 — 기본 모델의 한글 읽기 한계로 보고, 미세조정은 더하지도 빼지도 않았다. 모호 수량은 3건 중 M0 2 · M1 v1 2 · M1-cord 3건을 그대로 옮겨 경고가 났다(합성 FINAL T05/T06의 0/2와 다름). 대사 코드가 오라클과 같은 문서 18 · 19 · 22/30, 다른 문서는 대부분 품번 한 개 오독(UNKNOWN_SKU + PO_LINE_NOT_FOUND 쌍).
 
 실행 순서: `scripts/realdocs/gpu_free_runner.py review6`(PC가 비었을 때만, 수정 4 → 6 → 5 순서).

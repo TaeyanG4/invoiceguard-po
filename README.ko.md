@@ -265,6 +265,10 @@ dev 문서 하나(`tr_69cab78e7dcd`)의 같은 부분과 그 열화본 3종입�
 | <img src="docs/images/data/stress-original.jpg" alt="원본" width="150"> | <img src="docs/images/data/stress-blur_jpeg.jpg" alt="blur + JPEG" width="150"> | <img src="docs/images/data/stress-fade_noise.jpg" alt="fade + noise" width="150"> | <img src="docs/images/data/stress-skew_lowres.jpg" alt="skew + 저해상도" width="150"> |
 | | <sub>가우시안 블러 r 1.3, JPEG q 30</sub> | <sub>대비 0.55, 밝기 1.12, 노이즈 0.18</sub> | <sub>1.5–2.5° 회전, 55 %로 줄였다 다시 키움</sub> |
 
+**한영 혼합 레이아웃 T07** — 같은 생성기로 새로 만든 30장(dev 전용, 학습 · 설정 선택에 쓰지 않음, [수정 6](docs/20_DECISIONS_V6.md)). 라벨과 품명이 한국어 + 영어이고 글꼴은 맑은 고딕입니다. 결과는 [6장](#한영-혼합-레이아웃-t07-dev-전용-stress-수정-6).
+
+<img src="docs/images/data/t07-mixed.jpg" alt="한영 혼합 T07 인보이스 일부 — 거래명세서 / INVOICE, 품번 Part No., 품명 Description" width="520">
+
 ### 3.4 IID와 OOD
 
 - **IID**(in-distribution): 학습과 **같은 종류의 양식**에서 뽑은, 학습에 쓰지 않은 새 문서
@@ -590,6 +594,21 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 | strict 정답 / 채점 필드 | | 3 / 10 | 6 / 10 |
 
 <sub>✓ 일치 · ≈ 숫자·글자는 같고 인쇄 형식만 다름(strict에서는 오답) · ✗ 틀림. 대시보드의 CORD 영수증 페이지에서 문서마다 이 비교를 볼 수 있습니다.</sub>
+
+### 한영 혼합 레이아웃 T07 (dev 전용 stress, 수정 6)
+
+학습에 없던 한국어 + 영어 인보이스 30장입니다([`t07.py`](src/invoiceguard/synth/t07.py), [`t07_stress.md`](reports/eval/t07_stress.md)). 라벨이 두 언어(거래명세서 / INVOICE, 품번 Part No., 단가 Unit Price …)이고, 품명이 "열전대 K형 (Thermocouple type K)"처럼 섞여 있으며, 글꼴은 맑은 고딕입니다. 학습과 설정 선택에는 쓰지 않았고, 기준은 실행 전에 정해 push했습니다.
+
+| arm | strict | lenient (펜스 제거) | 품명 (한·영) | 대사 코드 일치 |
+|---|---:|---:|---:|---:|
+| M0 | 0.000 | 0.927 | 0.641 | 18/30 |
+| M1 v1 | 0.924 | 0.924 | 0.607 | 19/30 |
+| M1-cord | 0.932 | 0.932 | 0.590 | 22/30 |
+
+- **M1이 더 잘 읽는다고 말할 수 없습니다.** strict 차이(+0.924 [+0.905, +0.941])는 전부 형식 효과입니다. M0는 30장 모두 코드 펜스로 감쌌고, 펜스를 벗기면 M1 v1 − M0 = −0.003 [−0.015, +0.009]입니다.
+- **약점은 한글 글자 읽기입니다.** 품명은 세 arm 모두 약 0.6이고, 틀린 것의 대부분은 비슷한 한글 음절 오독(콘덴서 → 콘센서, 정션 → 정선, 동 → 등)이며 영어 부분은 맞습니다. 세 arm이 같은 실수를 하므로 기본 모델의 한계로 보고, 미세조정은 이를 고치지도 망치지도 않았습니다. 숫자 필드(수량 · 단가 · 금액 · 합계)는 0.94–1.00입니다.
+- **모호 수량은 여기서는 보존됐습니다.** "25 pcs (5 ctn)" 같은 3건 중 M0 2 · M1 v1 2 · M1-cord 3건을 그대로 옮겨 경고가 났습니다. 합성 FINAL(T05/T06)의 0/2와 달라, 이 실패는 레이아웃에 따라 다릅니다.
+- 대사 코드가 틀린 문서는 대부분 품번 한 개 오독입니다(UNKNOWN_SKU + PO_LINE_NOT_FOUND가 같이 생김).
 
 ---
 

@@ -265,6 +265,10 @@ The same crop of one dev document (`tr_69cab78e7dcd`) and its three degradations
 | <img src="docs/images/data/stress-original.jpg" alt="original" width="150"> | <img src="docs/images/data/stress-blur_jpeg.jpg" alt="blur + JPEG" width="150"> | <img src="docs/images/data/stress-fade_noise.jpg" alt="fade + noise" width="150"> | <img src="docs/images/data/stress-skew_lowres.jpg" alt="skew + low-res" width="150"> |
 | | <sub>Gaussian blur r 1.3, JPEG q 30</sub> | <sub>contrast 0.55, brightness 1.12, noise 0.18</sub> | <sub>rotate 1.5–2.5°, downscale to 55 % and back</sub> |
 
+**Korean-English mixed layout T07** — 30 new documents from the same generator (dev only, never used for training or choosing settings, [amendment 6](docs/20_DECISIONS_V6.md)). Labels and item names are Korean + English, set in Malgun Gothic. Results in [section 6](#korean-english-mixed-layout-t07-dev-only-stress-amendment-6).
+
+<img src="docs/images/data/t07-mixed.jpg" alt="Part of a T07 Korean-English invoice — 거래명세서 / INVOICE, 품번 Part No., 품명 Description" width="520">
+
 ### 3.4 IID and OOD
 
 - **IID** (in-distribution): new documents, not used for training, from **the same kinds of templates** as training.
@@ -592,6 +596,21 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 | strict correct / scored fields | | 3 / 10 | 6 / 10 |
 
 <sub>✓ match · ≈ same digits/letters, different print form (wrong under strict) · ✗ wrong. The dashboard's CORD receipt page shows this comparison for every document.</sub>
+
+### Korean-English mixed layout T07 (dev-only stress, amendment 6)
+
+Thirty Korean + English invoices on a layout never trained on ([`t07.py`](src/invoiceguard/synth/t07.py), [`t07_stress.md`](reports/eval/t07_stress.md)): bilingual labels (거래명세서 / INVOICE, 품번 Part No., 단가 Unit Price …), item names printed in both languages such as "열전대 K형 (Thermocouple type K)", Malgun Gothic font. Not used for training or for choosing settings; the reporting rule was fixed and pushed before the runs.
+
+| arm | strict | lenient (fence stripped) | item name (KO + EN) | reconciliation codes = oracle |
+|---|---:|---:|---:|---:|
+| M0 | 0.000 | 0.927 | 0.641 | 18/30 |
+| M1 v1 | 0.924 | 0.924 | 0.607 | 19/30 |
+| M1-cord | 0.932 | 0.932 | 0.590 | 22/30 |
+
+- **No claim that M1 reads better.** The strict difference (+0.924 [+0.905, +0.941]) is all format: M0 fenced all 30 answers, and with the fence stripped M1 v1 − M0 = −0.003 [−0.015, +0.009].
+- **The weak spot is reading Hangul.** Item names are about 0.6 for all three arms; most errors are similar-looking Hangul syllables (콘덴서 → 콘센서, 정션 → 정선, 동 → 등) while the English part is right. All three arms make the same mistakes, so this is the base model's limit; fine-tuning neither fixed nor broke it. Number fields (quantity, unit price, amount, totals) are 0.94–1.00.
+- **Ambiguous quantities were kept here.** Of 3 lines such as "25 pcs (5 ctn)", M0 2, M1 v1 2 and M1-cord 3 copied the text and raised the warning — unlike 0/2 on the synthetic FINAL layouts (T05/T06), so that failure depends on the layout.
+- Documents whose reconciliation codes differ mostly have one misread part number (UNKNOWN_SKU and PO_LINE_NOT_FOUND appear together).
 
 ---
 

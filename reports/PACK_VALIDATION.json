@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-15T00:50:16.083723+00:00",
+  "checked_at_utc": "2026-11-15T02:39:50.574920+00:00",
   "status": "pass",
   "checks": [
     {
@@ -254,6 +254,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:reports/data",
       "status": "pass",
       "detail": ""
@@ -399,12 +404,32 @@
       "detail": ""
     },
     {
-      "check": "link:README.ko.md:reports/eval/cord_failure_dev.md",
+      "check": "link:README.ko.md:reports/eval/invoice_number_drop_dev.md",
       "status": "pass",
       "detail": ""
     },
     {
       "check": "link:README.ko.md:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:prompts/EXTRACT_CORD_RAW_UNITPRICE.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/synth/t07.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/eval/t07_stress.md",
       "status": "pass",
       "detail": ""
     },
@@ -445,6 +470,21 @@
     },
     {
       "check": "link:README.ko.md:src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/app/static",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:tests/test_app.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:docs/images/review-screen.png",
       "status": "pass",
       "detail": ""
     },
@@ -694,6 +734,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:reports/data",
       "status": "pass",
       "detail": ""
@@ -839,12 +884,32 @@
       "detail": ""
     },
     {
-      "check": "link:README.md:reports/eval/cord_failure_dev.md",
+      "check": "link:README.md:reports/eval/invoice_number_drop_dev.md",
       "status": "pass",
       "detail": ""
     },
     {
       "check": "link:README.md:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:prompts/EXTRACT_CORD_RAW_UNITPRICE.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/synth/t07.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/t07_stress.md",
       "status": "pass",
       "detail": ""
     },
@@ -885,6 +950,21 @@
     },
     {
       "check": "link:README.md:src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/app/static",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:tests/test_app.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/images/review-screen.png",
       "status": "pass",
       "detail": ""
     },
@@ -1986,7 +2066,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "365 local Markdown links"
+      "detail": "381 local Markdown links"
     }
   ],
   "not_performed": [

@@ -1,0 +1,246 @@
+{
+ "set": "trade:t07 (30 Korean-English mixed invoices, layout T07, dev-only stress set)",
+ "runs": {
+  "M0": "t07_m0_nf4",
+  "M1 v1": "t07_m1v1_nf4",
+  "M1-cord": "t07_m1cord_nf4"
+ },
+ "method": "strict scorer as score_run; lenient = one fence stripped; paired document bootstrap 2000, seed 20261113",
+ "arms": {
+  "M0": {
+   "strict": 0.0,
+   "lenient": 0.9274,
+   "json_strict_rate": 0.0,
+   "reconciliation_codes_match": 18,
+   "documents": 30
+  },
+  "M1 v1": {
+   "strict": 0.924,
+   "lenient": 0.924,
+   "json_strict_rate": 1.0,
+   "reconciliation_codes_match": 19,
+   "documents": 30
+  },
+  "M1-cord": {
+   "strict": 0.932,
+   "lenient": 0.932,
+   "json_strict_rate": 1.0,
+   "reconciliation_codes_match": 22,
+   "documents": 30
+  }
+ },
+ "pairs": {
+  "M1 v1 - M0 (strict)": {
+   "diff": 0.924,
+   "ci95": [
+    0.9048,
+    0.9406
+   ]
+  },
+  "M1 v1 - M0 (lenient)": {
+   "diff": -0.0034,
+   "ci95": [
+    -0.0153,
+    0.0089
+   ]
+  },
+  "M1-cord - M0 (strict)": {
+   "diff": 0.932,
+   "ci95": [
+    0.9146,
+    0.9472
+   ]
+  },
+  "M1-cord - M0 (lenient)": {
+   "diff": 0.0045,
+   "ci95": [
+    -0.0106,
+    0.0197
+   ]
+  },
+  "M1-cord - M1 v1 (strict)": {
+   "diff": 0.0079,
+   "ci95": [
+    -0.0033,
+    0.021
+   ]
+  },
+  "M1-cord - M1 v1 (lenient)": {
+   "diff": 0.0079,
+   "ci95": [
+    -0.0033,
+    0.021
+   ]
+  }
+ },
+ "fields": {
+  "sku_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 0.9487
+   },
+   "M1 v1": {
+    "strict": 0.9316,
+    "lenient": 0.9316
+   },
+   "M1-cord": {
+    "strict": 0.9573,
+    "lenient": 0.9573
+   }
+  },
+  "description_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 0.641
+   },
+   "M1 v1": {
+    "strict": 0.6068,
+    "lenient": 0.6068
+   },
+   "M1-cord": {
+    "strict": 0.5897,
+    "lenient": 0.5897
+   }
+  },
+  "quantity_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 0.9915
+   },
+   "M1 v1": {
+    "strict": 0.9915,
+    "lenient": 0.9915
+   },
+   "M1-cord": {
+    "strict": 1.0,
+    "lenient": 1.0
+   }
+  },
+  "unit_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 0.9915
+   },
+   "M1 v1": {
+    "strict": 0.9915,
+    "lenient": 0.9915
+   },
+   "M1-cord": {
+    "strict": 1.0,
+    "lenient": 1.0
+   }
+  },
+  "unit_price_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 0.9658
+   },
+   "M1 v1": {
+    "strict": 0.9573,
+    "lenient": 0.9573
+   },
+   "M1-cord": {
+    "strict": 0.9829,
+    "lenient": 0.9829
+   }
+  },
+  "line_total_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 0.9402
+   },
+   "M1 v1": {
+    "strict": 0.9573,
+    "lenient": 0.9573
+   },
+   "M1-cord": {
+    "strict": 0.9829,
+    "lenient": 0.9829
+   }
+  },
+  "invoice_number_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 0.9667
+   },
+   "M1 v1": {
+    "strict": 0.9667,
+    "lenient": 0.9667
+   },
+   "M1-cord": {
+    "strict": 0.9,
+    "lenient": 0.9
+   }
+  },
+  "currency_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 1.0
+   },
+   "M1 v1": {
+    "strict": 1.0,
+    "lenient": 1.0
+   },
+   "M1-cord": {
+    "strict": 1.0,
+    "lenient": 1.0
+   }
+  },
+  "subtotal_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 0.9667
+   },
+   "M1 v1": {
+    "strict": 1.0,
+    "lenient": 1.0
+   },
+   "M1-cord": {
+    "strict": 1.0,
+    "lenient": 1.0
+   }
+  },
+  "tax_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 1.0
+   },
+   "M1 v1": {
+    "strict": 1.0,
+    "lenient": 1.0
+   },
+   "M1-cord": {
+    "strict": 1.0,
+    "lenient": 1.0
+   }
+  },
+  "discount_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 1.0
+   },
+   "M1 v1": {
+    "strict": 1.0,
+    "lenient": 1.0
+   },
+   "M1-cord": {
+    "strict": 1.0,
+    "lenient": 1.0
+   }
+  },
+  "total_raw": {
+   "M0": {
+    "strict": 0.0,
+    "lenient": 0.9667
+   },
+   "M1 v1": {
+    "strict": 1.0,
+    "lenient": 1.0
+   },
+   "M1-cord": {
+    "strict": 1.0,
+    "lenient": 1.0
+   }
+  }
+ }
+}

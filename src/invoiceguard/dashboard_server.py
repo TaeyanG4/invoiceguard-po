@@ -410,6 +410,8 @@ def status_body(store: DataStore) -> dict[str, Any]:
     return {
         "tasks": tasks, "gates": gates,
         "evaluations": evaluations, "comparisons": comparisons,
+        "t07": _safe(errors, "reports/eval/t07_stress.json", lambda: _read_json(repo / "reports" / "eval" / "t07_stress.json"))
+        if (repo / "reports" / "eval" / "t07_stress.json").exists() else None,
         "hardware": (config or {}).get("hardware"),
         "approval": _safe(errors, "approval", lambda: snap.parse_kv(snap._read(repo / "reports" / "RUNPOD_APPROVAL.md") or "")),
         "handoff": _safe(errors, "handoff", lambda: snap.parse_kv(snap._read(repo / "reports" / "SESSION_HANDOFF.md") or "")),

@@ -714,6 +714,19 @@
             runs.map((r) => h("tr", null, h("td", { class: "mono" }, r.run_id), h("td", { class: "num" }, String(r.optimizer_steps)), h("td", { class: "num" }, fmt(r.train_loss, 4)),
               h("td", { class: "num" }, String(r.records)), h("td", null, used(r) ? pillCls("ok", "final 사용") : finalAdapter ? pillCls("idle", "미채택") : "—"))), "small")] : null)));
   }
+  // Korean-English mixed layout T07 (docs/20 amendment 6): dev-only stress set, three arms, strict and fence-stripped.
+  function t07Card(t) {
+    const arms = Object.keys(t.arms || {});
+    const desc = (t.fields || {}).description_raw || {};
+    const rows = arms.map((a) => h("tr", null, h("td", null, a), h("td", { class: "num" }, fmt(t.arms[a].strict)), h("td", { class: "num" }, fmt(t.arms[a].lenient)),
+      h("td", { class: "num" }, fmt((desc[a] || {}).lenient)), h("td", { class: "num" }, t.arms[a].reconciliation_codes_match + "/" + t.arms[a].documents)));
+    const pair = (t.pairs || {})["M1 v1 - M0 (lenient)"];
+    return h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "한영 혼합 레이아웃 T07 (dev 전용 stress)"), h("span", { class: "hint" }, "reports/eval/t07_stress.json")),
+      table(["arm", ["strict", "num"], ["펜스 제거", "num"], ["품명 (한·영)", "num"], ["대사 코드 일치", "num"]], rows, "small"),
+      h("p", { class: "note" }, "학습에 없던 한국어+영어 인보이스 30장. strict 차이는 M0의 코드 펜스 때문이며, 펜스를 벗기면 M1 v1 − M0 = " +
+        (pair ? fmt(pair.diff) + " [" + fmt(pair.ci95[0]) + ", " + fmt(pair.ci95[1]) + "]" : "—") + "로 차이가 없습니다. 품명 오류 대부분은 비슷한 한글 음절 오독입니다."));
+  }
+
   async function pageModel(view) {
     const s = await status();
     const evals = s.evaluations || [], comps = s.comparisons || [];
@@ -735,6 +748,7 @@
       forestCard(stageComps(comps, evals, "final"), "FINAL paired 차이 (A − B)"),
       trainingCard(s.model_reports, finalAdapter),
       devSets.length ? details("DEV 결과 (개발 중 비교 · final 아님)", armLegend(), armChart(devs, devSets), forestCard(stageComps(comps, evals, "dev"), "DEV paired 차이")) : null,
+      s.t07 ? t07Card(s.t07) : null,
       details("세부 표 — 실행별 원본 수치",
         ["final", "dev"].map((st) => byStage(st).length ? [h("h3", null, st === "final" ? "FINAL" : "DEV"), evalTable(byStage(st))] : null),
         h("p", { class: "note" }, "세트별로만 집계합니다(세트 합산 없음). 셀: strict 필드 정확도 · 문서 exact · strict JSON 유효율 · 문서 수 · base/family bootstrap 95% CI. 굵게 = 해당 세트 최고값.")),
