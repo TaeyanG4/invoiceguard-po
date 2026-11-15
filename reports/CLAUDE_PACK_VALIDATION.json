@@ -1,6 +1,6 @@
 {
   "scope": "static_claude_code_package_migration_only",
-  "checked_at_utc": "2026-11-15T00:00:42.119353+00:00",
+  "checked_at_utc": "2026-11-15T00:07:49.198735+00:00",
   "status": "pass",
   "checks": [
     {
@@ -844,6 +844,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/reviews/astra-5.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/reviews/astra-direction-1.md",
       "status": "pass",
       "detail": ""
@@ -860,6 +865,11 @@
     },
     {
       "check": "utf8:reports/reviews/fable-4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/fable-5.md",
       "status": "pass",
       "detail": ""
     },
@@ -890,6 +900,11 @@
     },
     {
       "check": "utf8:reports/reviews/briefs/review-4-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/review-5-brief.md",
       "status": "pass",
       "detail": ""
     },
@@ -2054,6 +2069,11 @@
       "detail": ""
     },
     {
+      "check": "active_refs:reports/reviews/astra-5.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:reports/reviews/astra-direction-1.md",
       "status": "pass",
       "detail": ""
@@ -2070,6 +2090,11 @@
     },
     {
       "check": "active_refs:reports/reviews/fable-4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/fable-5.md",
       "status": "pass",
       "detail": ""
     },
@@ -2100,6 +2125,11 @@
     },
     {
       "check": "active_refs:reports/reviews/briefs/review-4-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/review-5-brief.md",
       "status": "pass",
       "detail": ""
     },

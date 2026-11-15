@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-15T00:01:00.941374+00:00",
+  "checked_at_utc": "2026-11-15T00:07:32.301471+00:00",
   "status": "pass",
   "checks": [
     {
@@ -1779,6 +1779,111 @@
       "detail": ""
     },
     {
+      "check": "link:reports\\reviews\\astra-5.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../reports/serving/hf_peft_nf4_local_cord.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../reports/serving/hf_peft_nf4_local_cord_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../configs/frozen_cord_v1_deps.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../src/invoiceguard/cord_guard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../plan.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../src/invoiceguard/regression_gate.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../src/invoiceguard/regression_gate.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../configs/regression_gate.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../tests/test_regression_gate.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../reports/eval/final_field_ci.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../reports/runpod2/billing.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../.github/workflows/ci.yml",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-5.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:reports\\reviews\\astra-direction-1.md:../../reports/quant/precision_dev20.md",
       "status": "pass",
       "detail": ""
@@ -1881,7 +1986,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "344 local Markdown links"
+      "detail": "365 local Markdown links"
     }
   ],
   "not_performed": [

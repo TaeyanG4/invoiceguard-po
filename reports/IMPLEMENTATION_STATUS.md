@@ -234,7 +234,7 @@
 | CORD v2 (로컬 4070 NF4) | dev M0 0.712 · M1 v1 0.304 · M1-cord 0.762 → 동결 → test M0 0.689 · M1 v1 0.215 · M1-cord 0.754, 사전 기준 충족, 기존 dev 회귀 없음 | reports/eval/cord_*.json, docs/20_DECISIONS_V6.md |
 | CPU 테스트 | 200개 중 실패 0 · 건너뜀 1, verify_pack 264 · verify_contracts 63 pass, GitHub CI pass (93db6dd) | .github/workflows/ci.yml |
 
-### 세션 3 후반 — 평가 반영 (2026-11-15 01:52 ~ 09:05 KST)
+### 세션 3 후반 — 평가 반영 (2026-11-15 01:52 ~ 09:06 KST)
 - CORD 가드(실행 · 채점 · 비교), seed 3개(dev 평균 +0.051), 수정 3(효과 없음), 실패 유형 보고서, 필드별 회귀 게이트(CI), FINAL 필드별 paired CI, 청구 기록 $2.162.
 - 서빙 재측정: 모든 답 채점 · HTTP 상태 코드 · 지속 부하. M1 v1(자체 dev)과 M1-cord(CORD dev) 모두 로컬 HF 서버 원문이 오프라인과 10/10 동일, 5분 지속 부하 실패 0. M1-cord vLLM 서빙은 not_run(RunPod 필요).
 - 세부는 `handoff.md`(최신순)와 `plan.md` 단계 4 · 5.

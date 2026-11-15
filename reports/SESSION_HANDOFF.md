@@ -24,7 +24,7 @@
 - final: 합성 `reports/eval/final_summary.md` (B0/M0/M1, 160/160, 1회) · CORD test `reports/eval/cord_test_*.json` (M0 0.689 · M1 v1 0.215 · M1-cord 0.754, M1-cord−M0 +0.065 [+0.027, +0.107], 1회)
 - backup: `H:\dev\invoiceguard-po-backup` — 합성 트랙 41파일(`reports/backup_inventory.json`) + CORD 트랙 18파일(어댑터 · 예측 원문, `reports/backup_inventory_cord.json`, 복원 해시 일치)
 - serving_local: M1 v1(자체 dev) · M1-cord(CORD dev) 모두 로컬 HF 서버 원문이 오프라인 평가와 10/10 동일, 5분 지속 부하 실패 0(`reports/serving/hf_peft_nf4_local_{v2,sustained,cord,cord_sustained}.json`). M1-cord vLLM 서빙은 not_run(RunPod 필요)
-- running_processes: HF 모델 서버(127.0.0.1:8001)는 측정 후 매번 종료(11-15 09:02 M1-cord 측정 후 포트 닫힘 · 고아 0 확인). 대시보드 미리보기 서버(127.0.0.1:8765)는 Claude 앱 Browser 패널에서 열려 있을 수 있음 — 과금 없음
+- running_processes: HF 모델 서버(127.0.0.1:8001)는 측정 후 매번 종료(11-15 08:56 M1-cord 측정 후 포트 닫힘 · 고아 0 확인). 대시보드 미리보기 서버(127.0.0.1:8765)는 Claude 앱 Browser 패널에서 열려 있을 수 있음 — 과금 없음
 - active_paid_resources_from_this_project: none — RunPod Pod 2대 모두 삭제 확인(실행 1 2026-11-14 18:43, 실행 2 22:22:58 KST, list-pods 0)
 - runpod_access: Runpod MCP(OAuth). API 키 없음. 등록 SSH 키는 로컬 키와 짝
 

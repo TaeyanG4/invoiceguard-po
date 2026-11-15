@@ -5,7 +5,7 @@ description: Fable·astra 독립 평가에서 각각 90점 이상을 받기 위�
 tags: [portfolio, plan, vlm, lora, serving, hard-data]
 status: draft
 generated: {by: claude-opus-5.5, at: 2026-11-14T19:10+09:00}
-updated: {by: claude-opus-5.5, at: 2026-11-15T00:45+09:00, why: "CORD C4·C5 완료, 동결, test 1회 실행 중. 대시보드·README에 CORD 반영(미실행 칸은 빈칸)"}
+updated: {by: claude-opus-5.5, at: 2026-11-15T09:08+09:00, why: "단계 5: 4차 지적 반영, M1-cord 로컬 서빙 측정, 5차 평가 Fable 91 · astra 94(목표 달성)"}
 sources:
   - {id: fable-direction-1, resource: reports/reviews/fable-direction-1.md}
   - {id: astra-direction-1, resource: reports/reviews/astra-direction-1.md}
@@ -19,7 +19,7 @@ sources:
 - **목표:** 채용공고(로그인네트웍, LLM/VLM 파인튜닝·서빙) 기준 독립 평가에서 **Fable ≥ 90**, **astra ≥ 90**.
 - **판정:** 평가자에게 저장소와 공고만 주고 우리 결론은 주지 않는다. 점수·지적은 handoff.md에 그대로 기록한다.
 - **원칙:** 실행하지 않은 것은 not_run, 실패는 failed. 기존 FINAL은 다시 쓰지 않고 과거 결과로 보존. 새 실험은 새로 고정한 세트에서. 유료 GPU는 새 견적·새 승인 없이는 쓰지 않는다. 데이터 내려받기도 사용자 승인 후.
-- **점수 기록:** Fable 1 = 70 (11-14 19:00) · astra 1 = 76 (11-14 19:40) · **Fable 2 = 79 · astra 2 = 88** (11-15 01:48 · 01:51, `reports/reviews/fable-2.md`, `astra-2.md`). · **Fable 3 = 82.5 · astra 3 = 89** (11-15 05:0x, `fable-3.md`, `astra-3.md` — 감점표 포함, R5·R6 not_run 상태로 평가). · **Fable 4 = 89 · astra 4 = 92.5** (11-15 08:37, `fable-4.md`, `astra-4.md`).
+- **점수 기록:** Fable 1 = 70 (11-14 19:00) · astra 1 = 76 (11-14 19:40) · **Fable 2 = 79 · astra 2 = 88** (11-15 01:48 · 01:51, `reports/reviews/fable-2.md`, `astra-2.md`). · **Fable 3 = 82.5 · astra 3 = 89** (11-15 05:0x, `fable-3.md`, `astra-3.md` — 감점표 포함, R5·R6 not_run 상태로 평가). · **Fable 4 = 89 · astra 4 = 92.5** (11-15 08:37, `fable-4.md`, `astra-4.md`). · **Fable 5 = 91 · astra 5 = 94** (11-15 09:03 · 09:06, `fable-5.md`, `astra-5.md`) — **목표(둘 다 ≥ 90) 달성**.
 
 ## 단계 1 — 지금 저장소의 약점 보완 (진행 중)
 
@@ -93,8 +93,9 @@ sources:
 | S1 | 필드별 회귀 게이트를 CI에(하락 한도 사전 고정, 알려진 하락은 사유와 함께) | Fable −0.5 | CPU | **완료** (39b0dc2, 0 failing · 5 accepted) |
 | S2 | FINAL 자체 test 필드별 paired CI(품번 · 단가) | Fable −1 | CPU | **완료** (`final_field_ci.md`, 행 금액만 유의) |
 | S3 | 비용을 청구 기록으로, 채점 의존 파일 해시 고정, "GPU memory flat" 문구 정정 | Fable −0.5 · astra −1 | CPU | **완료** |
-| S4 | 실사진 모델(M1-cord) 서빙 측정: 로컬 HF 서버, CORD dev 10장, 모든 답 채점 · 지속 부하 | astra −1 · Fable −1.5 일부 | 로컬 GPU 약 10분 | **완료** (11-15 09:02): 원문 10/10 동일, 5분 64건 모두 200 |
-| S5 | 5차 평가(Fable · astra) | P9 | — | 진행 |
+| S4 | 실사진 모델(M1-cord) 서빙 측정: 로컬 HF 서버, CORD dev 10장, 모든 답 채점 · 지속 부하 | astra −1 · Fable −1.5 일부 | 로컬 GPU 약 10분 | **완료** (11-15 08:55): 원문 10/10 동일, 5분 64건 모두 200 |
+| S5 | 5차 평가(Fable · astra) | P9 | — | **완료**: Fable 91 · astra 94 |
+| S6 | (선택) 남은 값싼 개선: 회귀 게이트 예외를 허용 수치·분모로 고정(astra +0.5), 직접 `cord_eval` CLI 우회 제거(astra +0.5), 인보이스 번호 하락 3건 원인표 + 서빙 보고서에 어댑터 해시(Fable +0.5~1), 단가 프롬프트 dev 실험(Fable +0.5~2, 사전 고정 후) | 5차 평가 | CPU 1–3시간 · 로컬 GPU 20분 | 사용자 결정 대기 |
 
 ## 결정이 필요한 것 (사용자)
 - **Q4 실문서:** CORD v2 내려받기(naver-clova-ix/cord-v2 @7f0115a4, 약 2.31GB, CC BY 4.0) 승인. Kaggle 인도 세금계산서는 라벨이 없어 정량 평가에서 제외(사용자 지적, 22:25).

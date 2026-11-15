@@ -18,7 +18,13 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
-## 2026-11-15 09:05 — 실사진 모델(M1-cord) 로컬 서빙 측정 (astra 4 −1 · Fable 4 −1.5 지적)
+## 2026-11-15 09:06 — 5차 평가: Fable 91 · astra 94 (목표 달성)
+- **astra 5 = 94** (`reports/reviews/astra-5.md`, 4차 92.5, astra-4 세션 이어서): M1-cord 서빙 · 채점 의존 파일 · 메모리 문구 감점 회복. 남은 감점 −6 — 단가(−2), 모호 수량(−1), 하위 품목(−1), 직접 `cord_eval` CLI가 검사 없이 덮어씀(−0.5), 한영 혼합(−0.5), 검수 UI(−0.5), **신규** 회귀 게이트 예외가 필드 이름으로만 적용돼 더 떨어져도 통과(−0.5).
+- **Fable 5 = 91** (`reports/reviews/fable-5.md`, 4차 89): 회귀 게이트 CI · 청구 기록 · seed 규칙 명시로 회복, 필드별 CI(−1 → −0.5), M1-cord 서빙(−1.5 → −1, vLLM 미측정 · 서빙 보고서에 어댑터 해시 없음). 남은 감점 −9: 단가(−1.5), 한영 혼합(−1.5), 검수 UI(−1), 서빙(−1), ablation · 원격 시각 · 모호 수량 · 서빙 표본 · 개선 검증 0건 · Pod 자동 정지 각 −0.5, **신규** 인보이스 번호 하락 원인 분석 없음(−0.5).
+- astra가 지적한 README 과장("any new field drop fails CI")을 실제 범위로 고침: 등록된 비교 쌍 4개, 0.05 넘게 · 3칸 이상, 알려진 하락은 필드 이름으로만 맞춤.
+- 다음(선택, 사용자 결정): plan 단계 5 S6의 값싼 개선. push는 사용자 승인 후.
+
+## 2026-11-15 09:01 — 실사진 모델(M1-cord) 로컬 서빙 측정 — astra 4 −1 · Fable 4 −1.5 지적, 측정 08:55 끝, 커밋 4e8de7f
 - 벤치에 `--task cord` 추가(`vllm_bench.py`): CORD dev 영수증을 보내고 CORD 채점기(펜스 제거 파싱, 칸별 strict, 문서별 masked)로 모든 답을 채점, 오프라인 비교 대상은 `cord_dev_m1cord_nf4`. CPU 테스트 1개(`test_bench_load.py`).
 - 로컬 HF+PEFT 서버(127.0.0.1:8001, `--adapter artifacts/adapters/m1_cord_v1`, health의 adapter_sha256 630d3dd1… = 동결 M1_cord와 같음)에 `vllm_bench run --label hf_peft_nf4_local_cord --task cord --arms m1 --docs 10 --conc 1,2,4 --warmups 2 --reps 1`:
   - 서버 원문이 오프라인 평가와 **10/10 동일**, 정확도 0.730 = 오프라인 0.730(같은 10장, 54/74칸)
