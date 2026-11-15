@@ -11,7 +11,7 @@
 
 - **Model:** Qwen3-VL-2B-Instruct (NF4) + a QLoRA adapter — trained, evaluated and served on one local GPU; the training was reproduced, vLLM serving accuracy recovered and FP8 measured on rented RunPod A40 and L40S GPUs ([section 12](#12-cloud-reproduction-on-runpod))
 - **Data:** public InvoiceOCR-Synth and the self-generated Invoice–PO documents are synthetic. The base model already gets those almost right, so they cannot separate the fine-tuning effect; human-labelled **real receipt photos from CORD v2** (CC BY 4.0) were added ([CORD results](#cord-v2--real-receipt-photos)). No claim is made about real company or customs documents.
-- **Reproducibility:** every evaluation number (training · dev · final · paired CI) is produced by the scripts in this repository, given the pinned dataset revision, base-model revision and seed. Data and weights are downloaded, not stored here, synthetic training ran with one seed and CORD training with three (repeated on dev).
+- **Reproducibility:** every evaluation number (training · dev · final · paired CI) is produced by the scripts in this repository, given the pinned dataset revision, base-model revision and seed. Data and weights are downloaded, not stored here, synthetic training ran with one seed; on CORD, M1-cord and the q · k · v · o variant each ran with three seeds (repeated on dev).
 - **Honesty:** anything that was not run is recorded as `not_run` / `blocked`.
 
 ### One-minute summary
@@ -25,14 +25,14 @@
 | Recipe improvement (pre-registered) | widening LoRA to q · k · v · o recovers unit price to 39–40/50 on all three seeds (M1-cord 32–34, M0 41); the overall gain averages +0.012 but is not robust across seeds (dev only; test not reopened). Unit-price up-weighting and a one-line prompt failed and are reported as such | [section 6](#cord-v2--real-receipt-photos) |
 | Korean-English documents | 30 mixed-language invoices on an untrained layout: fence-stripped M0 0.927 · M1 v1 0.924 · M1-cord 0.932 (no difference). The Hangul misreads were traced to resolution: without downscaling M1 v1 goes 0.924 → 0.969, item names +0.18 | [section 6](#korean-english-mixed-layout-t07-dev-only-stress-amendment-6) |
 | Review screen | upload → extract → edit → reasons for warnings → approve → export (approved versions only), flow checked in a browser | [section 8](#8-review-api) |
-| Evaluation integrity | single-test-run guard, frozen hashes and a field-level regression gate checked in CI, experiment criteria pushed before the runs, 229 pytest tests (1 GPU-only test skips without torch, as in CI) | [section 6](#6-results) |
+| Evaluation integrity | single-test-run guard, frozen hashes and a field-level regression gate checked in CI, experiment criteria pushed before the runs, 230 pytest tests (229 pass locally, 1 needs torch; CI, without local data, fonts or GPU, passes 218 and skips 12) | [section 6](#6-results) |
 | Cost | two RunPod runs, billed $2.16 ([`billing.json`](reports/runpod2/billing.json)); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
 | Limits | the only real photos are receipts; test unit price fell 0.82 → 0.72 after fine-tuning (on dev the q · k · v · o variant recovers 0.78–0.80 on all three seeds, not confirmed on test); the test verdict rests on one seed, while on dev all three seeds beat M0 by +0.044 to +0.060; at the frozen resolution Hangul misreads remain | [section 11](#11-cost-and-limitations) |
 
 ![Admin dashboard — overview](docs/images/dashboard-overview.png)
 
 <sub>Overview page of the local admin dashboard (read-only, 127.0.0.1; the UI is in Korean). Every value is read as recorded from `reports/` and `manifests/`.<br>
-"10/10" counts stages with evidence. When this screenshot was taken, T03 and T07 had passed only their local parts; the RunPod reproduction and vLLM were run later ([section 12](#12-cloud-reproduction-on-runpod)).</sub>
+"10/10" counts stages with evidence, and cloud spend is the Runpod billing record. Screenshots were retaken at the final state on 2026-11-15.</sub>
 
 ## Contents
 
@@ -145,21 +145,23 @@ flowchart LR
 | OCR baseline B0<br><sub>Tesseract, Docker</sub> | [`ocr_baseline.py`](src/invoiceguard/ocr_baseline.py) |
 | Scoring · comparison · freeze | [`evaluation.py`](src/invoiceguard/evaluation.py) · [`score_run.py`](src/invoiceguard/score_run.py) · [`compare_runs.py`](src/invoiceguard/compare_runs.py) · [`freeze.py`](src/invoiceguard/freeze.py) |
 | Reconciliation rules | [`reconciliation.py`](src/invoiceguard/reconciliation.py) |
-| GPU serving server | [`serving/hf_server.py`](src/invoiceguard/serving/hf_server.py) |
-| Review API | [`app/api.py`](src/invoiceguard/app/api.py) |
+| GPU serving server · bench<br><sub>several adapters on one base</sub> | [`serving/hf_server.py`](src/invoiceguard/serving/hf_server.py) · [`serving/core.py`](src/invoiceguard/serving/core.py) · [`serving/vllm_bench.py`](src/invoiceguard/serving/vllm_bench.py) |
+| Review API · review screen | [`app/api.py`](src/invoiceguard/app/api.py) · [`app/static/`](src/invoiceguard/app/static) |
+| CORD scoring · freeze guards · regression gate | [`cord_eval.py`](src/invoiceguard/cord_eval.py) · [`cord_score.py`](src/invoiceguard/cord_score.py) · [`cord_guard.py`](src/invoiceguard/cord_guard.py) · [`regression_gate.py`](src/invoiceguard/regression_gate.py) |
 | Admin dashboard | [`dashboard_server.py`](src/invoiceguard/dashboard_server.py) · [`dashboard_static/`](src/invoiceguard/dashboard_static) |
 
 ---
 
 ## 3. Data
 
-There are four kinds of data. The first three are synthetic; CORD v2 is real photos with human labels. Each is shown below with real samples.
+There are five kinds of data. The first four are synthetic; CORD v2 is real photos with human labels. Each is shown below with real samples.
 
 | Kind | What it is | Size | Labels | Used for |
 |---|---|---|---|---|
 | **Public**<br><sub>PUBLIC_CANONICAL</sub> | InvoiceOCR-Synth<br><sub>CC BY 4.0, synthetic English</sub> | 2,814 images<br><sub>938 documents × 3 qualities</sub> | description · qty · unit price · amount<br><sub>no SKU</sub> | train · dev · final |
 | **Own**<br><sub>TRADE_RAW</sub> | invoice + PO pairs<br><sub>made by this repository</sub> | 224 documents<br><sub>6 layouts · 7 scenarios</sub> | exact printed strings incl. SKU · unit<br><sub>+ an independent PO</sub> | train · dev · final |
 | **Stress**<br><sub>dev only</sub> | degraded copies of own dev | 72 images<br><sub>24 × 3 degradations</sub> | same as own | robustness check only |
+| **Korean-English T07**<br><sub>dev-only stress</sub> | Korean + English invoices + POs<br><sub>same generator, new layout</sub> | 30 documents<br><sub>7 scenarios</sub> | same as own | robustness check only<br><sub>[section 3.3](#33-stress-set--dev-only)</sub> |
 | **CORD v2**<br><sub>CORD_RAW · real photos</sub> | Indonesian receipt photos<br><sub>CC BY 4.0, human labels</sub> | 1,000 photos<br><sub>official 800 / 100 / 100</sub> | item name · count · unit price · price, sub-items, subtotal · tax · total<br><sub>exact printed strings, no SKU</sub> | train · dev · test<br><sub>[section 3.5](#35-real-receipt-photos--cord-v2-cord_raw)</sub> |
 
 ### 3.1 Public data — InvoiceOCR-Synth (PUBLIC_CANONICAL)
@@ -739,12 +741,12 @@ A local, read-only dashboard (the UI is in Korean).
 
 | Page | What it shows |
 |---|---|
-| Overview · stages & gates | pipeline stages, KPIs, FINAL bars, blocked items<br><sub>T00–T09 tasks, G0–G7 acceptance gates</sub> |
+| Overview · stages & gates | pipeline stages, KPIs (cloud spend from the billing record), FINAL and CORD bars, blocked items<br><sub>T00–T09 tasks, G0–G7 acceptance gates</sub> |
 | Public data · own Invoice–PO | filtered lists → document image + gold labels + visibility masks<br><sub>own data also shows the PO and reconciliation results</sub> |
 | Splits · manifests | split statistics, leakage checks, freeze status |
-| CORD receipts · CORD evaluation | receipt photo + gold + every recorded run's prediction (M0 · M1 v1 · M1-cord), compared cell by cell<br><sub>pre-registered criteria table, dev/test bars, paired differences (CI), per-field accuracy, training loss, elapsed time — test cells stay blank until a test result file exists</sub> |
-| Model & evaluation · serving | B0 · M0 · M1 bars (95% CI · lenient), paired differences, training loss<br><sub>latency · throughput · cancellation · output parity</sub> |
-| Review API · tests · cloud & cost | T06 record and LIVE demo, pytest summary, budget plan and approval form |
+| CORD receipts · CORD evaluation | receipt photo + gold + every recorded run's prediction (M0 · M1 v1 · M1-cord, plus the seed and amendment 3–8 exploratory runs), compared cell by cell<br><sub>pre-registered criteria table, dev/test bars, paired differences (CI), per-field accuracy, training loss, elapsed time — test cells stay blank until a test result file exists</sub> |
+| Model & evaluation · serving | B0 · M0 · M1 bars (95% CI · lenient), paired differences, training loss and the other training runs, Korean-English T07 card<br><sub>latency · throughput · cancellation · output parity, every-answer-scored re-runs (two-adapter server · sustained load · retrying client)</sub> |
+| Review API · tests · cloud & cost | T06 record and LIVE demo, pytest summary, budget plan and approval form<br><sub>the review screen itself is separate from the dashboard (section 8)</sub> |
 
 | Model & evaluation | Stages & gates |
 |---|---|
@@ -774,7 +776,7 @@ A local, read-only dashboard (the UI is in Korean).
 
 **Cost**
 - Cloud spend **$2.16 (billed)** — run 1 on an A40, 43 min, $0.437, plus run 2 on an L40S, 1 h 33 min, $1.725; one Pod each time ([section 12](#12-cloud-reproduction-on-runpod)). GPU $2.122 + Pod disk $0.041; storage and serverless $0. Read from the Runpod billing API, read-only ([`billing.json`](reports/runpod2/billing.json)); it matches the earlier time × rate estimate.
-- Local GPU: one training run about 22 min; final M0 · M1 inference about 49 min (B0 OCR time not recorded). CORD: M1-cord training 22.6 min, dev inference 20.7 · 20.9 · 13.6 min, regression on the existing dev sets 29.7 min.
+- Local GPU: one training run about 22 min; final M0 · M1 inference about 49 min (B0 OCR time not recorded). CORD: M1-cord training 22.6 min, dev inference 20.7 · 20.9 · 13.6 min, regression on the existing dev sets 29.7 min. Stage 6 follow-up experiments (amendments 4–8, serving runs included): about 5 h 30 min of local GPU (four training runs of about 20 min each, the rest inference and serving), $0.
 
 **Limitations**
 - The FINAL table is synthetic data with small samples. The only real photos are CORD v2 receipts — not invoices or customs documents, and not English-only. The CORD test verdict is one seed, one run (the three-seed repeat is dev only).
@@ -1025,13 +1027,14 @@ docker build -t invoiceguard-ocr:tesseract docker/ocr
 .venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_final --allow-final
 ```
 
-**6) Serving · review API · dashboard (127.0.0.1)**
+**6) Serving · review API · review screen · dashboard (127.0.0.1)**
 ```bash
-.venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --port 8001
-.venv/Scripts/python.exe -m invoiceguard.serving.vllm_bench run --label hf_peft_nf4_local --port 8001 --conc 1,2,4 --docs 10 --reps 1
-# real-photo model: start the server with --adapter artifacts/adapters/m1_cord_v1, then
-.venv/Scripts/python.exe -m invoiceguard.serving.vllm_bench run --label hf_peft_nf4_local_cord --task cord --arms m1 --port 8001 --conc 1,2,4 --docs 10 --reps 1 --warmups 2
-.venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1
+# one base model + two adapters (m1 = invoices M1 v1, cord = receipts M1-cord), chosen by the request's model name
+.venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --extra-adapter cord=artifacts/adapters/m1_cord_v1 --port 8001
+bash scripts/serving/run_multi_lora_bench.sh     # starts the server, measures full-dev parity (24 · 100), concurrency and a 5-minute sustained load, stops it
+bash scripts/serving/run_retry_bench.sh          # goodput under overload with a client that retries 429 (--retry-429)
+.venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1   # review screen at http://127.0.0.1:8000/
+.venv/Scripts/python.exe -m invoiceguard.app.server --mode replay --replay-run m1_dev_v1                      # no GPU: the screen with saved extraction outputs
 .venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765
 ```
 
@@ -1050,9 +1053,22 @@ python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --sm
 bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord training → M1-cord dev → regression on the existing dev sets
 .venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
 bash scripts/realdocs/run_cord_test.sh           # once per arm
-.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # checks the freeze; test reports are write-once (score only through this entry: cord_eval.py stays byte-identical to the freeze and is not run directly)
+.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # checks the freeze; test reports are write-once (the `cord_eval` CLI also goes through this entry; its scoring code is checked AST-identical to the frozen bytes)
 .venv/Scripts/python.exe -m invoiceguard.cord_score compare cord_test_m1cord_nf4 cord_test_m0_nf4
 .venv/Scripts/python.exe scripts/realdocs/cord_failure_report.py                                          # dev failure types
+```
+
+**10) Pre-registered follow-up experiments (docs/20 amendments 4–8, dev only)** — criteria are committed and pushed first; GPU work starts only when the PC is free.
+```bash
+.venv/Scripts/python.exe -m invoiceguard.synth.t07                         # 30 Korean-English T07 invoices (needs Malgun Gothic)
+.venv/Scripts/python.exe scripts/realdocs/gpu_free_runner.py review6       # unit-price prompt · T07 three arms · LoRA ablation (q·k·v·o, r16)
+.venv/Scripts/python.exe scripts/realdocs/gpu_free_runner.py review6b      # T07 at full resolution (max_pixels 2,200,000)
+.venv/Scripts/python.exe scripts/realdocs/gpu_free_runner.py review6c      # resolution on CORD dev · own dev, two more A1 seeds
+.venv/Scripts/python.exe scripts/eval/t07_stress.py                         # T07 table
+.venv/Scripts/python.exe scripts/eval/resolution_dev.py                     # resolution on the dev sets
+.venv/Scripts/python.exe scripts/eval/invoice_number_drop.py                # cause of the invoice-number drop
+.venv/Scripts/python.exe scripts/eval/final_field_ci.py                     # FINAL per-field paired CIs
+.venv/Scripts/python.exe -m invoiceguard.regression_gate                    # field-level regression gate (also in CI)
 ```
 
 **9) Redraw the README charts and data samples** — charts come from the records in `reports/` (English and Korean sets); samples need the local data

@@ -11,7 +11,7 @@
 
 - **모델:** Qwen3-VL-2B-Instruct(NF4) + QLoRA 어댑터 — 로컬 GPU 1장에서 학습·평가·서빙했고, RunPod A40 · L40S를 빌려 학습 재현, vLLM 서빙 정확도 회복, FP8 측정을 했습니다([12장](#12-runpod-클라우드-재현))
 - **데이터:** 공개 InvoiceOCR-Synth와 자체 생성 Invoice–PO는 합성입니다. 합성 데이터에서는 기본 모델도 거의 다 맞혀 파인튜닝 효과를 가를 수 없어, 사람이 라벨을 단 **실사진 영수증 CORD v2**(CC BY 4.0)를 추가했습니다([CORD 결과](#cord-v2--실사진-영수증)). 실제 기업·통관 문서 성능은 주장하지 않습니다.
-- **재현성:** 평가 수치(학습 · dev · final · paired CI)는 고정한 데이터셋 revision · 기본 모델 revision · seed를 쓰면 이 저장소의 스크립트로 다시 만들어집니다. 데이터와 가중치는 내려받는 것이라 저장소에 없고, 합성 데이터 학습은 seed 1개, CORD 학습은 seed 3개(dev에서 반복 확인)입니다.
+- **재현성:** 평가 수치(학습 · dev · final · paired CI)는 고정한 데이터셋 revision · 기본 모델 revision · seed를 쓰면 이 저장소의 스크립트로 다시 만들어집니다. 데이터와 가중치는 내려받는 것이라 저장소에 없고, 합성 데이터 학습은 seed 1개, CORD 학습은 M1-cord와 q · k · v · o 변형이 각각 seed 3개(dev에서 반복 확인)입니다.
 - **정직성:** 실행하지 않은 항목은 `not_run` / `blocked`로 남겼습니다.
 
 ### 1분 요약
@@ -25,14 +25,14 @@
 | 레시피 개선 (사전 등록) | LoRA 대상을 q · k · v · o로 넓히자 단가가 seed 3개 모두 39–40/50으로 회복(M1-cord 32–34, M0 41), 전체는 평균 +0.012이지만 seed에 견고하지는 않음(dev만, test는 다시 보지 않음). 단가 학습 가중 · 프롬프트 한 줄은 실패로 그대로 보고 | [6장](#cord-v2--실사진-영수증) |
 | 한영 혼합 문서 | 학습에 없던 한영 레이아웃 30장: 펜스 제거 기준 M0 0.927 · M1 v1 0.924 · M1-cord 0.932(차이 없음). 약점이던 한글 음절 오독은 해상도 때문으로 확인: 축소 없이 돌리면 M1 v1 0.924 → 0.969, 품명 +0.18 | [6장](#한영-혼합-레이아웃-t07-dev-전용-stress-수정-6) |
 | 검수 화면 | 업로드 → 추출 → 수정 → 경고 사유 → 승인 → 내보내기(승인한 버전만), 브라우저에서 흐름 확인 | [8장](#8-검수-api) |
-| 평가 무결성 | test 1회 가드, 동결 해시 · 필드별 회귀 게이트를 CI가 검사, 실험 기준을 실행 전에 push, pytest 229개(GPU 전용 1개는 torch가 없으면 건너뜀, CI도 같음) | [6장](#6-결과) |
+| 평가 무결성 | test 1회 가드, 동결 해시 · 필드별 회귀 게이트를 CI가 검사, 실험 기준을 실행 전에 push, pytest 230개(로컬 229 통과 · torch 필요 1개 건너뜀, CI는 데이터 · 글꼴 · GPU가 없어 218 통과 · 12 건너뜀) | [6장](#6-결과) |
 | 비용 | RunPod 2회 청구 $2.16([`billing.json`](reports/runpod2/billing.json)), 나머지는 로컬 GPU 1장 | [11장](#11-비용과-한계) |
 | 한계 | 실사진은 영수증뿐, test 단가는 파인튜닝 뒤 0.82 → 0.72(dev에서 q · k · v · o 변형이 seed 3개 모두 0.78–0.80으로 회복, test 미확인), test 판정은 seed 1개 결과이고 dev에서는 seed 3개 모두 M0보다 +0.044~+0.060, 동결 해상도에서는 한글 오독이 남음 | [11장](#11-비용과-한계) |
 
 ![관리자 대시보드 — 개요](docs/images/dashboard-overview.png)
 
 <sub>로컬 관리자 대시보드(읽기 전용, 127.0.0.1)의 개요 화면입니다. 모든 값은 `reports/` · `manifests/`의 기록을 그대로 읽은 것입니다.<br>
-"10/10"은 증거가 있는 단계 수입니다. 이 화면을 찍을 때 T03 · T07은 로컬 부분만 통과한 상태였고, RunPod 재현과 vLLM은 그 뒤에 실행했습니다([12장](#12-runpod-클라우드-재현)).</sub>
+"10/10"은 증거가 있는 단계 수이고, 클라우드 지출은 Runpod 청구 기록입니다. 화면은 2026-11-15 최종 상태로 다시 찍었습니다.</sub>
 
 ## 목차
 
@@ -145,21 +145,23 @@ flowchart LR
 | OCR 기준선 B0<br><sub>Tesseract, Docker</sub> | [`ocr_baseline.py`](src/invoiceguard/ocr_baseline.py) |
 | 채점 · 비교 · 동결 | [`evaluation.py`](src/invoiceguard/evaluation.py) · [`score_run.py`](src/invoiceguard/score_run.py) · [`compare_runs.py`](src/invoiceguard/compare_runs.py) · [`freeze.py`](src/invoiceguard/freeze.py) |
 | 대사 규칙 | [`reconciliation.py`](src/invoiceguard/reconciliation.py) |
-| GPU 서빙 서버 | [`serving/hf_server.py`](src/invoiceguard/serving/hf_server.py) |
-| 검수 API | [`app/api.py`](src/invoiceguard/app/api.py) |
+| GPU 서빙 서버 · 벤치<br><sub>어댑터 여러 개를 한 기본 모델에</sub> | [`serving/hf_server.py`](src/invoiceguard/serving/hf_server.py) · [`serving/core.py`](src/invoiceguard/serving/core.py) · [`serving/vllm_bench.py`](src/invoiceguard/serving/vllm_bench.py) |
+| 검수 API · 검수 화면 | [`app/api.py`](src/invoiceguard/app/api.py) · [`app/static/`](src/invoiceguard/app/static) |
+| CORD 채점 · 동결 가드 · 회귀 게이트 | [`cord_eval.py`](src/invoiceguard/cord_eval.py) · [`cord_score.py`](src/invoiceguard/cord_score.py) · [`cord_guard.py`](src/invoiceguard/cord_guard.py) · [`regression_gate.py`](src/invoiceguard/regression_gate.py) |
 | 관리자 대시보드 | [`dashboard_server.py`](src/invoiceguard/dashboard_server.py) · [`dashboard_static/`](src/invoiceguard/dashboard_static) |
 
 ---
 
 ## 3. 데이터
 
-데이터는 네 종류입니다. 앞의 세 종류는 합성이고, CORD v2는 사람이 라벨을 단 실사진입니다. 종류별로 실제 샘플과 함께 정리했습니다.
+데이터는 다섯 종류입니다. 앞의 네 종류는 합성이고, CORD v2는 사람이 라벨을 단 실사진입니다. 종류별로 실제 샘플과 함께 정리했습니다.
 
 | 종류 | 무엇인가 | 규모 | 정답(라벨) | 용도 |
 |---|---|---|---|---|
 | **공개**<br><sub>PUBLIC_CANONICAL</sub> | InvoiceOCR-Synth<br><sub>CC BY 4.0, 합성 영어</sub> | 2,814장<br><sub>938문서 × 품질 3</sub> | 설명 · 수량 · 단가 · 금액<br><sub>SKU 없음</sub> | 학습 · dev · final |
 | **자체**<br><sub>TRADE_RAW</sub> | 인보이스 + 발주서 쌍<br><sub>이 저장소에서 생성</sub> | 224문서<br><sub>레이아웃 6 · 시나리오 7</sub> | 인쇄된 문자열 그대로(SKU · 단위 포함)<br><sub>+ 독립 발주서</sub> | 학습 · dev · final |
 | **stress**<br><sub>dev 전용</sub> | 자체 dev 문서의 열화본 | 72장<br><sub>24 × 열화 3</sub> | 자체와 같음 | 견고성 확인만 |
+| **한영 혼합 T07**<br><sub>dev 전용 stress</sub> | 한국어 + 영어 인보이스 + 발주서<br><sub>같은 생성기, 새 레이아웃</sub> | 30문서<br><sub>시나리오 7</sub> | 자체와 같음 | 견고성 확인만<br><sub>[3.3절](#33-stress-세트--dev-전용)</sub> |
 | **CORD v2**<br><sub>CORD_RAW · 실사진</sub> | 인도네시아 영수증 사진<br><sub>CC BY 4.0, 사람 라벨</sub> | 1,000장<br><sub>공식 800 / 100 / 100</sub> | 품목 이름 · 수량 · 단가 · 금액, 하위 품목, 소계 · 세금 · 합계<br><sub>인쇄된 문자열 그대로, SKU 없음</sub> | 학습 · dev · test<br><sub>[3.5절](#35-실사진-영수증--cord-v2-cord_raw)</sub> |
 
 ### 3.1 공개 데이터 — InvoiceOCR-Synth (PUBLIC_CANONICAL)
@@ -737,12 +739,12 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 
 | 페이지 | 보여 주는 것 |
 |---|---|
-| 개요 · 진행 단계·게이트 | 파이프라인 단계, KPI, FINAL 막대, 차단 항목<br><sub>T00–T09 작업, G0–G7 인수 게이트</sub> |
+| 개요 · 진행 단계·게이트 | 파이프라인 단계, KPI(청구 기록 기반 클라우드 지출 포함), FINAL · CORD 막대, 차단 항목<br><sub>T00–T09 작업, G0–G7 인수 게이트</sub> |
 | 공개 데이터 · 자체 Invoice–PO | 필터 목록 → 문서 이미지 + 정답 + 가시성 마스크<br><sub>자체 데이터는 발주서와 대사 결과까지</sub> |
 | 분할·manifest | 분할 통계, 누수 검사, 동결 상태 |
-| CORD 영수증 · CORD 평가 | 영수증 사진 + 정답 + 기록된 실행(M0 · M1 v1 · M1-cord)의 예측을 칸마다 비교<br><sub>사전 고정 기준 표, dev/test 막대, paired 차이(CI), 필드별 정확도, 학습 loss, 걸린 시간 — test 결과 파일이 생기기 전까지 test 칸은 빈칸</sub> |
-| 모델·평가 · 서빙 | B0 · M0 · M1 막대(95% CI · lenient), paired 차이, 학습 loss<br><sub>지연 · 처리량 · 취소 · 출력 동일성</sub> |
-| 검수 API · 테스트 · 클라우드·비용 | T06 기록과 LIVE 시연, pytest 요약, 예산 계획과 승인 양식 |
+| CORD 영수증 · CORD 평가 | 영수증 사진 + 정답 + 기록된 실행(M0 · M1 v1 · M1-cord와 seed · 수정 3–8 탐색 실행)의 예측을 칸마다 비교<br><sub>사전 고정 기준 표, dev/test 막대, paired 차이(CI), 필드별 정확도, 학습 loss, 걸린 시간 — test 결과 파일이 생기기 전까지 test 칸은 빈칸</sub> |
+| 모델·평가 · 서빙 | B0 · M0 · M1 막대(95% CI · lenient), paired 차이, 학습 loss와 다른 학습 실행 표, 한영 혼합 T07 카드<br><sub>지연 · 처리량 · 취소 · 출력 동일성, 모든 답 채점 재측정(어댑터 2개 서버 · 지속 부하 · 재시도 클라이언트)</sub> |
+| 검수 API · 테스트 · 클라우드·비용 | T06 기록과 LIVE 시연, pytest 요약, 예산 계획과 승인 양식<br><sub>검수 화면 자체는 대시보드와 별개(8장)</sub> |
 
 | 모델·평가 | 진행 단계·게이트 |
 |---|---|
@@ -772,7 +774,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 
 **비용**
 - 클라우드 지출 **$2.16(청구 기록)** — 실행 1 A40 43분 $0.437 + 실행 2 L40S 1시간 33분 $1.725, 각각 Pod 1대([12장](#12-runpod-클라우드-재현)). GPU $2.122 + Pod 디스크 $0.041이고 스토리지 · 서버리스 요금은 0입니다. Runpod 청구 API를 읽기 전용으로 조회한 값이며([`billing.json`](reports/runpod2/billing.json)), 앞서 시간 × 단가로 계산한 추정과 같습니다.
-- 로컬 GPU: 학습 1회 약 22분, final M0 · M1 추론 약 49분(B0 OCR 시간은 기록 없음). CORD: M1-cord 학습 22.6분, dev 추론 20.7 · 20.9 · 13.6분, 기존 dev 회귀 29.7분.
+- 로컬 GPU: 학습 1회 약 22분, final M0 · M1 추론 약 49분(B0 OCR 시간은 기록 없음). CORD: M1-cord 학습 22.6분, dev 추론 20.7 · 20.9 · 13.6분, 기존 dev 회귀 29.7분. 단계 6 추가 실험(수정 4–8, 서빙 측정 포함): 로컬 GPU 약 5시간 30분(학습 4회 각 약 20분, 나머지는 추론 · 서빙 측정), 비용 $0.
 
 **한계**
 - FINAL 표는 합성 데이터이고 표본이 작습니다. 실사진은 CORD v2 영수증뿐이며, 인보이스·통관 문서가 아니고 영어 전용도 아닙니다. CORD test 판정은 seed 1개 · 1회 학습 결과입니다(seed 3개 반복은 dev에서만).
@@ -1023,13 +1025,14 @@ docker build -t invoiceguard-ocr:tesseract docker/ocr
 .venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_final --allow-final
 ```
 
-**6) 서빙 · 검수 API · 대시보드 (127.0.0.1)**
+**6) 서빙 · 검수 API · 검수 화면 · 대시보드 (127.0.0.1)**
 ```bash
-.venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --port 8001
-.venv/Scripts/python.exe -m invoiceguard.serving.vllm_bench run --label hf_peft_nf4_local --port 8001 --conc 1,2,4 --docs 10 --reps 1
-# 실사진 모델: 서버를 --adapter artifacts/adapters/m1_cord_v1 로 띄운 뒤
-.venv/Scripts/python.exe -m invoiceguard.serving.vllm_bench run --label hf_peft_nf4_local_cord --task cord --arms m1 --port 8001 --conc 1,2,4 --docs 10 --reps 1 --warmups 2
-.venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1
+# 기본 모델 1개 + 어댑터 2개(m1 = 인보이스 M1 v1, cord = 영수증 M1-cord), 요청의 model 이름으로 선택
+.venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --extra-adapter cord=artifacts/adapters/m1_cord_v1 --port 8001
+bash scripts/serving/run_multi_lora_bench.sh     # 서버를 띄워 dev 전체(24 · 100장) 원문 일치 · 동시성 · 5분 지속 부하를 재고 서버를 끔
+bash scripts/serving/run_retry_bench.sh          # 429를 재시도하는 클라이언트(--retry-429)로 과부하 goodput
+.venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1   # 검수 화면 http://127.0.0.1:8000/
+.venv/Scripts/python.exe -m invoiceguard.app.server --mode replay --replay-run m1_dev_v1                      # GPU 없이: 저장된 추출 결과로 화면 확인
 .venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765
 ```
 
@@ -1048,9 +1051,22 @@ python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --sm
 bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord 학습 → M1-cord dev → 기존 dev 회귀
 .venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
 bash scripts/realdocs/run_cord_test.sh           # arm마다 한 번
-.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # 동결 검사, test 보고서는 한 번만 씀 (채점은 이 입구만 씀: cord_eval.py는 동결 해시에 묶여 그대로 두지만 직접 실행하지 않음)
+.venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # 동결 검사, test 보고서는 한 번만 씀 (`cord_eval` CLI도 이 입구로 감 — 채점 코드는 동결 원본과 AST가 같은지 검사)
 .venv/Scripts/python.exe -m invoiceguard.cord_score compare cord_test_m1cord_nf4 cord_test_m0_nf4
 .venv/Scripts/python.exe scripts/realdocs/cord_failure_report.py                                          # dev 실패 유형
+```
+
+**10) 사전 등록 추가 실험 (docs/20 수정 4–8, dev 전용)** — 기준을 커밋 · push한 뒤 PC가 빌 때만 GPU 작업을 돌립니다.
+```bash
+.venv/Scripts/python.exe -m invoiceguard.synth.t07                         # 한영 혼합 T07 30장 (맑은 고딕 필요)
+.venv/Scripts/python.exe scripts/realdocs/gpu_free_runner.py review6       # 단가 프롬프트 · T07 세 arm · LoRA ablation(q·k·v·o, r16)
+.venv/Scripts/python.exe scripts/realdocs/gpu_free_runner.py review6b      # T07 고해상도(max_pixels 2,200,000)
+.venv/Scripts/python.exe scripts/realdocs/gpu_free_runner.py review6c      # 해상도 일반화(CORD dev · 자체 dev) · A1 seed 2개
+.venv/Scripts/python.exe scripts/eval/t07_stress.py                         # T07 표
+.venv/Scripts/python.exe scripts/eval/resolution_dev.py                     # 해상도의 dev 효과
+.venv/Scripts/python.exe scripts/eval/invoice_number_drop.py                # 인보이스 번호 하락 원인
+.venv/Scripts/python.exe scripts/eval/final_field_ci.py                     # FINAL 필드별 paired CI
+.venv/Scripts/python.exe -m invoiceguard.regression_gate                    # 필드별 회귀 게이트 (CI에서도 실행)
 ```
 
 **9) README 차트 · 데이터 샘플 다시 만들기** — 차트는 `reports/`의 기록에서, 샘플은 로컬 데이터에서 생성합니다.

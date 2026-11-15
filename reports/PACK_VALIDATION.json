@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-15T06:50:35.533317+00:00",
+  "checked_at_utc": "2026-11-15T06:55:15.360006+00:00",
   "status": "pass",
   "checks": [
     {
@@ -244,7 +244,42 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:src/invoiceguard/serving/core.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/app/static",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/cord_score.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/cord_guard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:src/invoiceguard/regression_gate.py",
       "status": "pass",
       "detail": ""
     },
@@ -794,7 +829,42 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:src/invoiceguard/serving/core.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/app/static",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/cord_score.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/cord_guard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:src/invoiceguard/regression_gate.py",
       "status": "pass",
       "detail": ""
     },
@@ -2356,7 +2426,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "439 local Markdown links"
+      "detail": "453 local Markdown links"
     }
   ],
   "not_performed": [
