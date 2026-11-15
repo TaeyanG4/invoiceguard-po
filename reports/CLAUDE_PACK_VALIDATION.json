@@ -1,6 +1,6 @@
 {
   "scope": "static_claude_code_package_migration_only",
-  "checked_at_utc": "2026-11-15T04:42:26.696608+00:00",
+  "checked_at_utc": "2026-11-15T06:35:51.150962+00:00",
   "status": "pass",
   "checks": [
     {
@@ -514,7 +514,32 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordqkvo_nf4__vs__cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/eval/compare_cord_dev_m1cordqkvo_nf4__vs__cord_dev_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordqkvo_s20261114_nf4__vs__cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordqkvo_s20261114_nf4__vs__cord_dev_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordqkvo_s20261115_nf4__vs__cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordqkvo_s20261115_nf4__vs__cord_dev_m1cord_nf4.json",
       "status": "pass",
       "detail": ""
     },
@@ -530,6 +555,11 @@
     },
     {
       "check": "utf8:reports/eval/compare_cord_dev_m1cordup_nf4__vs__cord_dev_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cord_hires_nf4__vs__cord_dev_m1cord_nf4.json",
       "status": "pass",
       "detail": ""
     },
@@ -639,12 +669,27 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/eval/cord_dev_m1cordqkvo_s20261114_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1cordqkvo_s20261115_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/eval/cord_dev_m1cordr16_nf4.json",
       "status": "pass",
       "detail": ""
     },
     {
       "check": "utf8:reports/eval/cord_dev_m1cordup_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1cord_hires_nf4.json",
       "status": "pass",
       "detail": ""
     },
@@ -779,6 +824,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/eval/m1_dev_hires.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/eval/m1_dev_v1.json",
       "status": "pass",
       "detail": ""
@@ -790,6 +840,16 @@
     },
     {
       "check": "utf8:reports/eval/metric_contract_v2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/resolution_dev.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/resolution_dev.md",
       "status": "pass",
       "detail": ""
     },
@@ -830,6 +890,16 @@
     },
     {
       "check": "utf8:reports/model/train_m1_cord_qkvo.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/train_m1_cord_qkvo_s20261114.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/train_m1_cord_qkvo_s20261115.json",
       "status": "pass",
       "detail": ""
     },
@@ -950,6 +1020,11 @@
     },
     {
       "check": "utf8:reports/reviews/fable-5.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/fable-6.md",
       "status": "pass",
       "detail": ""
     },
@@ -1290,6 +1365,11 @@
     },
     {
       "check": "utf8:scripts/eval/invoice_number_drop.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/eval/resolution_dev.py",
       "status": "pass",
       "detail": ""
     },
@@ -1734,6 +1814,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:tests/test_review_screen_browser.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:tests/test_serving_core.py",
       "status": "pass",
       "detail": ""
@@ -2169,6 +2254,11 @@
       "detail": ""
     },
     {
+      "check": "active_refs:reports/eval/resolution_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:reports/eval/t07_stress.md",
       "status": "pass",
       "detail": ""
@@ -2235,6 +2325,11 @@
     },
     {
       "check": "active_refs:reports/reviews/fable-5.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/fable-6.md",
       "status": "pass",
       "detail": ""
     },

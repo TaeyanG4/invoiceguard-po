@@ -351,7 +351,9 @@
         kpi("FINAL 평가", den.length ? String(Math.min(...den.map((d) => d.predicted))) : "—", den.length ? "/ " + den[0].expected + " 문서" : "",
           den.length ? "동결 후 1회 · " + Object.keys(finals).map((k) => ARMS[k].name).join("·") + " 같은 문서" + (complete ? " · 누락 0" : " · 누락 있음") : "final 기록 없음", complete ? "ok" : den.length ? "warn" : "idle"),
         kpi("CPU 테스트", passed === null ? "—" : String(passed), junit ? "/ " + junit.tests : "", junit ? "건너뜀 " + junit.skipped + " · 실패 " + (junit.failures + junit.errors) + " · " + junit.mtime : "junit 기록 없음", junit && !junit.failures && !junit.errors ? "ok" : "warn", junit ? passed / Math.max(1, junit.tests) : null),
-        kpi("클라우드 지출", ho.active_paid_resources_from_this_project && /^none/.test(ho.active_paid_resources_from_this_project) ? "$0" : "미확인", "", clean(ho.active_paid_resources_from_this_project) || "SESSION_HANDOFF 기록 없음", "idle")),
+        kpi("클라우드 지출", s.billing ? "$" + fmt(s.billing.account_totals_usd.total, 2) : "미확인", "", s.billing
+          ? "청구 기록 · Pod " + (s.billing.pods || []).length + "대 · 현재 유료 리소스 " + ((ho.active_paid_resources_from_this_project || "").startsWith("none") ? "없음" : "확인 필요")
+          : clean(ho.active_paid_resources_from_this_project) || "청구 기록 없음", s.billing ? "ok" : "idle")),
       finalSets.length
         ? h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "FINAL 결과 — strict 필드 정확도"), h("a", { href: "#/model" }, "모델·평가에서 자세히 →")),
           armLegend(), armChart(finals, finalSets),
@@ -712,7 +714,7 @@
             : h("p", { class: "sub" }, "loss 기록 없음"),
           runs.length > 1 ? [h("h3", null, "다른 학습 실행"), table(["run", ["step", "num"], ["train_loss", "num"], ["기록", "num"], "어댑터"],
             runs.map((r) => h("tr", null, h("td", { class: "mono" }, r.run_id), h("td", { class: "num" }, String(r.optimizer_steps)), h("td", { class: "num" }, fmt(r.train_loss, 4)),
-              h("td", { class: "num" }, String(r.records)), h("td", null, used(r) ? pillCls("ok", "final 사용") : finalAdapter ? pillCls("idle", "미채택") : "—"))), "small")] : null)));
+              h("td", { class: "num" }, String(r.records)), h("td", null, used(r) ? pillCls("ok", "final 사용") : r.run_id === "m1_cord_v1" ? pillCls("ok", "CORD test 사용") : finalAdapter ? pillCls("idle", "탐색 · 미채택") : "—"))), "small")] : null)));
   }
   // Korean-English mixed layout T07 (docs/20 amendment 6): dev-only stress set, three arms, strict and fence-stripped.
   function t07Card(t) {
@@ -1125,6 +1127,7 @@
     const s = await status();
     const sv = s.serving || {}, ho = s.handoff || {};
     const bench = sv.hf_peft_nf4_local, probe = sv.hf_cancel_probe;
+    const multi = [sv.hf_multi_lora_trade, sv.hf_multi_lora_cord].filter((m) => m && m.arms && m.arms.m1);
     const t07 = (s.tasks || []).find((t) => t.id === "T07");
     const arms = bench ? Object.keys(bench.arms || {}) : [];
     const m1c1 = bench && bench.arms.m1 && bench.arms.m1.bench ? bench.arms.m1.bench["1"] : null;
@@ -1160,7 +1163,10 @@
       ho["vLLM 서빙"] ? banner("vLLM: " + recordedStatus(ho["vLLM 서빙"]) + (s.handoff_decision ? " — 사용자 결정: " + clean(s.handoff_decision) : "")) : t07 ? banner(t07.evidence) : null,
       statusErrors(s),
       bench ? h("div", { class: "kpis" },
-        kpi("서버 = 오프라인 출력", allSame ? "100" : arms.map((a) => fmt(bench.arms[a].identical_raw_rate * 100, 0)).join("/"), "%", "같은 " + (bench.docs || []).length + "문서 원문 출력 일치 (" + arms.map(runName).join("·") + ")", allSame ? "ok" : "warn"),
+        multi.length === 2
+          ? kpi("서버 = 오프라인 출력", multi.every((m) => m.arms.m1.identical_raw_rate === 1) ? "100" : multi.map((m) => fmt(m.arms.m1.identical_raw_rate * 100, 0)).join("/"), "%",
+              "dev 전체 " + multi.map((m) => (m.docs || []).length).join(" + ") + "문서 원문 일치 · 어댑터 2개 서버(M1 v1 · M1-cord)", multi.every((m) => m.arms.m1.identical_raw_rate === 1) ? "ok" : "warn")
+          : kpi("서버 = 오프라인 출력", allSame ? "100" : arms.map((a) => fmt(bench.arms[a].identical_raw_rate * 100, 0)).join("/"), "%", "같은 " + (bench.docs || []).length + "문서 원문 출력 일치 (" + arms.map(runName).join("·") + ")", allSame ? "ok" : "warn"),
         m1c1 ? kpi("M1 지연 p50 · 동시 1", fmt(m1c1.p50_s, 1), "s", "p95 " + fmt(m1c1.p95_s, 1) + "s · 요청 " + m1c1.requests + "건", "run") : null,
         m1c1 ? kpi("M1 처리량 · 동시 1", fmt(m1c1.docs_per_min, 2), "문서/분", "GPU 1개, 배치 1 (동시 생성 없음)", "run") : null,
         probe ? kpi("타임아웃 취소", String(probe.timeout_cancel_test.http_status), "", "제한 " + probe.timeout_cancel_test.request_timeout_s + "s · GPU " + fmt(probe.timeout_cancel_test.gpu_seconds, 2) + "s 후 중단", "ok") : null)

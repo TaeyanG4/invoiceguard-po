@@ -412,6 +412,8 @@ def status_body(store: DataStore) -> dict[str, Any]:
     return {
         "tasks": tasks, "gates": gates,
         "evaluations": evaluations, "comparisons": comparisons,
+        "billing": _safe(errors, "reports/runpod2/billing.json", lambda: _read_json(repo / "reports" / "runpod2" / "billing.json"))
+        if (repo / "reports" / "runpod2" / "billing.json").exists() else None,
         "t07": _safe(errors, "reports/eval/t07_stress.json", lambda: _read_json(repo / "reports" / "eval" / "t07_stress.json"))
         if (repo / "reports" / "eval" / "t07_stress.json").exists() else None,
         "hardware": (config or {}).get("hardware"),

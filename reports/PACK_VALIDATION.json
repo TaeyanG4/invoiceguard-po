@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-15T04:47:11.086928+00:00",
+  "checked_at_utc": "2026-11-15T06:35:16.719275+00:00",
   "status": "pass",
   "checks": [
     {
@@ -444,6 +444,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:reports/eval/resolution_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:src/invoiceguard/serving/hf_server.py",
       "status": "pass",
       "detail": ""
@@ -525,6 +530,11 @@
     },
     {
       "check": "link:README.ko.md:tests/test_app.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:tests/test_review_screen_browser.py",
       "status": "pass",
       "detail": ""
     },
@@ -979,6 +989,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:reports/eval/resolution_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:src/invoiceguard/serving/hf_server.py",
       "status": "pass",
       "detail": ""
@@ -1060,6 +1075,11 @@
     },
     {
       "check": "link:README.md:tests/test_app.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:tests/test_review_screen_browser.py",
       "status": "pass",
       "detail": ""
     },
@@ -2176,7 +2196,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "403 local Markdown links"
+      "detail": "407 local Markdown links"
     }
   ],
   "not_performed": [
