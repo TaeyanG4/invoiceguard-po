@@ -3,7 +3,7 @@
 작업 내역은 최신순으로 `handoff.md`, 단계 계획은 `plan.md`에 있다. 이 파일은 환경 · 해시 · 리소스 상태의 스냅샷이다.
 
 - project_root: `H:\dev\invoiceguard-po` (Windows 10, PowerShell 5.1 + Git Bash), git `main`, remote `origin` = github.com/TaeyanG4/invoiceguard-po (**public**, 작성자 이메일 noreply로 재작성한 이력 — `reports/HISTORY_REWRITE.md`)
-- push: 사용자 승인(11-15 "전부 승인")으로 사전 등록 커밋을 실행 전에 push — e247246(09:50, 수정 4–6) · 5a6b0b6(11:4x, 수정 7), GitHub CI 통과. 최종 push는 6차 평가 후 README 정리와 함께
+- push: 사용자 승인(11-15 "전부 승인")으로 사전 등록 커밋을 실행 전에 push — e247246(09:50, 수정 4–6) · 5a6b0b6(11:4x, 수정 7), GitHub CI 통과. 6차 평가(Fable 95.5 · astra 96.0, 둘 다 ≥ 95) 뒤 최종 README 정리와 함께 push(사용자 사전 승인)
 - python_env: 제품/CPU `.venv` (3.11.9, `pip install -e ".[dev,app]"`), 모델 `.venv-ml` (정확한 버전 `requirements-ml.lock.txt`) — 둘 다 Git 제외
 - decision record: `docs/19_DECISIONS_V5.md`, `docs/20_DECISIONS_V6.md`(CORD v2 실사진 트랙, 지표·통과 기준 사전 고정) — 방향·검토 Fable, 구현 Opus
 - completed: T00–T09 (T05 개선 시도는 음성 결과, T06 검수 API + 검수 화면(한국어 한 페이지, 11-15)). 추가: 정밀도 비교(P3), NF4 역양자화 병합(P8a), 어댑터–정밀도 짝 검사(P15), 서빙 회귀 테스트(P12), RunPod 실행 2(L40S: vLLM 정확도 회복 · FP8 · bf16 LoRA), CORD v2 트랙(dev · 학습 · 동결 · test 1회, 사전 기준 충족)

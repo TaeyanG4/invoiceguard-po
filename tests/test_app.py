@@ -82,7 +82,12 @@ def test_po_validation(make):
     dup["po_version"] = 2
     dup["items"][1]["sku"] = dup["items"][0]["sku"]
     assert client.post("/api/purchase-orders", json=dup).status_code == 422
-    assert client.post("/api/purchase-orders", json=PO).status_code == 409  # versions are immutable
+    same = client.post("/api/purchase-orders", json=PO)  # versions are immutable
+    assert same.status_code == 409 and same.json()["error"]["code"] == "PO_VERSION_EXISTS"  # identical: safe to reuse
+    changed = copy.deepcopy(PO)
+    changed["items"][0]["unit_price"] = "999.00"
+    other = client.post("/api/purchase-orders", json=changed)  # astra review 6: must not be mistaken for the stored PO
+    assert other.status_code == 409 and other.json()["error"]["code"] == "PO_VERSION_CONFLICT"
 
 
 def test_a08_upload_validation(make):

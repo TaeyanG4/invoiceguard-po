@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-15T06:35:16.719275+00:00",
+  "checked_at_utc": "2026-11-15T06:47:28.656105+00:00",
   "status": "pass",
   "checks": [
     {
@@ -170,6 +170,11 @@
     },
     {
       "check": "link:README.ko.md:docs/images/dashboard-overview.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:docs/20_DECISIONS_V6.md",
       "status": "pass",
       "detail": ""
     },
@@ -715,6 +720,11 @@
     },
     {
       "check": "link:README.md:docs/images/dashboard-overview.png",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/20_DECISIONS_V6.md",
       "status": "pass",
       "detail": ""
     },
@@ -2094,6 +2104,126 @@
       "detail": ""
     },
     {
+      "check": "link:reports\\reviews\\astra-6.md:../../docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/serving/hf_multi_lora_cord.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/eval/cord_dev_m1cordqkvo_s20261114_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../src/invoiceguard/cord_guard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../src/invoiceguard/regression_gate.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../tests/test_regression_gate.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/eval/t07_stress.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/eval/resolution_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../src/invoiceguard/app/static/review.js",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../tests/test_review_screen_browser.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../src/invoiceguard/app/static/review.js",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/serving/hf_multi_lora_trade.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/serving/hf_multi_lora_cord.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6.md:../../reports/serving/hf_multi_lora_cord_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:reports\\reviews\\astra-direction-1.md:../../reports/quant/precision_dev20.md",
       "status": "pass",
       "detail": ""
@@ -2196,7 +2326,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "407 local Markdown links"
+      "detail": "433 local Markdown links"
     }
   ],
   "not_performed": [

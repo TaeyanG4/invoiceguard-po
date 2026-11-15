@@ -111,6 +111,11 @@ What differs between the sets is summarised in [6. Results › Evaluation sets](
 - M1 v1, trained only on synthetic invoices, scores **0.47 below the base model** on receipt photos (test −0.474 [−0.543, −0.400]): outside the format it learned, fine-tuning can hurt.
 - On the two dev sets named in the criterion, M1-cord stayed within the allowed 0.03 drop against M1 v1 (own dev −0.003, public dev clean +0.033). Of the other five dev sets checked, the largest drop was public dev faded −0.067 (8 documents).
 
+**6. Further experiments with criteria fixed and pushed before running (dev only, test not reopened)** — [`docs/20`](docs/20_DECISIONS_V6.md) amendments 3–8
+- The unit-price drop on real photos: up-weighting (amendment 3) and a one-line prompt (amendment 4) failed; **widening LoRA to q · k · v · o recovered unit price to 39–40 of 50 on all three seeds** (M1-cord 32–34, M0 41). The overall gain is not robust across seeds.
+- Thirty Korean-English invoices: with the fence stripped the three models do not differ, and the Hangul item-name misreads were **caused by resolution** (without downscaling M1 v1 0.924 → 0.969). On the English dev sets a higher resolution had no effect.
+- Ambiguous quantities were kept on 2–3 of 3 Korean-English invoices, so the 0/2 failure above depends on the layout.
+
 ---
 
 ## 2. System
@@ -593,7 +598,7 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 | A1 seed 20261114 (amendment 8) | 3.2M | 0.776 | +0.014 [−0.010, +0.034] | 40/50 | |
 | A1 seed 20261115 (amendment 8) | 3.2M | 0.767 | +0.005 [−0.018, +0.024] | 39/50 | |
 
-- Both variants that double the adapter's capacity raised unit price (34 → 40 · 39, M0 has 41); only A1, which widens the target modules, passed the pre-registered rule. No field dropped (the field-level gate passes).
+- Both variants that double the adapter's capacity raised unit price (34 → 40 · 39, M0 has 41); only A1, which widens the target modules, passed the pre-registered rule. No field fell beyond the field-level gate's limit (more than 0.05 and 3+ fields), though small drops exist (e.g. r16 quantity 189 → 188, line amount 177 → 175).
 - **Seed repeats (amendment 8, criteria fixed and pushed before the runs):** the three A1 seeds score 0.782 · 0.776 · 0.767 (mean 0.775 against M1-cord's seed mean 0.763). One seed stays below 0.772, so "robustly better" is not claimed. **The unit-price recovery is robust**: 40 · 40 · 39 of 50 for all three seeds (M1-cord's seeds 34 · 32 · 33, M0 41). Against M0 all three seeds are significant (+0.070 · +0.064 · +0.050).
 - **Not confirmed on test:** CORD test was already used once by M1-cord, so A1 was not taken to test. Training reports: [`train_m1_cord_qkvo.json`](reports/model/train_m1_cord_qkvo.json) · [`train_m1_cord_r16.json`](reports/model/train_m1_cord_r16.json).
 
@@ -709,6 +714,7 @@ reject is allowed from every state except `extracting`, and re-extraction from e
 - **Immutable snapshots:** approval stores a snapshot and its SHA256; export returns only the valid approved snapshot of the current version.<br>
   After a restart, cases left in `extracting` become `failed/INTERRUPTED`.
 - **Row-level review:** besides editing values, a reviewer can add a row the model missed (`add_row`) and delete a row it invented (`delete_row`); rows are renumbered and findings recomputed.
+- **PO versions are immutable:** re-posting the same id and version is reused only when the contents are identical (`PO_VERSION_EXISTS`) and refused when they differ (`PO_VERSION_CONFLICT`); the review screen then creates no case, so an invoice is never linked to a PO it was not checked against.
 - **One key per finding:** every finding carries the `key` that `/approve` expects, and each missing PO line gets its own key, so each needs its own reason.
 **Review screen** ([`app/static/`](src/invoiceguard/app/static), Korean UI) — `python -m invoiceguard.app.server`, then http://127.0.0.1:8000/
 - One same-origin HTML + JS page (CSP self-only, no external requests) that only calls the API above, so the version, blocker, reason and snapshot rules apply unchanged.

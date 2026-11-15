@@ -237,7 +237,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const img = document.getElementById("imgFile").files[0];
     if (!poFile || !img) { toast("발주서 JSON과 이미지를 모두 고르세요.", true); return; }
     const po = JSON.parse(await poFile.text());
-    try { await api("POST", "/api/purchase-orders", po); } catch (err) { if (!String(err.message).startsWith("PO_VERSION_EXISTS")) throw err; }
+    // PO_VERSION_EXISTS = the same document is already registered (reuse it); PO_VERSION_CONFLICT (same id and version,
+    // different contents) and every other error stop here, so an invoice is never linked to a PO it was not checked against.
+    try { await api("POST", "/api/purchase-orders", po); } catch (err) { if (!String(err.message).startsWith("PO_VERSION_EXISTS ")) throw err; }
     const form = new FormData();
     form.append("image", img); form.append("po_id", po.po_id); form.append("po_version", String(po.po_version));
     const r = await api("POST", "/api/cases", form, true);

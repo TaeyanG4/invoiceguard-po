@@ -237,7 +237,7 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None, samples: dict[s
             if row is None:
                 db.execute("INSERT INTO purchase_orders VALUES (?,?,?,?)", (po["po_id"], po["po_version"], json.dumps(po), _now()))
             elif json.loads(row["json"]) != po:
-                raise ApiError(409, "PO_VERSION_EXISTS", "같은 발주서 버전이 다른 내용으로 이미 있습니다.")
+                raise ApiError(409, "PO_VERSION_CONFLICT", "같은 발주서 ID · 버전이 다른 내용으로 이미 있습니다.")
             (store.storage_dir / f"{document_id}.png").write_bytes(png)
             db.execute("INSERT INTO documents VALUES (?,?,?,?,?)", (document_id, sha, meta["width"], meta["height"], _now()))
             db.execute("INSERT INTO cases VALUES (?,?,?,?,?,?,?,?,?,?)",
@@ -261,8 +261,11 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None, samples: dict[s
         if errors:
             raise ApiError(422, "PO_INVALID", ", ".join(errors))
         with store.tx() as db:
-            if db.execute("SELECT 1 FROM purchase_orders WHERE po_id=? AND po_version=?", (po["po_id"], po["po_version"])).fetchone():
-                raise ApiError(409, "PO_VERSION_EXISTS", "같은 발주서 버전이 이미 있습니다. 새 버전으로 등록하세요.")
+            row = db.execute("SELECT json FROM purchase_orders WHERE po_id=? AND po_version=?", (po["po_id"], po["po_version"])).fetchone()
+            if row is not None:  # versions are immutable; say whether the stored one is the same document (astra review 6)
+                if json.loads(row["json"]) == po:
+                    raise ApiError(409, "PO_VERSION_EXISTS", "같은 발주서 버전이 같은 내용으로 이미 있습니다. 그대로 쓰면 됩니다.")
+                raise ApiError(409, "PO_VERSION_CONFLICT", "같은 발주서 ID · 버전이 다른 내용으로 이미 있습니다. 새 버전으로 등록하세요.")
             db.execute("INSERT INTO purchase_orders VALUES (?,?,?,?)", (po["po_id"], po["po_version"], json.dumps(po), _now()))
         return {"po_id": po["po_id"], "po_version": po["po_version"]}
 
