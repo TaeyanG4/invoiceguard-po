@@ -20,6 +20,7 @@ jobs:
         run: |
           python scripts/verify_pack.py
           python scripts/verify_contracts.py
+          python scripts/verify_claude_pack.py
       - name: Field-level regression gate on committed scoring reports
         run: python -m invoiceguard.regression_gate
       - name: Unit + regression tests (data/GPU dependent tests skip honestly)

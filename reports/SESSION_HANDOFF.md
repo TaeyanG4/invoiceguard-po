@@ -11,7 +11,7 @@
 - blocked / not_run:
   - RunPod: 실행 1 A40 43분($0.437) · 실행 2 L40S 1시간 33분($1.725), 둘 다 백업 해시 확인 후 삭제 · list-pods 0 확인. 합계 **$2.162(청구 기록, `reports/runpod2/billing.json`)**. 활성 승인 없음(`reports/RUNPOD_APPROVAL.md` approved: false). 다음 유료 실행은 새 견적 · 새 승인 필요
   - CORD RunPod 재현(C7): not_run (선택, 승인 필요)
-  - seed 반복: not_run (모든 학습 seed 1개 · 1회)
+  - seed 반복: CORD dev에서 seed 3개 완료(M1-cord − M0 평균 +0.051, 모두 > 0). 합성 트랙과 CORD test는 seed 1개 · 1회
   - 어려운 합성 데이터 렌더러 v2(Q1–Q3): not_run — CORD 실데이터로 방향 변경
   - 검수 화면 UI: not_implemented
   - FSDP/DeepSpeed·DPO: 기각(docs/19) · 하드웨어 한계로 평가 제외(`reports/reviews/briefs/review_constraints.md`)
@@ -23,7 +23,8 @@
 - freeze: 합성 `configs/frozen_v1_appendix.json` @ 622c22c7 (final 실행 전 커밋 7c5b7f8, 과거 결과로 보존) · CORD `configs/frozen_cord_v1.json` @ 92892c5 (fa750bb에 커밋, code_dirty false)
 - final: 합성 `reports/eval/final_summary.md` (B0/M0/M1, 160/160, 1회) · CORD test `reports/eval/cord_test_*.json` (M0 0.689 · M1 v1 0.215 · M1-cord 0.754, M1-cord−M0 +0.065 [+0.027, +0.107], 1회)
 - backup: `H:\dev\invoiceguard-po-backup` — 합성 트랙 41파일(`reports/backup_inventory.json`) + CORD 트랙 18파일(어댑터 · 예측 원문, `reports/backup_inventory_cord.json`, 복원 해시 일치)
-- running_processes: P12 확인용 HF 모델 서버(127.0.0.1:8001)는 확인 후 종료. 대시보드 미리보기 서버(127.0.0.1:8765)는 Claude 앱 Browser 패널에서 열려 있을 수 있음 — 과금 없음
+- serving_local: M1 v1(자체 dev) · M1-cord(CORD dev) 모두 로컬 HF 서버 원문이 오프라인 평가와 10/10 동일, 5분 지속 부하 실패 0(`reports/serving/hf_peft_nf4_local_{v2,sustained,cord,cord_sustained}.json`). M1-cord vLLM 서빙은 not_run(RunPod 필요)
+- running_processes: HF 모델 서버(127.0.0.1:8001)는 측정 후 매번 종료(11-15 09:02 M1-cord 측정 후 포트 닫힘 · 고아 0 확인). 대시보드 미리보기 서버(127.0.0.1:8765)는 Claude 앱 Browser 패널에서 열려 있을 수 있음 — 과금 없음
 - active_paid_resources_from_this_project: none — RunPod Pod 2대 모두 삭제 확인(실행 1 2026-11-14 18:43, 실행 2 22:22:58 KST, list-pods 0)
 - runpod_access: Runpod MCP(OAuth). API 키 없음. 등록 SSH 키는 로컬 키와 짝
 

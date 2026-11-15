@@ -1122,6 +1122,22 @@
         h("td", { class: "num" }, fmt(b.docs_per_min, 2)), h("td", { class: "num" }, fmt(b.p50_s, 1) + "s"), h("td", { class: "num" }, fmt(b.p95_s, 1) + "s"),
         h("td", { class: "num" }, String(b.gpu_mem_mb_max) + " MB")));
     }
+    // re-measurements that score every answer and record HTTP codes (own dev with M1 v1, CORD dev with M1-cord)
+    const SCORED = [["hf_peft_nf4_local_v2", "자체 dev · M1 v1"], ["hf_peft_nf4_local_sustained", "자체 dev · M1 v1 · 5분"],
+      ["hf_peft_nf4_local_cord", "CORD dev · M1-cord"], ["hf_peft_nf4_local_cord_sustained", "CORD dev · M1-cord · 5분"]];
+    const scoredRows = [], parity = [];
+    for (const [key, name] of SCORED) {
+      const r = sv[key], m = r && r.arms && r.arms.m1;
+      if (!m) continue;
+      if (m.identical_raw_rate !== undefined && !key.endsWith("_sustained")) parity.push(name + ": 서버 원문이 오프라인 평가(" + ((r.offline_runs || {}).m1 || "m1_dev_v1") + ")와 " +
+        fmt(m.identical_raw_rate * 100, 0) + "% 동일 (정확도 서버 " + fmt(m.server_field_accuracy) + " · 오프라인 " + fmt(m.offline_hf_field_accuracy_same_docs) + ")");
+      for (const [c, b] of Object.entries(m.bench || {})) {
+        const codes = Object.entries(b.status_codes || {}).map(([k, v]) => k + "×" + v).join(" ");
+        scoredRows.push(h("tr", null, h("td", null, name), h("td", { class: "num" }, c), h("td", { class: "num" }, String(b.requests)), h("td", null, codes),
+          h("td", { class: "num" }, fmt(b.field_accuracy)), h("td", { class: "num" }, fmt((b.identical_to_concurrency1_rate || 0) * 100, 0) + "%"),
+          h("td", { class: "num" }, fmt(b.docs_per_min, 2)), h("td", { class: "num" }, fmt(b.p50_s, 1) + "s / " + fmt(b.p95_s, 1) + "s")));
+      }
+    }
     add(view, [
       pageHead("서빙", "Transformers + PEFT 서버(로컬 RTX 4070 Ti SUPER, 127.0.0.1) 실측", "reports/serving/*.json"),
       ho["vLLM 서빙"] ? banner("vLLM: " + recordedStatus(ho["vLLM 서빙"]) + (s.handoff_decision ? " — 사용자 결정: " + clean(s.handoff_decision) : "")) : t07 ? banner(t07.evidence) : null,
@@ -1135,6 +1151,10 @@
       bench ? h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "동시성별 지연·처리량"), h("span", { class: "hint" }, "최대 토큰 " + bench.max_tokens + " · warmup " + bench.warmups)),
         table(["arm", ["동시 요청", "num"], ["요청", "num"], ["실패", "num"], ["문서/분", "num"], ["p50", "num"], ["p95", "num"], ["GPU 메모리 최대", "num"]], rows, "small"),
         h("p", { class: "note" }, "서버는 GPU 작업을 한 번에 하나만 실행하고 대기열을 2개로 제한해 넘치는 요청을 429로 거절하도록 만들어져 있습니다. 이 벤치는 상태 코드를 기록하지 않았고, 상태 코드를 기록한 재측정(reports/serving/hf_peft_nf4_local_v2.json)에서 동시 4의 실패 7건은 모두 429로 확인됐습니다. 같은 재측정의 5분 지속 부하(동시 2)는 25건 모두 200, 정확도 0.943입니다. 문서/분·p50·p95는 성공한 요청만으로 계산했으므로 동시 4 행은 성공 3건 기준입니다. ", clean(bench.note))) : null,
+      scoredRows.length ? h("section", { class: "card" }, h("div", { class: "cardhead" }, h("h2", null, "모든 답 채점 재측정"),
+        h("span", { class: "hint" }, "답마다 채점 · HTTP 상태 코드 · 동시 1과 원문 비교 · 잘림 기록")),
+        table(["측정", ["동시", "num"], ["요청", "num"], "HTTP", ["정확도", "num"], ["동시 1과 동일", "num"], ["문서/분", "num"], ["p50 / p95", "num"]], scoredRows, "small"),
+        h("p", { class: "note" }, parity.join(" · "), parity.length ? ". " : "", "429는 대기열(2개)이 찬 요청을 설계대로 거절한 것입니다. CORD 영수증은 출력이 짧아 자체 인보이스보다 처리량이 높습니다.")) : null,
       h("div", { class: "cols" },
         probe ? cardH("취소·대기열 프로브", probe.measured_at, kv([
           ["요청 타임아웃", probe.timeout_cancel_test.request_timeout_s + "s → HTTP " + probe.timeout_cancel_test.http_status + " (경과 " + probe.timeout_cancel_test.wall_s + "s)"],

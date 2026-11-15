@@ -19,10 +19,10 @@
 | 보여 주려는 것 | 결과 | 자세히 |
 |---|---|---|
 | 실사진에서 파인튜닝 효과 | CORD v2 영수증 test(동결 후 1회): M1-cord − M0 **+0.065 [+0.027, +0.107]**, 형식 무시 +0.055 [+0.019, +0.095] → 학습 전에 정한 기준 충족 | [CORD 결과](#cord-v2--실사진-영수증) |
-| 학습한 모델을 품질 손실 없이 서빙 | vLLM 정확도 0.849 → **0.960** (원인 = 어댑터·기본 모델 정밀도 불일치, NF4 역양자화 병합으로 해결), FP8 처리량 +23–33 % | [12장](#12-runpod-클라우드-재현) |
+| 학습한 모델을 품질 손실 없이 서빙 | vLLM 정확도 0.849 → **0.960** (원인 = 어댑터·기본 모델 정밀도 불일치, NF4 역양자화 병합으로 해결), FP8 처리량 +23–33 %<br>실사진 모델(M1-cord)도 로컬 서버 원문이 오프라인 평가와 10/10 동일, 5분 지속 부하 64건 모두 200 | [12장](#12-runpod-클라우드-재현) · [7장](#7-서빙) |
 | 다른 GPU에서 학습 재현 | A40 재학습: 평균 loss 차이 0.0002, dev 출력 8/8 동일 | [12장](#12-runpod-클라우드-재현) |
 | 인보이스 추출 + 발주서 대사 | 미학습 레이아웃 test: M1 0.921 · M0 0.897(차이 유의하지 않음) · OCR 규칙 0.210 | [1장](#1-한눈에-보기) |
-| 평가 무결성 | test 1회 가드, 동결 해시를 CI가 검사, pytest 209개 | [6장](#6-결과) |
+| 평가 무결성 | test 1회 가드, 동결 해시를 CI가 검사, pytest 217개 | [6장](#6-결과) |
 | 비용 | RunPod 2회 청구 $2.16([`billing.json`](reports/runpod2/billing.json)), 나머지는 로컬 GPU 1장 | [11장](#11-비용과-한계) |
 | 한계 | 실사진은 영수증뿐, 단가는 파인튜닝 뒤 0.82 → 0.72로 하락, test 판정은 seed 1개 결과이고, dev에서는 seed 3개 모두 M0보다 +0.044~+0.060([6장](#cord-v2--실사진-영수증)) | [11장](#11-비용과-한계) |
 
@@ -600,6 +600,7 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 | 처리량 · 지연<br><sub>M1</sub> | 동시 1: 4.0 문서/분, p50 16.1s / p95 18.4s<br>동시 2: 4.2 문서/분, p50 26.6s / p95 36.3s<br><sub>직렬 작업자라 대기 시간이 늘어난 것이며, 배치 효과가 아님</sub> |
 | 동시 4 | 10건 중 7건 실패 기록<br><sub>첫 벤치는 상태 코드를 저장하지 않았습니다. 상태 코드를 기록하는 재측정(아래)에서 7건 모두 **429(대기열 초과)**로 확인</sub> |
 | **모든 답 채점 · 지속 부하** (11-15 재측정)<br><sub>M1, 자체 dev 10장</sub> | 동시 1 · 2 · 4의 정확도 0.936 · 0.936 · 0.962(성공 3건), 원문이 동시 1과 모두 같음, 잘림 0<br>**5분 지속 부하(동시 2):** 25건 모두 200, 정확도 0.943, 분당 4.56문서, p50 24.9s / p95 32.8s, GPU 메모리 최대 3.36GB(벤치는 최댓값만 기록)<br><sub>[`hf_peft_nf4_local_v2.json`](reports/serving/hf_peft_nf4_local_v2.json) · [`hf_peft_nf4_local_sustained.json`](reports/serving/hf_peft_nf4_local_sustained.json)</sub> |
+| **실사진 모델(M1-cord) 서빙** (11-15)<br><sub>CORD dev 영수증 10장, CORD 채점기</sub> | 서버 원문이 오프라인 평가(`cord_dev_m1cord_nf4`)와 **10/10 동일**, 정확도 0.730 = 오프라인 0.730(같은 10장)<br>동시 1 · 2 · 4: 분당 11.7 · 12.0 · 11.6문서, p50 4.6 · 9.6 · 11.1s, 동시 4는 7건 **429**(대기열 초과, 설계대로), 성공한 답은 모두 동시 1과 같은 원문<br>**5분 지속 부하(동시 2):** 64건 모두 200, 정확도 0.730, 분당 12.6문서, p50 9.3s / p95 11.3s, 잘림 0, GPU 메모리 최대 3.52GB<br><sub>영수증은 출력이 짧아 자체 인보이스보다 약 2.7배 빠릅니다. 10장 부분집합이라 정확도는 CORD dev 전체 수치와 다릅니다. [`hf_peft_nf4_local_cord.json`](reports/serving/hf_peft_nf4_local_cord.json) · [`hf_peft_nf4_local_cord_sustained.json`](reports/serving/hf_peft_nf4_local_cord_sustained.json)</sub> |
 | 타임아웃 취소 | 3초 제한 요청 → 3.1초에 504, 직후 작업자 `busy:false`<br><sub>StoppingCriteria로 생성을 중단해 남는 추론이 없음</sub> |
 | GPU 메모리 | 약 3.1GB<br><sub>nvidia-smi, 다른 프로세스 포함</sub> |
 | LIVE 시연 | 검수 API(LIVE_MODEL) → 추출 15.2s → `UNIT_PRICE_DIFF` 검출 → 승인 → 스냅샷 export<br><sub>추출 결과가 정답 행과 일치</sub> |
@@ -713,7 +714,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 - 서빙
   - vLLM은 RunPod에서만 측정했습니다. 실행 1의 정확도 저하는 원인(어댑터·기본 모델 정밀도 불일치)을 찾아 실행 2에서 역양자화 병합으로 회복했지만, 병합본은 GPU마다 비트가 조금 다르므로 한 곳에서 만들어 해시로 옮겨야 합니다.
   - 직접 만든 HF 서버는 배칭이 없습니다(batch 1, 직렬 작업자). 배칭은 RunPod의 vLLM에서만 측정했습니다(12장).
-  - 벤치는 문서 10장 · 반복 1회이고, 지속 부하는 로컬 HF 서버에서 5분 한 번입니다. 서버의 대기열 · 데드라인 · 오류 처리는 자동 회귀 테스트 6개가 있고([`test_serving_core.py`](tests/test_serving_core.py)), 리팩터링한 GPU 서버는 실제 요청 6건에서 원문이 오프라인 평가와 6/6 같았습니다([`hf_server_refactor_smoke.json`](reports/serving/hf_server_refactor_smoke.json)). vLLM에서의 지속 부하와 CORD 모델 서빙은 측정하지 않았습니다(RunPod 필요).
+  - 벤치는 문서 10장 · 반복 1회이고, 지속 부하는 로컬 HF 서버에서 5분 한 번입니다. 서버의 대기열 · 데드라인 · 오류 처리는 자동 회귀 테스트 6개가 있고([`test_serving_core.py`](tests/test_serving_core.py)), 리팩터링한 GPU 서버는 실제 요청 6건에서 원문이 오프라인 평가와 6/6 같았습니다([`hf_server_refactor_smoke.json`](reports/serving/hf_server_refactor_smoke.json)). 실사진 모델(M1-cord)은 로컬 HF 서버에서 CORD dev 10장으로 측정했습니다(원문 10/10 동일, 5분 지속 부하 64건 모두 200). vLLM에서의 지속 부하와 M1-cord의 vLLM 서빙은 측정하지 않았습니다(RunPod 필요).
 - 같은 정밀도에서도 GPU마다 출력이 문서 1건 정도 갈릴 수 있습니다(소수점 끝자리 차이 → greedy 토큰 하나). 그래서 비교는 한 GPU 안에서만 했습니다([12장](#12-runpod-클라우드-재현)).
 - RunPod 재현은 seed 1개 · 1회이고, dev parity는 8건입니다. Pod 안 자동 정지는 권한 문제로 걸지 못해, Pod를 삭제할 때까지 지켜보며 진행했습니다.
 - FSDP / DeepSpeed는 2B 모델 · 단일 GPU에서 필요가 없어 쓰지 않았습니다([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
@@ -955,6 +956,8 @@ docker build -t invoiceguard-ocr:tesseract docker/ocr
 ```bash
 .venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --port 8001
 .venv/Scripts/python.exe -m invoiceguard.serving.vllm_bench run --label hf_peft_nf4_local --port 8001 --conc 1,2,4 --docs 10 --reps 1
+# 실사진 모델: 서버를 --adapter artifacts/adapters/m1_cord_v1 로 띄운 뒤
+.venv/Scripts/python.exe -m invoiceguard.serving.vllm_bench run --label hf_peft_nf4_local_cord --task cord --arms m1 --port 8001 --conc 1,2,4 --docs 10 --reps 1 --warmups 2
 .venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1
 .venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765
 ```

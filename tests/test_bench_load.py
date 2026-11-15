@@ -50,3 +50,26 @@ def test_sustained_load_keeps_requests_in_flight_until_the_time_is_up(monkeypatc
     out = vllm_bench._load("m0", [Doc("a"), Doc("b")], conc=3, reps=1, duration_s=0.3, c1_raw={}, request=request)
     assert out["sustained_s"] == 0.3 and out["requests"] == len(calls) > 6 and out["failures"] == 0
     assert out["field_accuracy"] == 1.0 and out["wall_s"] >= 0.3
+
+
+def test_cord_task_scores_served_answers_with_the_cord_scorer_and_compares_with_cord_offline_runs(monkeypatch):
+    """--task cord: positional CORD_RAW scoring with the document's masked slots, fence-stripped parse, CORD offline runs."""
+    from invoiceguard import cord, cord_eval
+
+    monkeypatch.setitem(vllm_bench.TARGET, "task", "cord")
+    monkeypatch.setitem(vllm_bench.TARGET, "offline", {})
+    monkeypatch.setattr(cord, "manifest_rows", lambda split: [{"id": "cord_dev_0007", "masked": ["menu.0.price"]}])
+    monkeypatch.setattr(cord, "load_gold", lambda rid: {"doc": rid})
+    seen = {}
+
+    def score(gold, masked, parsed):
+        seen.update(gold=gold, masked=masked, parsed=parsed)
+        return {"strict": (3, 5)}
+    monkeypatch.setattr(cord_eval, "score_document", score)
+    assert vllm_bench._fields("cord_dev_0007", '```json\n{"menu": []}\n```', "stop") == (3, 5)
+    assert seen["gold"] == {"doc": "cord_dev_0007"} and seen["masked"] == ["menu.0.price"]
+    assert vllm_bench._offline_run("m1") == "cord_dev_m1cord_nf4" and vllm_bench._offline_run("m0") == "cord_dev_m0_nf4"
+    monkeypatch.setitem(vllm_bench.TARGET, "offline", {"m1": "cord_dev_m1cordup_nf4"})
+    assert vllm_bench._offline_run("m1") == "cord_dev_m1cordup_nf4"
+    monkeypatch.setitem(vllm_bench.TARGET, "task", "trade")
+    assert vllm_bench._offline_run("m1") == "m1_dev_v1"

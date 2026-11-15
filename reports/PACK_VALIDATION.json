@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-14T16:22:54.740920+00:00",
+  "checked_at_utc": "2026-11-15T00:01:00.941374+00:00",
   "status": "pass",
   "checks": [
     {
@@ -164,6 +164,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:reports/runpod2/billing.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:docs/images/dashboard-overview.png",
       "status": "pass",
       "detail": ""
@@ -314,6 +319,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:reports/eval/final_field_ci.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:prompts/EXTRACT_V1.txt",
       "status": "pass",
       "detail": ""
@@ -359,6 +369,16 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:src/invoiceguard/cord_guard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:tests/test_cord_freeze.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:src/invoiceguard/cord_eval.py",
       "status": "pass",
       "detail": ""
@@ -369,7 +389,47 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:src/invoiceguard/regression_gate.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:configs/regression_gate.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:src/invoiceguard/serving/hf_server.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving/hf_peft_nf4_local_v2.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving/hf_peft_nf4_local_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving/hf_peft_nf4_local_cord.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving/hf_peft_nf4_local_cord_sustained.json",
       "status": "pass",
       "detail": ""
     },
@@ -454,12 +514,32 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:reports/runpod2/billing.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:tests/test_serving_core.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving/hf_server_refactor_smoke.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:docs/19_DECISIONS_V5.md",
       "status": "pass",
       "detail": ""
     },
     {
       "check": "link:README.ko.md:reports/IMPLEMENTATION_STATUS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/runpod2/billing.json",
       "status": "pass",
       "detail": ""
     },
@@ -520,6 +600,11 @@
     },
     {
       "check": "link:README.md:README.ko.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/runpod2/billing.json",
       "status": "pass",
       "detail": ""
     },
@@ -674,6 +759,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:reports/eval/final_field_ci.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:prompts/EXTRACT_V1.txt",
       "status": "pass",
       "detail": ""
@@ -719,6 +809,16 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:src/invoiceguard/cord_guard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:tests/test_cord_freeze.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:src/invoiceguard/cord_eval.py",
       "status": "pass",
       "detail": ""
@@ -729,7 +829,47 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:src/invoiceguard/regression_gate.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:configs/regression_gate.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:src/invoiceguard/serving/hf_server.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving/hf_peft_nf4_local_v2.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving/hf_peft_nf4_local_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving/hf_peft_nf4_local_cord.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving/hf_peft_nf4_local_cord_sustained.json",
       "status": "pass",
       "detail": ""
     },
@@ -814,12 +954,32 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:reports/runpod2/billing.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:tests/test_serving_core.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving/hf_server_refactor_smoke.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:docs/19_DECISIONS_V5.md",
       "status": "pass",
       "detail": ""
     },
     {
       "check": "link:README.md:reports/IMPLEMENTATION_STATUS.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/runpod2/billing.json",
       "status": "pass",
       "detail": ""
     },
@@ -1219,6 +1379,406 @@
       "detail": ""
     },
     {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/vlm/train.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/model/local_smoke_train.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/runpod2/vllm_run2_m1merged_bf16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/evaluation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/vlm/infer.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/quant/precision_dev20.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/eval/dev_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../handoff.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/eval/compare_cord_test_m1cord_nf4__vs__cord_test_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/vlm/infer.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/vlm/infer.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/cord.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/eval/compare_m1cord_dev_v1__vs__m1_dev_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../tests/test_serving_core.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-2.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../reports/eval/compare_cord_test_m1cord_nf4__vs__cord_test_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/cord_guard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/vlm/infer.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/vlm/train.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/vlm/train.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../schemas/findings.schema.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../tests/test_pairing.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../tests/test_app.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../tests/test_cord_freeze.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../plan.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-3.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../src/invoiceguard/cord_guard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../tests/test_app.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../tests/test_cord.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../handoff.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../configs/frozen_cord_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../plan.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../reports/runpod2/vllm_run2_m1merged_bf16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../reports/serving/hf_peft_nf4_local_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../src/invoiceguard/serving/vllm_bench.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-4.md:../../reports/serving/hf_peft_nf4_local_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:reports\\reviews\\astra-direction-1.md:../../reports/quant/precision_dev20.md",
       "status": "pass",
       "detail": ""
@@ -1321,7 +1881,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "232 local Markdown links"
+      "detail": "344 local Markdown links"
     }
   ],
   "not_performed": [

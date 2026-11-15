@@ -8,6 +8,16 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 checks: list[dict] = []
+# Git-ignored local folders (virtualenvs, raw data, weights) are never in the repository or release, as in verify_pack.py.
+LOCAL_DIRS = {'.git', '.venv', '.venv-ml', 'data', 'artifacts', 'models', 'node_modules'}
+# Logs that name the external reviewer's CLI as history, not as an instruction to use another agent.
+HISTORY_LOGS = {'handoff.md'}
+
+
+def repo_files():
+    for p in ROOT.rglob('*'):
+        if p.is_file() and p.relative_to(ROOT).parts[0] not in LOCAL_DIRS:
+            yield p
 
 def record(name: str, valid: bool, detail: str = '') -> None:
     checks.append({'check': name, 'status': 'pass' if valid else 'failed', 'detail': detail})
@@ -25,8 +35,8 @@ required = [
 ]
 for relative in required:
     record('required:' + relative, (ROOT / relative).is_file())
-for p in ROOT.rglob('*'):
-    if p.is_file() and p.suffix.lower() in {'.md', '.json', '.yaml', '.txt', '.py'}:
+for p in repo_files():
+    if p.suffix.lower() in {'.md', '.json', '.yaml', '.txt', '.py'}:
         try:
             p.read_text(encoding='utf-8')
             valid = True
@@ -65,8 +75,8 @@ for key in ['start_prompt','resume_prompt','workflow','handoff_file','task_board
     record('config_path:'+key, (ROOT / cfg['agent'][key]).is_file())
 # Limit to active content; historical audit labels v2/v3 are intentional.
 legacy_tokens = ['CODE' + 'X', 'Co' + 'dex', 'AG' + 'ENTS.md', 'verify_' + 'v3.py']
-for p in ROOT.rglob('*'):
-    if p.is_file() and p.suffix in {'.md','.yaml'}:
+for p in repo_files():
+    if p.suffix in {'.md','.yaml'} and p.relative_to(ROOT).as_posix() not in HISTORY_LOGS:
         text = p.read_text(encoding='utf-8')
         bad = [token for token in legacy_tokens if token in text]
         record('active_refs:' + p.relative_to(ROOT).as_posix(), not bad, ','.join(bad))
@@ -78,7 +88,7 @@ for p in (ROOT / 'scripts').glob('*.py'):
         valid = False
     record('python_syntax:' + p.name, valid)
 for suffix in ['.pem','.key','.ttf','.otf','.woff','.woff2','.safetensors','.pt']:
-    record('no_asset:' + suffix, not any(p.is_file() and p.suffix.lower() == suffix for p in ROOT.rglob('*')))
+    record('no_asset:' + suffix, not any(p.suffix.lower() == suffix for p in repo_files()))
 
 report = {
     'scope': 'static_claude_code_package_migration_only',

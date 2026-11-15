@@ -1,6 +1,6 @@
 {
   "scope": "static_claude_code_package_migration_only",
-  "checked_at_utc": "2026-11-14T09:54:37.538414+00:00",
+  "checked_at_utc": "2026-11-15T00:00:42.119353+00:00",
   "status": "pass",
   "checks": [
     {
@@ -84,7 +84,17 @@
       "detail": ""
     },
     {
+      "check": "utf8:handoff.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:MANIFEST.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:plan.md",
       "status": "pass",
       "detail": ""
     },
@@ -124,6 +134,26 @@
       "detail": ""
     },
     {
+      "check": "utf8:.claude/settings.local.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:.pytest_cache/README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:configs/frozen_cord_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:configs/frozen_cord_v1_deps.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:configs/frozen_v1.json",
       "status": "pass",
       "detail": ""
@@ -135,6 +165,11 @@
     },
     {
       "check": "utf8:configs/project.yaml",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:configs/regression_gate.json",
       "status": "pass",
       "detail": ""
     },
@@ -239,6 +274,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:docs/PACKAGE_README_v4.md",
       "status": "pass",
       "detail": ""
@@ -304,6 +344,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:prompts/EXTRACT_CORD_RAW.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:prompts/EXTRACT_PUBLIC_CANONICAL.txt",
       "status": "pass",
       "detail": ""
@@ -315,6 +360,11 @@
     },
     {
       "check": "utf8:reports/backup_inventory.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/backup_inventory_cord.json",
       "status": "pass",
       "detail": ""
     },
@@ -439,7 +489,77 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordup_nf4__vs__cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordup_nf4__vs__cord_dev_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cord_nf4__vs__cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cord_nf4__vs__cord_dev_m1v1_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cord_s20261114_nf4__vs__cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cord_s20261115_nf4__vs__cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1v1_nf4__vs__cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_test_m1cord_nf4__vs__cord_test_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_test_m1cord_nf4__vs__cord_test_m1v1_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_test_m1v1_nf4__vs__cord_test_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_dev44_l40s_m1_bf16lora__vs__dev44_l40s_m0_bf16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_dev44_l40s_m1_bf16lora__vs__dev44_l40s_m1_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_dev44_l40s_m1_nf4__vs__dev44_l40s_m0_bf16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/eval/compare_m0_final_v1__vs__b0_final_v12.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_m1cord_dev_v1__vs__m1_dev_v1.json",
       "status": "pass",
       "detail": ""
     },
@@ -469,6 +589,76 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/eval/cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1cordup_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1cord_s20261114_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1cord_s20261115_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1v1_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_failure_dev.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_test_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_test_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_test_m1v1_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/dev44_l40s_m0_bf16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/dev44_l40s_m1_bf16lora.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/dev44_l40s_m1_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/eval/dev_summary.md",
       "status": "pass",
       "detail": ""
@@ -494,6 +684,16 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/eval/final_field_ci.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/final_field_ci.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/eval/final_summary.md",
       "status": "pass",
       "detail": ""
@@ -505,6 +705,11 @@
     },
     {
       "check": "utf8:reports/eval/m0_final_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/m1cord_dev_v1.json",
       "status": "pass",
       "detail": ""
     },
@@ -554,12 +759,142 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/model/train_m1_cord_s20261114.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/train_m1_cord_s20261115.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/train_m1_cord_up_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/train_m1_cord_v1.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/model/train_m1_standard_v1.json",
       "status": "pass",
       "detail": ""
     },
     {
       "check": "utf8:reports/model/train_m1_standard_v2.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/quant/precision_dev20.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/quant/precision_dev20.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/realdocs/cord_budget.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/realdocs/cord_build.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/realdocs/cord_fetch.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/research/datasets-2026-11-14.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/astra-1-attempt1-noread.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/astra-1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/astra-2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/astra-3.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/astra-4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/astra-direction-1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/fable-2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/fable-3.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/fable-4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/fable-direction-1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/astra-1-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/direction-1-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/review-2-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/review-3-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/review-4-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/review_constraints.md",
       "status": "pass",
       "detail": ""
     },
@@ -659,6 +994,76 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/runpod2/billing.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/local_merged_tensors.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/local_merge_metadata.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/merge_tensor_diff.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/pod_merged_tensors.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/restore_local_load.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/teacher_drafts_summary.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/timeline.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/timeline.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/train_m1_bf16lora_l40s.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/vllm_run2_m0_bf16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/vllm_run2_m0_fp8.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/vllm_run2_m1merged_bf16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/runpod2/vllm_run2_m1merged_fp8.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/serving/hf_cancel_probe.json",
       "status": "pass",
       "detail": ""
@@ -669,12 +1074,42 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/serving/hf_peft_nf4_local_cord.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/hf_peft_nf4_local_cord_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/hf_peft_nf4_local_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/hf_peft_nf4_local_v2.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/hf_server_refactor_smoke.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/serving/live_e2e_demo.json",
       "status": "pass",
       "detail": ""
     },
     {
       "check": "utf8:reports/serving/vllm_bf16_a40.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:schemas/cord_extraction.schema.json",
       "status": "pass",
       "detail": ""
     },
@@ -724,6 +1159,66 @@
       "detail": ""
     },
     {
+      "check": "utf8:scripts/eval/final_field_ci.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/quant/compare_precision.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/quant/merge_dequantized.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/quant/tensor_hashes.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/realdocs/cord_budget.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/realdocs/cord_failure_report.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/realdocs/fetch_cord.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/realdocs/freeze_cord.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/realdocs/gpu_free_runner.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/realdocs/teacher_label.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/realdocs/verify_labels.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/review/consult_astra.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:scripts/runpod/compare_parity.py",
       "status": "pass",
       "detail": ""
@@ -744,6 +1239,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:scripts/runpod/timeline.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:src/invoiceguard/backup.py",
       "status": "pass",
       "detail": ""
@@ -755,6 +1255,26 @@
     },
     {
       "check": "utf8:src/invoiceguard/compare_runs.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/cord.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/cord_eval.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/cord_guard.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/cord_score.py",
       "status": "pass",
       "detail": ""
     },
@@ -824,6 +1344,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:src/invoiceguard/readme_cord.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:src/invoiceguard/readme_figures.py",
       "status": "pass",
       "detail": ""
@@ -834,7 +1359,17 @@
       "detail": ""
     },
     {
+      "check": "utf8:src/invoiceguard/readme_tables.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:src/invoiceguard/reconciliation.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/regression_gate.py",
       "status": "pass",
       "detail": ""
     },
@@ -875,6 +1410,11 @@
     },
     {
       "check": "utf8:src/invoiceguard/app/__init__.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard/serving/core.py",
       "status": "pass",
       "detail": ""
     },
@@ -929,6 +1469,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:src/invoiceguard/vlm/pairing.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:src/invoiceguard/vlm/records.py",
       "status": "pass",
       "detail": ""
@@ -959,12 +1504,47 @@
       "detail": ""
     },
     {
+      "check": "utf8:src/invoiceguard.egg-info/dependency_links.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard.egg-info/requires.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard.egg-info/SOURCES.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:src/invoiceguard.egg-info/top_level.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:tests/test_app.py",
       "status": "pass",
       "detail": ""
     },
     {
+      "check": "utf8:tests/test_bench_load.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:tests/test_canonical.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_cord.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_cord_freeze.py",
       "status": "pass",
       "detail": ""
     },
@@ -984,6 +1564,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:tests/test_pairing.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:tests/test_public_visibility.py",
       "status": "pass",
       "detail": ""
@@ -999,7 +1584,17 @@
       "detail": ""
     },
     {
+      "check": "utf8:tests/test_regression_gate.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:tests/test_repo_hygiene.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_serving_core.py",
       "status": "pass",
       "detail": ""
     },
@@ -1189,6 +1784,11 @@
       "detail": ""
     },
     {
+      "check": "active_refs:plan.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:README.ko.md",
       "status": "pass",
       "detail": ""
@@ -1200,6 +1800,11 @@
     },
     {
       "check": "active_refs:.claude/README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:.pytest_cache/README.md",
       "status": "pass",
       "detail": ""
     },
@@ -1309,6 +1914,11 @@
       "detail": ""
     },
     {
+      "check": "active_refs:docs/20_DECISIONS_V6.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:docs/PACKAGE_README_v4.md",
       "status": "pass",
       "detail": ""
@@ -1374,6 +1984,11 @@
       "detail": ""
     },
     {
+      "check": "active_refs:reports/eval/cord_failure_dev.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:reports/eval/dev_summary.md",
       "status": "pass",
       "detail": ""
@@ -1389,6 +2004,11 @@
       "detail": ""
     },
     {
+      "check": "active_refs:reports/eval/final_field_ci.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:reports/eval/final_summary.md",
       "status": "pass",
       "detail": ""
@@ -1399,7 +2019,102 @@
       "detail": ""
     },
     {
+      "check": "active_refs:reports/quant/precision_dev20.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/research/datasets-2026-11-14.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/astra-1-attempt1-noread.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/astra-1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/astra-2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/astra-3.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/astra-4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/astra-direction-1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/fable-2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/fable-3.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/fable-4.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/fable-direction-1.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/astra-1-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/direction-1-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/review-2-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/review-3-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/review-4-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/review_constraints.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:reports/runpod/RUNPOD_RUN.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/runpod2/timeline.md",
       "status": "pass",
       "detail": ""
     },

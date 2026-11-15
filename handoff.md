@@ -18,11 +18,26 @@ sources:
 이어서 작업할 때: 이 파일 → `plan.md` → `reports/SESSION_HANDOFF.md`(환경·해시·리소스 상태) 순서로 읽는다.
 기록 규칙: 항목마다 시각(KST) · 한 일 · 실제 결과(수치와 근거 파일) · 결정 · 다음 할 일. 실행하지 않은 것은 not_run, 실패는 failed. 비밀값은 적지 않는다.
 
-## 2026-11-15 08:55 — 4차 평가: Fable 89 · astra 92.5
+## 2026-11-15 09:05 — 실사진 모델(M1-cord) 로컬 서빙 측정 (astra 4 −1 · Fable 4 −1.5 지적)
+- 벤치에 `--task cord` 추가(`vllm_bench.py`): CORD dev 영수증을 보내고 CORD 채점기(펜스 제거 파싱, 칸별 strict, 문서별 masked)로 모든 답을 채점, 오프라인 비교 대상은 `cord_dev_m1cord_nf4`. CPU 테스트 1개(`test_bench_load.py`).
+- 로컬 HF+PEFT 서버(127.0.0.1:8001, `--adapter artifacts/adapters/m1_cord_v1`, health의 adapter_sha256 630d3dd1… = 동결 M1_cord와 같음)에 `vllm_bench run --label hf_peft_nf4_local_cord --task cord --arms m1 --docs 10 --conc 1,2,4 --warmups 2 --reps 1`:
+  - 서버 원문이 오프라인 평가와 **10/10 동일**, 정확도 0.730 = 오프라인 0.730(같은 10장, 54/74칸)
+  - 동시 1 · 2 · 4: 11.7 · 12.0 · 11.6 문서/분, p50 4.6 · 9.6 · 11.1 s, p95 7.7 · 11.4 · 15.4 s. 동시 4는 200 × 3 · **429 × 7**(대기열 2개 초과, 설계대로). 성공한 답은 모두 동시 1과 같은 원문, 잘림 0
+- `--duration 300 --conc 2` 5분 지속 부하: **64건 모두 200**, 정확도 0.730(346/474), 12.55 문서/분, p50 9.3 s · p95 11.3 s, 잘림 0, GPU 메모리 최대 3.52 GB. 영수증은 출력이 짧아 자체 인보이스(4.56 문서/분)보다 약 2.7배 빠름.
+- 보고서: `reports/serving/hf_peft_nf4_local_cord.json`, `hf_peft_nf4_local_cord_sustained.json`. 서버 종료 후 포트 8001 닫힘 · 고아 프로세스 0 · GPU 0.64 GB 확인.
+- README 요약표 · 7장 표 · 11장 한계 · 실행 명령, 대시보드 서빙 페이지(모든 답 채점 재측정 표) 갱신. 테스트 217 pass(1 skip).
+- 남은 것: M1-cord의 **vLLM** 서빙은 not_run(RunPod 필요, R7 견적 대기). 다음: 5차 평가.
+
+## 2026-11-15 08:42 — 4차 지적 CPU 수정 (커밋 39b0dc2)
+- 필드별 회귀 게이트 `regression_gate.py` + `configs/regression_gate.json`(하락 > 0.05 그리고 3칸 이상이면 실패, 알려진 하락은 사유와 함께 accepted) — CI 단계 추가. 결과 0 failing · 5 accepted(자체 dev 인보이스 번호 0.958 → 0.833 등, README에 기록).
+- FINAL 자체 test 필드별 paired CI `scripts/eval/final_field_ci.py` → `reports/eval/final_field_ci.md`: M1 − M0은 행 금액만 유의, 품번 · 단가 · 수량은 유의하지 않음.
+- RunPod 청구 기록 `reports/runpod2/billing.json` $2.162(추정과 일치). 채점 의존 파일 해시 `configs/frozen_cord_v1_deps.json`. "GPU memory flat" → "최대값만 기록"으로 정정.
+
+## 2026-11-15 08:37 — 4차 평가: Fable 89 · astra 92.5
 - **astra 4 = 92.5** (`reports/reviews/astra-4.md`, 감점 −7.5): 90 통과. 남은 감점 — 단가(−2), 모호수량(−1), 하위 품목(−1), 서빙 증거가 M1 v1이고 실사진 모델 M1-cord와 연결 안 됨(−1), 직접 `cord_eval` CLI에 가드 없음(−0.5), 채점 의존 파일(`evaluation.py`·`public_data.py`)이 동결 해시 밖(−0.5), "GPU memory flat" 과장(−0.5, 최대값만 기록), 한영 혼합(−0.5), 검수 UI(−0.5). seed·수정 3 보고는 감점 철회.
 - **Fable 4 = 89** (`reports/reviews/fable-4.md`, 감점 −11): 단가(−1.5), 품번 유의차 없음(−1), 모호수량(−0.5), M1-cord vLLM 서빙 없음(−1.5), 서빙 표본(−0.5), 필드별 회귀 게이트 CI 없음(−0.5), 개선 검증 0건(−0.5), 비용 추정치(−0.5), Pod 자동 정지 미실증(−0.5), 레시피 ablation(−0.5), 원격 시각(−0.5), 한영 혼합(−1.5), 검수 UI(−1), 문구 2곳(감점 없음). "회귀 게이트 CI + 품번·단가 paired CI 표 + 청구 기록·문구 정정이면 약 90.5".
 
-## 2026-11-15 08:45 — 로컬 서빙 재측정(모든 답 채점·지속 부하), 4차 평가 의뢰
+## 2026-11-15 08:31 — 로컬 서빙 재측정(모든 답 채점·지속 부하), 4차 평가 의뢰
 - `vllm_bench run --label hf_peft_nf4_local_v2 --conc 1,2,4 --docs 10 --arms m1` (로컬 HF+PEFT, M1 v1): 동시 1·2·4 정확도 0.936·0.936·0.962(성공 3), 원문 모두 동시 1과 같음, 잘림 0. 동시 4 실패 7건은 모두 **HTTP 429** — 1차 벤치의 "429로 추정, 미확인"을 확인.
 - `--duration 300 --conc 2` 5분 지속 부하: 25건 모두 200, 정확도 0.943, 4.56 문서/분, p50 24.9 s · p95 32.8 s, GPU 메모리 3.36 GB 일정. 서버 종료·포트 8001 닫힘 확인.
 - README 7장 표·11장 한계, 대시보드 서빙 메모 갱신. 테스트 214개, verify_pack 337 · contracts 63 pass.

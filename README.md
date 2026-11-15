@@ -19,10 +19,10 @@
 | What it shows | Result | Details |
 |---|---|---|
 | Fine-tuning effect on real photos | CORD v2 receipt test (frozen, run once): M1-cord − M0 **+0.065 [+0.027, +0.107]**, format-insensitive +0.055 [+0.019, +0.095] → criteria fixed before training met | [CORD results](#cord-v2--real-receipt-photos) |
-| Serving the trained model without losing quality | vLLM accuracy 0.849 → **0.960** (cause: adapter/base precision mismatch, fixed by the dequantised NF4 merge), FP8 throughput +23–33 % | [section 12](#12-cloud-reproduction-on-runpod) |
+| Serving the trained model without losing quality | vLLM accuracy 0.849 → **0.960** (cause: adapter/base precision mismatch, fixed by the dequantised NF4 merge), FP8 throughput +23–33 %<br>the real-photo model (M1-cord) served locally returns raw outputs identical to offline evaluation on 10/10, 64/64 HTTP 200 under a 5-minute sustained load | [section 12](#12-cloud-reproduction-on-runpod) · [section 7](#7-serving) |
 | Training reproduced on another GPU | A40 retrain: mean loss within 0.0002, dev outputs 8/8 identical | [section 12](#12-cloud-reproduction-on-runpod) |
 | Invoice extraction + PO reconciliation | unseen-layout test: M1 0.921 · M0 0.897 (not significant) · OCR rules 0.210 | [section 1](#1-at-a-glance) |
-| Evaluation integrity | single-test-run guard, frozen hashes checked in CI, 209 pytest tests | [section 6](#6-results) |
+| Evaluation integrity | single-test-run guard, frozen hashes checked in CI, 217 pytest tests | [section 6](#6-results) |
 | Cost | two RunPod runs, billed $2.16 ([`billing.json`](reports/runpod2/billing.json)); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
 | Limits | the only real photos are receipts; unit price fell 0.82 → 0.72 after fine-tuning; the test verdict rests on one seed; on dev all three seeds beat M0 by +0.044 to +0.060 ([section 6](#cord-v2--real-receipt-photos)) | [section 11](#11-cost-and-limitations) |
 
@@ -602,6 +602,7 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 | Throughput · latency<br><sub>M1</sub> | concurrency 1: 4.0 docs/min, p50 16.1s / p95 18.4s<br>concurrency 2: 4.2 docs/min, p50 26.6s / p95 36.3s<br><sub>the worker is serial, so waiting time grows — not a batching effect</sub> |
 | Concurrency 4 | 7 of 10 requests recorded as failures<br><sub>the first bench did not store status codes; the re-run that records them (below) shows all 7 were **429 (queue full)**</sub> |
 | **Every answer scored · sustained load** (re-run 11-15)<br><sub>M1, 10 own dev documents</sub> | accuracy 0.936 · 0.936 · 0.962 at concurrency 1 · 2 · 4 (3 successes at 4), raw outputs all identical to concurrency 1, 0 truncated<br>**5-minute sustained load (concurrency 2):** 25/25 HTTP 200, accuracy 0.943, 4.56 docs/min, p50 24.9 s / p95 32.8 s, peak GPU memory 3.36 GB (the bench records the maximum only)<br><sub>[`hf_peft_nf4_local_v2.json`](reports/serving/hf_peft_nf4_local_v2.json) · [`hf_peft_nf4_local_sustained.json`](reports/serving/hf_peft_nf4_local_sustained.json)</sub> |
+| **Serving the real-photo model (M1-cord)** (11-15)<br><sub>10 CORD dev receipts, CORD scorer</sub> | raw outputs **identical to offline evaluation on 10/10** (`cord_dev_m1cord_nf4`), accuracy 0.730 = offline 0.730 on the same 10<br>concurrency 1 · 2 · 4: 11.7 · 12.0 · 11.6 docs/min, p50 4.6 · 9.6 · 11.1 s; at 4, 7 requests got **429** (queue full, by design) and every successful answer equals the concurrency-1 output<br>**5-minute sustained load (concurrency 2):** 64/64 HTTP 200, accuracy 0.730, 12.6 docs/min, p50 9.3 s / p95 11.3 s, 0 truncated, peak GPU memory 3.52 GB<br><sub>Receipts have short outputs, so they run about 2.7× faster than own invoices. Ten documents are a subset, so the accuracy differs from the full CORD dev figure. [`hf_peft_nf4_local_cord.json`](reports/serving/hf_peft_nf4_local_cord.json) · [`hf_peft_nf4_local_cord_sustained.json`](reports/serving/hf_peft_nf4_local_cord_sustained.json)</sub> |
 | Timeout cancellation | a 3-second request → 504 at 3.1 s; right after, the worker reports `busy:false`<br><sub>generation is stopped with StoppingCriteria, so no orphaned inference keeps running</sub> |
 | GPU memory | about 3.1GB<br><sub>nvidia-smi, other processes included</sub> |
 | LIVE demo | review API (LIVE_MODEL) → extraction 15.2 s → `UNIT_PRICE_DIFF` detected → approval → snapshot export<br><sub>the extraction matched the gold rows</sub> |
@@ -715,7 +716,7 @@ A local, read-only dashboard (the UI is in Korean).
 - Serving
   - vLLM was measured only on RunPod. Run 1's accuracy drop was traced (adapter/base precision mismatch) and recovered in run 2 by merging into the dequantised weights; merged files differ slightly between GPUs, so they must be built once and moved by hash.
   - The own HF server has no batching (batch 1, serial worker); batching was measured only with vLLM on RunPod (section 12).
-  - The bench uses 10 documents and one repetition; the sustained load is one 5-minute run on the local HF server. The server's queue, deadline and error handling have 6 automated regression tests ([`test_serving_core.py`](tests/test_serving_core.py)), and the refactored GPU server returned raw outputs identical to offline evaluation on 6/6 real requests ([`hf_server_refactor_smoke.json`](reports/serving/hf_server_refactor_smoke.json)); sustained load under vLLM and serving the CORD model are not measured (they need RunPod).
+  - The bench uses 10 documents and one repetition; the sustained load is one 5-minute run on the local HF server. The server's queue, deadline and error handling have 6 automated regression tests ([`test_serving_core.py`](tests/test_serving_core.py)), and the refactored GPU server returned raw outputs identical to offline evaluation on 6/6 real requests ([`hf_server_refactor_smoke.json`](reports/serving/hf_server_refactor_smoke.json)); the real-photo model (M1-cord) was measured on the local HF server with 10 CORD dev receipts (raw outputs 10/10 identical, 64/64 HTTP 200 under a 5-minute sustained load); sustained load under vLLM and serving M1-cord on vLLM are not measured (they need RunPod).
 - Even at the same precision, outputs can diverge on about one document per GPU (last-bit rounding → one greedy token), so comparisons were kept within one GPU ([section 12](#12-cloud-reproduction-on-runpod)).
 - The RunPod reproduction is one seed and one run; its dev parity covers 8 documents. An automatic stop inside the Pod could not be set (permission), so the run was watched until the Pod was deleted.
 - FSDP / DeepSpeed were not used: they are unnecessary for a 2B model on a single GPU ([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
@@ -957,6 +958,8 @@ docker build -t invoiceguard-ocr:tesseract docker/ocr
 ```bash
 .venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --port 8001
 .venv/Scripts/python.exe -m invoiceguard.serving.vllm_bench run --label hf_peft_nf4_local --port 8001 --conc 1,2,4 --docs 10 --reps 1
+# real-photo model: start the server with --adapter artifacts/adapters/m1_cord_v1, then
+.venv/Scripts/python.exe -m invoiceguard.serving.vllm_bench run --label hf_peft_nf4_local_cord --task cord --arms m1 --port 8001 --conc 1,2,4 --docs 10 --reps 1 --warmups 2
 .venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1
 .venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765
 ```
