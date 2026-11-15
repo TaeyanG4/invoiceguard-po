@@ -170,7 +170,8 @@ class DataStore:
                 continue
             adapter = meta.get("adapter")
             runs.append({"run_id": meta.get("run_id") or meta_path.parent.name, "dir": meta_path.parent.name,
-                         "label": cord_arm_label(adapter), "adapter": adapter, "sets": sets,
+                         "label": cord_arm_label(adapter) + (" · 단가 프롬프트 (수정 4)" if (meta.get("fingerprint") or {}).get("prompt_variant") else ""),
+                         "adapter": adapter, "sets": sets,
                          "adapter_sha256": (meta.get("fingerprint") or {}).get("adapter_sha256"),
                          "started": meta.get("started"), "finished": meta.get("finished"),
                          "wall_seconds": meta.get("wall_seconds"), "peak_vram_gb": meta.get("peak_vram_gb")})
@@ -319,7 +320,10 @@ TRADE_LIST_KEYS = ("doc_id", "split", "template", "scenario_type", "expected_cod
 CORD_FACETS = {"split": "split", "eligible": "train_eligible", "overlap": "content_overlap", "has_sub": "has_sub",
                "masked": "has_masked"}
 # arm labels by adapter folder (docs/20): base model, the adapter trained without CORD, the adapter trained with it
-CORD_ARMS = {None: "M0", "m1_standard_v1": "M1 v1", "m1_cord_v1": "M1-cord"}
+CORD_ARMS = {None: "M0", "m1_standard_v1": "M1 v1", "m1_cord_v1": "M1-cord",
+             # exploratory dev-only runs (docs/20 amendments 2, 3, 5) — never CORD test
+             "m1_cord_s20261114": "M1-cord seed 20261114", "m1_cord_s20261115": "M1-cord seed 20261115",
+             "m1_cord_up_v1": "M1-cord 단가 가중 (수정 3)", "m1_cord_qkvo": "M1-cord q·k·v·o (수정 5)", "m1_cord_r16": "M1-cord r16 (수정 5)"}
 CORD_ARM_ORDER = ("M0", "M1 v1", "M1-cord")
 CORD_FIELD_ORDER = ("name", "count", "unit_price", "price")
 CORD_DOC_ORDER = ("subtotal", "tax", "total")

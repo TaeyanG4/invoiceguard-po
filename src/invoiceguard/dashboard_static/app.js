@@ -1124,7 +1124,9 @@
     }
     // re-measurements that score every answer and record HTTP codes (own dev with M1 v1, CORD dev with M1-cord)
     const SCORED = [["hf_peft_nf4_local_v2", "자체 dev · M1 v1"], ["hf_peft_nf4_local_sustained", "자체 dev · M1 v1 · 5분"],
-      ["hf_peft_nf4_local_cord", "CORD dev · M1-cord"], ["hf_peft_nf4_local_cord_sustained", "CORD dev · M1-cord · 5분"]];
+      ["hf_peft_nf4_local_cord", "CORD dev · M1-cord"], ["hf_peft_nf4_local_cord_sustained", "CORD dev · M1-cord · 5분"],
+      ["hf_multi_lora_trade", "어댑터 2개 서버 · 자체 dev 24장 · M1 v1"], ["hf_multi_lora_cord", "어댑터 2개 서버 · CORD dev 100장 · M1-cord"],
+      ["hf_multi_lora_cord_sustained", "어댑터 2개 서버 · CORD dev · M1-cord · 5분"]];
     const scoredRows = [], parity = [];
     for (const [key, name] of SCORED) {
       const r = sv[key], m = r && r.arms && r.arms.m1;

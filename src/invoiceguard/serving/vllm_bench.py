@@ -160,12 +160,31 @@ def _offline_run(arm: str) -> str:
     return f"{arm}_dev_v1"
 
 
+def _retrying(request, retries: int = 40, backoff_s: float = 1.0):
+    """Client behaviour the bounded queue expects (--retry-429): on HTTP 429 wait (exponential backoff with jitter,
+    capped at 8 s) and send again. Latency is end to end from the first attempt, so waiting in the client counts."""
+    import random
+
+    def call(model, prompt, image_path):
+        start = time.perf_counter()
+        for attempt in range(retries + 1):
+            r = request(model, prompt, image_path)
+            if r.get("http_status") != 429 or attempt == retries:
+                return dict(r, attempts=attempt + 1, latency_s=time.perf_counter() - start)
+            time.sleep(min(backoff_s * 1.5 ** attempt, 8.0) * (0.5 + random.random()))
+        raise AssertionError("unreachable")
+    return call
+
+
 def _load(model: str, docs: list, conc: int, reps: int, duration_s: float | None, c1_raw: dict, request=None) -> dict:
     """One load level. Every answer is kept and scored — not only latency (astra review 3: the old loop counted HTTP
     successes only, so quality under concurrency and truncation were invisible). With duration_s the level runs as a
     sustained load: `conc` requests stay in flight, cycling through the documents, until the time is up."""
     request = request or _request
+    if TARGET.get("retry_429"):
+        request = _retrying(request, backoff_s=TARGET.get("retry_backoff_s", 1.0))
     lat, mem, codes = [], [], {}
+    retries = 0
     correct = scored = truncated = same_as_c1 = answered = 0
     start = time.perf_counter()
     order = [d for _ in range(reps) for d in docs] if not duration_s else None
@@ -196,6 +215,7 @@ def _load(model: str, docs: list, conc: int, reps: int, duration_s: float | None
                 r = fut.result()
                 mem.append(_gpu_mem_mb())
                 code = r.get("http_status", 200 if r["ok"] else None)
+                retries += r.get("attempts", 1) - 1
                 codes[str(code)] = codes.get(str(code), 0) + 1
                 if r["ok"]:
                     answered += 1
@@ -208,6 +228,7 @@ def _load(model: str, docs: list, conc: int, reps: int, duration_s: float | None
     wall = time.perf_counter() - start
     lat.sort()
     return {"requests": sent, "failures": sent - answered, "status_codes": codes, "wall_s": round(wall, 2),
+            "client": "retry_429" if TARGET.get("retry_429") else "no_retry", "retries_after_429": retries,
             "sustained_s": duration_s, "docs_per_min": round(60 * answered / wall, 2) if wall else None,
             "p50_s": round(statistics.median(lat), 2) if lat else None,
             "p95_s": round(lat[min(len(lat) - 1, int(0.95 * len(lat)))], 2) if lat else None,
@@ -284,6 +305,8 @@ def main() -> int:
     parser.add_argument("--arms", default="m0,m1", help="which served models to measure: m0 = served name base, m1 = served name m1")
     parser.add_argument("--task", choices=["trade", "cord"], default="trade",
                         help="documents and scorer: own TRADE_RAW dev (default) or CORD v2 dev receipts (CORD_RAW)")
+    parser.add_argument("--retry-429", action="store_true",
+                        help="client retries a 429 (queue full) with backoff; latency stays end to end (goodput under overload)")
     parser.add_argument("--m1-model", default="m1",
                         help="served model name for the m1 arm (a multi-LoRA server may serve M1-cord as e.g. 'cord')")
     parser.add_argument("--offline-m1", help="offline prediction run to compare the served m1 with (CORD: default cord_dev_m1cord_nf4)")
@@ -297,6 +320,7 @@ def main() -> int:
     TARGET["duration_s"] = args.duration
     TARGET["task"] = args.task
     TARGET["m1_model"] = args.m1_model
+    TARGET["retry_429"] = args.retry_429
     TARGET["offline"] = {"m1": args.offline_m1} if args.offline_m1 else {}
     if args.command == "up":
         up(args.quant, args.allow_precision_mismatch)

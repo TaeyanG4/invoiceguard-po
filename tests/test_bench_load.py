@@ -90,3 +90,21 @@ def test_report_records_what_the_server_says_it_serves(monkeypatch):
     monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
     monkeypatch.setitem(vllm_bench.TARGET, "port", 8001)
     assert vllm_bench._server_identity() == {"health": {"status": "ok", "adapter_sha256": "abc"}, "v1/models": {}}
+
+
+def test_retry_client_turns_queue_full_answers_into_late_successes(monkeypatch):
+    """--retry-429: a full queue is retried with backoff; the answer counts once, with end-to-end latency."""
+    monkeypatch.setattr(vllm_bench, "_fields", lambda rid, raw, fin: (1, 1))
+    monkeypatch.setattr(vllm_bench, "_gpu_mem_mb", lambda: None)
+    monkeypatch.setitem(vllm_bench.TARGET, "retry_429", True)
+    monkeypatch.setitem(vllm_bench.TARGET, "retry_backoff_s", 0.001)
+    tries = {}
+
+    def request(model, prompt, image_path):
+        n = tries[image_path] = tries.get(image_path, 0) + 1
+        if n <= 2:
+            return {"ok": False, "latency_s": 0.0, "error": "HTTPError 429", "http_status": 429}
+        return {"ok": True, "latency_s": 0.0, "raw_response": "x", "finish_reason": "stop"}
+    out = vllm_bench._load("m1", [Doc("a"), Doc("b")], conc=2, reps=1, duration_s=None, c1_raw={"a": "x", "b": "x"}, request=request)
+    assert out["requests"] == 2 and out["failures"] == 0 and out["status_codes"] == {"200": 2}
+    assert out["retries_after_429"] == 4 and out["client"] == "retry_429" and out["identical_to_concurrency1_rate"] == 1.0
