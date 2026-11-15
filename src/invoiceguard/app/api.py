@@ -8,6 +8,8 @@ Concurrency contract (docs/16):
 * timeout → run=timeout, case=failed, backend quarantined (503) until its health check passes.
 * every edit creates a new version and revokes approvals; export returns only the immutable approved snapshot.
 * restart: cases left in `extracting` become failed/INTERRUPTED.
+Review screen (GET /, app/static/): plain HTML + JS on the same origin, CSP self-only, no external requests; it only
+calls the endpoints below, so every rule above (versions, blockers, reasons, snapshots) applies to it unchanged.
 """
 from __future__ import annotations
 
@@ -24,7 +26,7 @@ from typing import Any
 
 import jsonschema
 from fastapi import Body, FastAPI, File, Form, Request, UploadFile
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
 
 from ..model_output import parse_response
 from ..normalization import normalization_to_json, normalize_invoice
@@ -36,6 +38,12 @@ REPO = Path(__file__).resolve().parents[3]
 PO_SCHEMA = json.loads((REPO / "schemas" / "purchase_order.schema.json").read_text(encoding="utf-8"))
 ROW_FIELDS = {"sku_raw", "description_raw", "quantity_raw", "unit_raw", "unit_price_raw", "line_total_raw"}
 DOC_FIELDS = {"invoice_number_raw", "currency_raw", "subtotal_raw", "tax_raw", "discount_raw", "total_raw"}
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+STATIC_FILES = {"review.js": "text/javascript", "review.css": "text/css"}
+CSP = ("default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; "
+       "base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+UI_HEADERS = {"Content-Security-Policy": CSP, "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer",
+              "Cache-Control": "no-store"}
 CSV_COLUMNS = ["sku", "description", "quantity", "unit", "unit_price", "line_total", "currency", "review_note"]
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS purchase_orders (po_id TEXT, po_version INTEGER, json TEXT, created_at TEXT, PRIMARY KEY (po_id, po_version));
@@ -139,7 +147,9 @@ class Store:
         return _Tx()
 
 
-def create_app(db_path: Path, storage_dir: Path, extractor=None) -> FastAPI:
+def create_app(db_path: Path, storage_dir: Path, extractor=None, samples: dict[str, dict] | None = None) -> FastAPI:
+    """samples: optional {doc_id: {"image": Path, "po": Path, "label": str}} of LOCAL synthetic documents the screen
+    can load in one click (the PO is registered and the image uploaded through the same code paths as a user upload)."""
     app = FastAPI(title="InvoiceGuard-PO review API", docs_url=None, redoc_url=None, openapi_url=None)
     store = Store(db_path, storage_dir)
     app.state.store = store
@@ -190,6 +200,49 @@ def create_app(db_path: Path, storage_dir: Path, extractor=None) -> FastAPI:
             raise ApiError(409, "STALE_VERSION", "다른 변경이 먼저 저장되었습니다. 새로고침 후 다시 시도하세요.")
         if case["state"] == "extracting":
             raise ApiError(409, "EXTRACTION_IN_PROGRESS", "추출이 진행 중입니다.")
+
+    @app.get("/")
+    def index():
+        return FileResponse(STATIC_DIR / "index.html", media_type="text/html; charset=utf-8", headers=UI_HEADERS)
+
+    @app.get("/ui/{name}")
+    def static_file(name: str):
+        if name not in STATIC_FILES:  # fixed whitelist: no path from the request reaches the filesystem
+            raise ApiError(404, "NOT_FOUND", "없는 파일입니다.")
+        return FileResponse(STATIC_DIR / name, media_type=STATIC_FILES[name] + "; charset=utf-8", headers=UI_HEADERS)
+
+    @app.get("/api/cases")
+    def list_cases(limit: int = 200):
+        with store.tx() as db:
+            rows = db.execute("SELECT case_id, state, state_reason, current_version, po_id, po_version, created_at, updated_at "
+                              "FROM cases ORDER BY updated_at DESC, created_at DESC LIMIT ?", (max(1, min(limit, 500)),)).fetchall()
+        return {"cases": [dict(r) | {"version": r["current_version"]} for r in rows]}
+
+    @app.get("/api/samples")
+    def list_samples():
+        return {"samples": [{"doc_id": k, "label": v["label"]} for k, v in (samples or {}).items()]}
+
+    @app.post("/api/samples/{doc_id}", status_code=201)
+    def load_sample(doc_id: str):
+        sample = (samples or {}).get(doc_id)
+        if sample is None:
+            raise ApiError(404, "NO_SAMPLE", "예시 문서가 없습니다.")
+        po = json.loads(Path(sample["po"]).read_text(encoding="utf-8"))
+        jsonschema.validate(po, PO_SCHEMA)
+        png, meta = normalise_image(Path(sample["image"]).read_bytes())
+        sha = hashlib.sha256(png).hexdigest()
+        case_id, document_id = str(uuid.uuid4()), str(uuid.uuid4())
+        with store.tx() as db:
+            row = db.execute("SELECT json FROM purchase_orders WHERE po_id=? AND po_version=?", (po["po_id"], po["po_version"])).fetchone()
+            if row is None:
+                db.execute("INSERT INTO purchase_orders VALUES (?,?,?,?)", (po["po_id"], po["po_version"], json.dumps(po), _now()))
+            elif json.loads(row["json"]) != po:
+                raise ApiError(409, "PO_VERSION_EXISTS", "같은 발주서 버전이 다른 내용으로 이미 있습니다.")
+            (store.storage_dir / f"{document_id}.png").write_bytes(png)
+            db.execute("INSERT INTO documents VALUES (?,?,?,?,?)", (document_id, sha, meta["width"], meta["height"], _now()))
+            db.execute("INSERT INTO cases VALUES (?,?,?,?,?,?,?,?,?,?)",
+                       (case_id, document_id, po["po_id"], po["po_version"], "uploaded", None, 0, None, _now(), _now()))
+        return {"case_id": case_id, "version": 0, "state": "uploaded", "image_sha256": sha}
 
     @app.get("/health")
     def health():

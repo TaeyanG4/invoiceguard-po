@@ -6,6 +6,12 @@
       "runtimeExecutable": ".venv/Scripts/python.exe",
       "runtimeArgs": ["-m", "invoiceguard.dashboard_server", "--port", "8765"],
       "port": 8765
+    },
+    {
+      "name": "review-app-replay",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "invoiceguard.app.server", "--mode", "replay", "--replay-run", "m1_dev_v1", "--port", "8000"],
+      "port": 8000
     }
   ]
 }

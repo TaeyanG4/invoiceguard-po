@@ -259,3 +259,37 @@ def test_reviewer_can_delete_and_add_rows_and_po_line_warnings_have_their_own_ke
     a = {"code": "PO_LINE_NOT_FOUND", "row_index": None, "field": "sku", "expected": "A-1"}
     assert finding_key(a) != finding_key(a | {"expected": "B-2"})
     assert finding_key({"code": "QTY_DIFF", "row_index": 1, "field": "quantity", "expected": "3"}) == "QTY_DIFF|1|quantity"
+
+
+def test_review_screen_is_served_same_origin_with_a_strict_csp_and_lists_cases(make):
+    """The review screen (GET /) only talks to this API; static files come from a fixed whitelist."""
+    app, client, root = make(Scripted(json.dumps(INVOICE)))
+    page = client.get("/")
+    assert page.status_code == 200 and "InvoiceGuard 검수" in page.text
+    csp = page.headers["content-security-policy"]
+    assert "default-src 'none'" in csp and "script-src 'self'" in csp and "frame-ancestors 'none'" in csp
+    assert client.get("/ui/review.js").headers["content-type"].startswith("text/javascript")
+    for bad in ("../api.py", "index.html", "%2e%2e%2fapi.py"):
+        assert client.get("/ui/" + bad).status_code == 404
+    case_id = new_case(client)
+    listed = client.get("/api/cases").json()["cases"]
+    assert [c["case_id"] for c in listed] == [case_id] and listed[0]["version"] == 0
+    assert client.get("/api/samples").json() == {"samples": []}  # no local samples configured in tests
+    assert client.post("/api/samples/x").status_code == 404
+
+
+def test_sample_loader_registers_the_po_once_and_uploads_through_the_normal_checks():
+    root = BASE / uuid.uuid4().hex
+    root.mkdir(parents=True)
+    img, po = root / "s.png", root / "po.json"
+    img.write_bytes(png_bytes())
+    po.write_text(json.dumps(PO), encoding="utf-8")
+    try:
+        client = TestClient(create_app(root / "db.sqlite", root / "uploads", Scripted(json.dumps(INVOICE)),
+                                       {"doc1": {"image": img, "po": po, "label": "sample"}}))
+        assert client.get("/api/samples").json()["samples"] == [{"doc_id": "doc1", "label": "sample"}]
+        first, second = client.post("/api/samples/doc1"), client.post("/api/samples/doc1")
+        assert first.status_code == second.status_code == 201 and first.json()["case_id"] != second.json()["case_id"]
+        assert client.post(f"/api/cases/{first.json()['case_id']}/extract", json={"expected_version": 0}).status_code == 200
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
