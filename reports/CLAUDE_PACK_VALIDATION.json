@@ -1,6 +1,6 @@
 {
   "scope": "static_claude_code_package_migration_only",
-  "checked_at_utc": "2026-11-15T06:48:34.036374+00:00",
+  "checked_at_utc": "2026-11-15T06:51:05.236952+00:00",
   "status": "pass",
   "checks": [
     {
@@ -1004,6 +1004,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/reviews/astra-6b.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/reviews/astra-direction-1.md",
       "status": "pass",
       "detail": ""
@@ -1070,6 +1075,11 @@
     },
     {
       "check": "utf8:reports/reviews/briefs/review-6-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/review-6b-brief.md",
       "status": "pass",
       "detail": ""
     },
@@ -2314,6 +2324,11 @@
       "detail": ""
     },
     {
+      "check": "active_refs:reports/reviews/astra-6b.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:reports/reviews/astra-direction-1.md",
       "status": "pass",
       "detail": ""
@@ -2380,6 +2395,11 @@
     },
     {
       "check": "active_refs:reports/reviews/briefs/review-6-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/review-6b-brief.md",
       "status": "pass",
       "detail": ""
     },

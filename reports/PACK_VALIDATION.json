@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-15T06:47:28.656105+00:00",
+  "checked_at_utc": "2026-11-15T06:50:35.533317+00:00",
   "status": "pass",
   "checks": [
     {
@@ -2224,6 +2224,36 @@
       "detail": ""
     },
     {
+      "check": "link:reports\\reviews\\astra-6b.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6b.md:../../src/invoiceguard/app/static/review.js",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6b.md:../../tests/test_app.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6b.md:../../README.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6b.md:../../README.ko.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:reports\\reviews\\astra-6b.md:../../src/invoiceguard/app/api.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:reports\\reviews\\astra-direction-1.md:../../reports/quant/precision_dev20.md",
       "status": "pass",
       "detail": ""
@@ -2326,7 +2356,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "433 local Markdown links"
+      "detail": "439 local Markdown links"
     }
   ],
   "not_performed": [
