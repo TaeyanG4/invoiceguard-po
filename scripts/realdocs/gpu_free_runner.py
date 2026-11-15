@@ -200,7 +200,24 @@ def plan_review6b() -> list[tuple[str, str, str, list[str]]]:
                                                                  "--run-id", "t07_m1v1_hires_nf4"])]
 
 
-PLANS = {"cord_r5_r6": plan_cord_r5_r6, "review6": plan_review6, "review6b": plan_review6b}
+def plan_review6c() -> list[tuple[str, str, str, list[str]]]:
+    """docs/20 amendment 8: resolution on CORD dev (M1-cord) and own dev (M1 v1), then two more A1 (q/k/v/o) seeds on CORD dev."""
+    infer = [PY_ML, "-m", "invoiceguard.vlm.infer", "--batch-size", "1"]
+    hires = ["--max-pixels", "2200000"]
+    units = [("cord_hires", "infer", "cord_dev_m1cord_hires_nf4", infer + hires + ["--arm", "m1", "--adapter", "artifacts/adapters/m1_cord_v1",
+                                                                              "--set", "cord:dev", "--run-id", "cord_dev_m1cord_hires_nf4"]),
+             ("own_dev_hires", "infer", "m1_dev_hires", infer + hires + ["--arm", "m1", "--adapter", "artifacts/adapters/m1_standard_v1",
+                                                                     "--set", "trade:dev", "--run-id", "m1_dev_hires"])]
+    for seed in ("20261114", "20261115"):
+        run, pred = f"m1_cord_qkvo_s{seed}", f"cord_dev_m1cordqkvo_s{seed}_nf4"
+        units.append((f"train_{run}", "train", run, [PY_ML, "-m", "invoiceguard.vlm.train", "--profile", "standard", "--data", "all_plus_cord",
+                                                       "--max-steps", "240", "--seed", seed, "--run-id", run, "--lora-targets", "qkvo"]))
+        units.append((f"dev_{run}", "infer", pred, infer + ["--arm", "m1", "--adapter", f"artifacts/adapters/{run}", "--set", "cord:dev",
+                                                             "--run-id", pred]))
+    return units
+
+
+PLANS = {"cord_r5_r6": plan_cord_r5_r6, "review6": plan_review6, "review6b": plan_review6b, "review6c": plan_review6c}
 
 
 def main() -> int:
