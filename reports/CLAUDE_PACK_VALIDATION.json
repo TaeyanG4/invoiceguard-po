@@ -1,6 +1,6 @@
 {
   "scope": "static_claude_code_package_migration_only",
-  "checked_at_utc": "2026-11-15T00:50:32.862261+00:00",
+  "checked_at_utc": "2026-11-15T02:43:15.155308+00:00",
   "status": "pass",
   "checks": [
     {
@@ -509,6 +509,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordprompt_nf4__vs__cord_dev_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/eval/compare_cord_dev_m1cordup_nf4__vs__cord_dev_m0_nf4.json",
       "status": "pass",
       "detail": ""
@@ -610,6 +615,11 @@
     },
     {
       "check": "utf8:reports/eval/cord_dev_m0_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1cordprompt_nf4.json",
       "status": "pass",
       "detail": ""
     },
@@ -760,6 +770,16 @@
     },
     {
       "check": "utf8:reports/eval/metric_contract_v2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/t07_stress.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/t07_stress.md",
       "status": "pass",
       "detail": ""
     },
@@ -1114,6 +1134,21 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/serving/hf_multi_lora_cord.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/hf_multi_lora_cord_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/hf_multi_lora_trade.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/serving/hf_peft_nf4_local.json",
       "status": "pass",
       "detail": ""
@@ -1210,6 +1245,11 @@
     },
     {
       "check": "utf8:scripts/eval/invoice_number_drop.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:scripts/eval/t07_stress.py",
       "status": "pass",
       "detail": ""
     },
@@ -2080,6 +2120,11 @@
     },
     {
       "check": "active_refs:reports/eval/metric_contract_v2.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/eval/t07_stress.md",
       "status": "pass",
       "detail": ""
     },

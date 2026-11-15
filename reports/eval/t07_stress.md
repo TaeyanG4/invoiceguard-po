@@ -9,11 +9,11 @@ generated: {by: scripts/eval/t07_stress.py}
 
 방법: strict scorer as score_run; lenient = one fence stripped; paired document bootstrap 2000, seed 20261113. `*` = 95% CI가 0을 포함하지 않음.
 
-| arm | strict | lenient | 펜스 없는 JSON | 대사 코드 일치 |
-|---|---:|---:|---:|---:|
-| M0 | 0.000 | 0.927 | 0.00 | 18/30 |
-| M1 v1 | 0.924 | 0.924 | 1.00 | 19/30 |
-| M1-cord | 0.932 | 0.932 | 1.00 | 22/30 |
+| arm | max_pixels | strict | lenient | 펜스 없는 JSON | 대사 코드 일치 | 초/문서 |
+|---|---:|---:|---:|---:|---:|---:|
+| M0 | 786,432 | 0.000 | 0.927 | 0.00 | 18/30 | 18.4 |
+| M1 v1 | 786,432 | 0.924 | 0.924 | 1.00 | 19/30 | 14.2 |
+| M1-cord | 786,432 | 0.932 | 0.932 | 1.00 | 22/30 | 14.4 |
 
 | 비교 | 차이 [95% CI] |
 |---|---|

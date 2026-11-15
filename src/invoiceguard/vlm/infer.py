@@ -136,6 +136,8 @@ def main() -> int:
     parser.add_argument("--limit", type=int, help="keep only the first N resolved records (parity spot checks)")
     parser.add_argument("--allow-precision-mismatch", action="store_true",
                         help="exploratory only (P3): load an adapter on a base precision it was not trained on; recorded in the run")
+    parser.add_argument("--max-pixels", type=int, help="docs/20 amendment 7 (exploratory): image resize limit instead of the "
+                                                    "frozen 786,432; dev/stress sets only, recorded in the run fingerprint")
     parser.add_argument("--prompt-file", help="docs/20 amendment 4 (exploratory): replace the CORD_RAW prompt with this file; "
                                                 "cord:dev only, recorded in the run fingerprint")
     parser.add_argument("--precision", default="nf4", choices=["nf4", "int8", "bf16", "fp16", "fp32"],
@@ -163,6 +165,10 @@ def main() -> int:
             fp["adapter_pairing_mismatch_allowed"] = pairing["problems"]
     if args.model_dir:
         fp["model_dir"] = args.model_dir
+    if args.max_pixels:
+        if any(s in FINAL_SETS or s == "cord:test" for s in args.set):
+            raise SystemExit("--max-pixels is exploratory: not for final sets or cord:test")
+        fp["max_pixels"] = args.max_pixels
     prompt_override = None
     if args.prompt_file:
         if args.set != ["cord:dev"] or args.ids_file:
@@ -220,6 +226,8 @@ def main() -> int:
 
     processor = load_processor()
     processor.tokenizer.padding_side = "left"
+    if args.max_pixels:
+        processor.image_processor.size = {**processor.image_processor.size, "longest_edge": args.max_pixels}
     model = load_base(REPO / args.model_dir, precision=args.precision) if args.model_dir else load_base(precision=args.precision)
     if args.adapter:
         model = PeftModel.from_pretrained(model, str(REPO / args.adapter))

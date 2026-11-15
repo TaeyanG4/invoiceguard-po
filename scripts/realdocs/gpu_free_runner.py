@@ -192,7 +192,15 @@ def plan_review6() -> list[tuple[str, str, str, list[str]]]:
     return units
 
 
-PLANS = {"cord_r5_r6": plan_cord_r5_r6, "review6": plan_review6}
+def plan_review6b() -> list[tuple[str, str, str, list[str]]]:
+    """docs/20 amendment 7: T07 at full resolution (max_pixels 2,200,000), M0 first (no train/inference mismatch), then M1 v1."""
+    infer = [PY_ML, "-m", "invoiceguard.vlm.infer", "--batch-size", "1", "--set", "trade:t07", "--max-pixels", "2200000"]
+    return [("t07_m0_hires", "infer", "t07_m0_hires_nf4", infer + ["--arm", "m0", "--run-id", "t07_m0_hires_nf4"]),
+            ("t07_m1v1_hires", "infer", "t07_m1v1_hires_nf4", infer + ["--arm", "m1", "--adapter", "artifacts/adapters/m1_standard_v1",
+                                                                 "--run-id", "t07_m1v1_hires_nf4"])]
+
+
+PLANS = {"cord_r5_r6": plan_cord_r5_r6, "review6": plan_review6, "review6b": plan_review6b}
 
 
 def main() -> int:

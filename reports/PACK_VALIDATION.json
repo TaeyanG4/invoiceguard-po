@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-15T02:39:50.574920+00:00",
+  "checked_at_utc": "2026-11-15T02:42:59.742387+00:00",
   "status": "pass",
   "checks": [
     {
@@ -455,6 +455,26 @@
     },
     {
       "check": "link:README.ko.md:reports/serving/hf_peft_nf4_local_cord_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving/hf_multi_lora_trade.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving/hf_multi_lora_cord.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving/hf_multi_lora_cord_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:scripts/serving/run_multi_lora_bench.sh",
       "status": "pass",
       "detail": ""
     },
@@ -935,6 +955,26 @@
     },
     {
       "check": "link:README.md:reports/serving/hf_peft_nf4_local_cord_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving/hf_multi_lora_trade.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving/hf_multi_lora_cord.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving/hf_multi_lora_cord_sustained.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:scripts/serving/run_multi_lora_bench.sh",
       "status": "pass",
       "detail": ""
     },
@@ -2066,7 +2106,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "381 local Markdown links"
+      "detail": "389 local Markdown links"
     }
   ],
   "not_performed": [

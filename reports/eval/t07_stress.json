@@ -12,21 +12,27 @@
    "lenient": 0.9274,
    "json_strict_rate": 0.0,
    "reconciliation_codes_match": 18,
-   "documents": 30
+   "documents": 30,
+   "max_pixels": 786432,
+   "seconds_per_document": 18.4
   },
   "M1 v1": {
    "strict": 0.924,
    "lenient": 0.924,
    "json_strict_rate": 1.0,
    "reconciliation_codes_match": 19,
-   "documents": 30
+   "documents": 30,
+   "max_pixels": 786432,
+   "seconds_per_document": 14.2
   },
   "M1-cord": {
    "strict": 0.932,
    "lenient": 0.932,
    "json_strict_rate": 1.0,
    "reconciliation_codes_match": 22,
-   "documents": 30
+   "documents": 30,
+   "max_pixels": 786432,
+   "seconds_per_document": 14.4
   }
  },
  "pairs": {

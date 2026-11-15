@@ -23,6 +23,9 @@ from invoiceguard.reconciliation import reconcile  # noqa: E402
 
 RUNS = {"M0": "t07_m0_nf4", "M1 v1": "t07_m1v1_nf4", "M1-cord": "t07_m1cord_nf4"}
 PAIRS = (("M1 v1", "M0"), ("M1-cord", "M0"), ("M1-cord", "M1 v1"))
+# docs/20 amendment 7 (exploratory): the same arms at full resolution (max_pixels 2,200,000), added when they exist
+HIRES = {"M0 고해상도": "t07_m0_hires_nf4", "M1 v1 고해상도": "t07_m1v1_hires_nf4"}
+HIRES_PAIRS = (("M0 고해상도", "M0"), ("M1 v1 고해상도", "M1 v1"))
 FIELDS = ["sku_raw", "description_raw", "quantity_raw", "unit_raw", "unit_price_raw", "line_total_raw",
           "invoice_number_raw", "currency_raw", "subtotal_raw", "tax_raw", "discount_raw", "total_raw"]
 NAMES = {"sku_raw": "품번", "description_raw": "품명 (한·영)", "quantity_raw": "수량", "unit_raw": "단위", "unit_price_raw": "단가",
@@ -41,8 +44,10 @@ def codes(result: dict | None) -> list[str]:
 
 def main() -> int:
     rows = _jsonl(REPO / "manifests" / "trade_raw_t07.jsonl")
+    runs = dict(RUNS) | {k: v for k, v in HIRES.items() if (REPO / "artifacts" / "predictions" / v / "predictions.jsonl").exists()}
+    pairs = PAIRS + tuple(p for p in HIRES_PAIRS if p[0] in runs)
     docs: dict[str, dict[str, dict]] = {}
-    for arm, run in RUNS.items():
+    for arm, run in runs.items():
         path = REPO / "artifacts" / "predictions" / run / "predictions.jsonl"
         if not path.exists():
             raise SystemExit(f"{run} has not run yet")
@@ -68,21 +73,23 @@ def main() -> int:
     rng = random.Random(SEED)
     samples = [[rng.choice(ids) for _ in ids] for _ in range(ITER)]
     lo, hi = int(0.025 * (ITER - 1)), int(0.975 * (ITER - 1))
-    result = {"set": "trade:t07 (30 Korean-English mixed invoices, layout T07, dev-only stress set)", "runs": RUNS,
+    result = {"set": "trade:t07 (30 Korean-English mixed invoices, layout T07, dev-only stress set)", "runs": runs,
               "method": f"strict scorer as score_run; lenient = one fence stripped; paired document bootstrap {ITER}, seed {SEED}",
               "arms": {}, "pairs": {}, "fields": {}}
-    for arm in RUNS:
+    for arm in runs:
+        meta = json.loads((REPO / "artifacts" / "predictions" / runs[arm] / "run_metadata.json").read_text(encoding="utf-8"))
         result["arms"][arm] = {"strict": round(acc(arm, "strict", ids), 4), "lenient": round(acc(arm, "lenient", ids), 4),
                                "json_strict_rate": round(sum(docs[arm][i]["json_strict"] for i in ids) / len(ids), 4),
                                "reconciliation_codes_match": sum(docs[arm][i]["codes_match"] for i in ids),
-                               "documents": len(ids)}
-    for a, b in PAIRS:
+                               "documents": len(ids), "max_pixels": meta["fingerprint"]["max_pixels"],
+                               "seconds_per_document": round(meta["wall_seconds"] / len(ids), 1) if meta.get("wall_seconds") else None}
+    for a, b in pairs:
         for mode in ("strict", "lenient"):
             diffs = sorted(acc(a, mode, s) - acc(b, mode, s) for s in samples)
             result["pairs"][f"{a} - {b} ({mode})"] = {"diff": round(acc(a, mode, ids) - acc(b, mode, ids), 4),
                                                        "ci95": [round(diffs[lo], 4), round(diffs[hi], 4)]}
     for f in FIELDS:
-        result["fields"][f] = {arm: {mode: round(acc(arm, mode, ids, [f]), 4) for mode in ("strict", "lenient")} for arm in RUNS}
+        result["fields"][f] = {arm: {mode: round(acc(arm, mode, ids, [f]), 4) for mode in ("strict", "lenient")} for arm in runs}
     out = REPO / "reports" / "eval"
     (out / "t07_stress.json").write_text(json.dumps(result, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
 
@@ -92,14 +99,14 @@ def main() -> int:
              "description: 학습에 없던 한국어+영어 인보이스 30장(dev 전용, docs/20 수정 6). 같은 strict 채점기, 문서 단위 paired bootstrap.",
              "generated: {by: scripts/eval/t07_stress.py}", "---", "", "# 한영 혼합 레이아웃 T07", "",
              f"방법: {result['method']}. `*` = 95% CI가 0을 포함하지 않음.", "",
-             "| arm | strict | lenient | 펜스 없는 JSON | 대사 코드 일치 |", "|---|---:|---:|---:|---:|"]
+             "| arm | max_pixels | strict | lenient | 펜스 없는 JSON | 대사 코드 일치 | 초/문서 |", "|---|---:|---:|---:|---:|---:|---:|"]
     for arm, v in result["arms"].items():
-        lines.append(f"| {arm} | {v['strict']:.3f} | {v['lenient']:.3f} | {v['json_strict_rate']:.2f} | {v['reconciliation_codes_match']}/{v['documents']} |")
+        lines.append(f"| {arm} | {v['max_pixels']:,} | {v['strict']:.3f} | {v['lenient']:.3f} | {v['json_strict_rate']:.2f} | {v['reconciliation_codes_match']}/{v['documents']} | {v['seconds_per_document']} |")
     lines += ["", "| 비교 | 차이 [95% CI] |", "|---|---|"]
     lines += [f"| {k} | {v['diff']:+.3f} [{v['ci95'][0]:+.3f}, {v['ci95'][1]:+.3f}]{sig(v)} |" for k, v in result["pairs"].items()]
-    lines += ["", "| 필드 (strict / lenient) | " + " | ".join(RUNS) + " |", "|---|" + "---:|" * len(RUNS)]
+    lines += ["", "| 필드 (strict / lenient) | " + " | ".join(runs) + " |", "|---|" + "---:|" * len(runs)]
     for f in FIELDS:
-        lines.append(f"| {NAMES[f]} | " + " | ".join(f"{result['fields'][f][a]['strict']:.3f} / {result['fields'][f][a]['lenient']:.3f}" for a in RUNS) + " |")
+        lines.append(f"| {NAMES[f]} | " + " | ".join(f"{result['fields'][f][a]['strict']:.3f} / {result['fields'][f][a]['lenient']:.3f}" for a in runs) + " |")
     (out / "t07_stress.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     sys.stdout.reconfigure(encoding="utf-8")
     print("\n".join(lines[8:]))
