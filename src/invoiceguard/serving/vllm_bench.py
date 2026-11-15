@@ -147,6 +147,14 @@ def _offline_adapter(run: str) -> str | None:
     return (json.loads(meta.read_text(encoding="utf-8")).get("fingerprint") or {}).get("adapter_sha256")
 
 
+def _prior_parity(arm: str, doc_ids: list[str], served_sha: str | None) -> tuple[list, list]:
+    old = json.loads((REPO / TARGET["parity_from"]).read_text(encoding="utf-8"))
+    entry = old["arms"][arm]
+    if [r["id"] for r in entry["requests_c1"]] != doc_ids or old.get("adapter", {}).get("served_sha256") != served_sha:
+        raise SystemExit("--parity-from report covers other documents or another adapter; run the parity pass instead")
+    return entry["parity_rows"], entry["requests_c1"]
+
+
 def _bench_docs(n_docs: int) -> list:
     from ..vlm.records import cord_records, trade_records
 
@@ -257,9 +265,14 @@ def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
             continue
         for d in docs[:warmups]:
             _request(model, d.prompt(), d.image_path)
-        # parity pass (concurrency 1): same docs as HF dev run
+        # parity pass (concurrency 1): same docs as HF dev run. --parity-from reuses the concurrency-1 answers of an
+        # earlier report from the SAME server setup (same adapter hash and documents, checked) instead of regenerating them.
         parity, rows = [], []
-        for d in docs:
+        prior = _prior_parity(arm, [d.record_id for d in docs], result["adapter"]["served_sha256"]) if TARGET.get("parity_from") else None
+        if prior is not None:
+            parity, rows = prior
+            result["parity_from"] = TARGET["parity_from"]
+        for d in ([] if prior is not None else docs):
             r = _request(model, d.prompt(), d.image_path)
             # raw responses are kept: the 2026-11-14 RunPod run dropped them and the M1 field loss under vLLM
             # (exactly 4 fields per document) could then only be inferred from token counts
@@ -305,6 +318,7 @@ def main() -> int:
     parser.add_argument("--arms", default="m0,m1", help="which served models to measure: m0 = served name base, m1 = served name m1")
     parser.add_argument("--task", choices=["trade", "cord"], default="trade",
                         help="documents and scorer: own TRADE_RAW dev (default) or CORD v2 dev receipts (CORD_RAW)")
+    parser.add_argument("--parity-from", help="reuse the concurrency-1 parity answers of this earlier report (same docs and adapter)")
     parser.add_argument("--retry-429", action="store_true",
                         help="client retries a 429 (queue full) with backoff; latency stays end to end (goodput under overload)")
     parser.add_argument("--m1-model", default="m1",
@@ -321,6 +335,7 @@ def main() -> int:
     TARGET["task"] = args.task
     TARGET["m1_model"] = args.m1_model
     TARGET["retry_429"] = args.retry_429
+    TARGET["parity_from"] = args.parity_from
     TARGET["offline"] = {"m1": args.offline_m1} if args.offline_m1 else {}
     if args.command == "up":
         up(args.quant, args.allow_precision_mismatch)
