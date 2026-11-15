@@ -96,6 +96,65 @@
     "cord:dev"
    ],
    "why": "docs/20 amendment 2"
+  },
+  {
+   "new": "cord_dev_m1cordqkvo_nf4",
+   "base": "cord_dev_m1cord_nf4",
+   "sets": [
+    "cord:dev"
+   ],
+   "why": "docs/20 amendment 5 ablation A1 (q/k/v/o targets) must not cost fields"
+  },
+  {
+   "new": "cord_dev_m1cordr16_nf4",
+   "base": "cord_dev_m1cord_nf4",
+   "sets": [
+    "cord:dev"
+   ],
+   "why": "docs/20 amendment 5 ablation A2 (rank 16) must not cost fields"
+  },
+  {
+   "new": "cord_dev_m1cordprompt_nf4",
+   "base": "cord_dev_m1cord_nf4",
+   "sets": [
+    "cord:dev"
+   ],
+   "why": "docs/20 amendment 4 prompt variant (not adopted): its field drops stay visible",
+   "accepted": {
+    "cord:dev|item.unit_price": {
+     "reason": "amendment 4 (one-line unit-price prompt) is a pre-registered side effect and NOT adopted; its drops are reported in README section 6",
+     "base": [
+      34,
+      50
+     ],
+     "new": [
+      23,
+      50
+     ]
+    },
+    "cord:dev|sub.count": {
+     "reason": "amendment 4 (one-line unit-price prompt) is a pre-registered side effect and NOT adopted; its drops are reported in README section 6",
+     "base": [
+      8,
+      32
+     ],
+     "new": [
+      3,
+      32
+     ]
+    },
+    "cord:dev|sub.name": {
+     "reason": "amendment 4 (one-line unit-price prompt) is a pre-registered side effect and NOT adopted; its drops are reported in README section 6",
+     "base": [
+      14,
+      49
+     ],
+     "new": [
+      10,
+      49
+     ]
+    }
+   }
   }
  ],
  "accepted_note": "'accepted' entries were added after the first gate run (2026-11-15) for results that were already final; each names the drop and where it is reported, and is pinned to the exact base/new counts it was granted for (2026-11-15, astra review 5): a further fall, or a field or set missing from a report, fails CI. Any other field over the limit fails CI."

@@ -95,6 +95,10 @@ dev에서 학습 설정을 정한 뒤, test를 돌리기 전에 `configs/frozen_
   - A2 `m1_cord_r16`: rank만 16(α 32, α/r = 2 유지), 대상은 q · v.
 - **평가:** CORD dev 100장만(`cord_dev_m1cordqkvo_nf4`, `cord_dev_m1cordr16_nf4`), M1-cord와 paired bootstrap(2,000회, seed 20261113). test는 돌리지 않는다.
 - **판정 (사전 고정):** seed 3개의 dev strict는 0.756 · 0.762 · 0.772였다(수정 2). 변형이 "낫다"는 dev strict가 0.772를 넘고 M1-cord 대비 paired CI가 0을 넘을 때만, "나쁘다"는 0.756 미만이고 CI가 0 아래일 때만 쓴다. 그 사이는 "seed 차이 안에서 구분되지 않음"으로 쓴다. 필드별 변화(단가 · 하위 품목)는 함께 보고한다.
+- **결과 (11-15 12:53 두 run 끝):**
+  - A1 q·k·v·o: dev strict **0.7815**, M1-cord 대비 **+0.020 [+0.005, +0.036]** → 0.772를 넘고 CI가 0 위 → **"낫다"**. 단가 34 → 40/50(0.80, M0 0.82), 형식 무시 0.829, order-free F1 0.860. 학습 loss 0.054(M1-cord 0.063), 20.8분, 학습 파라미터 3.2M(M1-cord 1.6M).
+  - A2 r16: dev strict 0.7736, +0.012 [−0.001, +0.026] → 0.772는 넘지만 CI가 0을 포함 → **"seed 차이 안에서 구분되지 않음"**. 단가 39/50.
+  - 두 변형 모두 필드별 회귀 게이트를 통과(하락 필드 없음, `configs/regression_gate.json`에 추가). seed는 각 1개이고 CORD test는 돌리지 않았다(test 1회 원칙) — A1은 다음 레시피의 후보이지 확정 결과가 아니다.
 
 ## 수정 6 — 한영 혼합 레이아웃 T07 stress set (2026-11-15 09:50, 추론 전, dev 전용)
 - **데이터:** 같은 PO-first 생성기로 30개 family를 새로 만들고 새 레이아웃 T07로 그린다(`src/invoiceguard/synth/t07.py`, `manifests/trade_raw_t07.jsonl` sha256 3861a8a6…). 바뀌는 것: 한국어+영어 라벨(거래명세서 / INVOICE, 품번 Part No., 단가 Unit Price, 합계 Total 등), 품명을 한국어+영어로 인쇄("열전대 K형 (Thermocouple type K)"), 한국어 회사명 줄, 맑은 고딕(시스템 글꼴, 저장소에 넣지 않음, 해시 기록). 시나리오: normal 12 · 단가 변경 4 · 수량 변경 4 · 미등록 품번 3 · 모호 수량 3 · PO 행 누락 2 · 중복 품번 2. 기존 family · 이미지 · 정답과 겹치지 않음을 확인했다.

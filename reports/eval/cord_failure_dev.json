@@ -333,5 +333,260 @@
    "other": 1
   },
   "parse_status": "ok"
+ },
+ "cord_dev_m1cordprompt_nf4": {
+  "run": "cord_dev_m1cordprompt_nf4",
+  "by_group": {
+   "item.name": {
+    "ok": 167,
+    "wrong_value": 36,
+    "format_only": 7,
+    "omitted": 10
+   },
+   "item.count": {
+    "ok": 189,
+    "wrong_value": 9,
+    "omitted": 8,
+    "format_only": 4
+   },
+   "item.unit_price": {
+    "omitted": 21,
+    "ok": 23,
+    "format_only": 3,
+    "wrong_value": 3
+   },
+   "item.price": {
+    "ok": 175,
+    "format_only": 21,
+    "wrong_value": 13,
+    "omitted": 11
+   },
+   "sub.name": {
+    "wrong_value": 6,
+    "omitted": 33,
+    "ok": 10
+   },
+   "sub.count": {
+    "ok": 3,
+    "omitted": 29
+   },
+   "sub.price": {
+    "ok": 3,
+    "omitted": 11
+   },
+   "doc.subtotal": {
+    "ok": 55,
+    "omitted": 5,
+    "wrong_value": 2,
+    "format_only": 5
+   },
+   "doc.tax": {
+    "wrong_value": 10,
+    "ok": 33,
+    "format_only": 3,
+    "omitted": 1
+   },
+   "doc.total": {
+    "ok": 89,
+    "format_only": 9
+   }
+  },
+  "invented_by_group": {
+   "item.unit_price": 1,
+   "doc.subtotal": 0,
+   "doc.tax": 1,
+   "sub.count": 0,
+   "sub.unit_price": 0,
+   "sub.price": 0,
+   "doc.total": 2,
+   "item.count": 0,
+   "sub.name": 0,
+   "item.price": 1
+  },
+  "rows": {
+   "gold_rows": 221,
+   "pred_rows": 244,
+   "docs_fewer_rows": 6,
+   "docs_more_rows": 8,
+   "gold_sub_items": 50,
+   "pred_sub_items": 23
+  },
+  "printed_unit_price_left_null": {
+   "unit price equals the line total (printed twice)": 15,
+   "other": 3,
+   "unit price put in the price field ('@…')": 1
+  },
+  "parse_status": "ok"
+ },
+ "cord_dev_m1cordqkvo_nf4": {
+  "run": "cord_dev_m1cordqkvo_nf4",
+  "by_group": {
+   "item.name": {
+    "ok": 167,
+    "wrong_value": 36,
+    "format_only": 8,
+    "omitted": 9
+   },
+   "item.count": {
+    "ok": 190,
+    "omitted": 7,
+    "format_only": 5,
+    "wrong_value": 8
+   },
+   "item.unit_price": {
+    "ok": 40,
+    "omitted": 6,
+    "format_only": 4
+   },
+   "item.price": {
+    "ok": 180,
+    "format_only": 17,
+    "wrong_value": 10,
+    "omitted": 13
+   },
+   "sub.name": {
+    "wrong_value": 6,
+    "omitted": 27,
+    "ok": 15,
+    "format_only": 1
+   },
+   "sub.count": {
+    "ok": 8,
+    "omitted": 24
+   },
+   "sub.price": {
+    "ok": 3,
+    "omitted": 11
+   },
+   "doc.subtotal": {
+    "ok": 59,
+    "wrong_value": 2,
+    "format_only": 4,
+    "omitted": 2
+   },
+   "doc.tax": {
+    "wrong_value": 9,
+    "ok": 35,
+    "format_only": 2,
+    "omitted": 1
+   },
+   "doc.total": {
+    "ok": 90,
+    "format_only": 7,
+    "wrong_value": 1
+   }
+  },
+  "invented_by_group": {
+   "item.unit_price": 19,
+   "doc.subtotal": 0,
+   "doc.tax": 1,
+   "sub.count": 0,
+   "sub.unit_price": 0,
+   "sub.price": 0,
+   "doc.total": 2,
+   "item.count": 0,
+   "sub.name": 0,
+   "item.price": 1
+  },
+  "rows": {
+   "gold_rows": 221,
+   "pred_rows": 240,
+   "docs_fewer_rows": 5,
+   "docs_more_rows": 6,
+   "gold_sub_items": 50,
+   "pred_sub_items": 27
+  },
+  "printed_unit_price_left_null": {
+   "unit price put in the price field ('@…')": 1,
+   "unit price equals the line total (printed twice)": 3,
+   "other": 1
+  },
+  "parse_status": "ok"
+ },
+ "cord_dev_m1cordr16_nf4": {
+  "run": "cord_dev_m1cordr16_nf4",
+  "by_group": {
+   "item.name": {
+    "ok": 168,
+    "wrong_value": 29,
+    "format_only": 8,
+    "omitted": 15
+   },
+   "item.count": {
+    "ok": 188,
+    "omitted": 12,
+    "format_only": 5,
+    "wrong_value": 5
+   },
+   "item.unit_price": {
+    "ok": 39,
+    "omitted": 6,
+    "format_only": 4,
+    "wrong_value": 1
+   },
+   "item.price": {
+    "ok": 175,
+    "format_only": 18,
+    "wrong_value": 9,
+    "omitted": 18
+   },
+   "sub.name": {
+    "wrong_value": 6,
+    "omitted": 27,
+    "ok": 15,
+    "format_only": 1
+   },
+   "sub.count": {
+    "ok": 8,
+    "omitted": 24
+   },
+   "sub.price": {
+    "ok": 3,
+    "omitted": 11
+   },
+   "doc.subtotal": {
+    "ok": 59,
+    "wrong_value": 2,
+    "format_only": 4,
+    "omitted": 2
+   },
+   "doc.tax": {
+    "wrong_value": 9,
+    "ok": 35,
+    "format_only": 2,
+    "omitted": 1
+   },
+   "doc.total": {
+    "ok": 89,
+    "format_only": 8,
+    "wrong_value": 1
+   }
+  },
+  "invented_by_group": {
+   "item.unit_price": 15,
+   "doc.subtotal": 0,
+   "doc.tax": 1,
+   "sub.count": 0,
+   "sub.unit_price": 0,
+   "sub.price": 0,
+   "doc.total": 1,
+   "item.count": 0,
+   "sub.name": 0,
+   "item.price": 1
+  },
+  "rows": {
+   "gold_rows": 221,
+   "pred_rows": 231,
+   "docs_fewer_rows": 7,
+   "docs_more_rows": 5,
+   "gold_sub_items": 50,
+   "pred_sub_items": 26
+  },
+  "printed_unit_price_left_null": {
+   "unit price put in the price field ('@…')": 1,
+   "unit price equals the line total (printed twice)": 2,
+   "other": 1
+  },
+  "parse_status": "ok"
  }
 }

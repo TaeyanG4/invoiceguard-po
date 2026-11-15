@@ -1,0 +1,75 @@
+{
+ "a": "cord_dev_m1cordr16_nf4",
+ "b": "cord_dev_m1cord_nf4",
+ "parse": "fence-stripped (one ```json fence removed, no other repair)",
+ "method": "document-paired bootstrap 2000 (seed 20261113), clusters = identical gold, A minus B",
+ "criteria": "docs/20_DECISIONS_V6.md",
+ "sets": {
+  "cord:dev": {
+   "all": {
+    "n_docs": 100,
+    "n_clusters": 99,
+    "strict_field_accuracy": {
+     "diff": 0.0119,
+     "ci95": [
+      -0.001,
+      0.0259
+     ]
+    },
+    "format_insensitive_accuracy": {
+     "diff": 0.0109,
+     "ci95": [
+      -0.001,
+      0.0225
+     ]
+    },
+    "order_free_f1": {
+     "diff": 0.0111,
+     "ci95": [
+      -0.0008,
+      0.0227
+     ]
+    },
+    "doc_exact": {
+     "diff": 0.06,
+     "ci95": [
+      0.0198,
+      0.1111
+     ]
+    }
+   },
+   "content_unseen": {
+    "n_docs": 80,
+    "n_clusters": 80,
+    "strict_field_accuracy": {
+     "diff": 0.0118,
+     "ci95": [
+      -0.0024,
+      0.0284
+     ]
+    },
+    "format_insensitive_accuracy": {
+     "diff": 0.0095,
+     "ci95": [
+      -0.0035,
+      0.0238
+     ]
+    },
+    "order_free_f1": {
+     "diff": 0.0116,
+     "ci95": [
+      -0.0019,
+      0.0267
+     ]
+    },
+    "doc_exact": {
+     "diff": 0.0625,
+     "ci95": [
+      0.0125,
+      0.125
+     ]
+    }
+   }
+  }
+ }
+}

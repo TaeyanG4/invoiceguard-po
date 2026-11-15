@@ -580,6 +580,17 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 - Item unit price 0.68 → **0.46**, overall strict 0.762 → 0.742 (−0.020 [−0.050, +0.007]). The rule (unit price +0.06 or more, at most 5 more invented values, at most a 0.01 overall drop) fails on unit price and overall: "side effect", not adopted.
 - The model became more cautious: printed unit prices left empty rose 10 → 21 ("printed twice" 5 → 15), while invented unit prices fell 20 → 1. One instruction did not raise both sides (copy what is printed, leave out what is not). With both up-weighting (amendment 3) and the prompt (amendment 4) failing, what remains is more training labels for receipts that print the unit price twice (needs human labelling).
 
+**LoRA configuration ablation (amendment 5, dev only, criteria fixed and pushed before the runs)** — one change at a time from the recipe (r 8, q · v), same data, 240 steps and seed.
+
+| variant | trainable params | dev strict | vs M1-cord [95% CI] | unit price | verdict (pre-registered) |
+|---|---:|---:|---|---:|---|
+| M1-cord (r 8, q · v) | 1.6M | 0.762 | — | 34/50 | three seeds span 0.756–0.772 |
+| A1: r 8, **q · k · v · o** | 3.2M | **0.782** | **+0.020 [+0.005, +0.036]** | **40/50** | **better** (above 0.772, CI above 0) |
+| A2: **r 16**, q · v | 3.2M | 0.774 | +0.012 [−0.001, +0.026] | 39/50 | not distinguishable (CI includes 0) |
+
+- Both variants that double the adapter's capacity raised unit price (34 → 40 · 39, M0 has 41); only A1, which widens the target modules, passed the pre-registered rule. No field dropped (the field-level gate passes).
+- **A candidate for the next recipe, not a final result:** one seed, and CORD test was already used once by M1-cord, so A1 was not taken to test. Training reports: [`train_m1_cord_qkvo.json`](reports/model/train_m1_cord_qkvo.json) · [`train_m1_cord_r16.json`](reports/model/train_m1_cord_r16.json).
+
 **dev failure types** ([`cord_failure_dev.md`](reports/eval/cord_failure_dev.md), same normalisation as the pre-registered scorer)
 - **Unit price is a trade-off.** M0 invented 160 unit prices that are not printed (mostly copying the line total); M1-cord cut that to 20, but left 10 of 50 printed unit prices empty — 5 on lines where unit price and total are the same printed number, 2 where an "@" unit price went into the price field. This analysis set amendment 3 (up-weighting receipts with printed unit prices), which had no effect (above). A one-line prompt instruction (amendment 4) then had a side effect (below).
 - **Sub-items are mostly missed.** Of 50 gold sub-items M0 emitted 10 and M1-cord 27. M0 often emits sub-items as separate item rows (300 predicted rows against 221), shifting the rows after them.
