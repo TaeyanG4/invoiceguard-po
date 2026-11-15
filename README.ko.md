@@ -19,12 +19,15 @@
 | 보여 주려는 것 | 결과 | 자세히 |
 |---|---|---|
 | 실사진에서 파인튜닝 효과 | CORD v2 영수증 test(동결 후 1회): M1-cord − M0 **+0.065 [+0.027, +0.107]**, 형식 무시 +0.055 [+0.019, +0.095] → 학습 전에 정한 기준 충족 | [CORD 결과](#cord-v2--실사진-영수증) |
-| 학습한 모델을 품질 손실 없이 서빙 | vLLM 정확도 0.849 → **0.960** (원인 = 어댑터·기본 모델 정밀도 불일치, NF4 역양자화 병합으로 해결), FP8 처리량 +23–33 %<br>실사진 모델(M1-cord)도 로컬 서버 원문이 오프라인 평가와 10/10 동일, 5분 지속 부하 64건 모두 200 | [12장](#12-runpod-클라우드-재현) · [7장](#7-서빙) |
+| 학습한 모델을 품질 손실 없이 서빙 | vLLM 정확도 0.849 → **0.960** (원인 = 어댑터·기본 모델 정밀도 불일치, NF4 역양자화 병합으로 해결), FP8 처리량 +23–33 %<br>로컬 서버 한 대에 어댑터 2개(인보이스 M1 v1 · 영수증 M1-cord)를 올려 요청마다 고르고, dev 전체 24/24 · 100/100 원문이 오프라인 평가와 동일 | [12장](#12-runpod-클라우드-재현) · [7장](#7-서빙) |
 | 다른 GPU에서 학습 재현 | A40 재학습: 평균 loss 차이 0.0002, dev 출력 8/8 동일 | [12장](#12-runpod-클라우드-재현) |
 | 인보이스 추출 + 발주서 대사 | 미학습 레이아웃 test: M1 0.921 · M0 0.897(차이 유의하지 않음) · OCR 규칙 0.210 | [1장](#1-한눈에-보기) |
-| 평가 무결성 | test 1회 가드, 동결 해시를 CI가 검사, pytest 217개 | [6장](#6-결과) |
+| 레시피 개선 (사전 등록) | LoRA 대상을 q · k · v · o로 넓히자 CORD dev +0.020 [+0.005, +0.036], 단가 34 → 40/50(dev만, test는 다시 보지 않음). 단가 학습 가중 · 프롬프트 한 줄은 실패로 그대로 보고 | [6장](#cord-v2--실사진-영수증) |
+| 한영 혼합 문서 | 학습에 없던 한영 레이아웃 30장: 펜스 제거 기준 M0 0.927 · M1 v1 0.924 · M1-cord 0.932(차이 없음). 약점은 품명의 한글 음절 오독 | [6장](#한영-혼합-레이아웃-t07-dev-전용-stress-수정-6) |
+| 검수 화면 | 업로드 → 추출 → 수정 → 경고 사유 → 승인 → 내보내기(승인한 버전만), 브라우저에서 흐름 확인 | [8장](#8-검수-api) |
+| 평가 무결성 | test 1회 가드, 동결 해시 · 필드별 회귀 게이트를 CI가 검사, 실험 기준을 실행 전에 push, pytest PYTEST_COUNT개 | [6장](#6-결과) |
 | 비용 | RunPod 2회 청구 $2.16([`billing.json`](reports/runpod2/billing.json)), 나머지는 로컬 GPU 1장 | [11장](#11-비용과-한계) |
-| 한계 | 실사진은 영수증뿐, 단가는 파인튜닝 뒤 0.82 → 0.72로 하락, test 판정은 seed 1개 결과이고, dev에서는 seed 3개 모두 M0보다 +0.044~+0.060([6장](#cord-v2--실사진-영수증)) | [11장](#11-비용과-한계) |
+| 한계 | 실사진은 영수증뿐, test 단가는 파인튜닝 뒤 0.82 → 0.72(dev에서 q · k · v · o 변형이 0.80까지 회복, test 미확인), test 판정은 seed 1개 결과이고 dev에서는 seed 3개 모두 M0보다 +0.044~+0.060, 한글 글자 오독은 남음 | [11장](#11-비용과-한계) |
 
 ![관리자 대시보드 — 개요](docs/images/dashboard-overview.png)
 
@@ -727,17 +730,17 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 
 | 역량 | 이 저장소의 증거 |
 |---|---|
-| LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` 루프 + 직접 만든 검증 collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
+| LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` 루프 + 직접 만든 검증 collator, NF4 + LoRA r8, 대상 모듈 · rank ablation(사전 등록)<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json) · [`train_m1_cord_qkvo.json`](reports/model/train_m1_cord_qkvo.json)</sub> |
 | 학습 정확성 검증 | loss mask 감사 360/360, 10-step smoke, 재로드 일치<br><sub>[`reports/model/`](reports/model)</sub> |
 | 다른 머신에서의 재현 | 동결 학습을 RunPod A40에서 다시 돌림: step별 loss 차이 0.002 이내, dev 출력 동일<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
 | 클라우드 GPU 운영 | MCP로 Runpod 운영: 실제 견적 → 승인 → Pod → SSH · 터널 검사 → 학습 → SHA256 백업 → 삭제, 청구 $0.44 · $1.73<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
-| 추출 정확도 · 실패 분석 · 개선 | 세트별 평가기 · paired bootstrap, 실패 분류, 개선 1건과 **음성 결과**<br><sub>[`reports/eval/`](reports/eval)</sub> |
+| 추출 정확도 · 실패 분석 · 개선 | 세트별 평가기 · paired bootstrap, 실패 분류, 실행 전에 기준을 정한 개선 시도 4건(학습 가중 · 프롬프트 = 실패, q · k · v · o = 개선, r16 = 구분 안 됨), 한영 혼합 stress, 필드 하락 원인 분석<br><sub>[`reports/eval/`](reports/eval) · [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)</sub> |
 | 실문서 평가 · 사전 등록 | 사람 라벨 실사진 영수증 CORD v2를 별도 태스크로 추가, 지표·통과 기준을 학습 전에 고정, 내용 중복 제거, test 1회 동결<br><sub>[`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) · [`cord_eval.py`](src/invoiceguard/cord_eval.py)</sub> |
 | 자동 채점 · 회귀 테스트 | pytest 200개 이상(규칙 B01–B12, 평가 E01–E05, API A01–A08 + 행 수정, 서빙 코어, 어댑터 짝 검사, CORD 채점기 · 동결 가드, 필드별 회귀 게이트, 대시보드, README 표)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · 동결 · 해시 가드</sub> |
-| 서빙 · 성능 측정 | 직접 만든 Transformers + PEFT GPU 서버(서빙 프레임워크 아님) — 실제 타임아웃 취소 · bounded queue 실측<br><sub>[`reports/serving/`](reports/serving)</sub><br>RunPod에서 vLLM 0.11.2: 동시성 1–8의 연속 배칭 측정 |
+| 서빙 · 성능 측정 | 직접 만든 Transformers + PEFT GPU 서버(서빙 프레임워크 아님) — 실제 타임아웃 취소 · bounded queue, 한 기본 모델에 어댑터 2개(요청별 선택), dev 전체 원문 동일 · 지속 부하 · 재시도 클라이언트 실측<br><sub>[`reports/serving/`](reports/serving)</sub><br>RunPod에서 vLLM 0.11.2: 동시성 1–8의 연속 배칭 측정 |
 | OCR / 문서 AI | Tesseract 기준선 B0<br><sub>train/dev만 보고 만든 일반 규칙, Docker 격리</sub> |
 | 표 구조 문서 · 도메인 규칙 | 구조가 다른 인보이스 레이아웃 6종 렌더러, PO 대사 규칙 |
-| 서비스 연동 | 검수 API: 추출 CAS, 늦은 응답 덮어쓰기 방지, 승인 스냅샷 export |
+| 서비스 연동 | 검수 API: 추출 CAS, 늦은 응답 덮어쓰기 방지, 승인 스냅샷 export · 검수 화면(한 페이지, CSP self-only) |
 
 ---
 
@@ -752,7 +755,9 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
   - 공개 세트당 20 base, 자체 test 40문서, 경고 코드별 사례 1–10건
   - 열화 stress는 dev 전용입니다.
 - M0의 낮은 strict 점수는 형식 효과(코드펜스)가 큽니다. 동결 전 프롬프트 A/B로도 없어지지 않았고, 펜스 제거 후처리는 동결된 계약에 들어 있지 않습니다.
-- 모호수량 실패는 해결되지 않았습니다.
+- 모호수량은 합성 FINAL(T05/T06)에서 0/2로 실패했고, 한영 T07에서는 3건 중 2–3건을 보존했습니다. 레이아웃에 따라 다르며 고치지는 않았습니다.
+- 한영 혼합 문서의 품명은 약 0.6입니다(비슷한 한글 음절 오독, 세 arm 같음).
+- 레시피 개선(q · k · v · o)은 CORD dev · seed 1개 결과이고 test로 확인하지 않았습니다.
 - 서빙
   - vLLM은 RunPod에서만 측정했습니다. 실행 1의 정확도 저하는 원인(어댑터·기본 모델 정밀도 불일치)을 찾아 실행 2에서 역양자화 병합으로 회복했지만, 병합본은 GPU마다 비트가 조금 다르므로 한 곳에서 만들어 해시로 옮겨야 합니다.
   - 직접 만든 HF 서버는 배칭이 없습니다(batch 1, 직렬 작업자). 배칭은 RunPod의 vLLM에서만 측정했습니다(12장).

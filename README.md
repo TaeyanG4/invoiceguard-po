@@ -19,12 +19,15 @@
 | What it shows | Result | Details |
 |---|---|---|
 | Fine-tuning effect on real photos | CORD v2 receipt test (frozen, run once): M1-cord − M0 **+0.065 [+0.027, +0.107]**, format-insensitive +0.055 [+0.019, +0.095] → criteria fixed before training met | [CORD results](#cord-v2--real-receipt-photos) |
-| Serving the trained model without losing quality | vLLM accuracy 0.849 → **0.960** (cause: adapter/base precision mismatch, fixed by the dequantised NF4 merge), FP8 throughput +23–33 %<br>the real-photo model (M1-cord) served locally returns raw outputs identical to offline evaluation on 10/10, 64/64 HTTP 200 under a 5-minute sustained load | [section 12](#12-cloud-reproduction-on-runpod) · [section 7](#7-serving) |
+| Serving the trained model without losing quality | vLLM accuracy 0.849 → **0.960** (cause: adapter/base precision mismatch, fixed by the dequantised NF4 merge), FP8 throughput +23–33 %<br>one local server holds two adapters (M1 v1 for invoices, M1-cord for receipts) chosen per request; raw outputs identical to offline evaluation on the full dev sets, 24/24 and 100/100 | [section 12](#12-cloud-reproduction-on-runpod) · [section 7](#7-serving) |
 | Training reproduced on another GPU | A40 retrain: mean loss within 0.0002, dev outputs 8/8 identical | [section 12](#12-cloud-reproduction-on-runpod) |
 | Invoice extraction + PO reconciliation | unseen-layout test: M1 0.921 · M0 0.897 (not significant) · OCR rules 0.210 | [section 1](#1-at-a-glance) |
-| Evaluation integrity | single-test-run guard, frozen hashes checked in CI, 217 pytest tests | [section 6](#6-results) |
+| Recipe improvement (pre-registered) | widening LoRA to q · k · v · o: CORD dev +0.020 [+0.005, +0.036], unit price 34 → 40/50 (dev only; test not reopened). Unit-price up-weighting and a one-line prompt failed and are reported as such | [section 6](#cord-v2--real-receipt-photos) |
+| Korean-English documents | 30 mixed-language invoices on an untrained layout: fence-stripped M0 0.927 · M1 v1 0.924 · M1-cord 0.932 (no difference). The weak spot is misread Hangul syllables in item names | [section 6](#korean-english-mixed-layout-t07-dev-only-stress-amendment-6) |
+| Review screen | upload → extract → edit → reasons for warnings → approve → export (approved versions only), flow checked in a browser | [section 8](#8-review-api) |
+| Evaluation integrity | single-test-run guard, frozen hashes and a field-level regression gate checked in CI, experiment criteria pushed before the runs, PYTEST_COUNT pytest tests | [section 6](#6-results) |
 | Cost | two RunPod runs, billed $2.16 ([`billing.json`](reports/runpod2/billing.json)); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
-| Limits | the only real photos are receipts; unit price fell 0.82 → 0.72 after fine-tuning; the test verdict rests on one seed; on dev all three seeds beat M0 by +0.044 to +0.060 ([section 6](#cord-v2--real-receipt-photos)) | [section 11](#11-cost-and-limitations) |
+| Limits | the only real photos are receipts; test unit price fell 0.82 → 0.72 after fine-tuning (on dev the q · k · v · o variant recovers 0.80, not confirmed on test); the test verdict rests on one seed, while on dev all three seeds beat M0 by +0.044 to +0.060; Hangul misreads remain | [section 11](#11-cost-and-limitations) |
 
 ![Admin dashboard — overview](docs/images/dashboard-overview.png)
 
@@ -729,17 +732,17 @@ A local, read-only dashboard (the UI is in Korean).
 
 | Skill | Evidence in this repository |
 |---|---|
-| LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` loop + our own verified completion-only collator, NF4 + LoRA r8<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json)</sub> |
+| LoRA / QLoRA / SFT<br><sub>transformers · peft · **trl**</sub> | TRL `SFTTrainer` loop + our own verified completion-only collator, NF4 + LoRA r8, target-module and rank ablation (pre-registered)<br><sub>[`vlm/train.py`](src/invoiceguard/vlm/train.py) · [`train_m1_standard_v1.json`](reports/model/train_m1_standard_v1.json) · [`train_m1_cord_qkvo.json`](reports/model/train_m1_cord_qkvo.json)</sub> |
 | Training correctness checks | loss-mask audit 360/360, 10-step smoke, reload parity<br><sub>[`reports/model/`](reports/model)</sub> |
 | Reproducibility on another machine | the frozen training re-run on a RunPod A40: loss curve within 0.002 per step, identical outputs on dev<br><sub>[`reports/runpod/`](reports/runpod)</sub> |
 | Cloud GPU operation | Runpod via MCP: real quote → approval → Pod → SSH and tunnel checks → training → SHA256 backup → delete, billed $0.44 · $1.73<br><sub>[`RUNPOD_APPROVAL.md`](reports/RUNPOD_APPROVAL.md) · [`scripts/runpod/`](scripts/runpod)</sub> |
-| Extraction accuracy · failure analysis · improvement | per-set evaluator · paired bootstrap, failure taxonomy, one improvement and its **negative result**<br><sub>[`reports/eval/`](reports/eval)</sub> |
+| Extraction accuracy · failure analysis · improvement | per-set evaluator · paired bootstrap, failure taxonomy, four improvement attempts with criteria fixed before running (up-weighting and prompt = failed, q · k · v · o = better, r16 = not distinguishable), Korean-English stress set, cause analysis of a field drop<br><sub>[`reports/eval/`](reports/eval) · [`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md)</sub> |
 | Real-document evaluation · pre-registration | human-labelled CORD v2 receipt photos added as a separate task; metrics and pass criteria fixed before training; content duplicates removed; test frozen and run once<br><sub>[`docs/20_DECISIONS_V6.md`](docs/20_DECISIONS_V6.md) · [`cord_eval.py`](src/invoiceguard/cord_eval.py)</sub> |
 | Automated scoring · regression tests | 200+ pytest tests (rules B01–B12, evaluation E01–E05, API A01–A08 + row edits, serving core, adapter pairing, CORD scorer and freeze guards, field-level regression gate, dashboard, README tables)<br><sub>[GitHub Actions CI](.github/workflows/ci.yml) · freeze and hash guards</sub> |
-| Serving · performance measurement | own Transformers + PEFT GPU server (not a serving framework) — real timeout cancellation and bounded queue, measured<br><sub>[`reports/serving/`](reports/serving)</sub><br>vLLM 0.11.2 on RunPod: continuous batching measured at concurrency 1–8 |
+| Serving · performance measurement | own Transformers + PEFT GPU server (not a serving framework) — real timeout cancellation and bounded queue, two adapters on one base chosen per request, full-dev raw-output parity, sustained load and a retrying client, all measured<br><sub>[`reports/serving/`](reports/serving)</sub><br>vLLM 0.11.2 on RunPod: continuous batching measured at concurrency 1–8 |
 | OCR / document AI | Tesseract baseline B0<br><sub>general rules built from train/dev only, isolated in Docker</sub> |
 | Table-structured documents · domain rules | renderer for 6 structurally different invoice layouts, PO reconciliation rules |
-| Service integration | review API: extraction CAS, protection against late responses, approved-snapshot export |
+| Service integration | review API: extraction CAS, protection against late responses, approved-snapshot export · review screen (one page, CSP self-only) |
 
 ---
 
@@ -754,7 +757,9 @@ A local, read-only dashboard (the UI is in Korean).
   - 20 base documents per public set, 40 own test documents, 1–10 cases per alert code
   - The degradation stress set is dev-only.
 - M0's low strict score is largely a format effect (code fences). A pre-freeze prompt A/B did not remove it, and a fence-stripping step is not part of the frozen contract.
-- The ambiguous-quantity failure is not solved.
+- Ambiguous quantities failed 0/2 on the synthetic FINAL (T05/T06) and were kept on 2–3 of 3 on Korean-English T07; it depends on the layout and was not fixed.
+- Item names on Korean-English documents are about 0.6 (similar-looking Hangul syllables misread, the same for all three arms).
+- The recipe improvement (q · k · v · o) is a CORD dev result with one seed and was not confirmed on test.
 - Serving
   - vLLM was measured only on RunPod. Run 1's accuracy drop was traced (adapter/base precision mismatch) and recovered in run 2 by merging into the dequantised weights; merged files differ slightly between GPUs, so they must be built once and moved by hash.
   - The own HF server has no batching (batch 1, serial worker); batching was measured only with vLLM on RunPod (section 12).
