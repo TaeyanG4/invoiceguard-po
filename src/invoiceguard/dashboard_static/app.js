@@ -1140,12 +1140,13 @@
     const SCORED = [["hf_peft_nf4_local_v2", "자체 dev · M1 v1"], ["hf_peft_nf4_local_sustained", "자체 dev · M1 v1 · 5분"],
       ["hf_peft_nf4_local_cord", "CORD dev · M1-cord"], ["hf_peft_nf4_local_cord_sustained", "CORD dev · M1-cord · 5분"],
       ["hf_multi_lora_trade", "어댑터 2개 서버 · 자체 dev 24장 · M1 v1"], ["hf_multi_lora_cord", "어댑터 2개 서버 · CORD dev 100장 · M1-cord"],
-      ["hf_multi_lora_cord_sustained", "어댑터 2개 서버 · CORD dev · M1-cord · 5분"]];
+      ["hf_multi_lora_cord_sustained", "어댑터 2개 서버 · CORD dev · M1-cord · 5분"],
+      ["hf_multi_lora_cord_retry", "어댑터 2개 서버 · CORD dev · 429 재시도 클라이언트"], ["hf_multi_lora_trade_retry", "어댑터 2개 서버 · 자체 dev · 429 재시도 클라이언트"]];
     const scoredRows = [], parity = [];
     for (const [key, name] of SCORED) {
       const r = sv[key], m = r && r.arms && r.arms.m1;
       if (!m) continue;
-      if (m.identical_raw_rate !== undefined && !key.endsWith("_sustained")) parity.push(name + ": 서버 원문이 오프라인 평가(" + ((r.offline_runs || {}).m1 || "m1_dev_v1") + ")와 " +
+      if (m.identical_raw_rate !== undefined && !key.endsWith("_sustained") && !key.endsWith("_retry")) parity.push(name + ": 서버 원문이 오프라인 평가(" + ((r.offline_runs || {}).m1 || "m1_dev_v1") + ")와 " +
         fmt(m.identical_raw_rate * 100, 0) + "% 동일 (정확도 서버 " + fmt(m.server_field_accuracy) + " · 오프라인 " + fmt(m.offline_hf_field_accuracy_same_docs) + ")");
       for (const [c, b] of Object.entries(m.bench || {})) {
         const codes = Object.entries(b.status_codes || {}).map(([k, v]) => k + "×" + v).join(" ");

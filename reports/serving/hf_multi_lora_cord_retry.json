@@ -1,0 +1,2319 @@
+{
+  "label": "hf_multi_lora_cord_retry",
+  "task": "cord",
+  "server_port": 8001,
+  "docs": [
+    "cord_dev_0000",
+    "cord_dev_0001",
+    "cord_dev_0002",
+    "cord_dev_0003",
+    "cord_dev_0004",
+    "cord_dev_0005",
+    "cord_dev_0006",
+    "cord_dev_0007",
+    "cord_dev_0008",
+    "cord_dev_0009",
+    "cord_dev_0010",
+    "cord_dev_0011",
+    "cord_dev_0012",
+    "cord_dev_0013",
+    "cord_dev_0014",
+    "cord_dev_0015",
+    "cord_dev_0016",
+    "cord_dev_0017",
+    "cord_dev_0018",
+    "cord_dev_0019",
+    "cord_dev_0020",
+    "cord_dev_0021",
+    "cord_dev_0022",
+    "cord_dev_0023",
+    "cord_dev_0024",
+    "cord_dev_0025",
+    "cord_dev_0026",
+    "cord_dev_0027",
+    "cord_dev_0028",
+    "cord_dev_0029",
+    "cord_dev_0030",
+    "cord_dev_0031",
+    "cord_dev_0032",
+    "cord_dev_0033",
+    "cord_dev_0034",
+    "cord_dev_0035",
+    "cord_dev_0036",
+    "cord_dev_0037",
+    "cord_dev_0038",
+    "cord_dev_0039",
+    "cord_dev_0040",
+    "cord_dev_0041",
+    "cord_dev_0042",
+    "cord_dev_0043",
+    "cord_dev_0044",
+    "cord_dev_0045",
+    "cord_dev_0046",
+    "cord_dev_0047",
+    "cord_dev_0048",
+    "cord_dev_0049",
+    "cord_dev_0050",
+    "cord_dev_0051",
+    "cord_dev_0052",
+    "cord_dev_0053",
+    "cord_dev_0054",
+    "cord_dev_0055",
+    "cord_dev_0056",
+    "cord_dev_0057",
+    "cord_dev_0058",
+    "cord_dev_0059",
+    "cord_dev_0060",
+    "cord_dev_0061",
+    "cord_dev_0062",
+    "cord_dev_0063",
+    "cord_dev_0064",
+    "cord_dev_0065",
+    "cord_dev_0066",
+    "cord_dev_0067",
+    "cord_dev_0068",
+    "cord_dev_0069",
+    "cord_dev_0070",
+    "cord_dev_0071",
+    "cord_dev_0072",
+    "cord_dev_0073",
+    "cord_dev_0074",
+    "cord_dev_0075",
+    "cord_dev_0076",
+    "cord_dev_0077",
+    "cord_dev_0078",
+    "cord_dev_0079",
+    "cord_dev_0080",
+    "cord_dev_0081",
+    "cord_dev_0082",
+    "cord_dev_0083",
+    "cord_dev_0084",
+    "cord_dev_0085",
+    "cord_dev_0086",
+    "cord_dev_0087",
+    "cord_dev_0088",
+    "cord_dev_0089",
+    "cord_dev_0090",
+    "cord_dev_0091",
+    "cord_dev_0092",
+    "cord_dev_0093",
+    "cord_dev_0094",
+    "cord_dev_0095",
+    "cord_dev_0096",
+    "cord_dev_0097",
+    "cord_dev_0098",
+    "cord_dev_0099"
+  ],
+  "max_tokens": 1536,
+  "warmups": 1,
+  "repetitions": 1,
+  "offline_runs": {
+    "m0": "cord_dev_m0_nf4",
+    "m1": "cord_dev_m1cord_nf4"
+  },
+  "server": {
+    "health": {
+      "status": "ok",
+      "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+      "adapter_sha256": "eb08674120d6489fb9f2ae4cf72038588794e09b3d337a5239d8a6078aff2868",
+      "adapters": {
+        "m1": "eb08674120d6489fb9f2ae4cf72038588794e09b3d337a5239d8a6078aff2868",
+        "cord": "630d3dd1251f4badf931cc88326483ce3eb0ebcc5cc4ac33ca2330630e58e965"
+      },
+      "busy": false,
+      "queued": 0
+    },
+    "v1/models": {
+      "data": [
+        {
+          "id": "base"
+        },
+        {
+          "id": "m1"
+        },
+        {
+          "id": "cord"
+        }
+      ]
+    }
+  },
+  "arms": {
+    "m1": {
+      "parity_rows": [
+        {
+          "id": "cord_dev_0000",
+          "server_fields": [
+            10,
+            10
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            10,
+            10
+          ]
+        },
+        {
+          "id": "cord_dev_0001",
+          "server_fields": [
+            4,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0002",
+          "server_fields": [
+            4,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0003",
+          "server_fields": [
+            4,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0004",
+          "server_fields": [
+            6,
+            8
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            8
+          ]
+        },
+        {
+          "id": "cord_dev_0005",
+          "server_fields": [
+            2,
+            6
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            2,
+            6
+          ]
+        },
+        {
+          "id": "cord_dev_0006",
+          "server_fields": [
+            8,
+            10
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            8,
+            10
+          ]
+        },
+        {
+          "id": "cord_dev_0007",
+          "server_fields": [
+            6,
+            6
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            6
+          ]
+        },
+        {
+          "id": "cord_dev_0008",
+          "server_fields": [
+            8,
+            10
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            8,
+            10
+          ]
+        },
+        {
+          "id": "cord_dev_0009",
+          "server_fields": [
+            2,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            2,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0010",
+          "server_fields": [
+            7,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            7,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0011",
+          "server_fields": [
+            13,
+            15
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            13,
+            15
+          ]
+        },
+        {
+          "id": "cord_dev_0012",
+          "server_fields": [
+            4,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0013",
+          "server_fields": [
+            9,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0014",
+          "server_fields": [
+            7,
+            11
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            7,
+            11
+          ]
+        },
+        {
+          "id": "cord_dev_0015",
+          "server_fields": [
+            11,
+            11
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            11,
+            11
+          ]
+        },
+        {
+          "id": "cord_dev_0016",
+          "server_fields": [
+            4,
+            5
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            5
+          ]
+        },
+        {
+          "id": "cord_dev_0017",
+          "server_fields": [
+            1,
+            6
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            1,
+            6
+          ]
+        },
+        {
+          "id": "cord_dev_0018",
+          "server_fields": [
+            8,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            8,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0019",
+          "server_fields": [
+            9,
+            10
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            10
+          ]
+        },
+        {
+          "id": "cord_dev_0020",
+          "server_fields": [
+            9,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0021",
+          "server_fields": [
+            8,
+            15
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            8,
+            15
+          ]
+        },
+        {
+          "id": "cord_dev_0022",
+          "server_fields": [
+            6,
+            10
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            10
+          ]
+        },
+        {
+          "id": "cord_dev_0023",
+          "server_fields": [
+            5,
+            6
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            6
+          ]
+        },
+        {
+          "id": "cord_dev_0024",
+          "server_fields": [
+            19,
+            19
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            19,
+            19
+          ]
+        },
+        {
+          "id": "cord_dev_0025",
+          "server_fields": [
+            19,
+            24
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            19,
+            24
+          ]
+        },
+        {
+          "id": "cord_dev_0026",
+          "server_fields": [
+            20,
+            21
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            20,
+            21
+          ]
+        },
+        {
+          "id": "cord_dev_0027",
+          "server_fields": [
+            5,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0028",
+          "server_fields": [
+            9,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0029",
+          "server_fields": [
+            2,
+            5
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            2,
+            5
+          ]
+        },
+        {
+          "id": "cord_dev_0030",
+          "server_fields": [
+            6,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0031",
+          "server_fields": [
+            4,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0032",
+          "server_fields": [
+            5,
+            5
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            5
+          ]
+        },
+        {
+          "id": "cord_dev_0033",
+          "server_fields": [
+            7,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            7,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0034",
+          "server_fields": [
+            13,
+            15
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            13,
+            15
+          ]
+        },
+        {
+          "id": "cord_dev_0035",
+          "server_fields": [
+            15,
+            15
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            15,
+            15
+          ]
+        },
+        {
+          "id": "cord_dev_0036",
+          "server_fields": [
+            9,
+            12
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            12
+          ]
+        },
+        {
+          "id": "cord_dev_0037",
+          "server_fields": [
+            6,
+            6
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            6
+          ]
+        },
+        {
+          "id": "cord_dev_0038",
+          "server_fields": [
+            4,
+            5
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            5
+          ]
+        },
+        {
+          "id": "cord_dev_0039",
+          "server_fields": [
+            5,
+            13
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            13
+          ]
+        },
+        {
+          "id": "cord_dev_0040",
+          "server_fields": [
+            9,
+            12
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            12
+          ]
+        },
+        {
+          "id": "cord_dev_0041",
+          "server_fields": [
+            15,
+            36
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            15,
+            36
+          ]
+        },
+        {
+          "id": "cord_dev_0042",
+          "server_fields": [
+            14,
+            14
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            14,
+            14
+          ]
+        },
+        {
+          "id": "cord_dev_0043",
+          "server_fields": [
+            7,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            7,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0044",
+          "server_fields": [
+            4,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0045",
+          "server_fields": [
+            14,
+            15
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            14,
+            15
+          ]
+        },
+        {
+          "id": "cord_dev_0046",
+          "server_fields": [
+            4,
+            5
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            5
+          ]
+        },
+        {
+          "id": "cord_dev_0047",
+          "server_fields": [
+            6,
+            8
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            8
+          ]
+        },
+        {
+          "id": "cord_dev_0048",
+          "server_fields": [
+            11,
+            12
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            11,
+            12
+          ]
+        },
+        {
+          "id": "cord_dev_0049",
+          "server_fields": [
+            9,
+            10
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            10
+          ]
+        },
+        {
+          "id": "cord_dev_0050",
+          "server_fields": [
+            4,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0051",
+          "server_fields": [
+            8,
+            8
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            8,
+            8
+          ]
+        },
+        {
+          "id": "cord_dev_0052",
+          "server_fields": [
+            11,
+            11
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            11,
+            11
+          ]
+        },
+        {
+          "id": "cord_dev_0053",
+          "server_fields": [
+            4,
+            13
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            13
+          ]
+        },
+        {
+          "id": "cord_dev_0054",
+          "server_fields": [
+            8,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            8,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0055",
+          "server_fields": [
+            5,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0056",
+          "server_fields": [
+            3,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            3,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0057",
+          "server_fields": [
+            10,
+            12
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            10,
+            12
+          ]
+        },
+        {
+          "id": "cord_dev_0058",
+          "server_fields": [
+            7,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            7,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0059",
+          "server_fields": [
+            29,
+            30
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            29,
+            30
+          ]
+        },
+        {
+          "id": "cord_dev_0060",
+          "server_fields": [
+            4,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0061",
+          "server_fields": [
+            11,
+            11
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            11,
+            11
+          ]
+        },
+        {
+          "id": "cord_dev_0062",
+          "server_fields": [
+            11,
+            12
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            11,
+            12
+          ]
+        },
+        {
+          "id": "cord_dev_0063",
+          "server_fields": [
+            5,
+            11
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            11
+          ]
+        },
+        {
+          "id": "cord_dev_0064",
+          "server_fields": [
+            4,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0065",
+          "server_fields": [
+            9,
+            11
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            11
+          ]
+        },
+        {
+          "id": "cord_dev_0066",
+          "server_fields": [
+            3,
+            3
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            3,
+            3
+          ]
+        },
+        {
+          "id": "cord_dev_0067",
+          "server_fields": [
+            15,
+            16
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            15,
+            16
+          ]
+        },
+        {
+          "id": "cord_dev_0068",
+          "server_fields": [
+            4,
+            5
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            5
+          ]
+        },
+        {
+          "id": "cord_dev_0069",
+          "server_fields": [
+            5,
+            12
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            12
+          ]
+        },
+        {
+          "id": "cord_dev_0070",
+          "server_fields": [
+            11,
+            12
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            11,
+            12
+          ]
+        },
+        {
+          "id": "cord_dev_0071",
+          "server_fields": [
+            8,
+            8
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            8,
+            8
+          ]
+        },
+        {
+          "id": "cord_dev_0072",
+          "server_fields": [
+            10,
+            10
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            10,
+            10
+          ]
+        },
+        {
+          "id": "cord_dev_0073",
+          "server_fields": [
+            3,
+            3
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            3,
+            3
+          ]
+        },
+        {
+          "id": "cord_dev_0074",
+          "server_fields": [
+            6,
+            6
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            6
+          ]
+        },
+        {
+          "id": "cord_dev_0075",
+          "server_fields": [
+            18,
+            18
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            18,
+            18
+          ]
+        },
+        {
+          "id": "cord_dev_0076",
+          "server_fields": [
+            8,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            8,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0077",
+          "server_fields": [
+            4,
+            8
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            8
+          ]
+        },
+        {
+          "id": "cord_dev_0078",
+          "server_fields": [
+            9,
+            15
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            15
+          ]
+        },
+        {
+          "id": "cord_dev_0079",
+          "server_fields": [
+            17,
+            24
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            17,
+            24
+          ]
+        },
+        {
+          "id": "cord_dev_0080",
+          "server_fields": [
+            2,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            2,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0081",
+          "server_fields": [
+            17,
+            18
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            17,
+            18
+          ]
+        },
+        {
+          "id": "cord_dev_0082",
+          "server_fields": [
+            13,
+            14
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            13,
+            14
+          ]
+        },
+        {
+          "id": "cord_dev_0083",
+          "server_fields": [
+            3,
+            8
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            3,
+            8
+          ]
+        },
+        {
+          "id": "cord_dev_0084",
+          "server_fields": [
+            6,
+            10
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            10
+          ]
+        },
+        {
+          "id": "cord_dev_0085",
+          "server_fields": [
+            5,
+            6
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            6
+          ]
+        },
+        {
+          "id": "cord_dev_0086",
+          "server_fields": [
+            4,
+            6
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            6
+          ]
+        },
+        {
+          "id": "cord_dev_0087",
+          "server_fields": [
+            6,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0088",
+          "server_fields": [
+            6,
+            26
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            26
+          ]
+        },
+        {
+          "id": "cord_dev_0089",
+          "server_fields": [
+            4,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0090",
+          "server_fields": [
+            5,
+            5
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            5
+          ]
+        },
+        {
+          "id": "cord_dev_0091",
+          "server_fields": [
+            3,
+            7
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            3,
+            7
+          ]
+        },
+        {
+          "id": "cord_dev_0092",
+          "server_fields": [
+            5,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0093",
+          "server_fields": [
+            6,
+            29
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            6,
+            29
+          ]
+        },
+        {
+          "id": "cord_dev_0094",
+          "server_fields": [
+            5,
+            5
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            5
+          ]
+        },
+        {
+          "id": "cord_dev_0095",
+          "server_fields": [
+            9,
+            9
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            9,
+            9
+          ]
+        },
+        {
+          "id": "cord_dev_0096",
+          "server_fields": [
+            5,
+            6
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            6
+          ]
+        },
+        {
+          "id": "cord_dev_0097",
+          "server_fields": [
+            4,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0098",
+          "server_fields": [
+            4,
+            4
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            4,
+            4
+          ]
+        },
+        {
+          "id": "cord_dev_0099",
+          "server_fields": [
+            5,
+            11
+          ],
+          "identical_raw_to_hf": true,
+          "hf_fields": [
+            5,
+            11
+          ]
+        }
+      ],
+      "requests_c1": [
+        {
+          "id": "cord_dev_0000",
+          "ok": true,
+          "latency_s": 6.20470939995721,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"REAL GANACHE\",\"count\":\"1\",\"unit_price\":null,\"price\":\"16,500\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"EGG TART\",\"count\":\"1\",\"unit_price\":null,\"price\":\"13,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"PIZZA TOAST\",\"count\":\"1\",\"unit_price\":null,\"price\":\"16,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"45,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 137
+        },
+        {
+          "id": "cord_dev_0001",
+          "ok": true,
+          "latency_s": 3.290477200062014,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Kopi Susu Kolonel\",\"count\":\"1\",\"unit_price\":null,\"price\":\"23.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"23.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 69
+        },
+        {
+          "id": "cord_dev_0002",
+          "ok": true,
+          "latency_s": 4.009661599993706,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"S-Ovaltine\",\"count\":\"20,000\",\"unit_price\":\"20,000\",\"price\":\"20,000\",\"sub_items\":[]}],\"subtotal\":\"18,181\",\"tax\":\"10% Tax Included\",\"total\":\"20,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 501,
+          "completion_tokens": 86
+        },
+        {
+          "id": "cord_dev_0003",
+          "ok": true,
+          "latency_s": 4.453277199994773,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"M-Caramel Black Tea\",\"count\":\"1X\",\"unit_price\":null,\"price\":\"@28,000\",\"sub_items\":[{\"name\":\"Less Ice\",\"count\":null,\"unit_price\":null,\"price\":null}]}],\"subtotal\":\"28,000\",\"tax\":\"70%\",\"total\":\"28,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 94
+        },
+        {
+          "id": "cord_dev_0004",
+          "ok": true,
+          "latency_s": 3.8773512999759987,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"BBQ Chicken\",\"count\":\"1\",\"unit_price\":null,\"price\":\"41,000\",\"sub_items\":[{\"name\":\"- Sedang\",\"count\":\"1\",\"unit_price\":null,\"price\":\"0\"}]}],\"subtotal\":null,\"tax\":null,\"total\":\"41,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 84
+        },
+        {
+          "id": "cord_dev_0005",
+          "ok": true,
+          "latency_s": 3.4135206999490038,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"LE MINERAL\",\"count\":null,\"unit_price\":\"1.00\",\"price\":\"8.000\",\"sub_items\":[]}],\"subtotal\":\"7.273\",\"tax\":\"727\",\"total\":\"8.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 970,
+          "completion_tokens": 72
+        },
+        {
+          "id": "cord_dev_0006",
+          "ok": true,
+          "latency_s": 6.682319000014104,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"POTATO SAUSAGE BREAD\",\"count\":\"1\",\"unit_price\":null,\"price\":\"19,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"OREO GREEN TEA SPREAD\",\"count\":\"1\",\"unit_price\":null,\"price\":\"32,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"WHITE CHOCO BANANA SPREAD\",\"count\":\"1\",\"unit_price\":null,\"price\":\"32,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"123,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 148
+        },
+        {
+          "id": "cord_dev_0007",
+          "ok": true,
+          "latency_s": 3.42752649995964,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Choco Devil\",\"count\":\"4\",\"unit_price\":null,\"price\":\"63,636\",\"sub_items\":[]}],\"subtotal\":\"63,636\",\"tax\":\"5,409\",\"total\":\"59,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 74
+        },
+        {
+          "id": "cord_dev_0008",
+          "ok": true,
+          "latency_s": 4.9750240000430495,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"TALAM UNGU\",\"count\":\"3X\",\"unit_price\":\"@6500\",\"price\":\"19,500\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"MIAKECIL\",\"count\":\"1X\",\"unit_price\":\"@0\",\"price\":\"0\",\"sub_items\":[]}],\"subtotal\":\"4.00xITEMS\",\"tax\":null,\"total\":\"11,700\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 112
+        },
+        {
+          "id": "cord_dev_0009",
+          "ok": true,
+          "latency_s": 3.3452033000066876,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Tahu Ikan Oma Giok\",\"count\":\"1\",\"unit_price\":null,\"price\":\"20.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"20.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 70
+        },
+        {
+          "id": "cord_dev_0010",
+          "ok": true,
+          "latency_s": 4.6671484999824315,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Serbu 1\",\"count\":\"2\",\"unit_price\":null,\"price\":\"40.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Choco Peanut Bread\",\"count\":\"2\",\"unit_price\":null,\"price\":\"20.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"60.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 101
+        },
+        {
+          "id": "cord_dev_0011",
+          "ok": true,
+          "latency_s": 8.929530899971724,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Se'i Sapi Sambal Matah ( R )\",\"count\":\"1\",\"unit_price\":null,\"price\":\"20.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Se'i Sapi Lada Hitam (J) \",\"count\":\"1\",\"unit_price\":null,\"price\":\"35.000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Nasi Putih\",\"count\":\"2\",\"unit_price\":null,\"price\":\"10.000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"Milk Shake Coklat\",\"count\":\"1\",\"unit_price\":null,\"price\":\"16.000\",\"sub_items\":[]}],\"subtotal\":\"81.000\",\"tax\":\"8.100\",\"total\":\"89.100\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 197
+        },
+        {
+          "id": "cord_dev_0012",
+          "ok": true,
+          "latency_s": 3.0542138000018895,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"ES KOPI SUSU\",\"count\":\"4\",\"unit_price\":null,\"price\":\"72.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"72.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 67
+        },
+        {
+          "id": "cord_dev_0013",
+          "ok": true,
+          "latency_s": 5.2727344000013545,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"MINERAL 600 ML\",\"count\":\"1\",\"unit_price\":null,\"price\":\"7,727\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"BULGOGI RICE R\",\"count\":\"1\",\"unit_price\":null,\"price\":\"33,636\",\"sub_items\":[]}],\"subtotal\":\"41,364\",\"tax\":\"4,136\",\"total\":\"45,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 116
+        },
+        {
+          "id": "cord_dev_0014",
+          "ok": true,
+          "latency_s": 5.990996000007726,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Arem Arem\",\"count\":\"2x\",\"unit_price\":\"@12.000\",\"price\":\"24.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Kroket\",\"count\":\"1x\",\"unit_price\":\"@12.000\",\"price\":\"12.000\",\"sub_items\":[]}],\"subtotal\":\"Rp 36.000\",\"tax\":\"Rp 3.600\",\"total\":\"Rp 39.600\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 962,
+          "completion_tokens": 129
+        },
+        {
+          "id": "cord_dev_0015",
+          "ok": true,
+          "latency_s": 5.990224399953149,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Arem Arem\",\"count\":\"2\",\"unit_price\":\"12.000\",\"price\":\"24.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Pepenero Pastel\",\"count\":\"2\",\"unit_price\":\"15.000\",\"price\":\"30.000\",\"sub_items\":[]}],\"subtotal\":\"Rp 54.000\",\"tax\":\"Rp 5.400\",\"total\":\"Rp 59.400\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 128
+        },
+        {
+          "id": "cord_dev_0016",
+          "ok": true,
+          "latency_s": 3.0691411000443622,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"TT\",\"count\":\"1\",\"unit_price\":null,\"price\":\"20,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"20,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 63
+        },
+        {
+          "id": "cord_dev_0017",
+          "ok": true,
+          "latency_s": 3.765206200070679,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"LEMONADE 16OZ\",\"count\":\"1 x\",\"unit_price\":\"20.000\",\"price\":\"20.000\",\"sub_items\":[]}],\"subtotal\":\"20.000\",\"tax\":null,\"total\":\"20.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 81
+        },
+        {
+          "id": "cord_dev_0018",
+          "ok": true,
+          "latency_s": 5.157163999974728,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"beef c roll 3pcs\",\"count\":\"1\",\"unit_price\":\"10,000\",\"price\":\"10,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"kaya bred\",\"count\":\"1\",\"unit_price\":\"15,000\",\"price\":\"15,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"25,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 113
+        },
+        {
+          "id": "cord_dev_0019",
+          "ok": true,
+          "latency_s": 6.885861500049941,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"FUTAMI 17 GREEN TEA (CLAS)\",\"count\":\"1\",\"unit_price\":null,\"price\":\"12,500\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"EGG TART\",\"count\":\"1\",\"unit_price\":null,\"price\":\"13,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"GRAIN CROQUE MONSIEUR\",\"count\":\"1\",\"unit_price\":null,\"price\":\"17,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"42,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 149
+        },
+        {
+          "id": "cord_dev_0020",
+          "ok": true,
+          "latency_s": 4.999332000035793,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"JAMUR\",\"count\":\"2\",\"unit_price\":null,\"price\":\"10,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"TAHU\",\"count\":\"1\",\"unit_price\":null,\"price\":\"5,000\",\"sub_items\":[]}],\"subtotal\":\"15,000\",\"tax\":\"1,500\",\"total\":\"16,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 106
+        },
+        {
+          "id": "cord_dev_0021",
+          "ok": true,
+          "latency_s": 8.66632989991922,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Mango Lemon Tea\",\"count\":\"1\",\"unit_price\":null,\"price\":\"Rp29,090\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Sliders Set\",\"count\":\"1\",\"unit_price\":null,\"price\":\"Rp113,636\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Chicken Vege Rice Bowl\",\"count\":\"1\",\"unit_price\":null,\"price\":\"Rp86,363\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"Discount BCA 15%\",\"count\":\"1\",\"unit_price\":null,\"price\":\"-Rp34,363\",\"sub_items\":[]}],\"subtotal\":\"Rp194,726\",\"tax\":\"Rp20,446\",\"total\":\"Rp224,908\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 195
+        },
+        {
+          "id": "cord_dev_0022",
+          "ok": true,
+          "latency_s": 6.29348990006838,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"RedVelvet Nutella\",\"count\":\"1\",\"unit_price\":null,\"price\":\"280,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Free Mini Candle\",\"count\":\"5\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":3,\"name\":\"Large Box\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]}],\"subtotal\":\"280,000\",\"tax\":\"28,000\",\"total\":\"308,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 137
+        },
+        {
+          "id": "cord_dev_0023",
+          "ok": true,
+          "latency_s": 3.5703289998928085,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"BUBBLE GUM\",\"count\":\"1\",\"unit_price\":null,\"price\":\"18,182\",\"sub_items\":[]}],\"subtotal\":\"18,182\",\"tax\":\"1,818\",\"total\":\"20,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 76
+        },
+        {
+          "id": "cord_dev_0024",
+          "ok": true,
+          "latency_s": 11.72472210007254,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"PAIN AU CHOCOLATE\",\"count\":\"1\",\"unit_price\":null,\"price\":\"11,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"CHOCO CUSTARD PASTRY\",\"count\":\"1\",\"unit_price\":null,\"price\":\"12,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"MILK PASTRY ROLL\",\"count\":\"1\",\"unit_price\":null,\"price\":\"9,000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"REAL CHEESE INSIDE BREAD\",\"count\":\"1\",\"unit_price\":null,\"price\":\"13,500\",\"sub_items\":[]},{\"row_index\":5,\"name\":\"SAUSAGE BREAD\",\"count\":\"1\",\"unit_price\":null,\"price\":\"15,000\",\"sub_items\":[]},{\"row_index\":6,\"name\":\"HAM CHEESE FLAT BREAD\",\"count\":\"1\",\"unit_price\":null,\"price\":\"20,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"80,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 260
+        },
+        {
+          "id": "cord_dev_0025",
+          "ok": true,
+          "latency_s": 14.237379299942404,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Sop Sui Jiao\",\"count\":\"1Prs\",\"unit_price\":null,\"price\":\"33,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Ha Kaou Udg\",\"count\":\"1Prs\",\"unit_price\":null,\"price\":\"28,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Sio May Kptng\",\"count\":\"1Prs\",\"unit_price\":null,\"price\":\"23,500\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"Siomay Kmbinasi\",\"count\":\"1Prs\",\"unit_price\":null,\"price\":\"23,000\",\"sub_items\":[]},{\"row_index\":5,\"name\":\"Leng Hong Kien\",\"count\":\"1Prs\",\"unit_price\":null,\"price\":\"30,000\",\"sub_items\":[]},{\"row_index\":6,\"name\":\"Mie Kkung Tresi\",\"count\":\"1Prs\",\"unit_price\":null,\"price\":\"35,500\",\"sub_items\":[]},{\"row_index\":7,\"name\":\"Es Teh Tawar\",\"count\":\"101s\",\"unit_price\":null,\"price\":\"7,000\",\"sub_items\":[]}],\"subtotal\":\"180,000\",\"tax\":\"9,000\",\"total\":\"207,900\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 315
+        },
+        {
+          "id": "cord_dev_0026",
+          "ok": true,
+          "latency_s": 10.638525399961509,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"NASI MERAH/PUTIH\",\"count\":\"1x\",\"unit_price\":\"5.000\",\"price\":\"5.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"SAYUR\",\"count\":\"2x\",\"unit_price\":\"4.000\",\"price\":\"8.000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"KERUPUK/SAMBEL\",\"count\":\"1x\",\"unit_price\":\"2.000\",\"price\":\"2.000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"AYAM\",\"count\":\"1x\",\"unit_price\":\"14.000\",\"price\":\"14.000\",\"sub_items\":[]},{\"row_index\":5,\"name\":\"MINUMAN KEMASAN/REFILL\",\"count\":\"1x\",\"unit_price\":\"6.000\",\"price\":\"6.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"Rp.35.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 237
+        },
+        {
+          "id": "cord_dev_0027",
+          "ok": true,
+          "latency_s": 3.793366299942136,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"THAI ICED TEA (L)\",\"count\":\"1\",\"unit_price\":null,\"price\":\"16,363\",\"sub_items\":[]}],\"subtotal\":\"16,363\",\"tax\":\"1,636\",\"total\":\"17,999\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 79
+        },
+        {
+          "id": "cord_dev_0028",
+          "ok": true,
+          "latency_s": 5.334204400074668,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"ELEPHANT READ BEAN\",\"count\":\"1\",\"unit_price\":\"12,000\",\"price\":\"12,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"chapsal twister donnut\",\"count\":\"1\",\"unit_price\":\"10,000\",\"price\":\"10,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"22,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 117
+        },
+        {
+          "id": "cord_dev_0029",
+          "ok": true,
+          "latency_s": 3.347878300002776,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Sabun Beras 1\",\"count\":\"30000\",\"unit_price\":null,\"price\":\"30000\",\"sub_items\":[]}],\"subtotal\":\"30000\",\"tax\":null,\"total\":\"20000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 74
+        },
+        {
+          "id": "cord_dev_0030",
+          "ok": true,
+          "latency_s": 5.173850100021809,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"REDBEAN BRE/D\",\"count\":\"1\",\"unit_price\":null,\"price\":\"9,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"FRANKFRUT S/USA3 ROLL\",\"count\":\"1\",\"unit_price\":null,\"price\":\"12,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"21,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 108
+        },
+        {
+          "id": "cord_dev_0031",
+          "ok": true,
+          "latency_s": 3.273549500037916,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"PREMIUM TOAST PAN BREAD\",\"count\":\"1\",\"unit_price\":null,\"price\":\"24,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"24,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 70
+        },
+        {
+          "id": "cord_dev_0032",
+          "ok": true,
+          "latency_s": 3.198977299965918,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Nasi (MLY)\",\"count\":\"1\",\"unit_price\":null,\"price\":\"6.000\",\"sub_items\":[]}],\"subtotal\":\"6.000\",\"tax\":null,\"total\":\"6.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 970,
+          "completion_tokens": 69
+        },
+        {
+          "id": "cord_dev_0033",
+          "ok": true,
+          "latency_s": 4.908223400008865,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"GRAINS PAN BREAD\",\"count\":\"1\",\"unit_price\":null,\"price\":\"20,500\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"ICED HIBISCUS LYCHEE TEA\",\"count\":\"1\",\"unit_price\":null,\"price\":\"37,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"57,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 109
+        },
+        {
+          "id": "cord_dev_0034",
+          "ok": true,
+          "latency_s": 8.464613900054246,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"GRILLED BABY POTATO (R)\",\"count\":\"1\",\"unit_price\":null,\"price\":\"50,500\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"TRUFFLE CREAM\",\"count\":\"1\",\"unit_price\":null,\"price\":\"76,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"CARBONARA\",\"count\":\"1\",\"unit_price\":null,\"price\":\"70,500\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"ORIGINAL BREWED TEA\",\"count\":\"2\",\"unit_price\":null,\"price\":\"46,000\",\"sub_items\":[]}],\"subtotal\":\"243,000\",\"tax\":\"14,580\",\"total\":\"283,338\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 190
+        },
+        {
+          "id": "cord_dev_0035",
+          "ok": true,
+          "latency_s": 9.144829299999401,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"BLACK PEPPER MEATBALL\",\"count\":\"1\",\"unit_price\":null,\"price\":\"76,500\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"QUARTO FORMANGGI PASTA\",\"count\":\"1\",\"unit_price\":null,\"price\":\"82,500\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"GREEN TEA WITH CRUMBLE\",\"count\":\"1\",\"unit_price\":null,\"price\":\"56,000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"ORIGINAL BREWED TEA\",\"count\":\"2\",\"unit_price\":null,\"price\":\"46,000\",\"sub_items\":[]}],\"subtotal\":\"261,000\",\"tax\":\"27,666\",\"total\":\"304,326\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 195
+        },
+        {
+          "id": "cord_dev_0036",
+          "ok": true,
+          "latency_s": 6.06268860003911,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Soft Ori 3 Top\",\"count\":\"1\",\"unit_price\":null,\"price\":\"17,272\",\"sub_items\":[{\"name\":\"Top Oreo\",\"count\":null,\"unit_price\":null,\"price\":null},{\"name\":\"Top Oreo\",\"count\":null,\"unit_price\":null,\"price\":null},{\"name\":\"Top Banana\",\"count\":null,\"unit_price\":null,\"price\":null}]}],\"subtotal\":\"17,272\",\"tax\":\"1,727\",\"total\":\"18,999\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 132
+        },
+        {
+          "id": "cord_dev_0037",
+          "ok": true,
+          "latency_s": 5.218743999954313,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Ice Lemon Tea\",\"count\":null,\"unit_price\":null,\"price\":\"13,636\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Gyro Platter - Regular\",\"count\":null,\"unit_price\":null,\"price\":\"50,000\",\"sub_items\":[]}],\"subtotal\":\"63,636\",\"tax\":\"6,364\",\"total\":\"70,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 111
+        },
+        {
+          "id": "cord_dev_0038",
+          "ok": true,
+          "latency_s": 3.311234400025569,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"33\",\"count\":\"1\",\"unit_price\":\"20,000\",\"price\":\"20,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"20,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 69
+        },
+        {
+          "id": "cord_dev_0039",
+          "ok": true,
+          "latency_s": 8.36531019990798,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"PKT TELOR/PERKEDEL\",\"count\":null,\"unit_price\":null,\"price\":\"26,000\",\"sub_items\":[{\"name\":\"TERONG\",\"count\":null,\"unit_price\":null,\"price\":\"12,000\"},{\"name\":\"PARU\",\"count\":null,\"unit_price\":null,\"price\":\"23,000\"},{\"name\":\"SBL GR ATI/AMPLA\",\"count\":null,\"unit_price\":null,\"price\":\"20,000\"},{\"name\":\"NESTLE 330 ML\",\"count\":null,\"unit_price\":null,\"price\":\"8,000\"}]}],\"subtotal\":\"89,000\",\"tax\":\"8,900\",\"total\":\"97,900\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 182
+        },
+        {
+          "id": "cord_dev_0040",
+          "ok": true,
+          "latency_s": 11.264689999981783,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Gojek Chicken\",\"count\":\"1\",\"unit_price\":\"95,000\",\"price\":\"95,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Chilli Sauce H\",\"count\":\"1\",\"unit_price\":\"180,000\",\"price\":\"180,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Gojek Chicken\",\"count\":\"1\",\"unit_price\":\"70,000\",\"price\":\"70,000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"Soy Sauce F\",\"count\":\"1\",\"unit_price\":\"180,000\",\"price\":\"180,000\",\"sub_items\":[]},{\"row_index\":5,\"name\":\"Gojek French Fries\",\"count\":\"1\",\"unit_price\":\"70,000\",\"price\":\"70,000\",\"sub_items\":[]}],\"subtotal\":\"345,000\",\"tax\":\"34,500\",\"total\":\"379,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 249
+        },
+        {
+          "id": "cord_dev_0041",
+          "ok": true,
+          "latency_s": 25.927267600083724,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"SOGOGI JAPCHAE\",\"count\":\"1\",\"unit_price\":\"150,000\",\"price\":\"150,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"GONG GIBAB\",\"count\":\"1\",\"unit_price\":\"105,000\",\"price\":\"105,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"CHULPAN CHEESE\",\"count\":\"1\",\"unit_price\":\"230,000\",\"price\":\"230,000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"DAK GALBI\",\"count\":\"1\",\"unit_price\":\"120,000\",\"price\":\"120,000\",\"sub_items\":[]},{\"row_index\":5,\"name\":\"CREAM TEOK PO KI\",\"count\":\"1\",\"unit_price\":\"95,000\",\"price\":\"95,000\",\"sub_items\":[]},{\"row_index\":6,\"name\":\"EL KEUN\",\"count\":\"1\",\"unit_price\":\"120,000\",\"price\":\"120,000\",\"sub_items\":[]},{\"row_index\":7,\"name\":\"HWANGTAE\",\"count\":\"1\",\"unit_price\":\"120,000\",\"price\":\"120,000\",\"sub_items\":[]},{\"row_index\":8,\"name\":\"SUNDUBU(TUKBEGI)\",\"count\":\"2\",\"unit_price\":\"620,000\",\"price\":\"620,000\",\"sub_items\":[]},{\"row_index\":9,\"name\":\"CHAM KKOT SAL\",\"count\":\"2\",\"unit_price\":\"290,000\",\"price\":\"290,000\",\"sub_items\":[]},{\"row_index\":10,\"name\":\"U SAM GYEOP\",\"count\":\"2\",\"unit_price\":\"390,000\",\"price\":\"390,000\",\"sub_items\":[]},{\"row_index\":11,\"name\":\"U SAM GYEOP\",\"count\":\"1\",\"unit_price\":\"0\",\"price\":\"0\",\"sub_items\":[]},{\"row_index\":12,\"name\":\"ICE COFFEE MIX\",\"count\":\"3\",\"unit_price\":\"0\",\"price\":\"0\",\"sub_items\":[]},{\"row_index\":13,\"name\":\"ICE BLACK COFFEE\",\"count\":\"1\",\"unit_price\":\"0\",\"price\":\"0\",\"sub_items\":[]}],\"subtotal\":\"2,000,000\",\"tax\":\"212,460\",\"total\":\"2,352,460\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 682,
+          "completion_tokens": 580
+        },
+        {
+          "id": "cord_dev_0042",
+          "ok": true,
+          "latency_s": 7.332337999949232,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"STIX CINNAMON\",\"count\":\"1\",\"unit_price\":\"19,000\",\"price\":\"19,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"CINNAMON SUGAR\",\"count\":\"1\",\"unit_price\":\"17,000\",\"price\":\"17,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"TRIPPLE CHEESE\",\"count\":\"1\",\"unit_price\":\"17,000\",\"price\":\"17,000\",\"sub_items\":[]}],\"subtotal\":\"53,000\",\"tax\":null,\"total\":\"53,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 165
+        },
+        {
+          "id": "cord_dev_0043",
+          "ok": true,
+          "latency_s": 5.147557999938726,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"ROTI UNYIL\",\"count\":\"170\",\"unit_price\":null,\"price\":\"272.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"PAPER BAG BESAR\",\"count\":\"1\",\"unit_price\":null,\"price\":\"6.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"278.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 970,
+          "completion_tokens": 108
+        },
+        {
+          "id": "cord_dev_0044",
+          "ok": true,
+          "latency_s": 3.8555341999744996,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"THAI ICED TEA (L)\",\"count\":\"1\",\"unit_price\":null,\"price\":\"16,363\",\"sub_items\":[]}],\"subtotal\":\"16,363\",\"tax\":\"1,636\",\"total\":\"17,999\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 79
+        },
+        {
+          "id": "cord_dev_0045",
+          "ok": true,
+          "latency_s": 8.124371899990365,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"ADP Seafood\",\"count\":\"1\",\"unit_price\":null,\"price\":\"85,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Omurice Katsu Curry\",\"count\":\"1\",\"unit_price\":null,\"price\":\"95,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Earl Gray Tea\",\"count\":\"1\",\"unit_price\":null,\"price\":\"35,000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"Hot Tea\",\"count\":\"1\",\"unit_price\":null,\"price\":\"25,000\",\"sub_items\":[]}],\"subtotal\":\"240,000\",\"tax\":\"26,160\",\"total\":\"287,760\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 183
+        },
+        {
+          "id": "cord_dev_0046",
+          "ok": true,
+          "latency_s": 3.1417057999642566,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"MARBLE CASTELA\",\"count\":\"1\",\"unit_price\":null,\"price\":\"22,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"22,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 67
+        },
+        {
+          "id": "cord_dev_0047",
+          "ok": true,
+          "latency_s": 3.9168883999809623,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Seaweed Chicken\",\"count\":\"1\",\"unit_price\":null,\"price\":\"42,000\",\"sub_items\":[{\"name\":\"- Sedang\",\"count\":\"1\",\"unit_price\":null,\"price\":null}]}],\"subtotal\":null,\"tax\":null,\"total\":\"42,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 85
+        },
+        {
+          "id": "cord_dev_0048",
+          "ok": true,
+          "latency_s": 6.61510110006202,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"SB 1 OR\",\"count\":\"1\",\"unit_price\":null,\"price\":\"28,636\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Chokocha Fit\",\"count\":\"1\",\"unit_price\":null,\"price\":\"13,636\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Bbq Bento\",\"count\":\"1\",\"unit_price\":null,\"price\":\"13,636\",\"sub_items\":[]}],\"subtotal\":\"55,908\",\"tax\":\"5,592\",\"total\":\"61,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 146
+        },
+        {
+          "id": "cord_dev_0049",
+          "ok": true,
+          "latency_s": 5.531495100003667,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Nasi Campur Bali\",\"count\":\"1x\",\"unit_price\":\"52.000\",\"price\":\"52.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Lemon\",\"count\":\"1x\",\"unit_price\":\"22.000\",\"price\":\"22.000\",\"sub_items\":[]}],\"subtotal\":\"74.000\",\"tax\":\"7.400\",\"total\":\"81.400\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 121
+        },
+        {
+          "id": "cord_dev_0050",
+          "ok": true,
+          "latency_s": 3.135377199971117,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"CHOCOLATE ECLAIR\",\"count\":\"2\",\"unit_price\":null,\"price\":\"26,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"26,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 69
+        },
+        {
+          "id": "cord_dev_0051",
+          "ok": true,
+          "latency_s": 5.174617199925706,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Round Wagyu (1gr)\",\"count\":\"118\",\"unit_price\":null,\"price\":\"47.200\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Wagyu Rice Box\",\"count\":\"1\",\"unit_price\":null,\"price\":\"10.000\",\"sub_items\":[]}],\"subtotal\":\"57.200\",\"tax\":null,\"total\":\"57.200\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 970,
+          "completion_tokens": 111
+        },
+        {
+          "id": "cord_dev_0052",
+          "ok": true,
+          "latency_s": 7.041851000045426,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"KENTHIR 2\",\"count\":\"2\",\"unit_price\":null,\"price\":\"42.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"KOL GORENG\",\"count\":\"2\",\"unit_price\":null,\"price\":\"6.000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"TEH MANIS\",\"count\":\"2\",\"unit_price\":null,\"price\":\"8.000\",\"sub_items\":[]}],\"subtotal\":\"56.000\",\"tax\":null,\"total\":\"56.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 141
+        },
+        {
+          "id": "cord_dev_0053",
+          "ok": true,
+          "latency_s": 7.1394380000419915,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Large\",\"count\":\"1\",\"unit_price\":\"1\",\"price\":\"11.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"*Rhum\",\"count\":\"1\",\"unit_price\":null,\"price\":\"0\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Pasty Keju\",\"count\":\"1\",\"unit_price\":null,\"price\":\"20.000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"*Plastik Kcl\",\"count\":\"1\",\"unit_price\":null,\"price\":\"0\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"31.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 159
+        },
+        {
+          "id": "cord_dev_0054",
+          "ok": true,
+          "latency_s": 5.200470700045116,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"40003-Blueberry Fuji\",\"count\":\"x1\",\"unit_price\":\"40.000\",\"price\":\"40.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"6001-Plastic Bag Small\",\"count\":\"x1\",\"unit_price\":\"0\",\"price\":\"0\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"40.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 113
+        },
+        {
+          "id": "cord_dev_0055",
+          "ok": true,
+          "latency_s": 4.940750399953686,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Cha Keaw L... x2\",\"count\":\"x2\",\"unit_price\":null,\"price\":\"60.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Cha Keaw L... x2\",\"count\":\"x2\",\"unit_price\":null,\"price\":\"60.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"60.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 109
+        },
+        {
+          "id": "cord_dev_0056",
+          "ok": true,
+          "latency_s": 3.444381900015287,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Thai Iced T..x1\",\"count\":null,\"unit_price\":null,\"price\":\"20.000\",\"sub_items\":[]}],\"subtotal\":\"20.000\",\"tax\":null,\"total\":\"20.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 74
+        },
+        {
+          "id": "cord_dev_0057",
+          "ok": true,
+          "latency_s": 6.899208500050008,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"SEAFOOD MARINARA\",\"count\":\"1\",\"unit_price\":null,\"price\":\"85,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"CREAMY MARINARA SALMON\",\"count\":\"1\",\"unit_price\":null,\"price\":\"85,500\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"LYCHEE ICE TEA\",\"count\":\"2\",\"unit_price\":null,\"price\":\"77,000\",\"sub_items\":[]}],\"subtotal\":\"247,500\",\"tax\":\"14,850\",\"total\":\"288,585\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 155
+        },
+        {
+          "id": "cord_dev_0058",
+          "ok": true,
+          "latency_s": 4.842960800044239,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Viet Milk Coffee\",\"count\":\"1\",\"unit_price\":null,\"price\":\"25.000\",\"sub_items\":[{\"name\":\"+Hot\",\"count\":null,\"unit_price\":null,\"price\":null},{\"name\":\"+M\",\"count\":null,\"unit_price\":null,\"price\":null}]}],\"subtotal\":\"25.000\",\"tax\":null,\"total\":\"25.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 482,
+          "completion_tokens": 105
+        },
+        {
+          "id": "cord_dev_0059",
+          "ok": true,
+          "latency_s": 16.494930199929513,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"XLB Org Pork 10x\",\"count\":\"1\",\"unit_price\":null,\"price\":\"78,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Sicito Babi\",\"count\":\"1\",\"unit_price\":null,\"price\":\"65,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Hotplate Tahu\",\"count\":\"1\",\"unit_price\":null,\"price\":\"58,000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"DF Fish Fillet Garlic\",\"count\":\"1\",\"unit_price\":null,\"price\":\"108,000\",\"sub_items\":[]},{\"row_index\":5,\"name\":\"LM Pork Belly\",\"count\":\"1\",\"unit_price\":null,\"price\":\"88,000\",\"sub_items\":[]},{\"row_index\":6,\"name\":\"Siew Mai\",\"count\":\"1\",\"unit_price\":null,\"price\":\"38,800\",\"sub_items\":[]},{\"row_index\":7,\"name\":\"Kwan Yin Cup\",\"count\":\"5\",\"unit_price\":null,\"price\":\"50,000\",\"sub_items\":[]},{\"row_index\":8,\"name\":\"Herbal Jelly\",\"count\":\"1\",\"unit_price\":null,\"price\":\"38,000\",\"sub_items\":[]},{\"row_index\":9,\"name\":\"Onde-Onde\",\"count\":\"1\",\"unit_price\":null,\"price\":\"38,000\",\"sub_items\":[]}],\"subtotal\":\"561,800\",\"tax\":\"60,394\",\"total\":\"664,329\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 362
+        },
+        {
+          "id": "cord_dev_0060",
+          "ok": true,
+          "latency_s": 3.4890832999954,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"VANILLA CHOCO HEART CAKE\",\"count\":\"1\",\"unit_price\":null,\"price\":\"180,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"180,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 74
+        },
+        {
+          "id": "cord_dev_0061",
+          "ok": true,
+          "latency_s": 5.51034040004015,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Populaire Chocolate\",\"count\":\"1\",\"unit_price\":\"4,500\",\"price\":\"4,500\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Paddle Pop Choco Magma\",\"count\":\"1\",\"unit_price\":\"3,000\",\"price\":\"3,000\",\"sub_items\":[]}],\"subtotal\":\"7,500\",\"tax\":\"750\",\"total\":\"8,250\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 958,
+          "completion_tokens": 114
+        },
+        {
+          "id": "cord_dev_0062",
+          "ok": true,
+          "latency_s": 6.436698199948296,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"French Fries\",\"count\":\"1\",\"unit_price\":null,\"price\":\"10,909\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Cheese Burger\",\"count\":\"2\",\"unit_price\":null,\"price\":\"36,364\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Milo\",\"count\":\"1\",\"unit_price\":null,\"price\":\"9,091\",\"sub_items\":[]}],\"subtotal\":\"56,364\",\"tax\":\"5,636\",\"total\":\"62,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 140
+        },
+        {
+          "id": "cord_dev_0063",
+          "ok": true,
+          "latency_s": 5.259947199956514,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"ISI CANFUR\",\"count\":\"1\",\"unit_price\":\"43,636\",\"price\":\"43,636\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"A.MINERAL BOTOL\",\"count\":\"1\",\"unit_price\":\"8,000\",\"price\":\"8,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":\"5,164\",\"total\":\"51,636\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 115
+        },
+        {
+          "id": "cord_dev_0064",
+          "ok": true,
+          "latency_s": 3.1988579999888316,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"WHOLE WHEAT PAN BREAD\",\"count\":\"1\",\"unit_price\":null,\"price\":\"20,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"20,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 482,
+          "completion_tokens": 70
+        },
+        {
+          "id": "cord_dev_0065",
+          "ok": true,
+          "latency_s": 4.930602499982342,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"BASO TAHU\",\"count\":\"1\",\"unit_price\":\"1\",\"price\":\"43.636\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"NASI PUTIH\",\"count\":\"1\",\"unit_price\":\"6\",\"price\":\"6.000\",\"sub_items\":[]}],\"subtotal\":\"49.636\",\"tax\":\"4.964\",\"total\":\"54.600\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 111
+        },
+        {
+          "id": "cord_dev_0066",
+          "ok": true,
+          "latency_s": 2.848288099979982,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"AIR MINERAL\",\"count\":null,\"unit_price\":null,\"price\":\"7,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"7,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 63
+        },
+        {
+          "id": "cord_dev_0067",
+          "ok": true,
+          "latency_s": 8.092830399982631,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"PAKET BER2\",\"count\":\"1\",\"unit_price\":null,\"price\":\"69,091\",\"sub_items\":[{\"name\":\"BREAD N CHEESE DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null},{\"name\":\"MAC N CHEESE DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null},{\"name\":\"PEPSI DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null},{\"name\":\"P/P THOUSAND ISL DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null},{\"name\":\"LIPTON ICE TEA DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null}]}],\"subtotal\":\"69,091\",\"tax\":\"6,909\",\"total\":\"76,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 188
+        },
+        {
+          "id": "cord_dev_0068",
+          "ok": true,
+          "latency_s": 3.2343163000186905,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Honey Mandarin\",\"count\":\"2X\",\"unit_price\":\"13,000\",\"price\":\"26,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"26,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 71
+        },
+        {
+          "id": "cord_dev_0069",
+          "ok": true,
+          "latency_s": 5.823367499979213,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"SOTO MEDAN+NASI\",\"count\":\"1\",\"unit_price\":null,\"price\":\"59.500\",\"sub_items\":[{\"name\":\"GADO-GADO\",\"count\":\"1\",\"unit_price\":null,\"price\":\"34.500\"},{\"name\":\"SOTO BETAWI + NASI\",\"count\":\"1\",\"unit_price\":null,\"price\":\"57.500\"}]}],\"subtotal\":\"151.500\",\"tax\":\"7.575\",\"total\":\"174.983\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 133
+        },
+        {
+          "id": "cord_dev_0070",
+          "ok": true,
+          "latency_s": 6.746464799973182,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"KaraageCurryTeishoku\",\"count\":\"1\",\"unit_price\":null,\"price\":\"69,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Lemon Plate\",\"count\":\"1\",\"unit_price\":null,\"price\":\"19,000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Ocha Hot\",\"count\":\"1\",\"unit_price\":null,\"price\":\"15,000\",\"sub_items\":[]}],\"subtotal\":\"103,000\",\"tax\":\"7,725\",\"total\":\"121,798\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 149
+        },
+        {
+          "id": "cord_dev_0071",
+          "ok": true,
+          "latency_s": 4.245164099964313,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Dum Dum Thai Coffee\",\"count\":\"1\",\"unit_price\":null,\"price\":\"19.000\",\"sub_items\":[{\"name\":\"Ice\",\"count\":\"1\",\"unit_price\":null,\"price\":\"1.000\"}]}],\"subtotal\":\"20.000\",\"tax\":null,\"total\":\"20.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 970,
+          "completion_tokens": 93
+        },
+        {
+          "id": "cord_dev_0072",
+          "ok": true,
+          "latency_s": 5.277036499930546,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"STIX CINNAMON\",\"count\":\"1 x\",\"unit_price\":\"19,000\",\"price\":\"19,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"TRIPPLE CHEESE\",\"count\":\"1 x\",\"unit_price\":\"17,000\",\"price\":\"17,000\",\"sub_items\":[]}],\"subtotal\":\"36,000\",\"tax\":null,\"total\":\"36,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 123
+        },
+        {
+          "id": "cord_dev_0073",
+          "ok": true,
+          "latency_s": 2.9757607000647113,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"ICED TT\",\"count\":null,\"unit_price\":null,\"price\":\"20,000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"20,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 65
+        },
+        {
+          "id": "cord_dev_0074",
+          "ok": true,
+          "latency_s": 3.547507800045423,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"THAI ICED TEA\",\"count\":\"1\",\"unit_price\":\"@20.000\",\"price\":\"20.000\",\"sub_items\":[]}],\"subtotal\":\"20.000\",\"tax\":null,\"total\":\"20.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 79
+        },
+        {
+          "id": "cord_dev_0075",
+          "ok": true,
+          "latency_s": 8.935529800015502,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"KFC Winger HC\",\"count\":\"2\",\"unit_price\":null,\"price\":\"40,000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Ori Bento\",\"count\":\"1\",\"unit_price\":null,\"price\":\"13,636\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Mango Float\",\"count\":\"1\",\"unit_price\":null,\"price\":\"5,909\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"F.Wngr GES-HC\",\"count\":\"1\",\"unit_price\":null,\"price\":\"0\",\"sub_items\":[]},{\"row_index\":5,\"name\":\"CHARGE TA\",\"count\":\"1\",\"unit_price\":null,\"price\":\"909\",\"sub_items\":[]}],\"subtotal\":\"60,454\",\"tax\":\"6,046\",\"total\":\"66,500\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 208
+        },
+        {
+          "id": "cord_dev_0076",
+          "ok": true,
+          "latency_s": 5.445379699929617,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Enting2 Dua Bandeng Ori\",\"count\":\"1\",\"unit_price\":\"31.000\",\"price\":\"31.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"TAHU BAKSO Grg Ayam VC [bijj\",\"count\":\"10\",\"unit_price\":\"6.800\",\"price\":\"68.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"99.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 124
+        },
+        {
+          "id": "cord_dev_0077",
+          "ok": true,
+          "latency_s": 5.465298100025393,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Cheese Tart\",\"count\":\"*2\",\"unit_price\":null,\"price\":\"Rp58000.00\",\"sub_items\":[{\"name\":\"Bag-S\",\"count\":null,\"unit_price\":null,\"price\":null},{\"name\":\"PS Carrier\",\"count\":null,\"unit_price\":null,\"price\":null}]}],\"subtotal\":\"Rp58000.00\",\"tax\":\"Rp5272.73\",\"total\":\"Rp58000.00\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 123
+        },
+        {
+          "id": "cord_dev_0078",
+          "ok": true,
+          "latency_s": 7.989000800065696,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Mineral Water\",\"count\":\"2\",\"unit_price\":null,\"price\":\"18 000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Teh Tawar Dingin\",\"count\":\"1\",\"unit_price\":null,\"price\":\"11 000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Soto Belawi\",\"count\":\"2\",\"unit_price\":null,\"price\":\"116 000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"NASI PUTIH\",\"count\":\"1\",\"unit_price\":null,\"price\":\"9 000\",\"sub_items\":[]}],\"subtotal\":\"154 000\",\"tax\":\"7 700\",\"total\":\"177 870\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 184
+        },
+        {
+          "id": "cord_dev_0079",
+          "ok": true,
+          "latency_s": 8.93046659999527,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Crab Stick\",\"count\":\"1\",\"unit_price\":null,\"price\":\"9.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"Bakso Lobster\",\"count\":\"1\",\"unit_price\":null,\"price\":\"10.000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"Sawi Putih\",\"count\":\"1\",\"unit_price\":null,\"price\":\"7.000\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"Jamur Enoki\",\"count\":\"1\",\"unit_price\":null,\"price\":\"8.000\",\"sub_items\":[]},{\"row_index\":5,\"name\":\"Jamur Kuping\",\"count\":\"1\",\"unit_price\":null,\"price\":\"8.000\",\"sub_items\":[]}],\"subtotal\":\"72.000\",\"tax\":null,\"total\":\"72.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 970,
+          "completion_tokens": 208
+        },
+        {
+          "id": "cord_dev_0080",
+          "ok": true,
+          "latency_s": 3.2205775000620633,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Sate Padang\",\"count\":\"1\",\"unit_price\":\"25 000\",\"price\":\"25 000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"25 000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 938,
+          "completion_tokens": 71
+        },
+        {
+          "id": "cord_dev_0081",
+          "ok": true,
+          "latency_s": 9.761969699990004,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"SURIMI\",\"count\":\"1\",\"unit_price\":null,\"price\":\"29,091\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"CREAMY CHK CLS FTC\",\"count\":\"1\",\"unit_price\":null,\"price\":\"42,727\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"MIX 4FUN CHOCOLATE\",\"count\":\"1\",\"unit_price\":null,\"price\":\"19,091\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"GREEN ITSDA PITCHER\",\"count\":\"1\",\"unit_price\":null,\"price\":\"60,909\",\"sub_items\":[]},{\"row_index\":5,\"name\":\"SC/R GRILLED STEAK\",\"count\":\"1\",\"unit_price\":null,\"price\":\"99,091\",\"sub_items\":[]}],\"subtotal\":\"250,909\",\"tax\":\"25,091\",\"total\":\"276,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 229
+        },
+        {
+          "id": "cord_dev_0082",
+          "ok": true,
+          "latency_s": 7.244631699984893,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"PEARL CHOCO TEA\",\"count\":\"1\",\"unit_price\":null,\"price\":\"17.000\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"GREEN TEA LYCHEE\",\"count\":\"1\",\"unit_price\":null,\"price\":\"18.000\",\"sub_items\":[]},{\"row_index\":3,\"name\":\"TUTUP SEAL\",\"count\":\"2\",\"unit_price\":null,\"price\":\"0\",\"sub_items\":[]},{\"row_index\":4,\"name\":\"CUP 14 OZ\",\"count\":\"2\",\"unit_price\":null,\"price\":\"0\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"35.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 850,
+          "completion_tokens": 169
+        },
+        {
+          "id": "cord_dev_0083",
+          "ok": true,
+          "latency_s": 3.355052899918519,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"S-Mi1k tea\",\"count\":\"1X\",\"unit_price\":null,\"price\":\"@17,000\",\"sub_items\":[]}],\"subtotal\":\"17,000\",\"tax\":null,\"total\":\"17,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 75
+        },
+        {
+          "id": "cord_dev_0084",
+          "ok": true,
+          "latency_s": 4.383864699979313,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"HazelNut Choco MT (R)\",\"count\":\"1 x\",\"unit_price\":null,\"price\":\"24,000\",\"sub_items\":[{\"name\":\"PEARL (R)\",\"count\":null,\"unit_price\":null,\"price\":\"4,000\"}]}],\"subtotal\":\"52,000\",\"tax\":null,\"total\":\"52,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 100
+        },
+        {
+          "id": "cord_dev_0085",
+          "ok": true,
+          "latency_s": 3.5978227999294177,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Peanut & Cheese\",\"count\":null,\"unit_price\":null,\"price\":\"13,636\",\"sub_items\":[]}],\"subtotal\":\"13,636\",\"tax\":\"1,364\",\"total\":\"15,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 76
+        },
+        {
+          "id": "cord_dev_0086",
+          "ok": true,
+          "latency_s": 3.5397660000016913,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"LEMONADE 22OZ\",\"count\":\"1\",\"unit_price\":\"26,000\",\"price\":\"26,000\",\"sub_items\":[]}],\"subtotal\":\"26,000\",\"tax\":null,\"total\":\"26,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 80
+        },
+        {
+          "id": "cord_dev_0087",
+          "ok": true,
+          "latency_s": 4.389987100032158,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"M-Passion Fruit Mac\",\"count\":\"1X\",\"unit_price\":\"@29,000\",\"price\":\"29,000\",\"sub_items\":[{\"name\":\"Less Ice\",\"count\":null,\"unit_price\":null,\"price\":null}]}],\"subtotal\":\"29,000\",\"tax\":\"25%\",\"total\":\"29,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 100
+        },
+        {
+          "id": "cord_dev_0088",
+          "ok": true,
+          "latency_s": 18.02355320006609,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"PAKET BER4 UP3\",\"count\":\"1\",\"unit_price\":null,\"price\":\"154,545\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"BREAD % CHEESE DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":3,\"name\":\"TUNA DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":4,\"name\":\"CRABSTICK FUSILLI DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":5,\"name\":\"LEMON TEA HANGAT DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":6,\"name\":\"BLACKCURRANT DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":7,\"name\":\"SC/P THOUSAND IS DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":8,\"name\":\"SCSC/P BBQ BEEF DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":9,\"name\":\"CR/P BEEF MAYO DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":10,\"name\":\"SUNRISE ITALIAN SODA\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":11,\"name\":\"SUNRISE ITALIAN SODA\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]}],\"subtotal\":\"154,545\",\"tax\":\"15,455\",\"total\":\"170,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 420
+        },
+        {
+          "id": "cord_dev_0089",
+          "ok": true,
+          "latency_s": 3.30966389994137,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Chocchip 8 Walnut\",\"count\":\"x1\",\"unit_price\":\"29.000\",\"price\":\"29.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"29.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 482,
+          "completion_tokens": 74
+        },
+        {
+          "id": "cord_dev_0090",
+          "ok": true,
+          "latency_s": 3.3651365999830887,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"REGULAR\",\"count\":\"2\",\"unit_price\":\"35000.00\",\"price\":\"70000.00\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"70000.00\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 75
+        },
+        {
+          "id": "cord_dev_0091",
+          "ok": true,
+          "latency_s": 3.2217295999871567,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"ADD CHICKEN BOX\",\"count\":null,\"unit_price\":null,\"price\":\"909\",\"sub_items\":[]}],\"subtotal\":\"40,000\",\"tax\":\"4,000\",\"total\":\"44,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 73
+        },
+        {
+          "id": "cord_dev_0092",
+          "ok": true,
+          "latency_s": 3.549761600093916,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"<FC Winger HC\",\"count\":\"1\",\"unit_price\":null,\"price\":\"20,000\",\"sub_items\":[]}],\"subtotal\":\"20,309\",\"tax\":\"2,091\",\"total\":\"23,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 76
+        },
+        {
+          "id": "cord_dev_0093",
+          "ok": true,
+          "latency_s": 18.355485199950635,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"PAKET BER4\",\"count\":\"1\",\"unit_price\":null,\"price\":\"138,182\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"BREAD N CHEESE DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":3,\"name\":\"CRABSTICK FUSILLI DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":4,\"name\":\"LIME SQUASH DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":5,\"name\":\"LIME SQUASH DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":6,\"name\":\"P/P SPICY TUNA DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":7,\"name\":\"P/P THUOSAND ISL DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":8,\"name\":\"P/P BEEF CORN\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":9,\"name\":\"SUNRISE ITALIAN SODA\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":10,\"name\":\"LIPTON ICE TEA DEL\",\"count\":\"1\",\"unit_price\":null,\"price\":null,\"sub_items\":[]},{\"row_index\":11,\"name\":\"50% CHICKEN ROYAL\",\"count\":\"1\",\"unit_price\":null,\"price\":\"18,182\",\"sub_items\":[]}],\"subtotal\":\"156,364\",\"tax\":\"15,436\",\"total\":\"172,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 425
+        },
+        {
+          "id": "cord_dev_0094",
+          "ok": true,
+          "latency_s": 3.880762799992226,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Emily's Shrimp Scampi Fettucine\",\"count\":\"1\",\"unit_price\":null,\"price\":\"69.000\",\"sub_items\":[]}],\"subtotal\":\"69.000\",\"tax\":\"80.100\",\"total\":\"80.100\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 83
+        },
+        {
+          "id": "cord_dev_0095",
+          "ok": true,
+          "latency_s": 5.293984699994326,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"SAYAP\",\"count\":\"1\",\"unit_price\":\"13,636\",\"price\":\"13,636\",\"sub_items\":[]},{\"row_index\":2,\"name\":\"PAHA BAWAH\",\"count\":\"1\",\"unit_price\":\"13,636\",\"price\":\"13,636\",\"sub_items\":[]}],\"subtotal\":\"27,272\",\"tax\":\"2,700\",\"total\":\"30,000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 922,
+          "completion_tokens": 120
+        },
+        {
+          "id": "cord_dev_0096",
+          "ok": true,
+          "latency_s": 3.344085399992764,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Choco Cheese\",\"count\":\"1\",\"unit_price\":null,\"price\":\"13,636\",\"sub_items\":[]}],\"subtotal\":\"13,636\",\"tax\":\"1,159\",\"total\":\"12,750\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 74
+        },
+        {
+          "id": "cord_dev_0097",
+          "ok": true,
+          "latency_s": 3.0192619001027197,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Lemon Tea (L)\",\"count\":\"1\",\"unit_price\":null,\"price\":\"25.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"25.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 67
+        },
+        {
+          "id": "cord_dev_0098",
+          "ok": true,
+          "latency_s": 3.0239004000322893,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Hulk Topper Package\",\"count\":\"1\",\"unit_price\":null,\"price\":\"100.000\",\"sub_items\":[]}],\"subtotal\":null,\"tax\":null,\"total\":\"100.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 688,
+          "completion_tokens": 69
+        },
+        {
+          "id": "cord_dev_0099",
+          "ok": true,
+          "latency_s": 7.084129499970004,
+          "raw_response": "{\"schema_version\":\"cord-raw-1.0\",\"items\":[{\"row_index\":1,\"name\":\"Giant Squid\",\"count\":\"x1\",\"unit_price\":null,\"price\":\"Rp. 39.000\",\"sub_items\":[{\"name\":\"C. Finishing - Cut Rp. 0\",\"count\":null,\"unit_price\":null,\"price\":null},{\"name\":\"B. Spicy Level - Extreme Hot Rp. 0\",\"count\":null,\"unit_price\":null,\"price\":null},{\"name\":\"A. Flavour - Salt & Pepper Rp. 0\",\"count\":null,\"unit_price\":null,\"price\":null}]}],\"subtotal\":\"Rp. 39.000\",\"tax\":null,\"total\":\"Rp. 39.000\"}",
+          "finish_reason": "stop",
+          "prompt_tokens": 928,
+          "completion_tokens": 163
+        }
+      ],
+      "server_field_accuracy": 0.7617,
+      "offline_hf_field_accuracy_same_docs": 0.7617,
+      "identical_raw_rate": 1.0,
+      "prompt_tokens": [
+        482,
+        501,
+        682,
+        688,
+        850,
+        922,
+        928,
+        938,
+        958,
+        962,
+        970
+      ],
+      "bench": {
+        "4": {
+          "requests": 100,
+          "failures": 1,
+          "status_codes": {
+            "200": 99,
+            "429": 1
+          },
+          "wall_s": 568.04,
+          "client": "retry_429",
+          "retries_after_429": 85,
+          "sustained_s": null,
+          "docs_per_min": 10.46,
+          "p50_s": 15.4,
+          "p95_s": 42.42,
+          "field_accuracy": 0.7645,
+          "fields": [
+            763,
+            998
+          ],
+          "truncated": 0,
+          "identical_to_concurrency1_rate": 1.0,
+          "gpu_mem_mb_max": 3651
+        },
+        "8": {
+          "requests": 100,
+          "failures": 4,
+          "status_codes": {
+            "200": 96,
+            "429": 4
+          },
+          "wall_s": 567.59,
+          "client": "retry_429",
+          "retries_after_429": 384,
+          "sustained_s": null,
+          "docs_per_min": 10.15,
+          "p50_s": 16.33,
+          "p95_s": 189.33,
+          "field_accuracy": 0.7648,
+          "fields": [
+            751,
+            982
+          ],
+          "truncated": 0,
+          "identical_to_concurrency1_rate": 1.0,
+          "gpu_mem_mb_max": 3651
+        }
+      }
+    }
+  },
+  "adapter": {
+    "m1_served_as": "cord",
+    "served_sha256": "630d3dd1251f4badf931cc88326483ce3eb0ebcc5cc4ac33ca2330630e58e965",
+    "offline_m1_sha256": "630d3dd1251f4badf931cc88326483ce3eb0ebcc5cc4ac33ca2330630e58e965",
+    "same_adapter_as_offline_m1": true
+  },
+  "parity_from": "reports/serving/hf_multi_lora_cord.json"
+}
