@@ -1,0 +1,47 @@
+{
+ "amendment": "docs/20 amendment 8 (b)",
+ "rule": "safe = point estimate not more than 0.01 lower AND CI lower bound above -0.02 on both sets; helps = CI above 0",
+ "sets": {
+  "own_dev": {
+   "set": "trade:dev (24 own invoices, layout T04)",
+   "runs": {
+    "hires": "m1_dev_hires",
+    "frozen": "m1_dev_v1"
+   },
+   "max_pixels": {
+    "hires": 2200000,
+    "frozen": 786432
+   },
+   "strict": {
+    "hires": 0.9576,
+    "frozen": 0.9682
+   },
+   "diff": -0.0106,
+   "ci95": [
+    -0.052,
+    0.0138
+   ],
+   "seconds_per_document": 12.1
+  },
+  "cord_dev": {
+   "set": "cord:dev (100 receipts)",
+   "runs": {
+    "hires": "cord_dev_m1cord_hires_nf4",
+    "frozen": "cord_dev_m1cord_nf4"
+   },
+   "strict": {
+    "hires": 0.7627,
+    "frozen": 0.7617
+   },
+   "diff": 0.001,
+   "ci95": [
+    -0.0312,
+    0.0282
+   ],
+   "images_downscaled_at_786432": 71,
+   "images_downscaled_at_2200000": 15,
+   "seconds_per_document": 5.9
+  }
+ },
+ "verdict": "not shown to be safe; helps on neither"
+}

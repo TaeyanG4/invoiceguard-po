@@ -25,7 +25,7 @@
 | Recipe improvement (pre-registered) | widening LoRA to q · k · v · o: CORD dev +0.020 [+0.005, +0.036], unit price 34 → 40/50 (dev only; test not reopened). Unit-price up-weighting and a one-line prompt failed and are reported as such | [section 6](#cord-v2--real-receipt-photos) |
 | Korean-English documents | 30 mixed-language invoices on an untrained layout: fence-stripped M0 0.927 · M1 v1 0.924 · M1-cord 0.932 (no difference). The Hangul misreads were traced to resolution: without downscaling M1 v1 goes 0.924 → 0.969, item names +0.18 | [section 6](#korean-english-mixed-layout-t07-dev-only-stress-amendment-6) |
 | Review screen | upload → extract → edit → reasons for warnings → approve → export (approved versions only), flow checked in a browser | [section 8](#8-review-api) |
-| Evaluation integrity | single-test-run guard, frozen hashes and a field-level regression gate checked in CI, experiment criteria pushed before the runs, 228 pytest tests (1 GPU-only test skips without torch, as in CI) | [section 6](#6-results) |
+| Evaluation integrity | single-test-run guard, frozen hashes and a field-level regression gate checked in CI, experiment criteria pushed before the runs, 229 pytest tests (1 GPU-only test skips without torch, as in CI) | [section 6](#6-results) |
 | Cost | two RunPod runs, billed $2.16 ([`billing.json`](reports/runpod2/billing.json)); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
 | Limits | the only real photos are receipts; test unit price fell 0.82 → 0.72 after fine-tuning (on dev the q · k · v · o variant recovers 0.80, not confirmed on test); the test verdict rests on one seed, while on dev all three seeds beat M0 by +0.044 to +0.060; at the frozen resolution Hangul misreads remain | [section 11](#11-cost-and-limitations) |
 
@@ -638,7 +638,8 @@ Thirty Korean + English invoices on a layout never trained on ([`t07.py`](src/in
 <sub>* part number, unit price, line amount, total. The rule (M0 item name +0.15 or more, number fields within 0.02) is met: "resolution is the cause".</sub>
 - Raising only the resolution lifted Korean item names by +0.17–0.18, made every number field 1.000 and the reconciliation right on 29/30. Time per document is about the same (generation dominates).
 - M1 v1 was trained at 786,432 and still improved at the higher resolution.
-- The frozen FINAL and CORD results are unchanged. Raising the resolution at the next freeze is recommended; the effect on CORD receipts was not checked. The remaining item-name errors (about 0.2) are next.
+- **It does not generalise to the English dev sets** (amendment 8 b, [`resolution_dev.md`](reports/eval/resolution_dev.md)): own dev 0.968 → 0.958 (−0.011 [−0.052, +0.014]), CORD dev 0.762 → 0.763 (+0.001 [−0.031, +0.028]); 71 of 100 receipts were downscaled less and still nothing changed. So the higher resolution is recommended only for documents with small, dense script such as Hangul.
+- The frozen FINAL and CORD results are unchanged. The remaining item-name errors (about 0.2) are next.
 
 ---
 
@@ -710,7 +711,7 @@ reject is allowed from every state except `extracting`, and re-extraction from e
 - One same-origin HTML + JS page (CSP self-only, no external requests) that only calls the API above, so the version, blocker, reason and snapshot rules apply unchanged.
 - It can: load a sample (synthetic own-dev invoice + PO) or upload one → extract → edit values and rows next to the image (add/delete rows) → give a reason for each finding → approve → export JSON/CSV.
 - Flow checked in the browser (replay mode): sample → extract → 2 arithmetic warnings → reasons → approve → export. Correcting row 3's amount and saving created version 2, cleared both warnings and revoked the approval, so export returned 409 until it was approved again.
-- Tests: 15 API tests including the screen, the static-file whitelist, the CSP, the case list and the sample loader ([`test_app.py`](tests/test_app.py)).
+- Tests: 15 API tests including the screen, the static-file whitelist, the CSP, the case list and the sample loader ([`test_app.py`](tests/test_app.py)), plus one browser test in which real headless Chrome opens the screen and review.js loads a case over HTTP and draws its rows, state, version and run history ([`test_review_screen_browser.py`](tests/test_review_screen_browser.py), skipped without Chrome).
 
 ![Review screen — a synthetic invoice with a quantity-difference warning](docs/images/review-screen.png)
 
