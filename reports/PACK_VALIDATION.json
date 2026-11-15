@@ -1,6 +1,6 @@
 {
   "scope": "planning-package-only; not data download, application, training, or serving validation",
-  "checked_at_utc": "2026-11-15T02:42:59.742387+00:00",
+  "checked_at_utc": "2026-11-15T04:42:08.309406+00:00",
   "status": "pass",
   "checks": [
     {
@@ -419,6 +419,16 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:reports/model/train_m1_cord_qkvo.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/model/train_m1_cord_r16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:reports/eval/cord_failure_dev.md",
       "status": "pass",
       "detail": ""
@@ -474,7 +484,22 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:reports/serving/hf_multi_lora_cord_retry.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:reports/serving/hf_multi_lora_trade_retry.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:scripts/serving/run_multi_lora_bench.sh",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:scripts/serving/run_retry_bench.sh",
       "status": "pass",
       "detail": ""
     },
@@ -529,6 +554,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.ko.md:reports/model/train_m1_cord_qkvo.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.ko.md:reports/model",
       "status": "pass",
       "detail": ""
@@ -550,6 +580,11 @@
     },
     {
       "check": "link:README.ko.md:reports/eval",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.ko.md:docs/20_DECISIONS_V6.md",
       "status": "pass",
       "detail": ""
     },
@@ -919,6 +954,16 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:reports/model/train_m1_cord_qkvo.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/model/train_m1_cord_r16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:reports/eval/cord_failure_dev.md",
       "status": "pass",
       "detail": ""
@@ -974,7 +1019,22 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:reports/serving/hf_multi_lora_cord_retry.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:reports/serving/hf_multi_lora_trade_retry.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:scripts/serving/run_multi_lora_bench.sh",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:scripts/serving/run_retry_bench.sh",
       "status": "pass",
       "detail": ""
     },
@@ -1029,6 +1089,11 @@
       "detail": ""
     },
     {
+      "check": "link:README.md:reports/model/train_m1_cord_qkvo.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "link:README.md:reports/model",
       "status": "pass",
       "detail": ""
@@ -1050,6 +1115,11 @@
     },
     {
       "check": "link:README.md:reports/eval",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "link:README.md:docs/20_DECISIONS_V6.md",
       "status": "pass",
       "detail": ""
     },
@@ -2106,7 +2176,7 @@
     {
       "check": "local_links_checked",
       "status": "pass",
-      "detail": "389 local Markdown links"
+      "detail": "403 local Markdown links"
     }
   ],
   "not_performed": [

@@ -23,11 +23,11 @@
 | Training reproduced on another GPU | A40 retrain: mean loss within 0.0002, dev outputs 8/8 identical | [section 12](#12-cloud-reproduction-on-runpod) |
 | Invoice extraction + PO reconciliation | unseen-layout test: M1 0.921 · M0 0.897 (not significant) · OCR rules 0.210 | [section 1](#1-at-a-glance) |
 | Recipe improvement (pre-registered) | widening LoRA to q · k · v · o: CORD dev +0.020 [+0.005, +0.036], unit price 34 → 40/50 (dev only; test not reopened). Unit-price up-weighting and a one-line prompt failed and are reported as such | [section 6](#cord-v2--real-receipt-photos) |
-| Korean-English documents | 30 mixed-language invoices on an untrained layout: fence-stripped M0 0.927 · M1 v1 0.924 · M1-cord 0.932 (no difference). The weak spot is misread Hangul syllables in item names | [section 6](#korean-english-mixed-layout-t07-dev-only-stress-amendment-6) |
+| Korean-English documents | 30 mixed-language invoices on an untrained layout: fence-stripped M0 0.927 · M1 v1 0.924 · M1-cord 0.932 (no difference). The Hangul misreads were traced to resolution: without downscaling M1 v1 goes 0.924 → 0.969, item names +0.18 | [section 6](#korean-english-mixed-layout-t07-dev-only-stress-amendment-6) |
 | Review screen | upload → extract → edit → reasons for warnings → approve → export (approved versions only), flow checked in a browser | [section 8](#8-review-api) |
-| Evaluation integrity | single-test-run guard, frozen hashes and a field-level regression gate checked in CI, experiment criteria pushed before the runs, PYTEST_COUNT pytest tests | [section 6](#6-results) |
+| Evaluation integrity | single-test-run guard, frozen hashes and a field-level regression gate checked in CI, experiment criteria pushed before the runs, 228 pytest tests | [section 6](#6-results) |
 | Cost | two RunPod runs, billed $2.16 ([`billing.json`](reports/runpod2/billing.json)); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
-| Limits | the only real photos are receipts; test unit price fell 0.82 → 0.72 after fine-tuning (on dev the q · k · v · o variant recovers 0.80, not confirmed on test); the test verdict rests on one seed, while on dev all three seeds beat M0 by +0.044 to +0.060; Hangul misreads remain | [section 11](#11-cost-and-limitations) |
+| Limits | the only real photos are receipts; test unit price fell 0.82 → 0.72 after fine-tuning (on dev the q · k · v · o variant recovers 0.80, not confirmed on test); the test verdict rests on one seed, while on dev all three seeds beat M0 by +0.044 to +0.060; at the frozen resolution Hangul misreads remain | [section 11](#11-cost-and-limitations) |
 
 ![Admin dashboard — overview](docs/images/dashboard-overview.png)
 
@@ -626,6 +626,20 @@ Thirty Korean + English invoices on a layout never trained on ([`t07.py`](src/in
 - **Ambiguous quantities were kept here.** Of 3 lines such as "25 pcs (5 ctn)", M0 2, M1 v1 2 and M1-cord 3 copied the text and raised the warning — unlike 0/2 on the synthetic FINAL layouts (T05/T06), so that failure depends on the layout.
 - Documents whose reconciliation codes differ mostly have one misread part number (UNKNOWN_SKU and PO_LINE_NOT_FOUND appear together).
 
+**The cause of the Hangul misreads is resolution (amendment 7, criteria fixed and pushed before the run).** The frozen `max_pixels` 786,432 shrinks a 1240×1754 page to about 0.6×, so 20 px text becomes about 12 px. The same 30 pages were run again at 2,200,000 (no downscaling).
+
+| arm | max_pixels | fence-stripped overall | item name (KO + EN) | number fields* | reconciliation = oracle | s/doc |
+|---|---:|---:|---:|---:|---:|---:|
+| M0 | 786,432 | 0.927 | 0.641 | 0.94–0.97 | 18/30 | 18.4 |
+| M0 | **2,200,000** | **0.974** (+0.046 [+0.031, +0.063]) | **0.812** | 1.000 | **29/30** | 16.8 |
+| M1 v1 | 786,432 | 0.924 | 0.607 | 0.93–1.00 | 19/30 | 14.2 |
+| M1 v1 | **2,200,000** | **0.969** (+0.045 [+0.030, +0.063]) | **0.786** | 1.000 | **29/30** | 15.0 |
+
+<sub>* part number, unit price, line amount, total. The rule (M0 item name +0.15 or more, number fields within 0.02) is met: "resolution is the cause".</sub>
+- Raising only the resolution lifted Korean item names by +0.17–0.18, made every number field 1.000 and the reconciliation right on 29/30. Time per document is about the same (generation dominates).
+- M1 v1 was trained at 786,432 and still improved at the higher resolution.
+- The frozen FINAL and CORD results are unchanged. Raising the resolution at the next freeze is recommended; the effect on CORD receipts was not checked. The remaining item-name errors (about 0.2) are next.
+
 ---
 
 ## 7. Serving
@@ -758,7 +772,7 @@ A local, read-only dashboard (the UI is in Korean).
   - The degradation stress set is dev-only.
 - M0's low strict score is largely a format effect (code fences). A pre-freeze prompt A/B did not remove it, and a fence-stripping step is not part of the frozen contract.
 - Ambiguous quantities failed 0/2 on the synthetic FINAL (T05/T06) and were kept on 2–3 of 3 on Korean-English T07; it depends on the layout and was not fixed.
-- Item names on Korean-English documents are about 0.6 (similar-looking Hangul syllables misread, the same for all three arms).
+- Item names on Korean-English documents are about 0.6 at the frozen resolution (similar-looking Hangul syllables misread). The cause was confirmed to be resolution (0.79–0.81 without downscaling); the frozen results were not changed.
 - The recipe improvement (q · k · v · o) is a CORD dev result with one seed and was not confirmed on test.
 - Serving
   - vLLM was measured only on RunPod. Run 1's accuracy drop was traced (adapter/base precision mismatch) and recovered in run 2 by merging into the dequantised weights; merged files differ slightly between GPUs, so they must be built once and moved by hash.

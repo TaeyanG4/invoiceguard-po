@@ -1,6 +1,6 @@
 {
   "scope": "static_claude_code_package_migration_only",
-  "checked_at_utc": "2026-11-15T02:43:15.155308+00:00",
+  "checked_at_utc": "2026-11-15T04:42:26.696608+00:00",
   "status": "pass",
   "checks": [
     {
@@ -514,6 +514,16 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordqkvo_nf4__vs__cord_dev_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/compare_cord_dev_m1cordr16_nf4__vs__cord_dev_m1cord_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/eval/compare_cord_dev_m1cordup_nf4__vs__cord_dev_m0_nf4.json",
       "status": "pass",
       "detail": ""
@@ -620,6 +630,16 @@
     },
     {
       "check": "utf8:reports/eval/cord_dev_m1cordprompt_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1cordqkvo_nf4.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/cord_dev_m1cordr16_nf4.json",
       "status": "pass",
       "detail": ""
     },
@@ -809,6 +829,16 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/model/train_m1_cord_qkvo.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/model/train_m1_cord_r16.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/model/train_m1_cord_s20261114.json",
       "status": "pass",
       "detail": ""
@@ -955,6 +985,11 @@
     },
     {
       "check": "utf8:reports/reviews/briefs/review-5-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/review-6-brief.md",
       "status": "pass",
       "detail": ""
     },
@@ -1139,12 +1174,22 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/serving/hf_multi_lora_cord_retry.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/serving/hf_multi_lora_cord_sustained.json",
       "status": "pass",
       "detail": ""
     },
     {
       "check": "utf8:reports/serving/hf_multi_lora_trade.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/serving/hf_multi_lora_trade_retry.json",
       "status": "pass",
       "detail": ""
     },
@@ -2225,6 +2270,11 @@
     },
     {
       "check": "active_refs:reports/reviews/briefs/review-5-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/review-6-brief.md",
       "status": "pass",
       "detail": ""
     },
