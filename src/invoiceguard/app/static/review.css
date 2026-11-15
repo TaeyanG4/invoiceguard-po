@@ -45,7 +45,7 @@ details button { margin-top: 10px; }
 .empty { color: var(--muted); padding: 40px; text-align: center; }
 .casehead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
 .casehead .id { color: var(--muted); font-size: 12px; font-family: Consolas, monospace; }
-.split { display: grid; grid-template-columns: minmax(280px, 42%) 1fr; gap: 12px; align-items: start; }
+.split { display: grid; grid-template-columns: minmax(280px, 40%) 1fr; gap: 12px; align-items: start; }
 .imgbox { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px; position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow: auto; }
 .imgbox img { width: 100%; height: auto; display: block; }
 .docfields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 10px; }
@@ -57,6 +57,9 @@ th, td { border-bottom: 1px solid var(--line); padding: 4px; text-align: left; v
 th { color: var(--ink2); font-weight: 600; font-size: 12px; white-space: nowrap; }
 td input { width: 100%; padding: 3px 5px; }
 td.num input { text-align: right; }
+td.desc { min-width: 220px; width: 34%; }
+td.sku { min-width: 90px; }
+td.num { min-width: 70px; }
 input.changed { background: var(--edit); }
 tr.flag-blocker td:first-child { box-shadow: inset 3px 0 0 var(--bad); }
 tr.flag-warning td:first-child { box-shadow: inset 3px 0 0 var(--warn); }

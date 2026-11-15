@@ -552,6 +552,7 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 - **The adapter trained only on synthetic invoices (M1 v1) does not transfer to receipts:** −0.474 [−0.543, −0.400] against M0 on test; 25 of 100 outputs are not readable JSON and total accuracy is 0.12. Outside the format it learned, fine-tuning can hurt.
 - dev and test point the same way (dev +0.0497 → test +0.065).
 - **A drop hidden by the average:** the overall criterion showed no regression (−0.003), but the field-level regression gate ([`regression_gate.py`](src/invoiceguard/regression_gate.py), run in CI) shows own-dev invoice numbers fell 0.958 → 0.833 (3 of 24) after adding CORD. As a result that was already final, it is recorded as a known drop with its reason ([`regression_gate.json`](configs/regression_gate.json)); on the four comparison pairs registered there, any other field that drops by more than 0.05 and loses 3 or more fields fails CI. Each accepted drop is pinned to the exact counts it was granted for, so a further fall in that field fails CI, as does a field or set missing from a report.
+- **Cause of the drop** ([`invoice_number_drop_dev.md`](reports/eval/invoice_number_drop_dev.md)): all 3 lost numbers have the `YYYY/NNNNN` format such as `2026/58536` (2 of 5 such numbers kept; none of the 19 other formats lost). M1-cord dropped the key (2) or the leading year (1). The 800 CORD training targets never contain such slash numbers, so it apparently learned not to output date-like header numbers (a hypothesis, not tested by another training run). Remedy: choose the adapter per document type — M1 v1 for invoices, M1-cord for receipts. Serving both on one server and picking per request is measured in section 7.
 
 **Seed repeats (amendment 2, CORD dev only, criteria fixed before training)** — the same recipe trained twice more with only the seed changed.
 
@@ -653,7 +654,13 @@ reject is allowed from every state except `extracting`, and re-extraction from e
   After a restart, cases left in `extracting` become `failed/INTERRUPTED`.
 - **Row-level review:** besides editing values, a reviewer can add a row the model missed (`add_row`) and delete a row it invented (`delete_row`); rows are renumbered and findings recomputed.
 - **One key per finding:** every finding carries the `key` that `/approve` expects, and each missing PO line gets its own key, so each needs its own reason.
-- There is **no review UI yet** — only the API, 13 tests and the LIVE demo record.
+**Review screen** ([`app/static/`](src/invoiceguard/app/static), Korean UI) — `python -m invoiceguard.app.server`, then http://127.0.0.1:8000/
+- One same-origin HTML + JS page (CSP self-only, no external requests) that only calls the API above, so the version, blocker, reason and snapshot rules apply unchanged.
+- It can: load a sample (synthetic own-dev invoice + PO) or upload one → extract → edit values and rows next to the image (add/delete rows) → give a reason for each finding → approve → export JSON/CSV.
+- Flow checked in the browser (replay mode): sample → extract → 2 arithmetic warnings → reasons → approve → export. Correcting row 3's amount and saving created version 2, cleared both warnings and revoked the approval, so export returned 409 until it was approved again.
+- Tests: 15 API tests including the screen, the static-file whitelist, the CSP, the case list and the sample loader ([`test_app.py`](tests/test_app.py)).
+
+![Review screen — a synthetic invoice with a quantity-difference warning](docs/images/review-screen.png)
 
 ---
 
@@ -720,7 +727,7 @@ A local, read-only dashboard (the UI is in Korean).
 - Even at the same precision, outputs can diverge on about one document per GPU (last-bit rounding → one greedy token), so comparisons were kept within one GPU ([section 12](#12-cloud-reproduction-on-runpod)).
 - The RunPod reproduction is one seed and one run; its dev parity covers 8 documents. An automatic stop inside the Pod could not be set (permission), so the run was watched until the Pod was deleted.
 - FSDP / DeepSpeed were not used: they are unnecessary for a 2B model on a single GPU ([`docs/19_DECISIONS_V5.md`](docs/19_DECISIONS_V5.md)).
-- The review **UI is not implemented** (only the review API and the read-only admin dashboard exist).
+- The review screen is a minimal local single-user page (no login, roles or concurrent reviewers).
 
 **How the work was done**
 - Direction and stage reviews by Fable, implementation by Opus (Claude Code).

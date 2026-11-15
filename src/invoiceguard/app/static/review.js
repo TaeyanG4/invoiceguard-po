@@ -4,7 +4,7 @@
 
 const DOC_FIELDS = [["invoice_number_raw", "인보이스 번호"], ["currency_raw", "통화"], ["subtotal_raw", "소계"],
   ["tax_raw", "세금"], ["discount_raw", "할인"], ["total_raw", "합계"]];
-const ROW_FIELDS = [["sku_raw", "품번", ""], ["description_raw", "품명", ""], ["quantity_raw", "수량", "num"],
+const ROW_FIELDS = [["sku_raw", "품번", "sku"], ["description_raw", "품명", "desc"], ["quantity_raw", "수량", "num"],
   ["unit_raw", "단위", ""], ["unit_price_raw", "단가", "num"], ["line_total_raw", "금액", "num"]];
 const STATES = { uploaded: ["업로드됨", ""], extracting: ["추출 중", "warn"], needs_review: ["검토 필요", "warn"],
   matched_candidate: ["일치 후보", "ok"], approved: ["승인됨", "ok"], rejected: ["반려", "bad"], failed: ["실패", "bad"] };
@@ -94,6 +94,7 @@ async function loadCases() {
 
 async function openCase(id) {
   selected = id;
+  history.replaceState(null, "", "#case=" + id);
   current = await api("GET", "/api/cases/" + id);
   render();
   loadCases().catch(() => {});
@@ -243,4 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
     await openCase(r.case_id); toast("케이스를 만들었습니다. 추출을 실행하세요.");
   }));
   loadHealth(); loadSamples().catch(() => {}); loadCases().catch((err) => toast(err.message, true));
+  const deep = /^#case=([0-9a-f-]{36})$/.exec(location.hash);  // shareable link to one case on this machine
+  if (deep) openCase(deep[1]).catch((err) => toast(err.message, true));
 });
