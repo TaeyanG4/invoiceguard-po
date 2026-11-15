@@ -82,3 +82,23 @@ dev에서 학습 설정을 정한 뒤, test를 돌리기 전에 `configs/frozen_
 - 실행 스크립트: `scripts/realdocs/run_cord_up.sh` (seed 반복이 끝난 뒤 같은 GPU에서).
 - **실행 방식 변경 (2026-11-15 03:13, 커밋 4200c31, 결과 전):** 수정 2·3의 학습·평가는 `scripts/realdocs/gpu_free_runner.py cord_r5_r6`로 돌린다. 다른 프로그램이 GPU를 쓰지 않을 때만 작업을 시작하고, 도중에 GPU 경합이 생기면 그 작업을 멈췄다가 처음부터 다시 돌린다(학습은 0 step부터, 평가는 남은 문서부터). 학습 프로세스에는 `PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.6,max_split_size_mb:256`을 준다(메모리 재사용 방식만 바뀌고 계산은 같다). 이전 두 번의 시도는 GPU 메모리가 넘쳐 중단했다(handoff.md).
 - **메모리 상한 추가 (2026-11-15 06:08, 결과 전):** 위 설정으로도 학습 프로세스의 메모리 풀이 16 GB 가까이(실제 사용 약 7 GB) 커져, 데스크톱 프로그램이 조금만 GPU를 써도 공유 메모리로 밀려났다(step당 수십~수백 초). 그래서 학습에 `torch.cuda.set_per_process_memory_fraction(0.75)`(12 GB)를 준다(`INVOICEGUARD_CUDA_MEM_FRACTION`, 학습 보고서 env에 기록). 메모리 풀의 크기만 바뀌고 계산은 같다.
+
+## 수정 4 — 단가 프롬프트 한 줄 (2026-11-15 09:50, 실행 전, exploratory, 추론만)
+- **근거 (dev만 봄, 수정 3과 같음):** M1-cord가 CORD dev에서 인쇄된 단가 50칸 중 10칸을 비웠고, 그중 "단가와 금액이 같은 숫자로 두 번 인쇄"가 5칸, "@ 단가를 금액 칸에 넣음"이 2칸이다(`reports/eval/cord_failure_dev.md`). 수정 3(학습 가중)은 효과가 없었다.
+- **변경 하나:** 학습은 하지 않고, CORD 프롬프트 끝에 한 줄만 더한 `prompts/EXTRACT_CORD_RAW_UNITPRICE.txt`(sha256 03e6753d…)로 M1-cord(`m1_cord_v1`)를 CORD dev 100장에 돌린다. run id `cord_dev_m1cordprompt_nf4`. 생성 설정 · NF4 · batch 1은 같다. `infer --prompt-file`은 `cord:dev`에서만 허용되고 실행 지문에 프롬프트 해시를 남긴다.
+- **판정 (사전 고정):** "개선"은 세 조건을 모두 만족할 때만 쓴다. (1) dev 품목 단가 정확도 0.68 → 0.74 이상(+3칸), (2) 정답에 단가가 없는 칸을 채운 수(지어냄)가 M1-cord의 20칸보다 5칸 넘게 늘지 않음, (3) dev 전체 strict 정확도가 0.762보다 0.01 넘게 떨어지지 않음. 아니면 "효과 없음" 또는 "부작용"으로 그대로 보고한다. test는 돌리지 않는다.
+
+## 수정 5 — LoRA 구성 ablation (2026-11-15 09:50, 학습 전, exploratory)
+- **목적:** 레시피(r 8 / α 16, q_proj · v_proj)가 임의 선택인지 확인한다. 하나씩만 바꾼 두 run을 같은 데이터(`all_plus_cord`, 1,102건) · 240 step · seed 20261113 · lr 1e-4 · NF4 · 메모리 상한 0.75로 학습한다.
+  - A1 `m1_cord_qkvo`: 대상만 q · k · v · o_proj로 넓힘(r 8 / α 16).
+  - A2 `m1_cord_r16`: rank만 16(α 32, α/r = 2 유지), 대상은 q · v.
+- **평가:** CORD dev 100장만(`cord_dev_m1cordqkvo_nf4`, `cord_dev_m1cordr16_nf4`), M1-cord와 paired bootstrap(2,000회, seed 20261113). test는 돌리지 않는다.
+- **판정 (사전 고정):** seed 3개의 dev strict는 0.756 · 0.762 · 0.772였다(수정 2). 변형이 "낫다"는 dev strict가 0.772를 넘고 M1-cord 대비 paired CI가 0을 넘을 때만, "나쁘다"는 0.756 미만이고 CI가 0 아래일 때만 쓴다. 그 사이는 "seed 차이 안에서 구분되지 않음"으로 쓴다. 필드별 변화(단가 · 하위 품목)는 함께 보고한다.
+
+## 수정 6 — 한영 혼합 레이아웃 T07 stress set (2026-11-15 09:50, 추론 전, dev 전용)
+- **데이터:** 같은 PO-first 생성기로 30개 family를 새로 만들고 새 레이아웃 T07로 그린다(`src/invoiceguard/synth/t07.py`, `manifests/trade_raw_t07.jsonl` sha256 3861a8a6…). 바뀌는 것: 한국어+영어 라벨(거래명세서 / INVOICE, 품번 Part No., 단가 Unit Price, 합계 Total 등), 품명을 한국어+영어로 인쇄("열전대 K형 (Thermocouple type K)"), 한국어 회사명 줄, 맑은 고딕(시스템 글꼴, 저장소에 넣지 않음, 해시 기록). 시나리오: normal 12 · 단가 변경 4 · 수량 변경 4 · 미등록 품번 3 · 모호 수량 3 · PO 행 누락 2 · 중복 품번 2. 기존 family · 이미지 · 정답과 겹치지 않음을 확인했다.
+- **역할:** 학습에 쓰지 않고, 설정을 고르는 데도 쓰지 않는 dev 전용 stress set이다. 결과는 "학습에 없던 한영 혼합 레이아웃에서의 동작"으로만 보고한다.
+- **실행:** M0 · M1 v1(`m1_standard_v1`) · M1-cord(`m1_cord_v1`) 세 arm을 같은 TRADE_RAW 프롬프트 · NF4 · batch 1로 돌린다(`t07_m0_nf4`, `t07_m1v1_nf4`, `t07_m1cord_nf4`). 채점은 `scripts/eval/t07_stress.py`(같은 strict 채점기 `score_trade_document`, 문서 단위 paired bootstrap 2,000회).
+- **보고 (사전 고정):** 필드별 strict 정확도와 전체, M1 v1 − M0 · M1-cord − M0의 paired 95% CI, 품명(한국어가 섞인 필드)은 따로, 대사 결과 코드가 기대 코드와 같은 문서 비율. "M1이 한영 혼합에서도 낫다"는 M1 v1 − M0 CI가 0을 넘을 때만 쓴다.
+
+실행 순서: `scripts/realdocs/gpu_free_runner.py review6`(PC가 비었을 때만, 수정 4 → 6 → 5 순서).

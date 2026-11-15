@@ -1,6 +1,6 @@
 {
   "scope": "static_claude_code_package_migration_only",
-  "checked_at_utc": "2026-11-15T00:07:49.198735+00:00",
+  "checked_at_utc": "2026-11-15T00:50:32.862261+00:00",
   "status": "pass",
   "checks": [
     {
@@ -149,6 +149,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:configs/frozen_cord_v1_amendments.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:configs/frozen_cord_v1_deps.json",
       "status": "pass",
       "detail": ""
@@ -170,6 +175,11 @@
     },
     {
       "check": "utf8:configs/regression_gate.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:configs/frozen_sources/cord_eval_92892c5.py.txt",
       "status": "pass",
       "detail": ""
     },
@@ -319,6 +329,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:manifests/trade_raw_t07.summary.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:manifests/trade_raw_v1.summary.json",
       "status": "pass",
       "detail": ""
@@ -345,6 +360,11 @@
     },
     {
       "check": "utf8:prompts/EXTRACT_CORD_RAW.txt",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:prompts/EXTRACT_CORD_RAW_UNITPRICE.txt",
       "status": "pass",
       "detail": ""
     },
@@ -695,6 +715,16 @@
     },
     {
       "check": "utf8:reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/invoice_number_drop_dev.json",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/eval/invoice_number_drop_dev.md",
       "status": "pass",
       "detail": ""
     },
@@ -1179,6 +1209,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:scripts/eval/invoice_number_drop.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:scripts/quant/compare_precision.py",
       "status": "pass",
       "detail": ""
@@ -1469,6 +1504,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:src/invoiceguard/synth/t07.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:src/invoiceguard/synth/__init__.py",
       "status": "pass",
       "detail": ""
@@ -1620,6 +1660,11 @@
     },
     {
       "check": "utf8:tests/test_synth.py",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:tests/test_t07.py",
       "status": "pass",
       "detail": ""
     },
@@ -2025,6 +2070,11 @@
     },
     {
       "check": "active_refs:reports/eval/final_summary.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/eval/invoice_number_drop_dev.md",
       "status": "pass",
       "detail": ""
     },

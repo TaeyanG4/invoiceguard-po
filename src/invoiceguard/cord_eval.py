@@ -8,7 +8,8 @@ Everything is reported for all documents and for the content-unseen subset (gold
 Amendment 1 (docs/20): field scores use the fence-stripped parse (exactly one ```json fence removed, nothing else
 repaired), because M0 fences every answer; strict JSON (no fence) is reported separately as the format metric.
 
-Usage (.venv-ml):
+Usage (.venv-ml): the CLI runs through the guarded entry point invoiceguard.cord_score (freeze checks, write-once
+test reports); the scoring code in this file is unchanged since the freeze (configs/frozen_cord_v1_amendments.json).
   python -I -m invoiceguard.cord_eval score artifacts/predictions/<run_id>
   python -I -m invoiceguard.cord_eval compare <run_a> <run_b>       # paired bootstrap A - B on identical documents
 """
@@ -237,29 +238,11 @@ def compare(run_a: str, run_b: str) -> dict:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    sub = ap.add_subparsers(dest="cmd", required=True)
-    s = sub.add_parser("score"); s.add_argument("run_dir")
-    c = sub.add_parser("compare"); c.add_argument("run_a"); c.add_argument("run_b")
-    args = ap.parse_args()
-    (REPO / "reports" / "eval").mkdir(parents=True, exist_ok=True)
-    if args.cmd == "score":
-        run = Path(args.run_dir).name
-        out = score(run)
-        path = REPO / "reports" / "eval" / f"{run}.json"
-        summary = {spec: {"field_acc": v["all"]["strict_field_accuracy"]["accuracy"],
-                          "format_insensitive_acc": v["all"]["format_insensitive_accuracy"]["accuracy"],
-                          "order_free_f1": v["all"]["order_free_f1"]["f1"], "json_ok_after_fence_strip": v["all"]["json_valid_rate"],
-                          "strict_json_rate": v["strict_json_no_repair_all"]["json_valid_rate"],
-                          "unseen_field_acc": v["content_unseen"]["strict_field_accuracy"]["accuracy"]}
-                   for spec, v in out["sets"].items()}
-    else:
-        out = compare(args.run_a, args.run_b)
-        path = REPO / "reports" / "eval" / f"compare_{args.run_a}__vs__{args.run_b}.json"
-        summary = out["sets"]
-    path.write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
-    print(json.dumps(summary, ensure_ascii=False, indent=1))
-    return 0
+    """Same commands as before the freeze, but every write goes through cord_score: a cord:test run must match the freeze
+    and its report is written once (astra reviews 3-5 found the old direct CLI could overwrite a scored test report)."""
+    from .cord_score import main as guarded_main
+
+    return guarded_main()
 
 
 if __name__ == "__main__":

@@ -171,7 +171,28 @@ def plan_cord_r5_r6() -> list[tuple[str, str, str, list[str]]]:
     return units
 
 
-PLANS = {"cord_r5_r6": plan_cord_r5_r6}
+def plan_review6() -> list[tuple[str, str, str, list[str]]]:
+    """docs/20 amendments 4 (unit-price prompt line, CORD dev), 6 (T07 Korean-English stress set, three arms) and
+    5 (LoRA ablation: q/k/v/o targets, rank 16 — each trained, then CORD dev). Pre-registered before any of them ran."""
+    infer = [PY_ML, "-m", "invoiceguard.vlm.infer", "--batch-size", "1"]
+    units = [("dev_cord_prompt", "infer", "cord_dev_m1cordprompt_nf4",
+              infer + ["--arm", "m1", "--adapter", "artifacts/adapters/m1_cord_v1", "--set", "cord:dev",
+                       "--prompt-file", "prompts/EXTRACT_CORD_RAW_UNITPRICE.txt", "--run-id", "cord_dev_m1cordprompt_nf4"])]
+    for run, arm, adapter in (("t07_m0_nf4", "m0", None), ("t07_m1v1_nf4", "m1", "artifacts/adapters/m1_standard_v1"),
+                              ("t07_m1cord_nf4", "m1", "artifacts/adapters/m1_cord_v1")):
+        units.append((run, "infer", run, infer + ["--arm", arm, *(["--adapter", adapter] if adapter else []),
+                                                  "--set", "trade:t07", "--run-id", run]))
+    for run, extra, pred in (("m1_cord_qkvo", ["--lora-targets", "qkvo"], "cord_dev_m1cordqkvo_nf4"),
+                             ("m1_cord_r16", ["--lora-r", "16"], "cord_dev_m1cordr16_nf4")):
+        units.append((f"train_{run}", "train", run, [PY_ML, "-m", "invoiceguard.vlm.train", "--profile", "standard",
+                                                       "--data", "all_plus_cord", "--max-steps", "240", "--seed", "20261113",
+                                                       "--run-id", run, *extra]))
+        units.append((f"dev_{run}", "infer", pred, infer + ["--arm", "m1", "--adapter", f"artifacts/adapters/{run}",
+                                                             "--set", "cord:dev", "--run-id", pred]))
+    return units
+
+
+PLANS = {"cord_r5_r6": plan_cord_r5_r6, "review6": plan_review6}
 
 
 def main() -> int:

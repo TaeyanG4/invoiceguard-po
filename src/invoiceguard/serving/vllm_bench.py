@@ -126,6 +126,27 @@ def _fields(record_id: str, raw: str, finish_reason: str | None) -> tuple[int, i
     return sum(c for c, _ in s["fields"].values()), sum(n for _, n in s["fields"].values())
 
 
+def _server_identity() -> dict:
+    """What the server says it is serving (HF server /health: base revision and adapter SHA-256; vLLM: model names), so a
+    serving report is tied to a specific adapter, not only to a label (Fable review 5)."""
+    out = {}
+    for route in ("health", "v1/models"):
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{TARGET['port']}/{route}", timeout=10) as resp:
+                body = resp.read().decode("utf-8")
+            out[route] = json.loads(body) if body.strip() else {}
+        except (OSError, ValueError) as exc:
+            out[route] = {"error": type(exc).__name__}
+    return out
+
+
+def _offline_adapter(run: str) -> str | None:
+    meta = REPO / "artifacts" / "predictions" / run / "run_metadata.json"
+    if not meta.exists():
+        return None
+    return (json.loads(meta.read_text(encoding="utf-8")).get("fingerprint") or {}).get("adapter_sha256")
+
+
 def _bench_docs(n_docs: int) -> list:
     from ..vlm.records import cord_records, trade_records
 
@@ -204,8 +225,13 @@ def run(label: str, n_docs: int, warmups: int, reps: int) -> Path:
             hf[arm] = {json.loads(l)["id"]: json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()}
     result = {"label": label, "task": TARGET.get("task", "trade"), "server_port": TARGET["port"], "docs": [d.record_id for d in docs],
               "max_tokens": MAX_TOKENS, "warmups": warmups, "repetitions": reps,
-              "offline_runs": {arm: _offline_run(arm) for arm in ("m0", "m1")}, "arms": {}}
-    for arm, model in (("m0", "base"), ("m1", "m1")):
+              "offline_runs": {arm: _offline_run(arm) for arm in ("m0", "m1")}, "server": _server_identity(), "arms": {}}
+    health = result["server"].get("health") or {}
+    served = (health.get("adapters") or {}).get(TARGET.get("m1_model", "m1")) or health.get("adapter_sha256")
+    offline_m1 = _offline_adapter(_offline_run("m1"))
+    result["adapter"] = {"m1_served_as": TARGET.get("m1_model", "m1"), "served_sha256": served, "offline_m1_sha256": offline_m1,
+                         "same_adapter_as_offline_m1": bool(served) and served == offline_m1}
+    for arm, model in (("m0", "base"), ("m1", TARGET.get("m1_model", "m1"))):
         if arm not in TARGET["arms"]:
             continue
         for d in docs[:warmups]:
@@ -258,6 +284,8 @@ def main() -> int:
     parser.add_argument("--arms", default="m0,m1", help="which served models to measure: m0 = served name base, m1 = served name m1")
     parser.add_argument("--task", choices=["trade", "cord"], default="trade",
                         help="documents and scorer: own TRADE_RAW dev (default) or CORD v2 dev receipts (CORD_RAW)")
+    parser.add_argument("--m1-model", default="m1",
+                        help="served model name for the m1 arm (a multi-LoRA server may serve M1-cord as e.g. 'cord')")
     parser.add_argument("--offline-m1", help="offline prediction run to compare the served m1 with (CORD: default cord_dev_m1cord_nf4)")
     parser.add_argument("--duration", type=float, default=None,
                         help="sustained load: keep each concurrency level busy for this many seconds instead of reps × docs")
@@ -268,6 +296,7 @@ def main() -> int:
     TARGET["arms"] = tuple(args.arms.split(","))
     TARGET["duration_s"] = args.duration
     TARGET["task"] = args.task
+    TARGET["m1_model"] = args.m1_model
     TARGET["offline"] = {"m1": args.offline_m1} if args.offline_m1 else {}
     if args.command == "up":
         up(args.quant, args.allow_precision_mismatch)

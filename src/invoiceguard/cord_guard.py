@@ -2,7 +2,8 @@
 
 What they enforce before any cord:test generation (astra / Fable review 2 found the old guard too weak):
 * the frozen generation settings, CORD prompt, manifest AND evaluator files (cord_eval.py, cord.py, model_output.py)
-  still hash to the values in configs/frozen_cord_v1.json;
+  still hash to the values in configs/frozen_cord_v1.json (cord_eval.py: or a documented CLI-only amendment whose
+  scoring code is AST-identical to the kept frozen bytes, configs/frozen_cord_v1_amendments.json);
 * the arm and adapter are one of the frozen arms;
 * that arm has not run cord:test before — checked against the run metadata of every prediction folder AND against the
   committed scoring reports (reports/eval/cord_*.json), so deleting or renaming a prediction folder does not reopen it;
@@ -11,6 +12,7 @@ What they enforce before any cord:test generation (astra / Fable review 2 found 
 """
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
 from pathlib import Path
@@ -28,11 +30,34 @@ def _same_arm(fp: dict, other: dict) -> bool:
     return other.get("arm") == fp.get("arm") and other.get("adapter_sha256") == fp.get("adapter_sha256")
 
 
+def _scoring_nodes(source: str) -> list[str]:
+    """Top-level statements that decide scores: everything except the module docstring and the CLI main()."""
+    body = ast.parse(source).body
+    if body and isinstance(body[0], ast.Expr) and isinstance(getattr(body[0], "value", None), ast.Constant):
+        body = body[1:]
+    return [ast.dump(n) for n in body if not (isinstance(n, ast.FunctionDef) and n.name == "main")]
+
+
+def _amended_ok(rel: str, digest: str, repo: Path) -> bool:
+    """A documented CLI-only amendment (configs/frozen_cord_v1_amendments.json): the frozen bytes are kept and still hash
+    to the freeze, the live file hashes to the amended value, and its scoring code is AST-identical to the frozen copy."""
+    path = repo / "configs" / "frozen_cord_v1_amendments.json"
+    if not path.exists():
+        return False
+    entry = json.loads(path.read_text(encoding="utf-8")).get("files", {}).get(rel)
+    if not entry or entry.get("may_differ") != ["module docstring", "main"]:
+        return False
+    frozen_copy, live = repo / entry["frozen_copy"], repo / rel
+    if _sha(frozen_copy) != digest or _sha(live) != entry.get("sha256"):
+        return False
+    return _scoring_nodes(frozen_copy.read_text(encoding="utf-8")) == _scoring_nodes(live.read_text(encoding="utf-8"))
+
+
 def frozen_file_problems(frozen: dict, repo: Path = REPO) -> list[str]:
-    """Evaluator files must be byte-identical to the freeze (they decide the verdict), and so must the files they import
-    (configs/frozen_cord_v1_deps.json: their contents at the freeze commit — astra review 4)."""
+    """Evaluator files must be byte-identical to the freeze (they decide the verdict) or carry a documented CLI-only
+    amendment, and the files they import must be byte-identical too (configs/frozen_cord_v1_deps.json — astra review 4)."""
     problems = [f"frozen_mismatch:evaluator:{rel}" for rel, digest in (frozen.get("evaluator_sha256") or {}).items()
-                if _sha(repo / rel) != digest]
+                if _sha(repo / rel) != digest and not _amended_ok(rel, digest, repo)]
     deps = repo / "configs" / "frozen_cord_v1_deps.json"
     if deps.exists():
         problems += [f"frozen_mismatch:dependency:{rel}"

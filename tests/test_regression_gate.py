@@ -27,3 +27,23 @@ def test_rule_needs_both_a_large_drop_and_several_lost_fields():
     assert "a" not in out                         # -0.083 but only 2 fields: one or two documents flipping
     assert out["b"]["fields_lost"] == 3 and out["b"]["accepted"] is None
     assert "c" not in out                         # 4 fields but only -0.04
+
+
+def test_an_acceptance_covers_only_the_counts_it_was_pinned_to():
+    """astra review 5: a name-only acceptance let the same field fall further without failing."""
+    base = _report({"b": (20, 20)})
+    pin = {"s|b": {"reason": "known drop", "base": [20, 20], "new": [17, 20]}}
+    same = rg.check_pair(_report({"b": (17, 20)}), base, ["s"], 0.05, 3, pin)
+    assert same[0]["accepted"] == "known drop" and "problem" not in same[0]
+    worse = rg.check_pair(_report({"b": (15, 20)}), base, ["s"], 0.05, 3, pin)
+    assert worse[0]["accepted"] is None and worse[0]["problem"] == "accepted_counts_changed"
+    name_only = rg.check_pair(_report({"b": (17, 20)}), base, ["s"], 0.05, 3, {"s|b": "known drop"})
+    assert name_only[0]["accepted"] is None
+
+
+def test_a_field_or_set_missing_from_the_new_report_fails():
+    base = _report({"a": (10, 10), "b": (5, 5)})
+    out = rg.check_pair(_report({"a": (10, 10), "b": (0, 0)}), base, ["s"], 0.05, 3)
+    assert [(v["field"], v["problem"]) for v in out] == [("b", "field_missing_in_new")]
+    out = rg.check_pair(_report({"a": (10, 10)}), base, ["s", "other"], 0.05, 3)
+    assert {(v["field"], v["problem"]) for v in out} == {("b", "field_missing_in_new"), ("*", "set_missing")}

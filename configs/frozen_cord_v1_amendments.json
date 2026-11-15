@@ -1,0 +1,12 @@
+{
+ "amended_at": "2026-11-15T09:40+09:00",
+ "contract": "docs/20_DECISIONS_V6.md (CORD freeze record, CLI amendment)",
+ "why": "astra review 4/5: the direct cord_eval CLI wrote reports without the freeze checks. Its main() now delegates to the guarded cord_score entry point. The scoring code is unchanged: every top-level statement except the module docstring and main() is AST-identical to the frozen bytes kept in frozen_copy, which still hash to the value in configs/frozen_cord_v1.json. cord_guard.frozen_file_problems checks all three (frozen copy hash, live hash, AST equality) at runtime.",
+ "files": {
+  "src/invoiceguard/cord_eval.py": {
+   "frozen_copy": "configs/frozen_sources/cord_eval_92892c5.py.txt",
+   "sha256": "3098e6388587aa6633729006939bd3fee6b9364ccf79c08c4486fb79dc1401b1",
+   "may_differ": ["module docstring", "main"]
+  }
+ }
+}

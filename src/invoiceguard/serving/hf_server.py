@@ -3,6 +3,8 @@
   .venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --port 8001
 
 * Models: "m1" (base NF4 + adapter) and "base" (same weights, adapter disabled) — identical loading to the evaluation.
+  --extra-adapter name=path loads more LoRA adapters on the same base (multi-LoRA), e.g. cord=artifacts/adapters/m1_cord_v1:
+  one GPU holds one base model and picks the adapter per request by its "model" name (invoices -> m1, receipts -> cord).
 * One GPU worker thread, bounded queue (MAX_QUEUE waiting) -> 429 when full. Never parallel generate on the GPU.
 * Real cancellation: a StoppingCriteria checks the request deadline (default 120 s) on every decoding step, so a
   timed-out request STOPS generating (finish_reason "timeout", HTTP 504) instead of running on as an orphan.
@@ -40,7 +42,7 @@ class Deadline(StoppingCriteria):
 class Engine(BaseEngine):
     model_revision = MODEL_REVISION
 
-    def __init__(self, adapter: Path | None):
+    def __init__(self, adapter: Path | None, extra: dict[str, Path] | None = None):
         from peft import PeftModel
 
         from ..vlm.model import load_base
@@ -53,7 +55,14 @@ class Engine(BaseEngine):
 
             check_pairing(adapter, "nf4", MODEL_REVISION)  # this server loads the NF4 base (P15)
             self.adapter_sha = hashlib.sha256((adapter / "adapter_model.safetensors").read_bytes()).hexdigest()
-            model = PeftModel.from_pretrained(model, str(adapter))
+            model = PeftModel.from_pretrained(model, str(adapter), adapter_name="m1")
+        self.extra_adapters = {}
+        for name, path in (extra or {}).items():
+            if not adapter or name in ("base", "m1"):
+                raise SystemExit("--extra-adapter needs --adapter first and a name other than base/m1")
+            check_pairing(path, "nf4", MODEL_REVISION)
+            model.load_adapter(str(path), adapter_name=name)
+            self.extra_adapters[name] = hashlib.sha256((path / "adapter_model.safetensors").read_bytes()).hexdigest()
         self.model = model.eval()
         self.has_adapter = adapter is not None
         super().__init__()
@@ -70,6 +79,8 @@ class Engine(BaseEngine):
                 with self.model.disable_adapter():
                     out = self.model.generate(**inputs, **kwargs)
             else:
+                if self.has_adapter:
+                    self.model.set_adapter(job.model)  # one worker thread: switching per request is safe
                 out = self.model.generate(**inputs, **kwargs)
         torch.cuda.synchronize()
         new = out[0, inputs["input_ids"].shape[1]:]
@@ -88,9 +99,12 @@ class Engine(BaseEngine):
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--adapter")
+    parser.add_argument("--extra-adapter", action="append", default=[], metavar="NAME=PATH",
+                        help="serve another LoRA adapter on the same base under this model name (repeatable)")
     parser.add_argument("--port", type=int, default=8001)
     args = parser.parse_args()
-    engine = Engine(REPO / args.adapter if args.adapter else None)
+    extra = {spec.split("=", 1)[0]: REPO / spec.split("=", 1)[1] for spec in args.extra_adapter}
+    engine = Engine(REPO / args.adapter if args.adapter else None, extra)
     uvicorn.run(create_app(engine, MAX_NEW_TOKENS), host="127.0.0.1", port=args.port, log_level="warning")
     return 0
 

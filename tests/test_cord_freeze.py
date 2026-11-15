@@ -144,3 +144,38 @@ def test_scorer_dependencies_are_pinned_to_the_freeze_commit(fake_repo):
     assert cord_guard.frozen_file_problems(frozen, fake_repo) == []
     (fake_repo / "src" / "dep.py").write_bytes(b"x = 2\n")
     assert cord_guard.frozen_file_problems(frozen, fake_repo) == ["frozen_mismatch:dependency:src/dep.py"]
+
+
+def test_cli_only_amendment_keeps_the_scoring_code_identical_to_the_frozen_bytes(fake_repo):
+    """astra review 4/5: the direct cord_eval CLI now runs through cord_score. Only main() and the docstring may differ
+    from the kept frozen copy; any change to scoring code (or an unrecorded hash) is still refused."""
+    amend = json.loads((REPO / "configs" / "frozen_cord_v1_amendments.json").read_text(encoding="utf-8"))
+    entry = amend["files"]["src/invoiceguard/cord_eval.py"]
+    assert hashlib.sha256((REPO / entry["frozen_copy"]).read_bytes()).hexdigest() == FROZEN["evaluator_sha256"]["src/invoiceguard/cord_eval.py"]
+    assert hashlib.sha256((REPO / "src/invoiceguard/cord_eval.py").read_bytes()).hexdigest() == entry["sha256"]
+
+    frozen_src = b'"""frozen doc"""\ndef score(x):\n    return x + 1\n\ndef main():\n    return "unguarded"\n'
+    live_src = b'"""new doc"""\ndef score(x):\n    return x + 1\n\ndef main():\n    return "guarded"\n'
+    (fake_repo / "configs" / "frozen_sources").mkdir()
+    (fake_repo / "configs" / "frozen_sources" / "scorer.txt").write_bytes(frozen_src)
+    frozen = json.loads((fake_repo / "configs" / "frozen_cord_v1.json").read_text(encoding="utf-8"))
+    frozen["evaluator_sha256"] = {"src/scorer.py": hashlib.sha256(frozen_src).hexdigest()}
+
+    def amend_to(src: bytes):
+        (fake_repo / "src" / "scorer.py").write_bytes(src)
+        (fake_repo / "configs" / "frozen_cord_v1_amendments.json").write_text(json.dumps({"files": {"src/scorer.py": {
+            "frozen_copy": "configs/frozen_sources/scorer.txt", "sha256": hashlib.sha256(src).hexdigest(),
+            "may_differ": ["module docstring", "main"]}}}), encoding="utf-8")
+        return cord_guard.frozen_file_problems(frozen, fake_repo)
+
+    assert amend_to(live_src) == []                                                    # CLI and docstring only
+    assert amend_to(live_src.replace(b"x + 1", b"x + 2")) == ["frozen_mismatch:evaluator:src/scorer.py"]  # scoring changed
+    (fake_repo / "src" / "scorer.py").write_bytes(live_src + b"\n# edited later\n")    # hash no longer the recorded one
+    assert cord_guard.frozen_file_problems(frozen, fake_repo) == ["frozen_mismatch:evaluator:src/scorer.py"]
+
+
+def test_the_direct_cord_eval_cli_runs_through_the_guarded_entry(monkeypatch):
+    from invoiceguard import cord_eval, cord_score
+
+    monkeypatch.setattr(cord_score, "main", lambda: 42)
+    assert cord_eval.main() == 42

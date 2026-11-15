@@ -141,3 +141,17 @@ def test_input_validation_and_model_names():
     assert client.post("/v1/chat/completions", json=_body(model="m1")).status_code == 404
     health = client.get("/health").json()
     assert health["busy"] is False and health["queued"] == 0
+
+
+def test_several_adapters_on_one_base_are_chosen_per_request_by_model_name():
+    """Multi-LoRA: invoices -> m1, receipts -> cord on the same base; each answer names the adapter that produced it."""
+    engine = StepEngine(steps=1)
+    engine.extra_adapters = {"cord": "cordsha"}
+    client = TestClient(create_app(engine, max_new_tokens=64))
+    assert [m["id"] for m in client.get("/v1/models").json()["data"]] == ["base", "m1", "cord"]
+    assert client.get("/health").json()["adapters"] == {"m1": "test", "cord": "cordsha"}
+    for model, sha in (("cord", "cordsha"), ("m1", "test"), ("base", None)):
+        r = client.post("/v1/chat/completions", json=_body(model=model))
+        assert r.status_code == 200 and r.json()["adapter_sha256"] == sha
+        assert r.json()["choices"][0]["message"]["content"].startswith(model + ":")
+    assert client.post("/v1/chat/completions", json=_body(model="other")).status_code == 404

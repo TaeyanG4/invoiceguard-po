@@ -1,0 +1,80 @@
+{
+ "set": "trade:dev (24 own synthetic invoices, layout T04)",
+ "runs": {
+  "M1 v1": "m1_dev_v1",
+  "M1-cord": "m1cord_dev_v1"
+ },
+ "field": "invoice_number_raw",
+ "lost": [
+  {
+   "doc_id": "tr_381d80972097",
+   "template": "T04",
+   "gold": "2026/58536",
+   "format": "YYYY/NNNNN",
+   "M1 v1": {
+    "correct": 1,
+    "output": "2026/58536"
+   },
+   "M1-cord": {
+    "correct": 0,
+    "output": "(key absent)"
+   }
+  },
+  {
+   "doc_id": "tr_e082855b966a",
+   "template": "T04",
+   "gold": "2026/60640",
+   "format": "YYYY/NNNNN",
+   "M1 v1": {
+    "correct": 1,
+    "output": "2026/60640"
+   },
+   "M1-cord": {
+    "correct": 0,
+    "output": "(key absent)"
+   }
+  },
+  {
+   "doc_id": "tr_e21f6a02f20d",
+   "template": "T04",
+   "gold": "2025/91153",
+   "format": "YYYY/NNNNN",
+   "M1 v1": {
+    "correct": 1,
+    "output": "2025/91153"
+   },
+   "M1-cord": {
+    "correct": 0,
+    "output": "91153"
+   }
+  }
+ ],
+ "gained": [],
+ "by_format": {
+  "AA-999999": {
+   "documents": 4,
+   "M1 v1 correct": 3,
+   "M1-cord correct": 3
+  },
+  "AAA-9999-99999": {
+   "documents": 8,
+   "M1 v1 correct": 8,
+   "M1-cord correct": 8
+  },
+  "YYYY/NNNNN": {
+   "documents": 5,
+   "M1 v1 correct": 5,
+   "M1-cord correct": 2
+  },
+  "digits (leading zeros)": {
+   "documents": 7,
+   "M1 v1 correct": 7,
+   "M1-cord correct": 7
+  }
+ },
+ "cord_train_targets": {
+  "documents": 800,
+  "containing_NNNN/N_strings": 0,
+  "schema_has_invoice_number": false
+ }
+}

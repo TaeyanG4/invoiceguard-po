@@ -11,6 +11,14 @@ from . import MODEL_DIR
 # LoRA only on the language backbone's attention q/v projections (configs/project.yaml training.*)
 LORA_TARGET_REGEX = r"model\.language_model\.layers\.\d+\.self_attn\.(q_proj|v_proj)"
 LORA = {"r": 8, "lora_alpha": 16, "lora_dropout": 0.05}
+LORA_TARGETS = ("q_proj", "v_proj")
+ABLATION_TARGETS = {"qv": ("q_proj", "v_proj"), "qkvo": ("q_proj", "k_proj", "v_proj", "o_proj")}  # docs/20 amendment 5
+
+
+def lora_target_regex(targets: tuple[str, ...] = LORA_TARGETS) -> str:
+    return r"model\.language_model\.layers\.\d+\.self_attn\.(" + "|".join(targets) + ")"
+
+
 # Vision tower and merger stay un-quantised (bf16) and frozen for BOTH M0 and M1, preserving reading
 # quality; recorded in run metadata so the comparison condition is explicit.
 SKIP_QUANT_MODULES = ["visual", "lm_head"]
@@ -70,9 +78,11 @@ def load_base(model_dir=MODEL_DIR, patch_embed_fp32: bool = True, precision: str
     return model
 
 
-def attach_lora(model, quantized: bool = True):
+def attach_lora(model, quantized: bool = True, r: int | None = None, targets: tuple[str, ...] | None = None):
     """quantized=True: QLoRA on the NF4 base (the frozen recipe). quantized=False (P14): plain LoRA on an
-    unquantised base — same targets/rank, gradient checkpointing on, base frozen, LoRA weights kept in fp32."""
+    unquantised base — same targets/rank, gradient checkpointing on, base frozen, LoRA weights kept in fp32.
+    r / targets (docs/20 amendment 5, exploratory ablation): rank (alpha = 2 r, as the recipe) and attention projections;
+    the defaults are the frozen recipe (r 8, alpha 16, q_proj + v_proj)."""
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
     if quantized:
@@ -83,7 +93,8 @@ def attach_lora(model, quantized: bool = True):
             p.requires_grad_(False)
         model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
         model.enable_input_require_grads()
-    cfg = LoraConfig(target_modules=LORA_TARGET_REGEX, bias="none", task_type="CAUSAL_LM", **LORA)
+    lora = LORA if r is None else {"r": r, "lora_alpha": 2 * r, "lora_dropout": LORA["lora_dropout"]}
+    cfg = LoraConfig(target_modules=lora_target_regex(targets or LORA_TARGETS), bias="none", task_type="CAUSAL_LM", **lora)
     model = get_peft_model(model, cfg)
     if not quantized:
         for p in model.parameters():
@@ -92,9 +103,10 @@ def attach_lora(model, quantized: bool = True):
     return model
 
 
-def trainable_report(model) -> dict:
+def trainable_report(model, targets: tuple[str, ...] = LORA_TARGETS) -> dict:
     names = [n for n, p in model.named_parameters() if p.requires_grad]
-    bad = [n for n in names if "lora_" not in n or "visual" in n or not re.search(r"language_model\.layers\.\d+\.self_attn\.(q_proj|v_proj)", n)]
+    pattern = r"language_model\.layers\.\d+\.self_attn\.(" + "|".join(targets) + ")"
+    bad = [n for n in names if "lora_" not in n or "visual" in n or not re.search(pattern, n)]
     total = sum(p.numel() for p in model.parameters())
     trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     return {"trainable_tensors": len(names), "trainable_params": trainable, "total_params": total,

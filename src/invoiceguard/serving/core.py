@@ -47,6 +47,11 @@ class BaseEngine:
     model_revision: str | None = None
     adapter_sha: str | None = None
     has_adapter: bool = False
+    extra_adapters: dict[str, str] = {}  # served name -> adapter SHA-256, beside "m1" on the same base (multi-LoRA)
+
+    def served(self) -> dict[str, str | None]:
+        """Every model name this engine answers, with the adapter SHA-256 behind it (None = base weights only)."""
+        return {"base": None, **({"m1": self.adapter_sha} if self.has_adapter else {}), **self.extra_adapters}
 
     def __init__(self, max_queue: int = MAX_QUEUE) -> None:
         self.jobs: queue.Queue[Job] = queue.Queue(maxsize=max_queue)
@@ -91,16 +96,16 @@ def create_app(engine: BaseEngine, max_new_tokens: int, default_timeout_s: float
     @app.get("/health")
     def health():
         return {"status": "ok", "model_revision": engine.model_revision, "adapter_sha256": engine.adapter_sha,
-                "busy": engine.busy.is_set(), "queued": engine.jobs.qsize()}
+                "adapters": {k: v for k, v in engine.served().items() if v}, "busy": engine.busy.is_set(), "queued": engine.jobs.qsize()}
 
     @app.get("/v1/models")
     def models():
-        return {"data": [{"id": "base"}] + ([{"id": "m1"}] if engine.has_adapter else [])}
+        return {"data": [{"id": name} for name in engine.served()]}
 
     @app.post("/v1/chat/completions")
     def chat(body: dict = Body(...)):
         model = body.get("model", "m1")
-        if model not in ("base", "m1") or (model == "m1" and not engine.has_adapter):
+        if model not in engine.served():
             return JSONResponse({"error": {"code": "unknown_model"}}, status_code=404)
         try:
             content = body["messages"][-1]["content"]
@@ -125,7 +130,7 @@ def create_app(engine: BaseEngine, max_new_tokens: int, default_timeout_s: float
             return JSONResponse({"error": {"code": "timeout", "message": "generation stopped at deadline"},
                                  "request_id": job.request_id, "gpu_seconds": res["gpu_seconds"]}, status_code=504)
         return {"id": job.request_id, "object": "chat.completion", "model": model,
-                "adapter_sha256": engine.adapter_sha if model == "m1" else None,
+                "adapter_sha256": engine.served()[model],
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": res["text"]}, "finish_reason": res["finish_reason"]}],
                 "usage": {"prompt_tokens": res["prompt_tokens"], "completion_tokens": res["completion_tokens"]},
                 "timing": {"gpu_seconds": res["gpu_seconds"], "wall_seconds": round(time.perf_counter() - start, 3)}}

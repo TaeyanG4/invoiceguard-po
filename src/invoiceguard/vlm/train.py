@@ -76,13 +76,17 @@ def main() -> int:
                         help="P6 ablation: public_only drops the own TRADE_RAW training documents; "
                              "all_plus_cord adds the train-eligible CORD v2 receipts (docs/20); all_plus_cord_up also repeats the "
                              "CORD receipts with a printed unit price once (docs/20 amendment 3, exploratory)")
+    parser.add_argument("--lora-r", type=int, default=None, help="docs/20 amendment 5 ablation: LoRA rank (alpha = 2 r); default = recipe r 8")
+    parser.add_argument("--lora-targets", choices=["qv", "qkvo"], default="qv",
+                        help="docs/20 amendment 5 ablation: attention projections to adapt; default = recipe q_proj + v_proj")
     args = parser.parse_args()
     seed = args.seed
 
     from datasets import Dataset
     from trl import SFTConfig, SFTTrainer
 
-    from .model import attach_lora, load_base, trainable_report
+    from .model import ABLATION_TARGETS, attach_lora, load_base, trainable_report
+    targets = ABLATION_TARGETS[args.lora_targets]
     from .smoke import _env
 
     role_field = f"{args.profile}_role"
@@ -109,9 +113,9 @@ def main() -> int:
     processor = load_processor()
     template = processor.chat_template or ""
     if args.base_precision == "nf4":
-        model = attach_lora(load_base(patch_embed_fp32=False))  # kbit prep upcasts vision to fp32 itself
+        model = attach_lora(load_base(patch_embed_fp32=False), r=args.lora_r, targets=targets)  # kbit prep upcasts vision to fp32 itself
     else:  # bf16 Conv3d is the slow cuDNN path on this stack, so only the patch embed runs in fp32 (as in inference)
-        model = attach_lora(load_base(patch_embed_fp32=True, precision="bf16"), quantized=False)
+        model = attach_lora(load_base(patch_embed_fp32=True, precision="bf16"), quantized=False, r=args.lora_r, targets=targets)
     collator = VerifiedCollator(processor, records)
     cfg = SFTConfig(
         output_dir=str(REPO / "artifacts" / "trainer" / run_id), max_steps=max_steps,
@@ -157,10 +161,11 @@ def main() -> int:
         "optimizer_steps": trainer.state.global_step, "micro_steps_checked": collator.checked,
         "examples_seen": trainer.state.global_step * CONFIG["grad_accum"] * CONFIG["micro_batch"],
         "epochs_equivalent": round(trainer.state.global_step * CONFIG["grad_accum"] / len(records), 3),
-        "config": CONFIG | {"max_steps": max_steps, "seed": seed, "data": args.data, "base_precision": args.base_precision}, "train_seconds": round(seconds, 1),
+        "config": CONFIG | {"max_steps": max_steps, "seed": seed, "data": args.data, "base_precision": args.base_precision,
+                            "lora_r": args.lora_r or 8, "lora_alpha": 2 * (args.lora_r or 8), "lora_targets": list(targets)}, "train_seconds": round(seconds, 1),
         "train_loss": result.training_loss, "loss_log": losses,
         "peak_vram_gb": round(torch.cuda.max_memory_allocated() / 2**30, 3),
-        "trainable": trainable_report(model), "base_model": MODEL_ID, "base_revision": MODEL_REVISION,
+        "trainable": trainable_report(model, targets), "base_model": MODEL_ID, "base_revision": MODEL_REVISION,
         "model_dir": str(MODEL_DIR.relative_to(REPO)).replace("\\", "/"),
         "adapter_dir": str(out_dir.relative_to(REPO)).replace("\\", "/"),
         "adapter_files_sha256": {p.name: _sha(p) for p in out_dir.iterdir() if p.is_file()},

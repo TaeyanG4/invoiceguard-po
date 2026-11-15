@@ -73,3 +73,20 @@ def test_cord_task_scores_served_answers_with_the_cord_scorer_and_compares_with_
     assert vllm_bench._offline_run("m1") == "cord_dev_m1cordup_nf4"
     monkeypatch.setitem(vllm_bench.TARGET, "task", "trade")
     assert vllm_bench._offline_run("m1") == "m1_dev_v1"
+
+
+def test_report_records_what_the_server_says_it_serves(monkeypatch):
+    """Fable review 5: tie a serving report to the adapter hash the server reports, not only to a label."""
+    import io
+    import urllib.request
+
+    bodies = {"health": b'{"status":"ok","adapter_sha256":"abc"}', "v1/models": b""}
+
+    def fake_urlopen(url, timeout=10):
+        route = url.split("/", 3)[3]
+        if route not in bodies:
+            raise OSError("down")
+        return io.BytesIO(bodies[route])
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setitem(vllm_bench.TARGET, "port", 8001)
+    assert vllm_bench._server_identity() == {"health": {"status": "ok", "adapter_sha256": "abc"}, "v1/models": {}}

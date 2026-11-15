@@ -1,0 +1,30 @@
+{
+  "manifest": "manifests/trade_raw_t07.jsonl",
+  "sha256": "3861a8a6a399eb546e7b6cd273d7b2e5f6b3c6608621ed230c28a374e722e169",
+  "documents": 30,
+  "role": "dev-only stress set (docs/20 amendment 6): never trained on, never used to choose settings",
+  "by_scenario": {
+    "normal": 12,
+    "price_change": 4,
+    "quantity_change": 4,
+    "unknown_sku": 3,
+    "ambiguous_quantity": 3,
+    "missing_po_line": 2,
+    "duplicate_sku": 2
+  },
+  "rows_per_doc": {
+    "2": 5,
+    "3": 9,
+    "4": 4,
+    "5": 8,
+    "6": 4
+  },
+  "overlap_with_trade_raw_v1": {
+    "family_id": [],
+    "doc_id": [],
+    "image_sha256": [],
+    "gold_sha256": []
+  },
+  "render_errors": [],
+  "pass": true
+}

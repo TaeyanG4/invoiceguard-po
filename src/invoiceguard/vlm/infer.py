@@ -33,6 +33,8 @@ def resolve_set(spec: str) -> list[Record]:
     kind, name = spec.split(":", 1)
     if kind == "public":
         return public_records("standard_role", name)
+    if kind == "trade" and name == "t07":  # docs/20 amendment 6: Korean-English mixed layout, dev-only stress set
+        return trade_records("standard_role", "stress", manifest="trade_raw_t07.jsonl")
     if kind == "trade":
         return trade_records("standard_role", {"test": "test", "dev": "dev", "train": "train"}[name])
     if kind == "stress":
@@ -74,6 +76,17 @@ def check_frozen(fp: dict) -> list[str]:
 
 
 from ..cord_guard import FROZEN_CORD, check_cord_frozen, check_run_sets  # noqa: E402,F401 - torch-free, CPU-tested
+
+
+class VariantPromptRecord(Record):
+    """A record whose prompt is replaced (docs/20 amendment 4, CORD dev only); everything else is unchanged."""
+
+    def __init__(self, record_id, task, image_path, answer, role, prompt_text: str):
+        super().__init__(record_id, task, image_path, answer, role)
+        self._prompt_text = prompt_text
+
+    def prompt(self) -> str:
+        return self._prompt_text
 
 
 @torch.inference_mode()
@@ -123,6 +136,8 @@ def main() -> int:
     parser.add_argument("--limit", type=int, help="keep only the first N resolved records (parity spot checks)")
     parser.add_argument("--allow-precision-mismatch", action="store_true",
                         help="exploratory only (P3): load an adapter on a base precision it was not trained on; recorded in the run")
+    parser.add_argument("--prompt-file", help="docs/20 amendment 4 (exploratory): replace the CORD_RAW prompt with this file; "
+                                                "cord:dev only, recorded in the run fingerprint")
     parser.add_argument("--precision", default="nf4", choices=["nf4", "int8", "bf16", "fp16", "fp32"],
                         help="base-model precision; anything but nf4 is an exploratory dev comparison and cannot run final sets")
     args = parser.parse_args()
@@ -148,8 +163,15 @@ def main() -> int:
             fp["adapter_pairing_mismatch_allowed"] = pairing["problems"]
     if args.model_dir:
         fp["model_dir"] = args.model_dir
+    prompt_override = None
+    if args.prompt_file:
+        if args.set != ["cord:dev"] or args.ids_file:
+            raise SystemExit("--prompt-file is an exploratory CORD dev variant: use exactly --set cord:dev")
+        raw = (REPO / args.prompt_file).read_bytes()
+        prompt_override = raw.decode("utf-8")
+        fp["prompt_variant"] = {"file": args.prompt_file, "sha256": hashlib.sha256(raw).hexdigest()}
     if any(s.startswith("cord:") for s in args.set):  # docs/20: CORD runs also pin the CORD prompt and manifest
-        fp["cord_prompt_sha256"] = load_prompt("CORD_RAW")[1]
+        fp["cord_prompt_sha256"] = fp["prompt_variant"]["sha256"] if prompt_override else load_prompt("CORD_RAW")[1]
         fp["cord_manifest_sha256"] = hashlib.sha256((REPO / "manifests" / "cord_v2.jsonl").read_bytes()).hexdigest()
     if "cord:test" in args.set:
         problems = check_cord_frozen(fp, args.run_id)
@@ -173,6 +195,8 @@ def main() -> int:
         records += [r for r in pool if r.record_id in wanted]
     if args.limit is not None:
         records = records[: args.limit]
+    if prompt_override is not None:
+        records = [VariantPromptRecord(r.record_id, r.task, r.image_path, r.answer, r.role, prompt_override) for r in records]
     run_id = args.run_id or f"{args.arm}_{time.strftime('%Y%m%d_%H%M%S')}"
     out_dir = REPO / "artifacts" / "predictions" / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
