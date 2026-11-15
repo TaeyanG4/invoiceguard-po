@@ -155,6 +155,78 @@
      ]
     }
    }
+  },
+  {
+   "new": "cord_dev_m1cordqkvo_s20261114_nf4",
+   "base": "cord_dev_m1cord_nf4",
+   "sets": [
+    "cord:dev"
+   ],
+   "why": "docs/20 amendment 8 (a): A1 seed 20261114 must not cost fields beyond seed variance",
+   "accepted": {
+    "cord:dev|sub.count": {
+     "reason": "seed variance in sub-items (32 counts, 49 names): M1-cord's own seed 20261114 shows the same 8 -> 3 and 14 -> 10; reported with the A1 seed table",
+     "base": [
+      8,
+      32
+     ],
+     "new": [
+      3,
+      32
+     ]
+    },
+    "cord:dev|sub.name": {
+     "reason": "seed variance in sub-items (32 counts, 49 names): M1-cord's own seed 20261114 shows the same 8 -> 3 and 14 -> 10; reported with the A1 seed table",
+     "base": [
+      14,
+      49
+     ],
+     "new": [
+      9,
+      49
+     ]
+    }
+   }
+  },
+  {
+   "new": "cord_dev_m1cordqkvo_s20261115_nf4",
+   "base": "cord_dev_m1cord_nf4",
+   "sets": [
+    "cord:dev"
+   ],
+   "why": "docs/20 amendment 8 (a): A1 seed 20261115 must not cost fields beyond seed variance",
+   "accepted": {
+    "cord:dev|sub.count": {
+     "reason": "seed variance in sub-items (32 counts, 49 names): M1-cord's own seed 20261114 shows the same 8 -> 3 and 14 -> 10; reported with the A1 seed table",
+     "base": [
+      8,
+      32
+     ],
+     "new": [
+      3,
+      32
+     ]
+    },
+    "cord:dev|sub.name": {
+     "reason": "seed variance in sub-items (32 counts, 49 names): M1-cord's own seed 20261114 shows the same 8 -> 3 and 14 -> 10; reported with the A1 seed table",
+     "base": [
+      14,
+      49
+     ],
+     "new": [
+      10,
+      49
+     ]
+    }
+   }
+  },
+  {
+   "new": "cord_dev_m1cord_hires_nf4",
+   "base": "cord_dev_m1cord_nf4",
+   "sets": [
+    "cord:dev"
+   ],
+   "why": "docs/20 amendment 8 (b): the higher resolution must not cost fields"
   }
  ],
  "accepted_note": "'accepted' entries were added after the first gate run (2026-11-15) for results that were already final; each names the drop and where it is reported, and is pinned to the exact base/new counts it was granted for (2026-11-15, astra review 5): a further fall, or a field or set missing from a report, fails CI. Any other field over the limit fails CI."
