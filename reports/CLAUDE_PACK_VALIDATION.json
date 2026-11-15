@@ -1,6 +1,6 @@
 {
   "scope": "static_claude_code_package_migration_only",
-  "checked_at_utc": "2026-11-15T06:55:45.883546+00:00",
+  "checked_at_utc": "2026-11-15T07:12:50.205391+00:00",
   "status": "pass",
   "checks": [
     {
@@ -1014,6 +1014,11 @@
       "detail": ""
     },
     {
+      "check": "utf8:reports/reviews/astra-readme.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "utf8:reports/reviews/fable-2.md",
       "status": "pass",
       "detail": ""
@@ -1050,6 +1055,11 @@
     },
     {
       "check": "utf8:reports/reviews/briefs/direction-1-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "utf8:reports/reviews/briefs/readme-check-brief.md",
       "status": "pass",
       "detail": ""
     },
@@ -2334,6 +2344,11 @@
       "detail": ""
     },
     {
+      "check": "active_refs:reports/reviews/astra-readme.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
       "check": "active_refs:reports/reviews/fable-2.md",
       "status": "pass",
       "detail": ""
@@ -2370,6 +2385,11 @@
     },
     {
       "check": "active_refs:reports/reviews/briefs/direction-1-brief.md",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "check": "active_refs:reports/reviews/briefs/readme-check-brief.md",
       "status": "pass",
       "detail": ""
     },

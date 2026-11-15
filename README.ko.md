@@ -23,7 +23,7 @@
 | 다른 GPU에서 학습 재현 | A40 재학습: 평균 loss 차이 0.0002, dev 출력 8/8 동일 | [12장](#12-runpod-클라우드-재현) |
 | 인보이스 추출 + 발주서 대사 | 미학습 레이아웃 test: M1 0.921 · M0 0.897(차이 유의하지 않음) · OCR 규칙 0.210 | [1장](#1-한눈에-보기) |
 | 레시피 개선 (사전 등록) | LoRA 대상을 q · k · v · o로 넓히자 단가가 seed 3개 모두 39–40/50으로 회복(M1-cord 32–34, M0 41), 전체는 평균 +0.012이지만 seed에 견고하지는 않음(dev만, test는 다시 보지 않음). 단가 학습 가중 · 프롬프트 한 줄은 실패로 그대로 보고 | [6장](#cord-v2--실사진-영수증) |
-| 한영 혼합 문서 | 학습에 없던 한영 레이아웃 30장: 펜스 제거 기준 M0 0.927 · M1 v1 0.924 · M1-cord 0.932(차이 없음). 약점이던 한글 음절 오독은 해상도 때문으로 확인: 축소 없이 돌리면 M1 v1 0.924 → 0.969, 품명 +0.18 | [6장](#한영-혼합-레이아웃-t07-dev-전용-stress-수정-6) |
+| 한영 혼합 문서 | 학습에 없던 한영 레이아웃 30장: 펜스 제거 기준 M0 0.927 · M1 v1 0.924 · M1-cord 0.932(차이 없음). 약점이던 한글 음절 오독은 이 조건에서 입력 축소가 주된 원인: 축소 없이 돌리면 M1 v1 0.924 → 0.969, 품명 +0.18 | [6장](#한영-혼합-레이아웃-t07-dev-전용-stress-수정-6) |
 | 검수 화면 | 업로드 → 추출 → 수정 → 경고 사유 → 승인 → 내보내기(승인한 버전만), 브라우저에서 흐름 확인 | [8장](#8-검수-api) |
 | 평가 무결성 | test 1회 가드, 동결 해시 · 필드별 회귀 게이트를 CI가 검사, 실험 기준을 실행 전에 push, pytest 230개(로컬 229 통과 · torch 필요 1개 건너뜀, CI는 데이터 · 글꼴 · GPU가 없어 218 통과 · 12 건너뜀) | [6장](#6-결과) |
 | 비용 | RunPod 2회 청구 $2.16([`billing.json`](reports/runpod2/billing.json)), 나머지는 로컬 GPU 1장 | [11장](#11-비용과-한계) |
@@ -113,7 +113,7 @@
 
 **6. 실행 전에 기준을 정해 push한 추가 실험 (dev 전용, test는 다시 보지 않음)** — [`docs/20`](docs/20_DECISIONS_V6.md) 수정 3–8
 - 실사진 단가 하락: 학습 가중(수정 3) · 프롬프트 한 줄(수정 4)은 실패했고, **LoRA 대상을 q · k · v · o로 넓히자 단가가 seed 3개 모두 39–40/50으로 회복**했습니다(M1-cord 32–34, M0 41). 전체 정확도 향상은 seed에 견고하지 않습니다.
-- 한영 혼합 레이아웃 30장: 펜스를 벗기면 세 모델 차이가 없고, 약점이던 한글 품명 오독은 **해상도 때문**이었습니다(축소 없이 M1 v1 0.924 → 0.969). 영어 dev 세트에서는 해상도를 올려도 효과가 없었습니다.
+- 한영 혼합 레이아웃 30장: 펜스를 벗기면 세 모델 차이가 없고, 약점이던 한글 품명 오독은 이 30장 조건에서 **입력 축소가 주된 원인**이었습니다(축소 없이 M1 v1 0.924 → 0.969). 기존 자체 인보이스 · CORD dev에서는 해상도를 올려도 개선이 없었습니다.
 - 모호수량은 한영 혼합 레이아웃에서는 3건 중 2–3건을 보존해, 위 0/2 실패는 레이아웃에 따라 다릅니다.
 
 ---
@@ -514,7 +514,7 @@ M1이 OOD clean에서 IID clean보다 높은 것은 이 OOD가 같은 생성기�
 | `QTY_DIFF` | 0 / 0 / 6 | 5 / 1 / 1 | 5 / 2 / 1 |
 | `AMBIGUOUS_QUANTITY` | 0 / 85 / 2 | 1 / 0 / 1 | **0 / 0 / 2** |
 | `LINE_ARITHMETIC_MISMATCH` | 0 / 0 / 0 | 0 / 18 / 0 | 0 / 19 / 0 |
-| 검수 대상 비율 | 1.00 | 0.65 | 0.675 |
+| 대사 결과 `needs_review` 비율<br><sub>내보내기 전 사람 승인은 모든 문서에 필요</sub> | 1.00 | 0.65 | 0.675 |
 
 dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.md) · [`failures_m1_dev_v1.md`](reports/eval/failures_m1_dev_v1.md)
 
@@ -586,7 +586,7 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 
 **단가 프롬프트 한 줄 (수정 4, dev만, 추론만, 실행 전에 기준을 정하고 push) — 부작용.** 학습은 그대로 두고, CORD 프롬프트 끝에 "단가가 인쇄돼 있으면(@ 뒤, 단가 열, 금액과 같은 숫자로 두 번 인쇄된 경우 포함) 옮기고, 인쇄되지 않았을 때만 null" 한 줄을 더해 M1-cord를 돌렸습니다([`EXTRACT_CORD_RAW_UNITPRICE.txt`](prompts/EXTRACT_CORD_RAW_UNITPRICE.txt)).
 - 품목 단가 0.68 → **0.46**, 전체 strict 0.762 → 0.742(−0.020 [−0.050, +0.007]). 기준(단가 +0.06 이상, 지어냄 +5칸 이내, 전체 하락 0.01 이내) 중 단가와 전체 기준을 못 채워 "부작용"이고 채택하지 않습니다.
-- 모델이 오히려 조심스러워졌습니다. 인쇄된 단가를 비운 칸은 10 → 21("두 번 인쇄" 5 → 15)로 늘었고, 정답에 없는 단가를 채운 칸은 20 → 1로 줄었습니다. 한 줄 지시로는 "있는 단가는 옮기고 없는 단가는 비우는" 두 쪽을 같이 올리지 못했습니다. 학습 가중(수정 3)과 프롬프트(수정 4) 모두 실패했으므로, 남은 방법은 단가가 두 번 인쇄된 영수증의 학습 정답을 직접 늘리는 것(사람 라벨 필요)입니다.
+- 모델이 오히려 조심스러워졌습니다. 인쇄된 단가를 비운 칸은 10 → 21("두 번 인쇄" 5 → 15)로 늘었고, 정답에 없는 단가를 채운 칸은 20 → 1로 줄었습니다. 한 줄 지시로는 "있는 단가는 옮기고 없는 단가는 비우는" 두 쪽을 같이 올리지 못했습니다. 학습 가중(수정 3)과 프롬프트(수정 4)는 실패했고, 이후 LoRA 대상을 넓힌 q · k · v · o 변형(수정 5 · 8)이 추가 라벨 없이 dev 단가를 회복했습니다(아래, test로는 확인하지 않음).
 
 **LoRA 구성 ablation (수정 5, dev만, 실행 전에 기준을 정하고 push)** — 레시피(r 8, q · v)를 하나씩만 바꿔 같은 데이터 · 240 step · seed로 학습했습니다.
 
@@ -599,7 +599,7 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 | A1 seed 20261115 (수정 8) | 3.2M | 0.767 | +0.005 [−0.018, +0.024] | 39/50 | |
 
 - 어댑터 용량을 두 배로 늘린 두 변형 모두 단가가 올랐고(34 → 40 · 39칸, M0는 41칸), 그중 대상 모듈을 넓힌 A1만 미리 정한 기준을 넘었습니다. 필드별 회귀 게이트의 기준(0.05 넘게 · 3칸 이상)을 넘는 하락은 없지만, 작은 하락은 있습니다(예: r16 수량 189 → 188, 행 금액 177 → 175).
-- **seed 반복 (수정 8, 실행 전에 기준을 정하고 push):** A1 세 seed는 0.782 · 0.776 · 0.767(평균 0.775, M1-cord seed 평균 0.763)입니다. 한 seed가 0.772를 넘지 못해 "seed에 견고하게 낫다"고는 쓰지 않습니다. 대신 **단가 회복은 견고합니다** — 세 seed 모두 40 · 40 · 39/50(M1-cord seed 34 · 32 · 33, M0 41). M0 대비는 세 seed 모두 유의합니다(+0.070 · +0.064 · +0.050).
+- **seed 반복 (수정 8, 실행 전에 기준을 정하고 push):** A1 세 seed는 0.782 · 0.776 · 0.767(평균 0.775, M1-cord seed 평균 0.763)입니다. 한 seed가 0.772를 넘지 못해 "seed에 견고하게 낫다"고는 쓰지 않습니다. 대신 **단가 회복은 견고합니다** — 세 seed 모두 40 · 40 · 39/50(M1-cord seed 34 · 32 · 33, M0 41). M0 대비는 세 seed 모두 유의합니다(+0.070 · +0.064 · +0.055).
 - **test로는 확인하지 않았습니다.** CORD test는 M1-cord로 이미 한 번 썼기 때문에 A1로 test를 다시 보지 않았습니다. 학습 보고서: [`train_m1_cord_qkvo.json`](reports/model/train_m1_cord_qkvo.json) · [`train_m1_cord_r16.json`](reports/model/train_m1_cord_r16.json).
 
 **dev 실패 유형** ([`cord_failure_dev.md`](reports/eval/cord_failure_dev.md), 사전 고정 채점기와 같은 정규화)
@@ -630,11 +630,11 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 | M1-cord | 0.932 | 0.932 | 0.590 | 22/30 |
 
 - **M1이 더 잘 읽는다고 말할 수 없습니다.** strict 차이(+0.924 [+0.905, +0.941])는 전부 형식 효과입니다. M0는 30장 모두 코드 펜스로 감쌌고, 펜스를 벗기면 M1 v1 − M0 = −0.003 [−0.015, +0.009]입니다.
-- **약점은 한글 글자 읽기입니다.** 품명은 세 arm 모두 약 0.6이고, 틀린 것의 대부분은 비슷한 한글 음절 오독(콘덴서 → 콘센서, 정션 → 정선, 동 → 등)이며 영어 부분은 맞습니다. 세 arm이 같은 실수를 하므로 기본 모델의 한계로 보고, 미세조정은 이를 고치지도 망치지도 않았습니다. 숫자 필드(수량 · 단가 · 금액 · 합계)는 0.94–1.00입니다.
+- **약점은 한글 글자 읽기입니다.** 품명은 세 arm 모두 약 0.6이고, 틀린 것의 대부분은 비슷한 한글 음절 오독(콘덴서 → 콘센서, 정션 → 정선, 동 → 등)이며 영어 부분은 맞습니다. 동결 해상도에서는 세 arm이 같은 실수를 하고 미세조정은 이를 고치지도 망치지도 않았습니다. 아래 수정 7에서 이 T07 조건의 주된 원인이 입력 축소임을 확인했습니다. 숫자 필드(수량 · 단가 · 금액 · 합계)는 0.94–1.00입니다.
 - **모호 수량은 여기서는 보존됐습니다.** "25 pcs (5 ctn)" 같은 3건 중 M0 2 · M1 v1 2 · M1-cord 3건을 그대로 옮겨 경고가 났습니다. 합성 FINAL(T05/T06)의 0/2와 달라, 이 실패는 레이아웃에 따라 다릅니다.
 - 대사 코드가 틀린 문서는 대부분 품번 한 개 오독입니다(UNKNOWN_SKU + PO_LINE_NOT_FOUND가 같이 생김).
 
-**한글 오독의 원인 = 해상도 (수정 7, 실행 전에 기준을 정하고 push).** 동결 설정 `max_pixels` 786,432는 1240×1754 페이지를 약 0.6배로 줄여 20 px 글자를 약 12 px로 만듭니다. 같은 30장을 2,200,000(축소 없음)으로 다시 돌렸습니다.
+**T07 한글 오독의 주된 원인 = 입력 축소 (수정 7, 실행 전에 기준을 정하고 push).** 동결 설정 `max_pixels` 786,432는 1240×1754 페이지를 약 0.6배로 줄여 20 px 글자를 약 12 px로 만듭니다. 같은 30장을 2,200,000(축소 없음)으로 다시 돌렸습니다.
 
 | arm | max_pixels | 펜스 제거 전체 | 품명 (한·영) | 숫자 필드* | 대사 코드 일치 | 초/문서 |
 |---|---:|---:|---:|---:|---:|---:|
@@ -644,9 +644,9 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 | M1 v1 | **2,200,000** | **0.969** (+0.045 [+0.030, +0.063]) | **0.786** | 1.000 | **29/30** | 15.0 |
 
 <sub>* 품번 · 단가 · 행 금액 · 합계. 판정 기준(M0 품명 +0.15 이상, 숫자 필드 하락 0.02 이내)을 넘어 "해상도가 원인"입니다.</sub>
-- 해상도만 올렸는데 한글 품명이 +0.17–0.18, 숫자 필드는 모두 1.000이 되고 대사 결과가 29/30으로 맞았습니다. 문서당 시간은 거의 같습니다(생성 시간이 대부분이라).
+- 해상도만 올렸는데 한글 품명이 +0.17–0.18, 품번 · 단가 · 행 금액 · 합계는 모두 1.000(수량 0.992)이 되고 대사 결과가 29/30으로 맞았습니다. 문서당 시간은 거의 같습니다(생성 시간이 대부분이라).
 - M1 v1은 786,432에서 학습했는데도 더 높은 해상도에서 좋아졌습니다.
-- **영어 dev 세트로는 일반화되지 않았습니다**(수정 8 b, [`resolution_dev.md`](reports/eval/resolution_dev.md)): 자체 dev 0.968 → 0.958(−0.011 [−0.052, +0.014]), CORD dev 0.762 → 0.763(+0.001 [−0.031, +0.028]). 영수증은 100장 중 71장이 실제로 덜 축소됐는데도 변화가 없었습니다. 그래서 해상도 상향은 한글처럼 획이 많은 작은 글자 문서에만 권합니다.
+- **기존 자체 인보이스 dev · CORD dev에서는 개선도, 미리 정한 안전 기준도 입증하지 못했습니다**(수정 8 b, [`resolution_dev.md`](reports/eval/resolution_dev.md)): 자체 dev 0.968 → 0.958(−0.011 [−0.052, +0.014]), CORD dev 0.762 → 0.763(+0.001 [−0.031, +0.028]). 영수증은 100장 중 71장이 실제로 덜 축소됐는데도 변화가 없었습니다. 해상도 상향의 효과는 이번 T07 조건(작은 한글)에서만 확인됐으므로, 그런 문서에만 권합니다.
 - 동결된 FINAL · CORD 결과는 바꾸지 않았습니다. 남은 품명 오류(약 0.2)는 다음 과제입니다.
 
 ---
@@ -657,9 +657,9 @@ dev 단계 결과와 실패 분류: [`dev_summary.md`](reports/eval/dev_summary.
 - OpenAI 호환 subset, 127.0.0.1 전용
 - GPU 작업자 1개 + 대기열 2개
 
-| 측정<br><sub>자체 dev 10장, warmup 3</sub> | 결과 |
+| 측정<br><sub>문서 수 · warmup · 동시성은 행마다 다름</sub> | 결과 |
 |---|---|
-| 출력 동일성<br><sub>서버 vs 오프라인</sub> | M0 · M1 모두 원문 100% 동일<br><sub>같은 프롬프트 토큰 1045개</sub> |
+| 출력 동일성 (첫 측정)<br><sub>서버 vs 오프라인, 자체 dev 10장, warmup 3</sub> | M0 · M1 모두 원문 100% 동일<br><sub>같은 프롬프트 토큰 1045개</sub> |
 | 처리량 · 지연<br><sub>M1</sub> | 동시 1: 4.0 문서/분, p50 16.1s / p95 18.4s<br>동시 2: 4.2 문서/분, p50 26.6s / p95 36.3s<br><sub>직렬 작업자라 대기 시간이 늘어난 것이며, 배치 효과가 아님</sub> |
 | 동시 4 | 10건 중 7건 실패 기록<br><sub>첫 벤치는 상태 코드를 저장하지 않았습니다. 상태 코드를 기록하는 재측정(아래)에서 7건 모두 **429(대기열 초과)**로 확인</sub> |
 | **모든 답 채점 · 지속 부하** (11-15 재측정)<br><sub>M1, 자체 dev 10장</sub> | 동시 1 · 2 · 4의 정확도 0.936 · 0.936 · 0.962(성공 3건), 원문이 동시 1과 모두 같음, 잘림 0<br>**5분 지속 부하(동시 2):** 25건 모두 200, 정확도 0.943, 분당 4.56문서, p50 24.9s / p95 32.8s, GPU 메모리 최대 3.36GB(벤치는 최댓값만 기록)<br><sub>[`hf_peft_nf4_local_v2.json`](reports/serving/hf_peft_nf4_local_v2.json) · [`hf_peft_nf4_local_sustained.json`](reports/serving/hf_peft_nf4_local_sustained.json)</sub> |
@@ -780,7 +780,7 @@ reject는 `extracting`을 뺀 모든 상태에서, 재추출은 `approved`를 �
 - FINAL 표는 합성 데이터이고 표본이 작습니다. 실사진은 CORD v2 영수증뿐이며, 인보이스·통관 문서가 아니고 영어 전용도 아닙니다. CORD test 판정은 seed 1개 · 1회 학습 결과입니다(seed 3개 반복은 dev에서만).
   - 공개 세트당 20 base, 자체 test 40문서, 경고 코드별 사례 1–10건
   - 열화 stress는 dev 전용입니다.
-- M0의 낮은 strict 점수는 형식 효과(코드펜스)가 큽니다. 동결 전 프롬프트 A/B로도 없어지지 않았고, 펜스 제거 후처리는 동결된 계약에 들어 있지 않습니다.
+- M0의 낮은 strict 점수는 형식 효과(코드펜스)가 큽니다. 동결 전 프롬프트 A/B로도 없어지지 않았고, 합성 FINAL의 strict 계약에는 펜스 제거가 들어 있지 않습니다. CORD는 수정 1에 따라 펜스를 벗긴 필드 점수와 원본 JSON 형식 지표를 따로 보고합니다.
 - 모호수량은 합성 FINAL(T05/T06)에서 0/2로 실패했고, 한영 T07에서는 3건 중 2–3건을 보존했습니다. 레이아웃에 따라 다르며 고치지는 않았습니다.
 - 한영 혼합 문서의 품명은 동결 해상도에서 약 0.6입니다(비슷한 한글 음절 오독). 원인은 해상도로 확인했고(축소 없이 0.79–0.81), 동결 결과는 바꾸지 않았습니다.
 - 레시피 개선(q · k · v · o)은 CORD dev 결과이고 test로 확인하지 않았습니다. 단가 회복은 seed 3개에서 같았지만 전체 정확도 향상은 seed에 견고하지 않습니다.
@@ -1000,6 +1000,9 @@ uv venv --python 3.11 .venv && uv pip install --python .venv/Scripts/python.exe 
 <sub>torch 2.9.1+cu126 · transformers 4.57.6 · peft 0.17.1 · trl 0.25.1 · bitsandbytes 0.48.2.
 모델 `Qwen/Qwen3-VL-2B-Instruct @ 89644892`를 `models/qwen3-vl-2b-instruct/<rev>/`에 둡니다.</sub>
 ```bash
+uv venv --python 3.11 .venv-ml
+uv pip install --python .venv-ml/Scripts/python.exe -r requirements-ml.lock.txt --extra-index-url https://download.pytorch.org/whl/cu126 --index-strategy unsafe-best-match
+uv pip install --python .venv-ml/Scripts/python.exe --no-deps -e .     # 이 프로젝트(잠금 파일은 버전 목록일 뿐 프로젝트를 설치하지 않음)
 .venv-ml/Scripts/python.exe -m invoiceguard.vlm.smoke masks
 .venv-ml/Scripts/python.exe -m invoiceguard.vlm.train --profile standard --run-id m1_standard_v1
 ```
@@ -1008,14 +1011,14 @@ uv venv --python 3.11 .venv && uv pip install --python .venv/Scripts/python.exe 
 ```bash
 docker build -t invoiceguard-ocr:tesseract docker/ocr
 .venv/Scripts/python.exe -m invoiceguard.ocr_baseline ocr --set trade:dev --set public:dev --psm 4
-.venv/Scripts/python.exe -m invoiceguard.ocr_baseline predict --set trade:dev --set public:dev --psm 4 --run-id b0_dev
+.venv/Scripts/python.exe -m invoiceguard.ocr_baseline predict --set trade:dev --set public:dev --psm 4 --run-id b0_dev_v12
 ```
 
 **4) 추론 → 채점 → paired 비교** — 원문 응답을 먼저 저장합니다.
 ```bash
-.venv-ml/Scripts/python.exe -m invoiceguard.vlm.infer --arm m1 --adapter artifacts/adapters/m1_standard_v1 --set trade:dev --set public:dev --run-id m1_dev
-.venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_dev
-.venv/Scripts/python.exe -m invoiceguard.compare_runs m1_dev b0_dev
+.venv-ml/Scripts/python.exe -m invoiceguard.vlm.infer --arm m1 --adapter artifacts/adapters/m1_standard_v1 --set trade:dev --set public:dev --run-id m1_dev_v1
+.venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_dev_v1
+.venv/Scripts/python.exe -m invoiceguard.compare_runs m1_dev_v1 b0_dev_v12
 ```
 
 **5) final** — 코드 커밋 → 동결 부록 기록 · 커밋 → `--allow-final`(해시가 다르거나 커밋하지 않은 변경이 있으면 거부)
@@ -1025,14 +1028,21 @@ docker build -t invoiceguard-ocr:tesseract docker/ocr
 .venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_final --allow-final
 ```
 
-**6) 서빙 · 검수 API · 검수 화면 · 대시보드 (127.0.0.1)**
+**6) 서빙 · 검수 API · 검수 화면 · 대시보드 (127.0.0.1)** — 아래 세 경로 중 하나를 고릅니다. 두 어댑터 서빙에는 8단계의 CORD 어댑터(`m1_cord_v1`)와 CORD dev 예측이 먼저 있어야 합니다.
 ```bash
-# 기본 모델 1개 + 어댑터 2개(m1 = 인보이스 M1 v1, cord = 영수증 M1-cord), 요청의 model 이름으로 선택
-.venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --extra-adapter cord=artifacts/adapters/m1_cord_v1 --port 8001
-bash scripts/serving/run_multi_lora_bench.sh     # 서버를 띄워 dev 전체(24 · 100장) 원문 일치 · 동시성 · 5분 지속 부하를 재고 서버를 끔
+# (a) 측정만: 벤치 스크립트가 서버를 스스로 띄우고 끕니다(수동 서버를 함께 켜지 말 것)
+bash scripts/serving/run_multi_lora_bench.sh     # dev 전체(24 · 100장) 원문 일치 · 동시성 · 5분 지속 부하
 bash scripts/serving/run_retry_bench.sh          # 429를 재시도하는 클라이언트(--retry-429)로 과부하 goodput
-.venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1   # 검수 화면 http://127.0.0.1:8000/
-.venv/Scripts/python.exe -m invoiceguard.app.server --mode replay --replay-run m1_dev_v1                      # GPU 없이: 저장된 추출 결과로 화면 확인
+
+# (b) LIVE 체험: 터미널 1에 모델 서버를 띄워 둔 채(기본 모델 1개 + 어댑터 2개, 요청의 model 이름으로 선택)
+.venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --extra-adapter cord=artifacts/adapters/m1_cord_v1 --port 8001
+#     터미널 2에서 검수 API · 화면 → http://127.0.0.1:8000/
+.venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1
+
+# (c) GPU 없이: (b) 대신 저장된 추출 결과로 화면 확인(같은 포트 8000)
+.venv/Scripts/python.exe -m invoiceguard.app.server --mode replay --replay-run m1_dev_v1
+
+# 대시보드(어느 경로와도 함께 가능)
 .venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765
 ```
 
@@ -1048,8 +1058,11 @@ python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --sm
 ```bash
 .venv-ml/Scripts/python.exe -I scripts/realdocs/fetch_cord.py
 .venv-ml/Scripts/python.exe -I -m invoiceguard.cord build
+.venv-ml/Scripts/python.exe -m invoiceguard.vlm.infer --arm m0 --set cord:dev --batch-size 1 --run-id cord_dev_m0_nf4   # M0 기준선(dev)
 bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord 학습 → M1-cord dev → 기존 dev 회귀
 .venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
+# ↓ 동결 · test는 최초 실행 당시의 기록입니다. 이 checkout에는 동결 파일과 test 보고서가 있어 다시 실행하면 의도적으로 거부됩니다.
+#   test 원예측을 복원한 경우에만, 아래 채점이 커밋된 보고서와 바이트 단위로 같은지 확인할 수 있습니다.
 bash scripts/realdocs/run_cord_test.sh           # arm마다 한 번
 .venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # 동결 검사, test 보고서는 한 번만 씀 (`cord_eval` CLI도 이 입구로 감 — 채점 코드는 동결 원본과 AST가 같은지 검사)
 .venv/Scripts/python.exe -m invoiceguard.cord_score compare cord_test_m1cord_nf4 cord_test_m0_nf4

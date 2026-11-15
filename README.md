@@ -23,7 +23,7 @@
 | Training reproduced on another GPU | A40 retrain: mean loss within 0.0002, dev outputs 8/8 identical | [section 12](#12-cloud-reproduction-on-runpod) |
 | Invoice extraction + PO reconciliation | unseen-layout test: M1 0.921 · M0 0.897 (not significant) · OCR rules 0.210 | [section 1](#1-at-a-glance) |
 | Recipe improvement (pre-registered) | widening LoRA to q · k · v · o recovers unit price to 39–40/50 on all three seeds (M1-cord 32–34, M0 41); the overall gain averages +0.012 but is not robust across seeds (dev only; test not reopened). Unit-price up-weighting and a one-line prompt failed and are reported as such | [section 6](#cord-v2--real-receipt-photos) |
-| Korean-English documents | 30 mixed-language invoices on an untrained layout: fence-stripped M0 0.927 · M1 v1 0.924 · M1-cord 0.932 (no difference). The Hangul misreads were traced to resolution: without downscaling M1 v1 goes 0.924 → 0.969, item names +0.18 | [section 6](#korean-english-mixed-layout-t07-dev-only-stress-amendment-6) |
+| Korean-English documents | 30 mixed-language invoices on an untrained layout: fence-stripped M0 0.927 · M1 v1 0.924 · M1-cord 0.932 (no difference). Under this condition the Hangul misreads come mainly from downscaling: without it M1 v1 goes 0.924 → 0.969, item names +0.18 | [section 6](#korean-english-mixed-layout-t07-dev-only-stress-amendment-6) |
 | Review screen | upload → extract → edit → reasons for warnings → approve → export (approved versions only), flow checked in a browser | [section 8](#8-review-api) |
 | Evaluation integrity | single-test-run guard, frozen hashes and a field-level regression gate checked in CI, experiment criteria pushed before the runs, 230 pytest tests (229 pass locally, 1 needs torch; CI, without local data, fonts or GPU, passes 218 and skips 12) | [section 6](#6-results) |
 | Cost | two RunPod runs, billed $2.16 ([`billing.json`](reports/runpod2/billing.json)); everything else on one local GPU | [section 11](#11-cost-and-limitations) |
@@ -113,7 +113,7 @@ What differs between the sets is summarised in [6. Results › Evaluation sets](
 
 **6. Further experiments with criteria fixed and pushed before running (dev only, test not reopened)** — [`docs/20`](docs/20_DECISIONS_V6.md) amendments 3–8
 - The unit-price drop on real photos: up-weighting (amendment 3) and a one-line prompt (amendment 4) failed; **widening LoRA to q · k · v · o recovered unit price to 39–40 of 50 on all three seeds** (M1-cord 32–34, M0 41). The overall gain is not robust across seeds.
-- Thirty Korean-English invoices: with the fence stripped the three models do not differ, and the Hangul item-name misreads were **caused by resolution** (without downscaling M1 v1 0.924 → 0.969). On the English dev sets a higher resolution had no effect.
+- Thirty Korean-English invoices: with the fence stripped the three models do not differ, and the Hangul item-name misreads on these 30 documents **came mainly from downscaling** (without it M1 v1 0.924 → 0.969). On the existing own-invoice and CORD dev sets a higher resolution brought no improvement.
 - Ambiguous quantities were kept on 2–3 of 3 Korean-English invoices, so the 0/2 failure above depends on the layout.
 
 ---
@@ -516,7 +516,7 @@ On the 40 own test documents, the alerts produced from each approach's extractio
 | `QTY_DIFF` | 0 / 0 / 6 | 5 / 1 / 1 | 5 / 2 / 1 |
 | `AMBIGUOUS_QUANTITY` | 0 / 85 / 2 | 1 / 0 / 1 | **0 / 0 / 2** |
 | `LINE_ARITHMETIC_MISMATCH` | 0 / 0 / 0 | 0 / 18 / 0 | 0 / 19 / 0 |
-| share sent to review | 1.00 | 0.65 | 0.675 |
+| share with `needs_review` findings<br><sub>every document still needs human approval before export</sub> | 1.00 | 0.65 | 0.675 |
 
 dev results and failure taxonomy: [`dev_summary.md`](reports/eval/dev_summary.md) · [`failures_m1_dev_v1.md`](reports/eval/failures_m1_dev_v1.md)
 
@@ -588,7 +588,7 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 
 **One prompt line for unit prices (amendment 4, dev only, inference only, criteria fixed and pushed before the run) — side effect.** With training unchanged, M1-cord ran with one extra prompt line: copy a unit price whenever one is printed (after "@", in a unit-price column, or printed again next to the line price), null only when none is printed ([`EXTRACT_CORD_RAW_UNITPRICE.txt`](prompts/EXTRACT_CORD_RAW_UNITPRICE.txt)).
 - Item unit price 0.68 → **0.46**, overall strict 0.762 → 0.742 (−0.020 [−0.050, +0.007]). The rule (unit price +0.06 or more, at most 5 more invented values, at most a 0.01 overall drop) fails on unit price and overall: "side effect", not adopted.
-- The model became more cautious: printed unit prices left empty rose 10 → 21 ("printed twice" 5 → 15), while invented unit prices fell 20 → 1. One instruction did not raise both sides (copy what is printed, leave out what is not). With both up-weighting (amendment 3) and the prompt (amendment 4) failing, what remains is more training labels for receipts that print the unit price twice (needs human labelling).
+- The model became more cautious: printed unit prices left empty rose 10 → 21 ("printed twice" 5 → 15), while invented unit prices fell 20 → 1. One instruction did not raise both sides (copy what is printed, leave out what is not). Up-weighting (amendment 3) and the prompt (amendment 4) failed; the q · k · v · o variant (amendments 5 and 8) then recovered dev unit price without extra labels (below; not confirmed on test).
 
 **LoRA configuration ablation (amendment 5, dev only, criteria fixed and pushed before the runs)** — one change at a time from the recipe (r 8, q · v), same data, 240 steps and seed.
 
@@ -600,8 +600,8 @@ On the synthetic sets M1−M0 was not significant, so the same 2B model is train
 | A1 seed 20261114 (amendment 8) | 3.2M | 0.776 | +0.014 [−0.010, +0.034] | 40/50 | |
 | A1 seed 20261115 (amendment 8) | 3.2M | 0.767 | +0.005 [−0.018, +0.024] | 39/50 | |
 
-- Both variants that double the adapter's capacity raised unit price (34 → 40 · 39, M0 has 41); only A1, which widens the target modules, passed the pre-registered rule. No field fell beyond the field-level gate's limit (more than 0.05 and 3+ fields), though small drops exist (e.g. r16 quantity 189 → 188, line amount 177 → 175).
-- **Seed repeats (amendment 8, criteria fixed and pushed before the runs):** the three A1 seeds score 0.782 · 0.776 · 0.767 (mean 0.775 against M1-cord's seed mean 0.763). One seed stays below 0.772, so "robustly better" is not claimed. **The unit-price recovery is robust**: 40 · 40 · 39 of 50 for all three seeds (M1-cord's seeds 34 · 32 · 33, M0 41). Against M0 all three seeds are significant (+0.070 · +0.064 · +0.050).
+- Both variants that double the adapter's capacity raised unit price (34 → 40 · 39, M0 has 41); only A1, which widens the target modules, passed the pre-registered rule. No field fell beyond the field-level gate's limit (more than 0.05 and at least three fewer correct values), though small drops exist (e.g. r16 quantity 189 → 188, line amount 177 → 175).
+- **Seed repeats (amendment 8, criteria fixed and pushed before the runs):** the three A1 seeds score 0.782 · 0.776 · 0.767 (mean 0.775 against M1-cord's seed mean 0.763). One seed stays below 0.772, so "robustly better" is not claimed. **The unit-price recovery is robust**: 40 · 40 · 39 of 50 for all three seeds (M1-cord's seeds 34 · 32 · 33, M0 41). Against M0 all three seeds are significant (+0.070 · +0.064 · +0.055).
 - **Not confirmed on test:** CORD test was already used once by M1-cord, so A1 was not taken to test. Training reports: [`train_m1_cord_qkvo.json`](reports/model/train_m1_cord_qkvo.json) · [`train_m1_cord_r16.json`](reports/model/train_m1_cord_r16.json).
 
 **dev failure types** ([`cord_failure_dev.md`](reports/eval/cord_failure_dev.md), same normalisation as the pre-registered scorer)
@@ -632,11 +632,11 @@ Thirty Korean + English invoices on a layout never trained on ([`t07.py`](src/in
 | M1-cord | 0.932 | 0.932 | 0.590 | 22/30 |
 
 - **No claim that M1 reads better.** The strict difference (+0.924 [+0.905, +0.941]) is all format: M0 fenced all 30 answers, and with the fence stripped M1 v1 − M0 = −0.003 [−0.015, +0.009].
-- **The weak spot is reading Hangul.** Item names are about 0.6 for all three arms; most errors are similar-looking Hangul syllables (콘덴서 → 콘센서, 정션 → 정선, 동 → 등) while the English part is right. All three arms make the same mistakes, so this is the base model's limit; fine-tuning neither fixed nor broke it. Number fields (quantity, unit price, amount, totals) are 0.94–1.00.
+- **The weak spot is reading Hangul.** Item names are about 0.6 for all three arms; most errors are similar-looking Hangul syllables (콘덴서 → 콘센서, 정션 → 정선, 동 → 등) while the English part is right. At the frozen resolution all three arms make the same mistakes and fine-tuning neither fixed nor broke them; amendment 7 below shows that downscaling the input is the main cause under this T07 condition. Number fields (quantity, unit price, amount, totals) are 0.94–1.00.
 - **Ambiguous quantities were kept here.** Of 3 lines such as "25 pcs (5 ctn)", M0 2, M1 v1 2 and M1-cord 3 copied the text and raised the warning — unlike 0/2 on the synthetic FINAL layouts (T05/T06), so that failure depends on the layout.
 - Documents whose reconciliation codes differ mostly have one misread part number (UNKNOWN_SKU and PO_LINE_NOT_FOUND appear together).
 
-**The cause of the Hangul misreads is resolution (amendment 7, criteria fixed and pushed before the run).** The frozen `max_pixels` 786,432 shrinks a 1240×1754 page to about 0.6×, so 20 px text becomes about 12 px. The same 30 pages were run again at 2,200,000 (no downscaling).
+**The main cause of the T07 Hangul misreads is downscaling (amendment 7, criteria fixed and pushed before the run).** The frozen `max_pixels` 786,432 shrinks a 1240×1754 page to about 0.6×, so 20 px text becomes about 12 px. The same 30 pages were run again at 2,200,000 (no downscaling).
 
 | arm | max_pixels | fence-stripped overall | item name (KO + EN) | number fields* | reconciliation = oracle | s/doc |
 |---|---:|---:|---:|---:|---:|---:|
@@ -646,9 +646,9 @@ Thirty Korean + English invoices on a layout never trained on ([`t07.py`](src/in
 | M1 v1 | **2,200,000** | **0.969** (+0.045 [+0.030, +0.063]) | **0.786** | 1.000 | **29/30** | 15.0 |
 
 <sub>* part number, unit price, line amount, total. The rule (M0 item name +0.15 or more, number fields within 0.02) is met: "resolution is the cause".</sub>
-- Raising only the resolution lifted Korean item names by +0.17–0.18, made every number field 1.000 and the reconciliation right on 29/30. Time per document is about the same (generation dominates).
+- Raising only the resolution lifted Korean item names by +0.17–0.18, made part number, unit price, line amount and total all 1.000 (quantity 0.992) and the reconciliation right on 29/30. Time per document is about the same (generation dominates).
 - M1 v1 was trained at 786,432 and still improved at the higher resolution.
-- **It does not generalise to the English dev sets** (amendment 8 b, [`resolution_dev.md`](reports/eval/resolution_dev.md)): own dev 0.968 → 0.958 (−0.011 [−0.052, +0.014]), CORD dev 0.762 → 0.763 (+0.001 [−0.031, +0.028]); 71 of 100 receipts were downscaled less and still nothing changed. So the higher resolution is recommended only for documents with small, dense script such as Hangul.
+- **On the existing own-invoice dev and CORD dev it showed neither an improvement nor the pre-registered safety margin** (amendment 8 b, [`resolution_dev.md`](reports/eval/resolution_dev.md)): own dev 0.968 → 0.958 (−0.011 [−0.052, +0.014]), CORD dev 0.762 → 0.763 (+0.001 [−0.031, +0.028]); 71 of 100 receipts were downscaled less and still nothing changed. The effect was shown only under the T07 condition (small Hangul), so the higher resolution is recommended only for such documents.
 - The frozen FINAL and CORD results are unchanged. The remaining item-name errors (about 0.2) are next.
 
 ---
@@ -659,9 +659,9 @@ Thirty Korean + English invoices on a layout never trained on ([`t07.py`](src/in
 - OpenAI-compatible subset, 127.0.0.1 only
 - one GPU worker + a queue of 2
 
-| Measurement<br><sub>10 own dev docs, warmup 3</sub> | Result |
+| Measurement<br><sub>documents, warmup and concurrency differ per row</sub> | Result |
 |---|---|
-| Output parity<br><sub>server vs offline</sub> | M0 and M1 raw outputs 100% identical<br><sub>same prompt tokens (1045)</sub> |
+| Output parity (first run)<br><sub>server vs offline, 10 own dev docs, warmup 3</sub> | M0 and M1 raw outputs 100% identical<br><sub>same prompt tokens (1045)</sub> |
 | Throughput · latency<br><sub>M1</sub> | concurrency 1: 4.0 docs/min, p50 16.1s / p95 18.4s<br>concurrency 2: 4.2 docs/min, p50 26.6s / p95 36.3s<br><sub>the worker is serial, so waiting time grows — not a batching effect</sub> |
 | Concurrency 4 | 7 of 10 requests recorded as failures<br><sub>the first bench did not store status codes; the re-run that records them (below) shows all 7 were **429 (queue full)**</sub> |
 | **Every answer scored · sustained load** (re-run 11-15)<br><sub>M1, 10 own dev documents</sub> | accuracy 0.936 · 0.936 · 0.962 at concurrency 1 · 2 · 4 (3 successes at 4), raw outputs all identical to concurrency 1, 0 truncated<br>**5-minute sustained load (concurrency 2):** 25/25 HTTP 200, accuracy 0.943, 4.56 docs/min, p50 24.9 s / p95 32.8 s, peak GPU memory 3.36 GB (the bench records the maximum only)<br><sub>[`hf_peft_nf4_local_v2.json`](reports/serving/hf_peft_nf4_local_v2.json) · [`hf_peft_nf4_local_sustained.json`](reports/serving/hf_peft_nf4_local_sustained.json)</sub> |
@@ -782,7 +782,7 @@ A local, read-only dashboard (the UI is in Korean).
 - The FINAL table is synthetic data with small samples. The only real photos are CORD v2 receipts — not invoices or customs documents, and not English-only. The CORD test verdict is one seed, one run (the three-seed repeat is dev only).
   - 20 base documents per public set, 40 own test documents, 1–10 cases per alert code
   - The degradation stress set is dev-only.
-- M0's low strict score is largely a format effect (code fences). A pre-freeze prompt A/B did not remove it, and a fence-stripping step is not part of the frozen contract.
+- M0's low strict score is largely a format effect (code fences). A pre-freeze prompt A/B did not remove it, and the synthetic FINAL's strict contract has no fence stripping; CORD, per amendment 1, reports fence-stripped field scores and the raw JSON format metric separately.
 - Ambiguous quantities failed 0/2 on the synthetic FINAL (T05/T06) and were kept on 2–3 of 3 on Korean-English T07; it depends on the layout and was not fixed.
 - Item names on Korean-English documents are about 0.6 at the frozen resolution (similar-looking Hangul syllables misread). The cause was confirmed to be resolution (0.79–0.81 without downscaling); the frozen results were not changed.
 - The recipe improvement (q · k · v · o) is a CORD dev result and was not confirmed on test; the unit-price recovery held for three seeds, the overall gain did not.
@@ -1002,6 +1002,9 @@ uv venv --python 3.11 .venv && uv pip install --python .venv/Scripts/python.exe 
 <sub>torch 2.9.1+cu126 · transformers 4.57.6 · peft 0.17.1 · trl 0.25.1 · bitsandbytes 0.48.2.
 Put `Qwen/Qwen3-VL-2B-Instruct @ 89644892` in `models/qwen3-vl-2b-instruct/<rev>/`.</sub>
 ```bash
+uv venv --python 3.11 .venv-ml
+uv pip install --python .venv-ml/Scripts/python.exe -r requirements-ml.lock.txt --extra-index-url https://download.pytorch.org/whl/cu126 --index-strategy unsafe-best-match
+uv pip install --python .venv-ml/Scripts/python.exe --no-deps -e .     # this project (the lockfile lists versions; it does not install the project)
 .venv-ml/Scripts/python.exe -m invoiceguard.vlm.smoke masks
 .venv-ml/Scripts/python.exe -m invoiceguard.vlm.train --profile standard --run-id m1_standard_v1
 ```
@@ -1010,14 +1013,14 @@ Put `Qwen/Qwen3-VL-2B-Instruct @ 89644892` in `models/qwen3-vl-2b-instruct/<rev>
 ```bash
 docker build -t invoiceguard-ocr:tesseract docker/ocr
 .venv/Scripts/python.exe -m invoiceguard.ocr_baseline ocr --set trade:dev --set public:dev --psm 4
-.venv/Scripts/python.exe -m invoiceguard.ocr_baseline predict --set trade:dev --set public:dev --psm 4 --run-id b0_dev
+.venv/Scripts/python.exe -m invoiceguard.ocr_baseline predict --set trade:dev --set public:dev --psm 4 --run-id b0_dev_v12
 ```
 
 **4) Inference → scoring → paired comparison** — raw responses are stored first.
 ```bash
-.venv-ml/Scripts/python.exe -m invoiceguard.vlm.infer --arm m1 --adapter artifacts/adapters/m1_standard_v1 --set trade:dev --set public:dev --run-id m1_dev
-.venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_dev
-.venv/Scripts/python.exe -m invoiceguard.compare_runs m1_dev b0_dev
+.venv-ml/Scripts/python.exe -m invoiceguard.vlm.infer --arm m1 --adapter artifacts/adapters/m1_standard_v1 --set trade:dev --set public:dev --run-id m1_dev_v1
+.venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_dev_v1
+.venv/Scripts/python.exe -m invoiceguard.compare_runs m1_dev_v1 b0_dev_v12
 ```
 
 **5) final** — commit code → write and commit the freeze appendix → `--allow-final` (refused if a hash differs or there are uncommitted changes)
@@ -1027,14 +1030,21 @@ docker build -t invoiceguard-ocr:tesseract docker/ocr
 .venv/Scripts/python.exe -m invoiceguard.score_run artifacts/predictions/m1_final --allow-final
 ```
 
-**6) Serving · review API · review screen · dashboard (127.0.0.1)**
+**6) Serving · review API · review screen · dashboard (127.0.0.1)** — pick one of the three paths below. Two-adapter serving needs the CORD adapter (`m1_cord_v1`) and CORD dev predictions from step 8 first.
 ```bash
-# one base model + two adapters (m1 = invoices M1 v1, cord = receipts M1-cord), chosen by the request's model name
-.venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --extra-adapter cord=artifacts/adapters/m1_cord_v1 --port 8001
-bash scripts/serving/run_multi_lora_bench.sh     # starts the server, measures full-dev parity (24 · 100), concurrency and a 5-minute sustained load, stops it
+# (a) measurement only: the bench scripts start and stop the server themselves (do not run a manual server alongside)
+bash scripts/serving/run_multi_lora_bench.sh     # full-dev parity (24 · 100), concurrency, 5-minute sustained load
 bash scripts/serving/run_retry_bench.sh          # goodput under overload with a client that retries 429 (--retry-429)
-.venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1   # review screen at http://127.0.0.1:8000/
-.venv/Scripts/python.exe -m invoiceguard.app.server --mode replay --replay-run m1_dev_v1                      # no GPU: the screen with saved extraction outputs
+
+# (b) LIVE: keep the model server running in terminal 1 (one base + two adapters, chosen by the request's model name)
+.venv-ml/Scripts/python.exe -m invoiceguard.serving.hf_server --adapter artifacts/adapters/m1_standard_v1 --extra-adapter cord=artifacts/adapters/m1_cord_v1 --port 8001
+#     review API and screen in terminal 2 -> http://127.0.0.1:8000/
+.venv/Scripts/python.exe -m invoiceguard.app.server --mode live --model-url http://127.0.0.1:8001 --model m1
+
+# (c) no GPU: instead of (b), the screen with saved extraction outputs (same port 8000)
+.venv/Scripts/python.exe -m invoiceguard.app.server --mode replay --replay-run m1_dev_v1
+
+# dashboard (works with any path)
 .venv/Scripts/python.exe -m invoiceguard.dashboard_server --port 8765
 ```
 
@@ -1050,8 +1060,11 @@ python scripts/runpod/compare_train.py reports/runpod/train_m1_pod_a40.json --sm
 ```bash
 .venv-ml/Scripts/python.exe -I scripts/realdocs/fetch_cord.py
 .venv-ml/Scripts/python.exe -I -m invoiceguard.cord build
+.venv-ml/Scripts/python.exe -m invoiceguard.vlm.infer --arm m0 --set cord:dev --batch-size 1 --run-id cord_dev_m0_nf4   # M0 baseline (dev)
 bash scripts/realdocs/run_cord_local.sh          # M1 v1 dev → M1-cord training → M1-cord dev → regression on the existing dev sets
 .venv-ml/Scripts/python.exe scripts/realdocs/freeze_cord.py --dev-runs cord_dev_m0_nf4 cord_dev_m1v1_nf4 cord_dev_m1cord_nf4
+# below: freeze and test are the record of the first run. This checkout already has the freeze file and test reports, so re-running them is refused on purpose;
+#   only with the original test predictions restored can the scoring below be checked to reproduce the committed reports byte for byte.
 bash scripts/realdocs/run_cord_test.sh           # once per arm
 .venv/Scripts/python.exe -m invoiceguard.cord_score score artifacts/predictions/cord_test_m1cord_nf4   # checks the freeze; test reports are write-once (the `cord_eval` CLI also goes through this entry; its scoring code is checked AST-identical to the frozen bytes)
 .venv/Scripts/python.exe -m invoiceguard.cord_score compare cord_test_m1cord_nf4 cord_test_m0_nf4
